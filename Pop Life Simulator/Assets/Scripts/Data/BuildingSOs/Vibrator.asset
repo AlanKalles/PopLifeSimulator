@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Vibrator
-  m_EditorClassIdentifier: Assembly-CSharp:PopLife.Data:ShelfArchetype
+  m_EditorClassIdentifier: 
   archetypeId: 1
   displayName: Vibrator
   icon: {fileID: 0}
@@ -21,7 +21,8 @@ MonoBehaviour:
   requiresBlueprint: 0
   footprintPattern:
   - {x: 0, y: 0}
-  canRotate: 0
+  - {x: 1, y: 0}
+  canRotate: 1
   levels:
   - level: 0
     upgradeMoneyCost: 0

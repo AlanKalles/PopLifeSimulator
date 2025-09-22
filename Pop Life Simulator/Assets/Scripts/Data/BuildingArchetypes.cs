@@ -77,59 +77,5 @@ namespace PopLife.Data
         }
     }
 
-    // 货架原型
-    [CreateAssetMenu(menuName = "PopLife/Archetypes/Shelf")]
-    public class ShelfArchetype : BuildingArchetype
-    {
-        [Header("货架属性")]
-        public ProductCategory category;
-        public int basePrice = 100;
 
-        [Serializable]
-        public class ShelfLevelData : BuildingLevelData
-        {
-            public int maxStock = 10;
-            public float attractiveness = 1f;
-        }
-
-        [SerializeField] private ShelfLevelData[] shelfLevels;
-        public new int MaxLevel => shelfLevels?.Length ?? 0;
-
-        public override BuildingLevelData GetLevel(int lvl)
-        {
-            if (shelfLevels == null || shelfLevels.Length == 0) return null;
-            int i = Mathf.Clamp(lvl - 1, 0, shelfLevels.Length - 1);
-            return shelfLevels[i];
-        }
-
-        public ShelfLevelData GetShelfLevel(int lvl) => (ShelfLevelData)GetLevel(lvl);
-    }
-
-    // 设施原型
-    [CreateAssetMenu(menuName = "PopLife/Archetypes/Facility")]
-    public class FacilityArchetype : BuildingArchetype
-    {
-        [Header("设施属性")]
-        public FacilityType facilityType;
-
-        [Serializable]
-        public class FacilityEffect
-        {
-            public EffectType type;
-            public float value = 1f;
-            public float radius = 3f;
-            public bool affectsSameFloor = true;
-        }
-
-        public List<FacilityEffect> effects = new();
-
-        public override bool ValidatePlacement(PopLife.Runtime.FloorGrid floor, Vector2Int position, int rotation)
-        {
-            // 示例：每层仅允许一个收银台
-            if (facilityType == FacilityType.Cashier && floor.HasFacilityOfType(FacilityType.Cashier))
-                return false;
-
-            return base.ValidatePlacement(floor, position, rotation);
-        }
-    }
 }
