@@ -422,9 +422,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorId: 0
-  gridSize: {x: 20, y: 10}
+  gridSize: {x: 10, y: 4}
   cellSize: 1
   buildingContainer: {fileID: 719379509}
+  origin: {fileID: 719379509}
+  gridColor: {r: 0, g: 1, b: 0.6673951, a: 1}
 --- !u!4 &715506818
 Transform:
   m_ObjectHideFlags: 0
@@ -434,7 +436,7 @@ Transform:
   m_GameObject: {fileID: 715506816}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 31.613537, y: 8.044035, z: 0.06600756}
+  m_LocalPosition: {x: 0.6, y: 0.3, z: 0.06600756}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -465,7 +467,7 @@ Transform:
   m_GameObject: {fileID: 719379508}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.84, y: -4.9, z: 0}
+  m_LocalPosition: {x: -8.37, y: -4.48, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -955,9 +957,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  selectedArchetype: {fileID: 11400000, guid: 2efd23cd574797c449fa53364e2ba223, type: 2}
-  selectedInstance: {fileID: 9004113815522659866, guid: ffb62aef7beb7ee438a84c69f3c593da, type: 3}
-  previewPrefab: {fileID: 7642206261173079852, guid: 2f5323ca719601a48a8505ec3603d53a, type: 3}
+  selectedArchetype: {fileID: 0}
+  selectedInstance: {fileID: 0}
+  previewPrefab: {fileID: 0}
   floorManager: {fileID: 798607670}
   blueprintManager: {fileID: 798607669}
   resourceManager: {fileID: 798607668}
@@ -982,8 +984,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 198329891}
   - {fileID: 798607675}
-  - {fileID: 715506818}
   - {fileID: 1746659250}
   - {fileID: 1615115558}
   - {fileID: 1423081141}
+  - {fileID: 715506818}
   - {fileID: 719379509}

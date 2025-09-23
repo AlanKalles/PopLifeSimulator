@@ -53,14 +53,25 @@ namespace PopLife.Runtime
         private void CreatePreview(BuildingArchetype arch)
         {
             if (preview) Destroy(preview);
-            preview = Instantiate(previewPrefab);
-            previewSR = preview.GetComponent<SpriteRenderer>();
 
-            var srcSR = arch.prefab.GetComponent<SpriteRenderer>();
-            if (srcSR && previewSR) previewSR.sprite = srcSR.sprite;
+            // 用建筑本体做预览
+            preview = Instantiate(arch.prefab);
+            preview.name = "Preview_" + arch.name;
 
-            if (previewSR) { var c = previewSR.color; previewSR.color = new Color(c.r, c.g, c.b, 0.5f); }
+            // 去功能化：禁用碰撞体和脚本
+            foreach (var col in preview.GetComponentsInChildren<Collider2D>(true)) col.enabled = false;
+            foreach (var mb in preview.GetComponentsInChildren<MonoBehaviour>(true))
+                if (!(mb is SpriteRenderer)) mb.enabled = false;
+
+            // 半透明显示
+            previewSR = preview.GetComponentInChildren<SpriteRenderer>();
+            if (previewSR)
+            {
+                var c = previewSR.color;
+                previewSR.color = new Color(c.r, c.g, c.b, 0.5f);
+            }
         }
+
 
         private void UpdatePlacePreview()
         {

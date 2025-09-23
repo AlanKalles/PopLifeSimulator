@@ -11,7 +11,11 @@ namespace PopLife.Runtime
         public Vector2Int gridSize = new(20, 10);
         public float cellSize = 1f;
         public Transform buildingContainer;
+        public Transform origin;
+        Vector3 OriginPos => origin ? origin.position : transform.position;
 
+        [Header("Level Design Only")] public Color gridColor;
+        
         private Cell[,] grid;
         private readonly Dictionary<string, BuildingInstance> instances = new();
         private readonly HashSet<Vector2Int> occupiedCells = new(); // 可删，若保留需同步
@@ -155,8 +159,14 @@ namespace PopLife.Runtime
             return false;
         }
 
-        public Vector3 GridToWorld(Vector2Int g) => new(g.x * cellSize, g.y * cellSize, 0);
-        public Vector2Int WorldToGrid(Vector3 w) => new(Mathf.FloorToInt(w.x / cellSize), Mathf.FloorToInt(w.y / cellSize));
+        public Vector3 GridToWorld(Vector2Int g)
+            => OriginPos + new Vector3(g.x * cellSize, g.y * cellSize, 0);
+
+        public Vector2Int WorldToGrid(Vector3 w) {
+            var local = w - OriginPos;
+            return new Vector2Int(Mathf.FloorToInt(local.x / cellSize),
+                Mathf.FloorToInt(local.y / cellSize));
+        }
         private bool InBounds(Vector2Int p) => p.x >= 0 && p.y >= 0 && p.x < gridSize.x && p.y < gridSize.y;
 
         // 供AI
@@ -164,6 +174,20 @@ namespace PopLife.Runtime
         public IEnumerable<ShelfInstance> AllShelves()
         {
             foreach (var kv in instances) if (kv.Value is ShelfInstance s) yield return s;
+        }
+#if UNITY_EDITOR
+        private void OnValidate() {
+            if (!origin && buildingContainer) origin = buildingContainer; // 你想用container当原点时，拖好一次即可
+        }
+#endif
+        void OnDrawGizmos() {
+            var o = OriginPos;
+            Gizmos.color = gridColor;
+            for (int x=0;x<gridSize.x;x++)
+            for (int y=0;y<gridSize.y;y++) {
+                var p = o + new Vector3(x*cellSize, y*cellSize, 0);
+                Gizmos.DrawWireCube(p, Vector3.one * cellSize * 0.98f);
+            }
         }
     }
 }
