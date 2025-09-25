@@ -9,12 +9,11 @@ namespace PopLife.Data
     public class BuildingLevelData
     {
         public int level = 1;
-        public int upgradeMoneyCost;
         public int upgradeFameCost;
         public int maintenanceFee;
     }
 
-    public enum ProductCategory { Lingerie, Condom, Vibrator, Fleshlights, Lubricant }
+    public enum ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant }
     public enum FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
     public enum EffectType { ReduceEmbarrassment, IncreaseAttractiveness, IncreaseCustomerSpeed, RestoreMoney }
 
@@ -29,16 +28,17 @@ namespace PopLife.Data
 
         [Header("建造信息")]
         public int buildCost;
-        public int moveCost = 10;
+        public int moveCost = 0;
         public bool requiresBlueprint = true;
 
         [Header("占用空间")]
         [SerializeField] private List<Vector2Int> footprintPattern = new(); // 相对原点
-        public bool canRotate = true;
+
+        public bool canRotate = false;
 
         [Header("等级系统")]
-        [SerializeField] protected BuildingLevelData[] levels;
-        public int MaxLevel => levels?.Length ?? 0;
+        [SerializeField][HideInInspector] protected BuildingLevelData[] levels;
+        public virtual int MaxLevel => levels?.Length ?? 0;
 
         // 统一取级别数据
         public virtual BuildingLevelData GetLevel(int lvl)
@@ -76,6 +76,5 @@ namespace PopLife.Data
             };
         }
     }
-
-
+    
 }

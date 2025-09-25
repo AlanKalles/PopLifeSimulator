@@ -18,7 +18,7 @@ namespace PopLife.Runtime
             var lv = SA.GetShelfLevel(1);
             maxStock = lv.maxStock;
             currentStock = maxStock;
-            currentPrice = SA.basePrice;
+            currentPrice = lv.price;
         }
 
         protected override void OnUpgraded()
@@ -26,6 +26,7 @@ namespace PopLife.Runtime
             var lv = SA.GetShelfLevel(currentLevel);
             maxStock = lv.maxStock;
             currentStock = maxStock; // 可改为不自动补满
+            currentPrice = lv.price;
         }
 
         public float GetAttractiveness()

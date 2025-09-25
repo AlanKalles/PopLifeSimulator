@@ -57,10 +57,10 @@ namespace PopLife.Runtime
             if (next == null) return false;
 
             // 外部资源系统：自行替换
-            if (!ResourceManager.Instance.CanAfford(next.upgradeMoneyCost, next.upgradeFameCost))
+            if (!ResourceManager.Instance.CanAfford(0,next.upgradeFameCost))
                 return false;
 
-            ResourceManager.Instance.Spend(next.upgradeMoneyCost, next.upgradeFameCost);
+            ResourceManager.Instance.Spend(0,next.upgradeFameCost);
             currentLevel++;
             OnUpgraded();
             return true;
