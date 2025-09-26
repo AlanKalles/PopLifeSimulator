@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: B002
   displayName: Poor Quality Condoms
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 2535633934883308398, guid: 3b44ec541961b194da6766fdf9ad78b4, type: 3}
   buildCost: 150
   moveCost: 0
   requiresBlueprint: 0

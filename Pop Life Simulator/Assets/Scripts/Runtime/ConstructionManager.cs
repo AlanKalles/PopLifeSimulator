@@ -54,21 +54,22 @@ namespace PopLife.Runtime
         {
             if (preview) Destroy(preview);
 
-            // 用建筑本体做预览
-            preview = Instantiate(arch.prefab);
-            preview.name = "Preview_" + arch.name;
+            preview = Instantiate(previewPrefab);
+            // 预览渲染器：优先自己，其次子物体
+            previewSR = preview.GetComponent<SpriteRenderer>() 
+                        ?? preview.GetComponentInChildren<SpriteRenderer>(true);
 
-            // 去功能化：禁用碰撞体和脚本
-            foreach (var col in preview.GetComponentsInChildren<Collider2D>(true)) col.enabled = false;
-            foreach (var mb in preview.GetComponentsInChildren<MonoBehaviour>(true))
-                if (!(mb is SpriteRenderer)) mb.enabled = false;
+            // 源Sprite：从原型Prefab取（自己或子物体）
+            var srcSR = arch.prefab.GetComponent<SpriteRenderer>() 
+                        ?? arch.prefab.GetComponentInChildren<SpriteRenderer>(true);
 
-            // 半透明显示
-            previewSR = preview.GetComponentInChildren<SpriteRenderer>();
-            if (previewSR)
-            {
+            if (previewSR != null && srcSR != null)
+                previewSR.sprite = srcSR.sprite;
+
+            if (previewSR != null) {
                 var c = previewSR.color;
                 previewSR.color = new Color(c.r, c.g, c.b, 0.5f);
+                previewSR.sortingOrder = 100;
             }
         }
 

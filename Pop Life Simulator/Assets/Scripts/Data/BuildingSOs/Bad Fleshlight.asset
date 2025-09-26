@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: B004
   displayName: Bad Fleshlight
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 9121478431460335272, guid: 3f1e057eee8d514448663c3208c25566, type: 3}
   buildCost: 200
   moveCost: 0
   requiresBlueprint: 0
