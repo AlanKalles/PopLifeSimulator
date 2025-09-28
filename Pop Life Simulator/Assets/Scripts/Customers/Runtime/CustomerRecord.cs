@@ -19,10 +19,9 @@ namespace PopLife.Customers.Runtime
     public class CustomerRecord
     {
 // —— 主键与身份 ——
-        public string customerId; // 稳定 GUID
+        public string customerId; // 自定义ID格式: C001(普通) 或 V001(VIP)
         public string name;
         [TextArea] public string bio;
-        public SexualOrientation orientation;
         public AppearanceParts appearance = new();
 
 
