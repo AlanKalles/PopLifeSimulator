@@ -5,7 +5,7 @@ using UnityEngine;
 namespace PopLife.Data
 {
 // 货架原型
-    [CreateAssetMenu(menuName = "PopLife/Archetypes/Shelf")]
+    [CreateAssetMenu(menuName = "PopLife/Buildings/ShelfArchetype")]
     public class ShelfArchetype : BuildingArchetype
     {
         [Header("货架属性")]

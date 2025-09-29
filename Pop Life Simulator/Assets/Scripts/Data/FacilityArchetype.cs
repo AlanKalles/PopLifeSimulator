@@ -5,7 +5,7 @@ using UnityEngine;
 namespace PopLife.Data
 {
 // 设施原型
-    [CreateAssetMenu(menuName = "PopLife/Archetypes/Facility")]
+    [CreateAssetMenu(menuName = "PopLife/Buildings/FacilityArchetype")]
     public class FacilityArchetype : BuildingArchetype
     {
         [Header("设施属性")]

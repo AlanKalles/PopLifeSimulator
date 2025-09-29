@@ -13,7 +13,7 @@ namespace PopLife.Data
         public int maintenanceFee;
     }
 
-    public enum ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant }
+    public enum ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant, BDSM }
     public enum FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
     public enum EffectType { ReduceEmbarrassment, IncreaseAttractiveness, IncreaseCustomerSpeed, RestoreMoney }
 

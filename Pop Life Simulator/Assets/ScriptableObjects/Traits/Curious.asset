@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6b8a152a77251f4cb1e9684b23ab5e6, type: 3}
+  m_Name: Curious
+  m_EditorClassIdentifier: 
+  traitId: ct03
+  displayNameKey: Curious
+  description: 
+  interestAdd: 000000000000000000000000000000000000000000000000
+  interestMul: 1
+  walletCapMul: 1
+  patienceMul: 1
+  embarrassmentCapMul: 1
+  priceSensitivityMul: 1

@@ -10,7 +10,7 @@ namespace PopLife.Customers.Data
 public class InterestArray
 {
 [Tooltip("兴趣对齐 ProductCategory 的索引长度")] public int[] values = Array.Empty<int>();
-public void EnsureSize(int size, int defaultValue = 50)
+public void EnsureSize(int size, int defaultValue = 2)
 {
 if (values == null) values = Array.Empty<int>();
 if (values.Length == size) return;
@@ -45,7 +45,7 @@ public CheckoutPolicy checkout;
 public class CustomerArchetype : ScriptableObject
 {
 [Header("标识与外观")]
-public string archetypeId; // GUID/地址
+public string archetypeId; 
 public string displayNameKey;
 public string defaultAppearancePresetId;
 public Sprite portrait;
@@ -70,9 +70,9 @@ public BehaviorPolicySet defaultPolicies;
 
 public int[] GetBaseInterestClamped(int categories)
 {
-baseInterest.EnsureSize(categories, 50);
+baseInterest.EnsureSize(categories, 2);
 var arr = new int[categories];
-for (int i = 0; i < categories; i++) arr[i] = Mathf.Clamp(baseInterest.values[i], 0, 100);
+for (int i = 0; i < categories; i++) arr[i] = Mathf.Clamp(baseInterest.values[i], 0, 5);
 return arr;
 }
 }
