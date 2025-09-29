@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18bec3c1940ebac4fad3b316770404a1, type: 3}
   m_Name: RegularCustomer
   m_EditorClassIdentifier: 
-  archetypeId: ca001
+  archetypeId: RegularCustomer
   displayNameKey: Normal People
   defaultAppearancePresetId: 
   portrait: {fileID: 0}

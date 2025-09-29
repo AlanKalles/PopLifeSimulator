@@ -9,8 +9,7 @@ namespace PopLife.Customers.Runtime
     public class CustomerAgent : MonoBehaviour
     {
         public CustomerBlackboardAdapter bb;
-        public string archetypeId;
-        public string[] traitIds;
+        public string customerID;
 
 
         void Awake(){ if (!bb) bb = GetComponent<CustomerBlackboardAdapter>(); }

@@ -11,9 +11,15 @@
                 "accessoryId": "",
                 "presetId": ""
             },
-            "archetypeId": "",
-            "traitIds": [],
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "CisWoman",
+                "Curious",
+                "Shy",
+                "Student"
+            ],
             "interestPersonalDelta": [
+                0,
                 0,
                 0,
                 0,
@@ -41,9 +47,10 @@
                 "accessoryId": "",
                 "presetId": ""
             },
-            "archetypeId": "",
+            "archetypeId": "RegularCustomer",
             "traitIds": [],
             "interestPersonalDelta": [
+                0,
                 0,
                 0,
                 0,
@@ -71,9 +78,10 @@
                 "accessoryId": "",
                 "presetId": ""
             },
-            "archetypeId": "",
+            "archetypeId": "RegularCustomer",
             "traitIds": [],
             "interestPersonalDelta": [
+                0,
                 0,
                 0,
                 0,
@@ -101,9 +109,10 @@
                 "accessoryId": "",
                 "presetId": ""
             },
-            "archetypeId": "",
+            "archetypeId": "RegularCustomer",
             "traitIds": [],
             "interestPersonalDelta": [
+                0,
                 0,
                 0,
                 0,
@@ -131,9 +140,10 @@
                 "accessoryId": "",
                 "presetId": ""
             },
-            "archetypeId": "",
+            "archetypeId": "RegularCustomer",
             "traitIds": [],
             "interestPersonalDelta": [
+                0,
                 0,
                 0,
                 0,
@@ -161,9 +171,10 @@
                 "accessoryId": "",
                 "presetId": ""
             },
-            "archetypeId": "",
+            "archetypeId": "RegularCustomer",
             "traitIds": [],
             "interestPersonalDelta": [
+                0,
                 0,
                 0,
                 0,
@@ -191,9 +202,10 @@
                 "accessoryId": "",
                 "presetId": ""
             },
-            "archetypeId": "",
+            "archetypeId": "RegularCustomer",
             "traitIds": [],
             "interestPersonalDelta": [
+                0,
                 0,
                 0,
                 0,

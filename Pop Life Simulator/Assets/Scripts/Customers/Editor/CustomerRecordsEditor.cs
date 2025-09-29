@@ -266,11 +266,11 @@ namespace PopLife.Customers.Editor
             {
                 EditorGUI.indentLevel++;
 
-                if (editingRecord.interestPersonalDelta == null || editingRecord.interestPersonalDelta.Length != 5)
-                    editingRecord.EnsureInterestSize(5);
+                if (editingRecord.interestPersonalDelta == null || editingRecord.interestPersonalDelta.Length != 6)
+                    editingRecord.EnsureInterestSize(6);
 
-                string[] categories = { "Lingerie", "Condom", "Vibrator", "Fleshlight", "Lubricant" };
-                for (int i = 0; i < 5; i++)
+                string[] categories = { "Lingerie", "Condom", "Vibrator", "Fleshlight", "Lubricant", "BDSM" };
+                for (int i = 0; i < 6; i++)
                 {
                     editingRecord.interestPersonalDelta[i] = EditorGUILayout.IntSlider(
                         categories[i],
@@ -372,7 +372,7 @@ namespace PopLife.Customers.Editor
                 appearance = new AppearanceParts(),
                 archetypeId = "",
                 traitIds = new string[0],
-                interestPersonalDelta = new int[5],
+                interestPersonalDelta = new int[6],
                 trust = 0,
                 loyaltyLevel = 0,
                 xp = 0,
@@ -598,7 +598,7 @@ namespace PopLife.Customers.Editor
                             lifetimeSpent = int.TryParse(fields[9], out int spent) ? spent : 0,
                             walletCapBase = 100,
                             appearance = new AppearanceParts(),
-                            interestPersonalDelta = new int[5],
+                            interestPersonalDelta = new int[6],
                             schemaVersion = 1
                         };
 
@@ -613,7 +613,9 @@ namespace PopLife.Customers.Editor
 
                         if (fields.Length > 17)
                         {
-                            for (int j = 0; j < 5; j++)
+                            // 兼容旧版本的5个类别和新版本的6个类别
+                            int maxCategories = Math.Min(6, fields.Length - 13);
+                            for (int j = 0; j < maxCategories; j++)
                             {
                                 if (int.TryParse(fields[13 + j], out int delta))
                                     record.interestPersonalDelta[j] = delta;
@@ -647,14 +649,14 @@ namespace PopLife.Customers.Editor
                 {
                     var sb = new StringBuilder();
 
-                    sb.AppendLine("CustomerID,Name,Bio,ArchetypeID,TraitIDs,Trust,LoyaltyLevel,XP,VisitCount,LifetimeSpent,LastVisitDay,LastLeaveReason,WalletCapBase,InterestDelta_Lingerie,InterestDelta_Condom,InterestDelta_Vibrator,InterestDelta_Fleshlight,InterestDelta_Lubricant");
+                    sb.AppendLine("CustomerID,Name,Bio,ArchetypeID,TraitIDs,Trust,LoyaltyLevel,XP,VisitCount,LifetimeSpent,LastVisitDay,LastLeaveReason,WalletCapBase,InterestDelta_Lingerie,InterestDelta_Condom,InterestDelta_Vibrator,InterestDelta_Fleshlight,InterestDelta_Lubricant,InterestDelta_BDSM");
 
                     foreach (var record in records)
                     {
-                        record.EnsureInterestSize(5);
+                        record.EnsureInterestSize(6);
 
                         sb.AppendLine(string.Format(
-                            "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",{5},{6},{7},{8},{9},\"{10}\",\"{11}\",{12},{13},{14},{15},{16},{17}",
+                            "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",{5},{6},{7},{8},{9},\"{10}\",\"{11}\",{12},{13},{14},{15},{16},{17},{18}",
                             EscapeCsvField(record.customerId),
                             EscapeCsvField(record.name),
                             EscapeCsvField(record.bio ?? ""),
@@ -672,7 +674,8 @@ namespace PopLife.Customers.Editor
                             record.interestPersonalDelta[1],
                             record.interestPersonalDelta[2],
                             record.interestPersonalDelta[3],
-                            record.interestPersonalDelta[4]
+                            record.interestPersonalDelta[4],
+                            record.interestPersonalDelta[5]
                         ));
                     }
 
