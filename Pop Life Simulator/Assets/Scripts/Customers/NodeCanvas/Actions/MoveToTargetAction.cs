@@ -8,7 +8,7 @@ using PopLife.Runtime;
 namespace PopLife.Customers.NodeCanvas.Actions
 {
     [Category("PopLife/Customer")]
-    [Description("使用 A* Pathfinding 移动到目标位置")]
+    [Description("使用 A* Pathfinding (FollowerEntity) 移动到目标位置")]
     public class MoveToTargetAction : ActionTask
     {
         [BlackboardOnly]
@@ -21,14 +21,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
         public BBParameter<bool> hasReachedTarget;
 
         public float stoppingDistance = 0.5f;
-        public float repathRate = 0.5f; // 重新计算路径的频率
 
-        private AIPath aiPath;
+        private FollowerEntity followerEntity;
         private AIDestinationSetter destinationSetter;
         private CustomerBlackboardAdapter blackboard;
         private FloorManager floorManager;
 
-        private float lastRepathTime;
         private Vector3 targetPosition;
 
         protected override string info
@@ -39,7 +37,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         protected override void OnExecute()
         {
             // 获取组件
-            aiPath = agent.GetComponent<AIPath>();
+            followerEntity = agent.GetComponent<FollowerEntity>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
 
@@ -49,9 +47,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 floorManager = Object.FindFirstObjectByType<FloorManager>(FindObjectsInactive.Exclude);
             }
 
-            if (aiPath == null)
+            if (followerEntity == null)
             {
-                Debug.LogError("[MoveToTargetAction] 找不到 AIPath 组件");
+                Debug.LogError("[MoveToTargetAction] 找不到 FollowerEntity 组件");
                 EndAction(false);
                 return;
             }
@@ -59,82 +57,67 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 设置移动速度
             if (moveSpeed.value > 0)
             {
-                aiPath.maxSpeed = moveSpeed.value;
+                followerEntity.maxSpeed = moveSpeed.value;
             }
 
             // 转换网格坐标到世界坐标
-            // 需要确定目标所在的楼层
             targetPosition = GridToWorldPosition(goalCell.value, blackboard.targetShelfId);
 
-            // 如果有 AIDestinationSetter，使用它
+            // 如果有 AIDestinationSetter，使用它（FollowerEntity 也支持）
             if (destinationSetter != null)
             {
-                // 创建或获取目标 Transform
                 GameObject targetGO = GetOrCreateTargetObject();
                 targetGO.transform.position = targetPosition;
                 destinationSetter.target = targetGO.transform;
             }
             else
             {
-                // 直接设置 AIPath 的目标
-                aiPath.destination = targetPosition;
-                aiPath.SearchPath();
+                // 直接设置 FollowerEntity 的目标（不需要手动 SearchPath）
+                followerEntity.destination = targetPosition;
             }
 
             hasReachedTarget.value = false;
-            lastRepathTime = Time.time;
 
             Debug.Log($"[MoveToTargetAction] 顾客 {blackboard.customerId} 开始移动到 {goalCell.value}");
         }
 
         protected override void OnUpdate()
         {
-            if (aiPath == null)
+            if (followerEntity == null)
             {
                 EndAction(false);
                 return;
             }
 
-            // 检查是否到达目标
-            float distance = Vector3.Distance(agent.transform.position, targetPosition);
-
-            if (distance <= stoppingDistance)
+            // 检查是否到达目标（使用 FollowerEntity 的内置属性）
+            if (followerEntity.reachedDestination)
             {
                 hasReachedTarget.value = true;
                 Debug.Log($"[MoveToTargetAction] 顾客 {blackboard.customerId} 到达目标");
 
                 // 停止移动
-                aiPath.isStopped = true;
+                followerEntity.isStopped = true;
 
                 EndAction(true);
                 return;
             }
 
-            // 定期重新计算路径
-            if (Time.time - lastRepathTime > repathRate)
-            {
-                if (destinationSetter == null)
-                {
-                    aiPath.destination = targetPosition;
-                    aiPath.SearchPath();
-                }
-                lastRepathTime = Time.time;
-            }
+            // FollowerEntity 会自动重新计算路径，不需要手动干预
+            // 它有内置的自动 repath 机制
 
-            // 检查是否卡住
-            if (aiPath.velocity.magnitude < 0.1f && distance > stoppingDistance * 2)
+            // 可选：检查是否卡住（FollowerEntity 通常能自行处理）
+            float distance = Vector3.Distance(agent.transform.position, targetPosition);
+            if (followerEntity.velocity.magnitude < 0.1f && distance > stoppingDistance * 2)
             {
-                // 可能被卡住了，尝试重新寻路
-                Debug.LogWarning($"[MoveToTargetAction] 顾客 {blackboard.customerId} 可能被卡住，重新寻路");
-                aiPath.SearchPath();
+                Debug.LogWarning($"[MoveToTargetAction] 顾客 {blackboard.customerId} 移动速度异常慢");
             }
         }
 
         protected override void OnStop()
         {
-            if (aiPath != null)
+            if (followerEntity != null)
             {
-                aiPath.isStopped = true;
+                followerEntity.isStopped = true;
             }
         }
 

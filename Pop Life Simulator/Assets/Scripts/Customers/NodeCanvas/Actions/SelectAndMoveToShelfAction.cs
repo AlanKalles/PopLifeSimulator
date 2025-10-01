@@ -28,16 +28,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
         public BBParameter<float> moveSpeed;
 
         public float stoppingDistance = 0.5f;
-        public float repathRate = 0.5f;
 
         private CustomerBlackboardAdapter blackboard;
-        private AIPath aiPath;
+        private FollowerEntity followerEntity;
         private AIDestinationSetter destinationSetter;
         private CustomerInteraction interaction;
         private FloorManager floorManager;
 
         private Vector3 targetPosition;
-        private float lastRepathTime;
         private bool isMoving = false;
 
         protected override string info
@@ -49,7 +47,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         {
             // 获取组件
             blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
-            aiPath = agent.GetComponent<AIPath>();
+            followerEntity = agent.GetComponent<FollowerEntity>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             interaction = agent.GetComponent<CustomerInteraction>();
 
@@ -59,7 +57,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 floorManager = Object.FindFirstObjectByType<FloorManager>(FindObjectsInactive.Exclude);
             }
 
-            if (blackboard == null || aiPath == null)
+            if (blackboard == null || followerEntity == null)
             {
                 Debug.LogError("[SelectAndMoveToShelfAction] 缺少必要组件");
                 EndAction(false);
@@ -128,11 +126,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 设置移动速度
             if (moveSpeed.value > 0)
             {
-                aiPath.maxSpeed = moveSpeed.value;
+                followerEntity.maxSpeed = moveSpeed.value;
             }
             else if (blackboard.moveSpeed > 0)
             {
-                aiPath.maxSpeed = blackboard.moveSpeed;
+                followerEntity.maxSpeed = blackboard.moveSpeed;
             }
 
             // 转换目标位置（使用目标货架所在楼层的坐标系统）
@@ -147,13 +145,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
             else
             {
-                aiPath.destination = targetPosition;
-                aiPath.SearchPath();
+                followerEntity.destination = targetPosition;
             }
 
-            aiPath.isStopped = false;
+            followerEntity.isStopped = false;
             isMoving = true;
-            lastRepathTime = Time.time;
 
             string msg = $"Started moving to {goalCell.value}";
             Debug.Log($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
@@ -162,7 +158,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnUpdate()
         {
-            if (!isMoving || aiPath == null)
+            if (!isMoving || followerEntity == null)
             {
                 EndAction(false);
                 return;
@@ -177,21 +173,19 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     string msg = "Arrived at shelf via collision";
                     Debug.Log($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
                     ScreenLogger.LogCustomerAction(blackboard.customerId, msg);
-                    aiPath.isStopped = true;
+                    followerEntity.isStopped = true;
                     EndAction(true);
                     return;
                 }
             }
 
-            // 检查距离
-            float distance = Vector3.Distance(agent.transform.position, targetPosition);
-
-            if (distance <= stoppingDistance)
+            // 检查是否到达目标（使用 FollowerEntity 内置属性）
+            if (followerEntity.reachedDestination)
             {
                 string msg = "Arrived at target position";
                 Debug.Log($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogCustomerAction(blackboard.customerId, msg);
-                aiPath.isStopped = true;
+                followerEntity.isStopped = true;
 
                 // 手动检查交互（以防碰撞器没有触发）
                 if (interaction != null)
@@ -203,40 +197,30 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // 定期重新寻路
-            if (Time.time - lastRepathTime > repathRate)
+            // FollowerEntity 会自动管理路径重计算
+            // 可选：根据策略重新考虑目标（保留原有逻辑）
+            if (ShouldReconsiderTarget())
             {
-                // 检查是否需要根据策略重新选择目标
-                if (ShouldReconsiderTarget())
+                Debug.Log($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 重新考虑目标");
+                if (SelectTargetShelf())
                 {
-                    Debug.Log($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 重新考虑目标");
-                    if (SelectTargetShelf())
-                    {
-                        StartMovement();
-                    }
+                    StartMovement();
                 }
-                else if (destinationSetter == null)
-                {
-                    // 只是重新计算路径
-                    aiPath.destination = targetPosition;
-                    aiPath.SearchPath();
-                }
-                lastRepathTime = Time.time;
             }
 
-            // 检查是否卡住
-            if (aiPath.velocity.magnitude < 0.1f && distance > stoppingDistance * 2)
+            // 可选：检查是否速度异常
+            float distance = Vector3.Distance(agent.transform.position, targetPosition);
+            if (followerEntity.velocity.magnitude < 0.1f && distance > stoppingDistance * 2)
             {
-                Debug.LogWarning($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 可能被卡住");
-                aiPath.SearchPath();
+                Debug.LogWarning($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 移动速度异常慢");
             }
         }
 
         protected override void OnStop()
         {
-            if (aiPath != null)
+            if (followerEntity != null)
             {
-                aiPath.isStopped = true;
+                followerEntity.isStopped = true;
             }
             isMoving = false;
         }
@@ -249,7 +233,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
             {
                 var customerContext = CustomerContextBuilder.BuildCustomerContext(blackboard);
                 float distLeft = Vector3.Distance(agent.transform.position, targetPosition);
-                return policySet.path.ShouldRepath(customerContext, lastRepathTime, distLeft);
+                // 注意：FollowerEntity 自动管理 repath，这里的时间检查仅用于决策重选目标
+                return policySet.path.ShouldRepath(customerContext, Time.time, distLeft);
             }
 
             return false;
