@@ -2,6 +2,7 @@ using UnityEngine;
 using PopLife.Runtime;
 using PopLife.Customers.Services;
 using PopLife.Data;
+using PopLife.UI;
 
 namespace PopLife.Customers.Runtime
 {
@@ -94,11 +95,13 @@ namespace PopLife.Customers.Runtime
             isInteracting = true;
             interactionStartTime = Time.time;
 
-            Debug.Log($"[CustomerInteraction] 顾客 {blackboard.customerId} 到达货架 {shelf.instanceId}");
+            string msg = $"Reached target shelf {shelf.instanceId}";
+            Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
+            ScreenLogger.LogCustomerAction(blackboard.customerId, msg);
 
             // 触发事件
             CustomerEventBus.RaiseReachedShelf(customerAgent, shelf);
-            
+
         }
 
         /// <summary>
@@ -154,20 +157,26 @@ namespace PopLife.Customers.Runtime
         {
             if (currentShelf == null || !isInteracting)
             {
-                Debug.LogWarning($"[CustomerInteraction] 顾客 {blackboard.customerId} 不在货架旁，无法购买");
+                string msg = "Not at shelf, cannot purchase";
+                Debug.LogWarning($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
                 return false;
             }
 
             // 检查库存和金钱
             if (currentShelf.currentStock <= 0)
             {
-                Debug.Log($"[CustomerInteraction] 货架 {currentShelf.instanceId} 库存不足");
+                string msg = $"Shelf {currentShelf.instanceId} out of stock";
+                Debug.Log($"[CustomerInteraction] {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
                 return false;
             }
 
             if (blackboard.moneyBag < currentShelf.currentPrice)
             {
-                Debug.Log($"[CustomerInteraction] 顾客 {blackboard.customerId} 金钱不足");
+                string msg = $"Insufficient money (need ${currentShelf.currentPrice}, have ${blackboard.moneyBag})";
+                Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
                 return false;
             }
 
@@ -175,7 +184,9 @@ namespace PopLife.Customers.Runtime
             if (currentShelf.TrySellOne())
             {
                 blackboard.moneyBag -= currentShelf.currentPrice;
-                Debug.Log($"[CustomerInteraction] 顾客 {blackboard.customerId} 购买成功，剩余金钱: {blackboard.moneyBag}");
+                string msg = $"Purchase successful, remaining money: ${blackboard.moneyBag}";
+                Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogPurchase(blackboard.customerId, msg);
 
                 // 触发购买事件
                 CustomerEventBus.RaisePurchased(customerAgent, currentShelf, 1, currentShelf.currentPrice);

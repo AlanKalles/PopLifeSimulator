@@ -2,6 +2,7 @@ using NodeCanvas.Framework;
 using ParadoxNotion.Design;
 using UnityEngine;
 using PopLife.Customers.Runtime;
+using PopLife.UI;
 
 namespace PopLife.Customers.NodeCanvas.Actions
 {
@@ -33,14 +34,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (interaction == null)
             {
-                Debug.LogError("[ExecutePurchaseAction] 找不到 CustomerInteraction 组件");
+                Debug.LogError("[ExecutePurchaseAction] CustomerInteraction component not found");
                 EndAction(false);
                 return;
             }
 
             if (blackboard == null)
             {
-                Debug.LogError("[ExecutePurchaseAction] 找不到 CustomerBlackboardAdapter 组件");
+                Debug.LogError("[ExecutePurchaseAction] CustomerBlackboardAdapter component not found");
                 EndAction(false);
                 return;
             }
@@ -49,7 +50,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (targetQty <= 0)
             {
-                Debug.Log($"[ExecutePurchaseAction] 顾客 {blackboard.customerId} 购买数量为0，跳过购买");
+                string msg = $"Purchase quantity is 0, skipping purchase";
+                Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
                 EndAction(false);
                 return;
             }
@@ -69,7 +72,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     else
                     {
                         // 购买失败（库存不足或钱不够），停止
-                        Debug.LogWarning($"[ExecutePurchaseAction] 顾客 {blackboard.customerId} 在第 {i + 1} 件时购买失败");
+                        string msg = $"Purchase failed at item {i + 1} (out of stock or insufficient money)";
+                        Debug.LogWarning($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
+                        ScreenLogger.LogWarning(blackboard.customerId, msg);
                         break;
                     }
                 }
@@ -100,12 +105,16 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (successCount > 0)
             {
-                Debug.Log($"[ExecutePurchaseAction] 顾客 {blackboard.customerId} 成功购买了 {successCount}/{targetQty} 件商品，剩余金钱: {blackboard.moneyBag}");
+                string msg = $"Successfully purchased {successCount}/{targetQty} items, remaining money: ${blackboard.moneyBag}";
+                Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogPurchase(blackboard.customerId, msg);
                 EndAction(true);
             }
             else
             {
-                Debug.LogWarning($"[ExecutePurchaseAction] 顾客 {blackboard.customerId} 购买失败，没有成功购买任何商品");
+                string msg = "Purchase failed, no items purchased";
+                Debug.LogWarning($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
                 EndAction(false);
             }
         }

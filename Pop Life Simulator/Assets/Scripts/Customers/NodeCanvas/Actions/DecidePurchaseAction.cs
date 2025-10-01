@@ -5,6 +5,7 @@ using PopLife.Customers.Data;
 using PopLife.Customers.Services;
 using PopLife.Customers.Runtime;
 using PopLife.Runtime;
+using PopLife.UI;
 
 namespace PopLife.Customers.NodeCanvas.Actions
 {
@@ -72,7 +73,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (qty <= 0)
             {
-                Debug.Log($"[DecidePurchaseAction] 顾客 {adapter.customerId} 决定不购买");
+                string msg = "Decided not to purchase";
+                Debug.Log($"[DecidePurchaseAction] Customer {adapter.customerId} {msg}");
+                ScreenLogger.LogCustomerAction(adapter.customerId, msg);
                 purchaseQuantity.value = 0;
                 EndAction(false);
                 return;
@@ -82,7 +85,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             var ticket = CommerceService.Instance.SoftReserve(shelf, qty);
             purchaseQuantity.value = ticket.qty;
 
-            Debug.Log($"[DecidePurchaseAction] 顾客 {adapter.customerId} 决定购买 {ticket.qty} 个商品");
+            string purchaseMsg = $"Decided to purchase {ticket.qty} items from shelf";
+            Debug.Log($"[DecidePurchaseAction] Customer {adapter.customerId} {purchaseMsg}");
+            ScreenLogger.LogCustomerAction(adapter.customerId, purchaseMsg);
 
             EndAction(true);
         }

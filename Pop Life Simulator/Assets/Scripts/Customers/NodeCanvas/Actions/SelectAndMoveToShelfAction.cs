@@ -7,6 +7,7 @@ using PopLife.Customers.Data;
 using PopLife.Customers.Services;
 using PopLife.Customers.Runtime;
 using PopLife.Runtime;
+using PopLife.UI;
 
 namespace PopLife.Customers.NodeCanvas.Actions
 {
@@ -68,7 +69,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 步骤1：选择目标货架
             if (!SelectTargetShelf())
             {
-                Debug.LogWarning($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 无法选择目标");
+                string msg = "Failed to select target shelf";
+                Debug.LogWarning($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
                 EndAction(false);
                 return;
             }
@@ -113,7 +116,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             blackboard.targetShelfId = selectedShelf.shelfId;
             blackboard.goalCell = selectedShelf.gridCell;
 
-            Debug.Log($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 选择了货架 {selectedShelf.shelfId}");
+            string msg = $"Selected shelf {selectedShelf.shelfId} at position {selectedShelf.gridCell}";
+            Debug.Log($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
+            ScreenLogger.LogCustomerAction(blackboard.customerId, msg);
 
             return true;
         }
@@ -150,7 +155,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             isMoving = true;
             lastRepathTime = Time.time;
 
-            Debug.Log($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 开始移动到 {goalCell.value}");
+            string msg = $"Started moving to {goalCell.value}";
+            Debug.Log($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
+            ScreenLogger.LogCustomerAction(blackboard.customerId, msg);
         }
 
         protected override void OnUpdate()
@@ -167,7 +174,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 var currentShelf = interaction.GetCurrentShelf();
                 if (currentShelf != null && currentShelf.instanceId == targetShelfId.value)
                 {
-                    Debug.Log($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 通过碰撞到达货架");
+                    string msg = "Arrived at shelf via collision";
+                    Debug.Log($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
+                    ScreenLogger.LogCustomerAction(blackboard.customerId, msg);
                     aiPath.isStopped = true;
                     EndAction(true);
                     return;
@@ -179,7 +188,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (distance <= stoppingDistance)
             {
-                Debug.Log($"[SelectAndMoveToShelfAction] 顾客 {blackboard.customerId} 到达目标位置");
+                string msg = "Arrived at target position";
+                Debug.Log($"[SelectAndMoveToShelfAction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogCustomerAction(blackboard.customerId, msg);
                 aiPath.isStopped = true;
 
                 // 手动检查交互（以防碰撞器没有触发）
