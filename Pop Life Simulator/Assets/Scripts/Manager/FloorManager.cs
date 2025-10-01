@@ -14,7 +14,7 @@ namespace PopLife.Runtime
         public bool isActive = true;
 
         [Tooltip("楼层ID（自动分配）")]
-        [ReadOnly] public int floorId;
+        [ReadOnly] public int floorId = -1;
 
         // 自定义属性特性，使字段在Inspector中只读
         public class ReadOnlyAttribute : PropertyAttribute { }

@@ -40,7 +40,7 @@ namespace PopLife.Customers.Spawner
             repository = CustomerRepository.Instance;
             if (repository == null)
             {
-                repository = FindObjectOfType<CustomerRepository>();
+                repository = FindFirstObjectByType<CustomerRepository>();
             }
 
             if (repository == null)

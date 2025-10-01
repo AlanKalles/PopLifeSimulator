@@ -96,4 +96,4 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  defaultPolicies: {fileID: 0}
+  defaultPolicies: {fileID: 11400000, guid: e97ca964d00958243a6f86ab26eb20ca, type: 2}

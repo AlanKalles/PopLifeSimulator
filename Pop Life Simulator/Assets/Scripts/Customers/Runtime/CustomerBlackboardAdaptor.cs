@@ -24,14 +24,16 @@ namespace PopLife.Customers.Runtime
         public Vector2Int goalCell;
         public string targetShelfId;
         public string targetCashierId;
+        public int purchaseQuantity; // 决定购买的数量
+
         [Header("策略集合（只读引用）")]
         public BehaviorPolicySet policies;
 
 
 // NodeCanvas 黑板写入（可选）
 #if NODECANVAS
-        public NodeCanvas.Framework.Blackboard ncBlackboard;
-        void Reset(){ ncBlackboard = GetComponent<NodeCanvas.Framework.Blackboard>(); }
+        public global::NodeCanvas.Framework.Blackboard ncBlackboard;
+        void Reset(){ ncBlackboard = GetComponent<global::NodeCanvas.Framework.Blackboard>(); }
 #endif
         public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, int[] finalInterest, int embarrassmentCapVal)
         {
@@ -55,6 +57,9 @@ namespace PopLife.Customers.Runtime
                 ncBlackboard.SetVariableValue("embarrassmentCap", embarrassmentCap);
                 ncBlackboard.SetVariableValue("moveSpeed", moveSpeed);
                 ncBlackboard.SetVariableValue("queueToleranceSec", queueToleranceSec);
+                ncBlackboard.SetVariableValue("policies", policies);
+                ncBlackboard.SetVariableValue("moneyBag", moneyBag);
+                ncBlackboard.SetVariableValue("purchaseQuantity", 0); // 初始化为0
             }
 #endif
         }
