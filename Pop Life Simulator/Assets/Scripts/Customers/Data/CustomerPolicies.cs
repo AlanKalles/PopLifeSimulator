@@ -38,7 +38,7 @@ namespace PopLife.Customers.Data
         public string customerId;
         public int loyaltyLevel;
         public int trust;
-        public int[] interest; // 对齐 ProductCategory
+        public float[] interest; // 对齐 ProductCategory
         public int embarrassmentCap;
         public float moveSpeed;
         public int queueToleranceSec;

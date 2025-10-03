@@ -12,11 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b8a152a77251f4cb1e9684b23ab5e6, type: 3}
   m_Name: CisWoman
   m_EditorClassIdentifier: 
-  traitId: ct02
+  traitId: ciswoman
   displayNameKey: CisWoman
   description: 
-  interestAdd: 000000000000000002000000feffffff0000000000000000
-  interestMul: 1
+  interestAdd:
+  - 0
+  - 0
+  - 2
+  - -2
+  - 0
+  - 0
+  interestMul:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
   walletCapMul: 1
   patienceMul: 1
   embarrassmentCapMul: 1

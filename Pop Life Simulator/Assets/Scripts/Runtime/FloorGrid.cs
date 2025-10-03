@@ -35,6 +35,12 @@ namespace PopLife.Runtime
 
         void Awake() => Init();
 
+        void Start()
+        {
+            // 自动注册场景中已存在的建筑（用于编辑器预建造）
+            RegisterAllChildBuildings();
+        }
+
         public void Init()
         {
             grid = new Cell[gridSize.x, gridSize.y];
@@ -44,6 +50,56 @@ namespace PopLife.Runtime
 
             // 清空列占用记录
             columnsWithGroundBuildings.Clear();
+        }
+
+        // 注册所有子建筑到网格（编辑器预建造 + 场景加载恢复）
+        private void RegisterAllChildBuildings()
+        {
+            if (buildingContainer == null) return;
+
+            BuildingInstance[] allBuildings = buildingContainer.GetComponentsInChildren<BuildingInstance>();
+
+            foreach (var building in allBuildings)
+            {
+                // 跳过已注册的建筑
+                if (instances.ContainsKey(building.instanceId)) continue;
+
+                // 从建筑的Transform推断网格位置和旋转
+                Vector2Int gridPos = WorldToGrid(building.transform.position);
+                int rotation = Mathf.RoundToInt(building.transform.eulerAngles.z / 90f) % 4;
+
+                // 确保建筑数据完整
+                if (building.archetype == null)
+                {
+                    Debug.LogWarning($"FloorGrid: Building {building.name} missing archetype, skipping registration");
+                    continue;
+                }
+
+                var footprint = building.archetype.GetRotatedFootprint(rotation);
+
+                // 验证位置可用
+                if (CanPlaceFootprint(footprint, gridPos))
+                {
+                    // 更新建筑实例数据
+                    building.rotation = rotation;
+                    building.gridPosition = gridPos;
+                    building.floorId = this.floorId;
+
+                    // 注册到网格
+                    if (RegisterExistingBuilding(building, gridPos, rotation))
+                    {
+                        Debug.Log($"FloorGrid: Auto-registered building '{building.archetype.displayName}' at {gridPos}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"FloorGrid: Failed to register building '{building.archetype.displayName}' at {gridPos}");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"FloorGrid: Building '{building.name}' at {gridPos} conflicts with existing buildings");
+                }
+            }
         }
 
         // —— 放置校验 ——

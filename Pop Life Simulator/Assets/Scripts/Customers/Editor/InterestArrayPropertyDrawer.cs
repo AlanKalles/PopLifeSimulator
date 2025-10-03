@@ -9,9 +9,8 @@ namespace PopLife.Customers.Editor
     public class InterestArrayPropertyDrawer : PropertyDrawer
     {
         private bool foldout = true;
-        private const int DEFAULT_INTEREST = 2;  // 默认兴趣值
-        private const int MIN_INTEREST = 0;      // 最小兴趣值
-        private const int MAX_INTEREST = 5;      // 最大兴趣值
+        private const float DEFAULT_INTEREST = 2f;  // 默认兴趣值
+        private const float MIN_INTEREST = 0f;      // 最小兴趣值（无上限）
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -30,9 +29,9 @@ namespace PopLife.Customers.Editor
                 valuesProperty.arraySize = categoryCount;
                 for (int i = 0; i < categoryCount; i++)
                 {
-                    if (valuesProperty.GetArrayElementAtIndex(i).intValue == 0)
+                    if (valuesProperty.GetArrayElementAtIndex(i).floatValue == 0)
                     {
-                        valuesProperty.GetArrayElementAtIndex(i).intValue = DEFAULT_INTEREST;
+                        valuesProperty.GetArrayElementAtIndex(i).floatValue = DEFAULT_INTEREST;
                     }
                 }
             }
@@ -62,11 +61,12 @@ namespace PopLife.Customers.Editor
                     // 创建带有类别名称的标签
                     GUIContent elementLabel = new GUIContent(
                         categoryNames[i],
-                        $"对 {categoryNames[i]} 类商品的兴趣等级 (0-5，0=无兴趣，5=极感兴趣)"
+                        $"对 {categoryNames[i]} 类商品的兴趣等级（最低0，无上限）"
                     );
 
-                    // 使用 IntSlider，范围 0-5
-                    element.intValue = EditorGUI.IntSlider(elementRect, elementLabel, element.intValue, MIN_INTEREST, MAX_INTEREST);
+                    // 使用 FloatField，最低为0，无上限
+                    float newValue = EditorGUI.FloatField(elementRect, elementLabel, element.floatValue);
+                    element.floatValue = Mathf.Max(newValue, MIN_INTEREST);
 
                     yPos += lineHeight + EditorGUIUtility.standardVerticalSpacing;
                 }

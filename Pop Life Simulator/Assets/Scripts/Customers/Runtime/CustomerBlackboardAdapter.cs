@@ -13,7 +13,7 @@ namespace PopLife.Customers.Runtime
         public string customerId;
         public int loyaltyLevel;
         public int trust;
-        public int[] interestFinal = Array.Empty<int>();
+        public float[] interestFinal = Array.Empty<float>();
         public int embarrassmentCap;
         public float moveSpeed;
         public int queueToleranceSec;
@@ -41,7 +41,7 @@ namespace PopLife.Customers.Runtime
         public global::NodeCanvas.Framework.Blackboard ncBlackboard;
         void Reset(){ ncBlackboard = GetComponent<global::NodeCanvas.Framework.Blackboard>(); }
 #endif
-        public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, int[] finalInterest, int embarrassmentCapVal)
+        public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, float[] finalInterest, int embarrassmentCapVal)
         {
             customerId = record.customerId;
             loyaltyLevel = record.loyaltyLevel;

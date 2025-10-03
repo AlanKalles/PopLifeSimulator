@@ -20,7 +20,13 @@ MonoBehaviour:
   moveSpeed: 2
   queueToleranceSeconds: 60
   baseInterest:
-    values: 020000000200000002000000020000000200000002000000
+    values:
+    - 2
+    - 2
+    - 2
+    - 2
+    - 2
+    - 2
   walletCapCurve:
     curve:
       serializedVersion: 2

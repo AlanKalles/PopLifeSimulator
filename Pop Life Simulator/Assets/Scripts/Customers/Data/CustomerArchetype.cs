@@ -9,12 +9,12 @@ namespace PopLife.Customers.Data
 [Serializable]
 public class InterestArray
 {
-[Tooltip("兴趣对齐 ProductCategory 的索引长度")] public int[] values = Array.Empty<int>();
-public void EnsureSize(int size, int defaultValue = 2)
+[Tooltip("兴趣对齐 ProductCategory 的索引长度")] public float[] values = Array.Empty<float>();
+public void EnsureSize(int size, float defaultValue = 2f)
 {
-if (values == null) values = Array.Empty<int>();
+if (values == null) values = Array.Empty<float>();
 if (values.Length == size) return;
-var newArr = new int[size];
+var newArr = new float[size];
 for (int i = 0; i < size; i++) newArr[i] = (i < values.Length) ? values[i] : defaultValue;
 values = newArr;
 }
@@ -68,11 +68,11 @@ public StatCurve embarrassmentCapCurve = new();
 public BehaviorPolicySet defaultPolicies;
 
 
-public int[] GetBaseInterestClamped(int categories)
+public float[] GetBaseInterest(int categories)
 {
-baseInterest.EnsureSize(categories, 2);
-var arr = new int[categories];
-for (int i = 0; i < categories; i++) arr[i] = Mathf.Clamp(baseInterest.values[i], 0, 5);
+baseInterest.EnsureSize(categories, 2f);
+var arr = new float[categories];
+for (int i = 0; i < categories; i++) arr[i] = Mathf.Max(baseInterest.values[i], 0f);
 return arr;
 }
 }

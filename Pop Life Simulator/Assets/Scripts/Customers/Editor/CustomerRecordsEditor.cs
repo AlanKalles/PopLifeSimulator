@@ -272,10 +272,9 @@ namespace PopLife.Customers.Editor
                 string[] categories = { "Lingerie", "Condom", "Vibrator", "Fleshlight", "Lubricant", "BDSM" };
                 for (int i = 0; i < 6; i++)
                 {
-                    editingRecord.interestPersonalDelta[i] = EditorGUILayout.IntSlider(
+                    editingRecord.interestPersonalDelta[i] = EditorGUILayout.FloatField(
                         categories[i],
-                        editingRecord.interestPersonalDelta[i],
-                        -50, 50
+                        editingRecord.interestPersonalDelta[i]
                     );
                 }
                 EditorGUI.indentLevel--;
@@ -372,7 +371,7 @@ namespace PopLife.Customers.Editor
                 appearance = new AppearanceParts(),
                 archetypeId = "",
                 traitIds = new string[0],
-                interestPersonalDelta = new int[6],
+                interestPersonalDelta = new float[6],
                 trust = 0,
                 loyaltyLevel = 0,
                 xp = 0,
@@ -598,7 +597,7 @@ namespace PopLife.Customers.Editor
                             lifetimeSpent = int.TryParse(fields[9], out int spent) ? spent : 0,
                             walletCapBase = 100,
                             appearance = new AppearanceParts(),
-                            interestPersonalDelta = new int[6],
+                            interestPersonalDelta = new float[6],
                             schemaVersion = 1
                         };
 
@@ -617,7 +616,7 @@ namespace PopLife.Customers.Editor
                             int maxCategories = Math.Min(6, fields.Length - 13);
                             for (int j = 0; j < maxCategories; j++)
                             {
-                                if (int.TryParse(fields[13 + j], out int delta))
+                                if (float.TryParse(fields[13 + j], out float delta))
                                     record.interestPersonalDelta[j] = delta;
                             }
                         }

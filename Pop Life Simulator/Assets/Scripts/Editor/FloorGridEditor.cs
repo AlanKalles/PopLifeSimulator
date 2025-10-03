@@ -10,7 +10,7 @@ namespace PopLife.Editor
     {
         private BuildingArchetype selectedArchetype;
         private int previewRotation = 0;
-        private bool snapMode = false;
+        private bool snapMode = true; // Default enabled
 
         public override void OnInspectorGUI()
         {
@@ -19,28 +19,28 @@ namespace PopLife.Editor
             FloorGrid floor = (FloorGrid)target;
 
             EditorGUILayout.Space(10);
-            EditorGUILayout.LabelField("═══ 关卡设计工具 ═══", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("═══ Level Design Tools ═══", EditorStyles.boldLabel);
 
-            // 建筑原型选择
+            // Building archetype selection
             selectedArchetype = (BuildingArchetype)EditorGUILayout.ObjectField(
-                "建筑原型", selectedArchetype, typeof(BuildingArchetype), false);
+                "Building Archetype", selectedArchetype, typeof(BuildingArchetype), false);
 
-            // 旋转控制
+            // Rotation control
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("旋转", GUILayout.Width(100));
-            if (GUILayout.Button("↶ 左转")) previewRotation = (previewRotation + 3) % 4;
+            EditorGUILayout.LabelField("Rotation", GUILayout.Width(100));
+            if (GUILayout.Button("↶ Left")) previewRotation = (previewRotation + 3) % 4;
             EditorGUILayout.LabelField($"{previewRotation * 90}°", GUILayout.Width(50));
-            if (GUILayout.Button("右转 ↷")) previewRotation = (previewRotation + 1) % 4;
+            if (GUILayout.Button("Right ↷")) previewRotation = (previewRotation + 1) % 4;
             EditorGUILayout.EndHorizontal();
 
-            // 吸附模式开关
-            snapMode = EditorGUILayout.Toggle("网格吸附模式", snapMode);
+            // Snap mode toggle
+            snapMode = EditorGUILayout.Toggle("Grid Snap Mode", snapMode);
 
             EditorGUILayout.Space(5);
 
-            // 快速建造按钮
+            // Quick build button
             GUI.enabled = selectedArchetype != null;
-            if (GUILayout.Button("🏗️ 在鼠标位置建造 (免费)", GUILayout.Height(30)))
+            if (GUILayout.Button("🏗️ Place at Mouse (Free)", GUILayout.Height(30)))
             {
                 PlaceBuildingAtMouse(floor);
             }
@@ -48,20 +48,25 @@ namespace PopLife.Editor
 
             EditorGUILayout.Space(5);
 
-            // 批量操作
-            EditorGUILayout.LabelField("批量操作", EditorStyles.boldLabel);
+            // Batch operations
+            EditorGUILayout.LabelField("Batch Operations", EditorStyles.boldLabel);
 
-            if (GUILayout.Button("📋 注册场景中所有建筑到网格"))
+            if (GUILayout.Button("📋 Register All Buildings in Scene"))
             {
                 RegisterAllBuildingsInScene(floor);
             }
 
-            if (GUILayout.Button("🗑️ 清空网格数据 (保留GameObject)"))
+            if (GUILayout.Button("🗑️ Clear Grid Data (Keep GameObjects)"))
             {
-                if (EditorUtility.DisplayDialog("确认", "这将清空网格占用数据,但不删除场景中的建筑GameObject", "确定", "取消"))
+                if (EditorUtility.DisplayDialog("Confirm", "This will clear grid occupation data without deleting building GameObjects", "OK", "Cancel"))
                 {
                     ClearGridData(floor);
                 }
+            }
+
+            if (GUILayout.Button("🔄 Sync Grid with Scene (Auto-cleanup)"))
+            {
+                SyncGridWithScene(floor);
             }
         }
 
@@ -114,11 +119,11 @@ namespace PopLife.Editor
 
         private void PlaceBuildingAtMouse(FloorGrid floor)
         {
-            // 从Scene视图获取鼠标位置
+            // Get mouse position from Scene view
             SceneView sceneView = SceneView.lastActiveSceneView;
             if (sceneView == null)
             {
-                Debug.LogWarning("请在Scene视图中操作");
+                Debug.LogWarning("Please operate in Scene view");
                 return;
             }
 
@@ -135,11 +140,11 @@ namespace PopLife.Editor
         {
             if (selectedArchetype == null)
             {
-                EditorUtility.DisplayDialog("错误", "请先选择建筑原型", "确定");
+                EditorUtility.DisplayDialog("Error", "Please select a building archetype first", "OK");
                 return;
             }
 
-            // 初始化网格(如果未初始化)
+            // Initialize grid if not initialized
             if (!Application.isPlaying)
             {
                 floor.Init();
@@ -149,11 +154,11 @@ namespace PopLife.Editor
 
             if (!floor.CanPlaceFootprint(footprint, gridPos))
             {
-                EditorUtility.DisplayDialog("无法建造", "该位置无法放置此建筑", "确定");
+                EditorUtility.DisplayDialog("Cannot Place", "Cannot place building at this position", "OK");
                 return;
             }
 
-            // 创建建筑实例
+            // Create building instance
             Vector3 worldPos = floor.GridToWorld(gridPos);
             GameObject go = (GameObject)PrefabUtility.InstantiatePrefab(selectedArchetype.prefab, floor.buildingContainer);
             go.transform.SetPositionAndRotation(worldPos, Quaternion.Euler(0, 0, previewRotation * 90));
@@ -164,23 +169,22 @@ namespace PopLife.Editor
                 instance.rotation = previewRotation;
                 instance.Initialize(selectedArchetype, gridPos, floor.floorId);
 
-                // 手动调用PlaceBuildingTransactional的内部逻辑(但跳过资源检查)
-                // 这里使用反射或者直接调用RegisterExistingBuilding
+                // Register to grid (skip resource check)
                 if (!floor.RegisterExistingBuilding(instance, gridPos, previewRotation))
                 {
                     DestroyImmediate(go);
-                    EditorUtility.DisplayDialog("注册失败", "无法将建筑注册到网格", "确定");
+                    EditorUtility.DisplayDialog("Registration Failed", "Cannot register building to grid", "OK");
                     return;
                 }
 
                 Undo.RegisterCreatedObjectUndo(go, "Place Building");
                 EditorUtility.SetDirty(floor);
-                Debug.Log($"已建造: {selectedArchetype.displayName} 在 {gridPos}");
+                Debug.Log($"Placed: {selectedArchetype.displayName} at {gridPos}");
             }
             else
             {
                 DestroyImmediate(go);
-                EditorUtility.DisplayDialog("错误", "预制体缺少BuildingInstance组件", "确定");
+                EditorUtility.DisplayDialog("Error", "Prefab is missing BuildingInstance component", "OK");
             }
         }
 
@@ -197,7 +201,7 @@ namespace PopLife.Editor
 
             foreach (var building in allBuildings)
             {
-                // 尝试从当前位置推断网格位置
+                // Infer grid position from current world position
                 Vector2Int gridPos = floor.WorldToGrid(building.transform.position);
                 int rotation = Mathf.RoundToInt(building.transform.eulerAngles.z / 90f) % 4;
 
@@ -211,31 +215,115 @@ namespace PopLife.Editor
                     if (floor.RegisterExistingBuilding(building, gridPos, rotation))
                     {
                         successCount++;
-                        Debug.Log($"✓ 已注册: {building.archetype.displayName} at {gridPos}");
+                        Debug.Log($"✓ Registered: {building.archetype.displayName} at {gridPos}");
                     }
                     else
                     {
                         failCount++;
-                        Debug.LogWarning($"✗ 注册失败: {building.archetype.displayName} at {gridPos}");
+                        Debug.LogWarning($"✗ Registration failed: {building.archetype.displayName} at {gridPos}");
                     }
                 }
                 else
                 {
                     failCount++;
-                    Debug.LogWarning($"✗ 位置冲突: {building.archetype.displayName} at {gridPos}");
+                    Debug.LogWarning($"✗ Position conflict: {building.archetype.displayName} at {gridPos}");
                 }
             }
 
             EditorUtility.SetDirty(floor);
-            EditorUtility.DisplayDialog("批量注册完成",
-                $"成功: {successCount}\n失败: {failCount}", "确定");
+            EditorUtility.DisplayDialog("Batch Registration Complete",
+                $"Success: {successCount}\nFailed: {failCount}", "OK");
         }
 
         private void ClearGridData(FloorGrid floor)
         {
             floor.Init();
             EditorUtility.SetDirty(floor);
-            Debug.Log("网格数据已清空");
+            Debug.Log("Grid data cleared");
+        }
+
+        private void SyncGridWithScene(FloorGrid floor)
+        {
+            if (!Application.isPlaying)
+            {
+                floor.Init();
+            }
+
+            // Get all buildings currently in scene
+            BuildingInstance[] sceneBuildings = floor.buildingContainer.GetComponentsInChildren<BuildingInstance>();
+            System.Collections.Generic.HashSet<string> sceneIds = new System.Collections.Generic.HashSet<string>();
+
+            foreach (var building in sceneBuildings)
+            {
+                if (!string.IsNullOrEmpty(building.instanceId))
+                {
+                    sceneIds.Add(building.instanceId);
+                }
+            }
+
+            // Access private 'instances' field using reflection
+            var instancesField = typeof(FloorGrid).GetField("instances",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            if (instancesField != null)
+            {
+                var instances = (System.Collections.Generic.Dictionary<string, BuildingInstance>)instancesField.GetValue(floor);
+                var toRemove = new System.Collections.Generic.List<string>();
+
+                // Find stale entries (buildings that no longer exist in scene)
+                foreach (var kvp in instances)
+                {
+                    if (kvp.Value == null || !sceneIds.Contains(kvp.Key))
+                    {
+                        toRemove.Add(kvp.Key);
+                    }
+                }
+
+                // Remove stale entries
+                foreach (var id in toRemove)
+                {
+                    instances.Remove(id);
+                    Debug.Log($"Removed missing building from grid: {id}");
+                }
+
+                if (toRemove.Count > 0)
+                {
+                    // Rebuild grid occupation data
+                    floor.Init();
+
+                    int reregisteredCount = 0;
+                    foreach (var building in sceneBuildings)
+                    {
+                        Vector2Int gridPos = floor.WorldToGrid(building.transform.position);
+                        int rotation = Mathf.RoundToInt(building.transform.eulerAngles.z / 90f) % 4;
+
+                        var footprint = building.archetype.GetRotatedFootprint(rotation);
+
+                        if (floor.CanPlaceFootprint(footprint, gridPos))
+                        {
+                            building.rotation = rotation;
+                            building.Initialize(building.archetype, gridPos, floor.floorId);
+
+                            if (floor.RegisterExistingBuilding(building, gridPos, rotation))
+                            {
+                                reregisteredCount++;
+                            }
+                        }
+                    }
+
+                    EditorUtility.SetDirty(floor);
+                    EditorUtility.DisplayDialog("Sync Complete",
+                        $"Removed {toRemove.Count} missing building(s) from grid\nRe-registered {reregisteredCount} building(s)", "OK");
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Sync Complete", "Grid is already in sync with scene", "OK");
+                }
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("Error", "Cannot access FloorGrid internal data via reflection", "OK");
+            }
         }
     }
 }

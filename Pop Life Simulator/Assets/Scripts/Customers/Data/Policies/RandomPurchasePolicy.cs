@@ -85,7 +85,7 @@ namespace PopLife.Customers.Data
             // 4. 应用兴趣倍率（如果启用）
             if (useInterestModifier && ctx.interest != null)
             {
-                int interest = GetInterestForCategory(ctx.interest, shelf.categoryIndex);
+                float interest = GetInterestForCategory(ctx.interest, shelf.categoryIndex);
                 float interestMult = interestMultiplierCurve.Evaluate(interest);
                 adjustedQty *= interestMult;
             }
@@ -187,11 +187,11 @@ namespace PopLife.Customers.Data
         /// <summary>
         /// 获取对应类别的兴趣值
         /// </summary>
-        private int GetInterestForCategory(int[] interests, int categoryIndex)
+        private float GetInterestForCategory(float[] interests, int categoryIndex)
         {
             if (interests == null || categoryIndex < 0 || categoryIndex >= interests.Length)
             {
-                return 2; // 默认中等兴趣
+                return 2f; // 默认中等兴趣
             }
             return interests[categoryIndex];
         }

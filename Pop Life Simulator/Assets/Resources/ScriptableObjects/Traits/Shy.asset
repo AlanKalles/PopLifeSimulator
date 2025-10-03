@@ -12,11 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b8a152a77251f4cb1e9684b23ab5e6, type: 3}
   m_Name: Shy
   m_EditorClassIdentifier: 
-  traitId: ct01
+  traitId: shy
   displayNameKey: Shy
   description: 
-  interestAdd: 000000000000000000000000000000000000000000000000
-  interestMul: 1
+  interestAdd:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  interestMul:
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
   walletCapMul: 1
   patienceMul: 1
   embarrassmentCapMul: 0.8

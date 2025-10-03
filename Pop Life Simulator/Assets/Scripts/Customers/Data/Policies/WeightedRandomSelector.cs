@@ -77,7 +77,7 @@ namespace PopLife.Customers.Data
                 }
 
                 // 检查兴趣阈值
-                int interest = GetInterestForCategory(ctx.interest, shelf.categoryIndex);
+                float interest = GetInterestForCategory(ctx.interest, shelf.categoryIndex);
                 if (interest < minInterestThreshold)
                 {
                     continue; // 跳过兴趣过低的类别
@@ -122,7 +122,7 @@ namespace PopLife.Customers.Data
         /// <summary>
         /// 计算单个货架的得分
         /// </summary>
-        private float CalculateShelfScore(in CustomerContext ctx, in ShelfSnapshot shelf, int interest)
+        private float CalculateShelfScore(in CustomerContext ctx, in ShelfSnapshot shelf, float interest)
         {
             float score = 0;
 
@@ -151,11 +151,11 @@ namespace PopLife.Customers.Data
         /// <summary>
         /// 获取对应类别的兴趣值
         /// </summary>
-        private int GetInterestForCategory(int[] interests, int categoryIndex)
+        private float GetInterestForCategory(float[] interests, int categoryIndex)
         {
             if (interests == null || categoryIndex < 0 || categoryIndex >= interests.Length)
             {
-                return 0;
+                return 0f;
             }
             return interests[categoryIndex];
         }

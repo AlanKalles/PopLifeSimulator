@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ab89118742ec6843961ecc4bf5e9005, type: 3}
   m_Name: WeightedRandomSelector
   m_EditorClassIdentifier: 
-  interestWeight: 1
+  interestWeight: 2
   attractivenessWeight: 0.8
   queuePenaltyWeight: 0.5
   distanceWeight: 0.3
