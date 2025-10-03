@@ -2,6 +2,8 @@ using NodeCanvas.Framework;
 using ParadoxNotion.Design;
 using UnityEngine;
 using PopLife.Customers.Runtime;
+using PopLife.Runtime;
+using PopLife.Data;
 using PopLife.UI;
 
 namespace PopLife.Customers.NodeCanvas.Actions
@@ -13,6 +15,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
         [BlackboardOnly]
         [Tooltip("要购买的数量（由DecidePurchaseAction设置）")]
         public BBParameter<int> purchaseQuantity;
+
+        [BlackboardOnly]
+        [Tooltip("目标货架ID（用于记录已购买archetype）")]
+        public BBParameter<string> targetShelfId;
 
         [Tooltip("是否每次只购买1件（推荐true，因为TryPurchase一次买一件）")]
         public bool purchaseOneByOne = true;
@@ -105,6 +111,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (successCount > 0)
             {
+                // 记录已购买的货架archetype
+                RecordPurchasedArchetype();
+
                 string msg = $"Successfully purchased {successCount}/{targetQty} items, remaining money: ${blackboard.moneyBag}";
                 Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogPurchase(blackboard.customerId, msg);
@@ -117,6 +126,64 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 ScreenLogger.LogWarning(blackboard.customerId, msg);
                 EndAction(false);
             }
+        }
+
+        /// <summary>
+        /// 记录已购买的货架archetype ID
+        /// </summary>
+        private void RecordPurchasedArchetype()
+        {
+            if (string.IsNullOrEmpty(targetShelfId.value))
+            {
+                Debug.LogWarning("[ExecutePurchaseAction] targetShelfId is null or empty, cannot record purchased archetype");
+                return;
+            }
+
+            // 查找目标货架
+            var shelf = FindShelfById(targetShelfId.value);
+            if (shelf == null)
+            {
+                Debug.LogWarning($"[ExecutePurchaseAction] Cannot find shelf {targetShelfId.value} to record archetype");
+                return;
+            }
+
+            // 获取archetype ID
+            var shelfArchetype = shelf.archetype as ShelfArchetype;
+            if (shelfArchetype == null)
+            {
+                Debug.LogWarning($"[ExecutePurchaseAction] Shelf {targetShelfId.value} has no ShelfArchetype");
+                return;
+            }
+
+            // 添加到已购买列表
+            if (blackboard.purchasedArchetypes == null)
+            {
+                blackboard.purchasedArchetypes = new System.Collections.Generic.HashSet<string>();
+            }
+
+            bool added = blackboard.purchasedArchetypes.Add(shelfArchetype.archetypeId);
+            if (added)
+            {
+                Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} marked archetype {shelfArchetype.archetypeId} as purchased");
+            }
+        }
+
+        /// <summary>
+        /// 根据ID查找货架
+        /// </summary>
+        private ShelfInstance FindShelfById(string shelfId)
+        {
+            if (string.IsNullOrEmpty(shelfId))
+                return null;
+
+            var allShelves = Object.FindObjectsByType<ShelfInstance>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            foreach (var shelf in allShelves)
+            {
+                if (shelf.instanceId == shelfId)
+                    return shelf;
+            }
+
+            return null;
         }
     }
 }

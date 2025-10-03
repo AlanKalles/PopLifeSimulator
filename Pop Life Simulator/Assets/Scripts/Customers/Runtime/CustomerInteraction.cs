@@ -151,7 +151,7 @@ namespace PopLife.Customers.Runtime
         }
 
         /// <summary>
-        /// 执行购买（由行为树调用）
+        /// 执行购买（由行为树调用）- 只扣库存和记录待结账金额，不立即增加玩家金钱
         /// </summary>
         public bool TryPurchase()
         {
@@ -180,15 +180,19 @@ namespace PopLife.Customers.Runtime
                 return false;
             }
 
-            // 执行购买
-            if (currentShelf.TrySellOne())
+            // 执行取货 - 只扣库存，不增加玩家金钱
+            if (currentShelf.TryTakeOne())
             {
+                // 扣除顾客钱包
                 blackboard.moneyBag -= currentShelf.currentPrice;
-                string msg = $"Purchase successful, remaining money: ${blackboard.moneyBag}";
+                // 累加待结账金额
+                blackboard.pendingPayment += currentShelf.currentPrice;
+
+                string msg = $"Took item, pending payment: ${blackboard.pendingPayment}, remaining money: ${blackboard.moneyBag}";
                 Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogPurchase(blackboard.customerId, msg);
 
-                // 触发购买事件
+                // 触发购买事件（此时只是拿货，未结账）
                 CustomerEventBus.RaisePurchased(customerAgent, currentShelf, 1, currentShelf.currentPrice);
 
                 return true;
@@ -198,18 +202,36 @@ namespace PopLife.Customers.Runtime
         }
 
         /// <summary>
-        /// 执行结账（由行为树调用）
+        /// 执行结账（由行为树调用）- 在收银台结算待结账金额
         /// </summary>
         public bool TryCheckout()
         {
             if (currentFacility == null || !isInteracting)
             {
-                Debug.LogWarning($"[CustomerInteraction] 顾客 {blackboard.customerId} 不在收银台，无法结账");
+                string msg = "Not at cashier, cannot checkout";
+                Debug.LogWarning($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
                 return false;
             }
 
-            // 这里可以添加结账逻辑
-            Debug.Log($"[CustomerInteraction] 顾客 {blackboard.customerId} 完成结账");
+            // 检查是否有待结账金额
+            if (blackboard.pendingPayment <= 0)
+            {
+                string msg = "No pending payment, checkout skipped";
+                Debug.LogWarning($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(blackboard.customerId, msg);
+                return false;
+            }
+
+            // 结账 - 增加玩家金钱
+            PopLife.ResourceManager.Instance.AddMoney(blackboard.pendingPayment);
+
+            string logMsg = $"Checkout completed, paid ${blackboard.pendingPayment}";
+            Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {logMsg}");
+            ScreenLogger.LogPurchase(blackboard.customerId, logMsg);
+
+            // 清空待结账金额
+            blackboard.pendingPayment = 0;
 
             // 触发结账事件
             CustomerEventBus.RaiseCheckedOut(customerAgent);

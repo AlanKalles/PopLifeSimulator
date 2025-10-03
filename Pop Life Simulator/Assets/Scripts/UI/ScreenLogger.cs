@@ -349,7 +349,7 @@ namespace PopLife.UI
             tmp.fontSize = 14;
             tmp.color = Color.white;
             tmp.alignment = TextAlignmentOptions.TopLeft;
-            tmp.enableWordWrapping = true;
+            tmp.textWrappingMode = TextWrappingModes.Normal;
             tmp.overflowMode = TextOverflowModes.Overflow;
             tmp.raycastTarget = false;
 

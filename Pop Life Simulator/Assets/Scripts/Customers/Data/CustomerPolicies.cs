@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -41,12 +42,14 @@ namespace PopLife.Customers.Data
         public int embarrassmentCap;
         public float moveSpeed;
         public int queueToleranceSec;
+        public HashSet<string> purchasedArchetypes; // 本次访问已购买的货架archetype ID
     }
 
 
     public struct ShelfSnapshot
     {
         public string shelfId;
+        public string archetypeId; // 货架的archetype ID
         public int categoryIndex; // 与 ProductCategory 对齐
         public int attractiveness; // 0..N（来自货架等级与系统）
         public int price;

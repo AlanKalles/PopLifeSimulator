@@ -52,7 +52,8 @@ namespace PopLife.Customers.Services
                 interest = adapter.interestFinal,
                 embarrassmentCap = adapter.embarrassmentCap,
                 moveSpeed = adapter.moveSpeed,
-                queueToleranceSec = adapter.queueToleranceSec
+                queueToleranceSec = adapter.queueToleranceSec,
+                purchasedArchetypes = adapter.purchasedArchetypes
             };
         }
 
@@ -116,19 +117,19 @@ namespace PopLife.Customers.Services
                 );
             }
 
-            // 获取排队人数（需要 QueueService）
-            //int queueLength = QueueService.Instance != null ?
-                //QueueService.Instance.GetQueueLength(shelf.instanceId) : 0;
+            // 获取排队人数（从 ShelfQueueController）
+            int queueLength = shelf.GetQueueLength();
 
             return new ShelfSnapshot
             {
                 shelfId = shelf.instanceId,
+                archetypeId = shelfArchetype.archetypeId,
                 categoryIndex = (int)shelfArchetype.category,
                 attractiveness = Mathf.RoundToInt(shelf.GetAttractiveness()),
                 price = shelf.currentPrice,
                 stock = shelf.currentStock,
                 gridCell = gridPos,
-                //queueLength = queueLength
+                queueLength = queueLength
             };
         }
 
@@ -200,15 +201,14 @@ namespace PopLife.Customers.Services
                 );
             }
 
-            // 获取排队人数
-            //int queueLength = QueueService.Instance != null ?
-                //QueueService.Instance.GetQueueLength(facility.instanceId) : 0;
+            // 获取排队人数（从 CashierQueueController）
+            int queueLength = facility.GetQueueLength();
 
             return new CashierSnapshot
             {
                 cashierId = facility.instanceId,
                 gridCell = gridPos,
-                //queueLength = queueLength
+                queueLength = queueLength
             };
         }
 

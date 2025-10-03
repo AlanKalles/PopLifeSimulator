@@ -38,7 +38,7 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
 
 #### 枚举定义
 ```csharp
-ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant }
+ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant, BDSM }
 FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
 EffectType { ReduceEmbarrassment, IncreaseAttractiveness, IncreaseCustomerSpeed, RestoreMoney }
 ```

@@ -18,7 +18,6 @@ GameObject:
   - component: {fileID: 6204318763288438747}
   - component: {fileID: 3229506754668197364}
   - component: {fileID: 1480878574802424384}
-  - component: {fileID: 5232463472839641171}
   m_Layer: 7
   m_Name: customer1
   m_TagString: Untagged
@@ -65,7 +64,11 @@ MonoBehaviour:
   goalCell: {x: 0, y: 0}
   targetShelfId: 
   targetCashierId: 
+  targetExitId: 
   purchaseQuantity: 0
+  pendingPayment: 0
+  assignedQueueSlot: {fileID: 0}
+  targetExitPoint: {fileID: 0}
   policies: {fileID: 11400000, guid: e97ca964d00958243a6f86ab26eb20ca, type: 2}
   ncBlackboard: {fileID: 5429321330937401962}
 --- !u!114 &6671437000822041582
@@ -331,7 +334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1073741831
   shape:
-    radius: 0.5
+    radius: 0.66
     height: 1
   movement:
     follower:
@@ -341,8 +344,8 @@ MonoBehaviour:
       maxOnSpotRotationSpeed: 720
       slowdownTime: 0.5
       slowdownTimeWhenTurningOnSpot: 0
-      desiredWallDistance: 0.5
-      leadInRadiusWhenApproachingDestination: 1
+      desiredWallDistance: 0.8
+      leadInRadiusWhenApproachingDestination: 0
       allowRotatingOnSpotBacking: 0
     debugFlags: 64
     stopDistance: 0.2
@@ -376,18 +379,3 @@ MonoBehaviour:
   movementPlaneSourceBacking: 0
   syncPosition: 1
   syncRotation: 0
---- !u!114 &5232463472839641171
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4138517110426417332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c9679e68a0f1144e79c664d9a11ca121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 1073741824
-  target: {fileID: 0}
-  useRotation: 0

@@ -83,8 +83,12 @@ namespace PopLife.Customers.Data
                     continue; // 跳过兴趣过低的类别
                 }
 
-                // TODO: 未来可添加已购买货架的过滤逻辑
-                // if (filterPurchased && HasPurchased(shelf.shelfId)) continue;
+                // 过滤已购买的货架archetype
+                if (filterPurchased && ctx.purchasedArchetypes != null &&
+                    ctx.purchasedArchetypes.Contains(shelf.archetypeId))
+                {
+                    continue; // 跳过已购买过的archetype
+                }
 
                 // 第二步：计算得分
                 float score = CalculateShelfScore(ctx, shelf, interest);

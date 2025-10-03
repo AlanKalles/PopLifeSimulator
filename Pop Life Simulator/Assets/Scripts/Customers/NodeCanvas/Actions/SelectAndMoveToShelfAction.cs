@@ -12,7 +12,9 @@ using PopLife.UI;
 namespace PopLife.Customers.NodeCanvas.Actions
 {
     [Category("PopLife/Customer")]
-    [Description("使用策略选择货架并移动到该位置（集成版本）")]
+    [Description("【已废弃】使用策略选择货架并移动到该位置（集成版本）\n" +
+                 "请改用: SelectTargetShelfAction → AcquireQueueSlotAction → MoveToTargetAction")]
+    [System.Obsolete("请使用新的队列系统流程: SelectTargetShelfAction → AcquireQueueSlotAction → MoveToTargetAction")]
     public class SelectAndMoveToShelfAction : ActionTask
     {
         [BlackboardOnly]
