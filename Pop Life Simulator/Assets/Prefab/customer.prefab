@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 3229506754668197364}
   - component: {fileID: 1480878574802424384}
   m_Layer: 7
-  m_Name: customer1
+  m_Name: customer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ MonoBehaviour:
   customerId: 
   loyaltyLevel: 0
   trust: 0
-  interestFinal: 
+  interestFinal: []
   embarrassmentCap: 0
   moveSpeed: 0
   queueToleranceSec: 0
@@ -69,7 +69,7 @@ MonoBehaviour:
   pendingPayment: 0
   assignedQueueSlot: {fileID: 0}
   targetExitPoint: {fileID: 0}
-  policies: {fileID: 11400000, guid: e97ca964d00958243a6f86ab26eb20ca, type: 2}
+  policies: {fileID: 0}
   ncBlackboard: {fileID: 5429321330937401962}
 --- !u!114 &6671437000822041582
 MonoBehaviour:
@@ -84,7 +84,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bb: {fileID: 1996756620596342347}
-  customerID: C001
+  customerID: 
+  appearanceDB: {fileID: 11400000, guid: f039d8cc3db4d00419a7f62eabb43978, type: 2}
 --- !u!114 &5429321330937401962
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,7 +274,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 867dc3bec4f72ff4fbe5e1bf5a53dc1e, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -281,7 +282,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!58 &3229506754668197364
@@ -339,16 +340,16 @@ MonoBehaviour:
   movement:
     follower:
       rotationSpeed: 600
-      speed: 5
+      speed: 3
       maxRotationSpeed: 720
       maxOnSpotRotationSpeed: 720
-      slowdownTime: 0.5
+      slowdownTime: 0.2
       slowdownTimeWhenTurningOnSpot: 0
       desiredWallDistance: 0.8
       leadInRadiusWhenApproachingDestination: 0
       allowRotatingOnSpotBacking: 0
     debugFlags: 64
-    stopDistance: 0.2
+    stopDistance: 0.1
     rotationSmoothing: 0
     positionSmoothing: 0
     groundMask:

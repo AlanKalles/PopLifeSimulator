@@ -33,3 +33,4 @@ MonoBehaviour:
   patienceMul: 1
   embarrassmentCapMul: 1
   priceSensitivityMul: 1
+  moveSpeedMul: 0.9

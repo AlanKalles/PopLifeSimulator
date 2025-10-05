@@ -7,22 +7,13 @@ using PopLife.Customers.Data;
 namespace PopLife.Customers.Runtime
 {
     [Serializable]
-    public class AppearanceParts
-    {
-        public string hairId;
-        public string eyesId;
-        public string outfitId;
-        public string accessoryId;
-        public string presetId; // 若使用预设，优先读取
-    }
-    [Serializable]
     public class CustomerRecord
     {
 // —— 主键与身份 ——
         public string customerId; // 自定义ID格式: C001(普通) 或 V001(VIP)
         public string name;
         [TextArea] public string bio;
-        public AppearanceParts appearance = new();
+        public string appearanceId; // 外貌预设ID，对应 AppearanceDatabase 中的条目
 
 
 // —— 行为基线来源 ——

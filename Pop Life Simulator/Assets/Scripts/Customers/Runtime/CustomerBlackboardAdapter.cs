@@ -41,14 +41,14 @@ namespace PopLife.Customers.Runtime
         public global::NodeCanvas.Framework.Blackboard ncBlackboard;
         void Reset(){ ncBlackboard = GetComponent<global::NodeCanvas.Framework.Blackboard>(); }
 #endif
-        public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, float[] finalInterest, int embarrassmentCapVal)
+        public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, float[] finalInterest, int embarrassmentCapVal, float finalMoveSpeed)
         {
             customerId = record.customerId;
             loyaltyLevel = record.loyaltyLevel;
             trust = record.trust;
             interestFinal = finalInterest;
             embarrassmentCap = embarrassmentCapVal;
-            moveSpeed = archetype.moveSpeed;
+            moveSpeed = finalMoveSpeed;
             queueToleranceSec = archetype.queueToleranceSeconds;
             policies = archetype.defaultPolicies;
 

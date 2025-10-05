@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Data;
+using PopLife.Utility;
 
 namespace PopLife.Customers.Editor
 {
@@ -18,9 +19,9 @@ namespace PopLife.Customers.Editor
         private int selectedIndex = -1;
         private bool showDetails = false;
 
-        // 默认保存路径
-        private static string SaveFolderPath => Path.Combine(Application.dataPath, "Documents", "Save");
-        private static string DefaultFilePath => Path.Combine(SaveFolderPath, "Customers.json");
+        // 默认保存路径 (使用 SavePathManager 统一管理)
+        private static string DefaultReadPath => SavePathManager.GetReadPath("Customers.json");
+        private static string DefaultWritePath => SavePathManager.GetWritePath("Customers.json");
 
         private CustomerRecord editingRecord;
         private SerializedObject serializedRecord;
@@ -32,7 +33,6 @@ namespace PopLife.Customers.Editor
         private SortBy sortBy = SortBy.None;
         private bool sortAscending = true;
 
-        private bool foldoutAppearance = true;
         private bool foldoutStats = true;
         private bool foldoutInterests = true;
 
@@ -208,17 +208,8 @@ namespace PopLife.Customers.Editor
             editingRecord.bio = EditorGUILayout.TextArea(editingRecord.bio, GUILayout.Height(60));
 
             EditorGUILayout.Space(10);
-            foldoutAppearance = EditorGUILayout.Foldout(foldoutAppearance, "Appearance", true);
-            if (foldoutAppearance)
-            {
-                EditorGUI.indentLevel++;
-                editingRecord.appearance.presetId = EditorGUILayout.TextField("Preset ID", editingRecord.appearance.presetId);
-                editingRecord.appearance.hairId = EditorGUILayout.TextField("Hair ID", editingRecord.appearance.hairId);
-                editingRecord.appearance.eyesId = EditorGUILayout.TextField("Eyes ID", editingRecord.appearance.eyesId);
-                editingRecord.appearance.outfitId = EditorGUILayout.TextField("Outfit ID", editingRecord.appearance.outfitId);
-                editingRecord.appearance.accessoryId = EditorGUILayout.TextField("Accessory ID", editingRecord.appearance.accessoryId);
-                EditorGUI.indentLevel--;
-            }
+            EditorGUILayout.LabelField("Appearance", EditorStyles.boldLabel);
+            editingRecord.appearanceId = EditorGUILayout.TextField("Appearance ID", editingRecord.appearanceId ?? "");
 
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Behavior", EditorStyles.boldLabel);
@@ -368,7 +359,7 @@ namespace PopLife.Customers.Editor
                 customerId = GenerateNewId(),
                 name = "New Customer",
                 bio = "",
-                appearance = new AppearanceParts(),
+                appearanceId = "",
                 archetypeId = "",
                 traitIds = new string[0],
                 interestPersonalDelta = new float[6],
@@ -439,18 +430,16 @@ namespace PopLife.Customers.Editor
 
         private void LoadFromJson()
         {
-            // 确保文件夹存在
-            if (!Directory.Exists(SaveFolderPath))
-            {
-                Directory.CreateDirectory(SaveFolderPath);
-                Debug.Log($"Created save directory: {SaveFolderPath}");
-            }
+            string path = DefaultReadPath;
 
-            if (File.Exists(DefaultFilePath))
+            // 确保目录存在
+            SavePathManager.EnsureDirectoryExists(path);
+
+            if (File.Exists(path))
             {
                 try
                 {
-                    string json = File.ReadAllText(DefaultFilePath);
+                    string json = File.ReadAllText(path);
 
                     // 兼容 CustomerRepository 的格式 (使用 items 字段)
                     if (json.Contains("\"items\""))
@@ -470,7 +459,7 @@ namespace PopLife.Customers.Editor
                         }
                     }
 
-                    Debug.Log($"Loaded {records.Count} records from {DefaultFilePath}");
+                    Debug.Log($"Loaded {records.Count} records from {path}");
                 }
                 catch (Exception e)
                 {
@@ -479,13 +468,14 @@ namespace PopLife.Customers.Editor
             }
             else
             {
-                Debug.Log($"Customers.json not found at: {DefaultFilePath}");
+                Debug.Log($"Customers.json not found at: {path}");
             }
         }
 
         private void ImportFromJson()
         {
-            string path = EditorUtility.OpenFilePanel("Import Customer Records", SaveFolderPath, "json");
+            string defaultPath = Path.GetDirectoryName(DefaultReadPath);
+            string path = EditorUtility.OpenFilePanel("Import Customer Records", defaultPath, "json");
             if (!string.IsNullOrEmpty(path))
             {
                 try
@@ -525,15 +515,14 @@ namespace PopLife.Customers.Editor
 
         private void ExportToJson()
         {
-            // 确保文件夹存在
-            if (!Directory.Exists(SaveFolderPath))
-            {
-                Directory.CreateDirectory(SaveFolderPath);
-                Debug.Log($"Created save directory: {SaveFolderPath}");
-            }
+            string writePath = DefaultWritePath;
 
+            // 确保目录存在
+            SavePathManager.EnsureDirectoryExists(writePath);
+
+            string defaultPath = Path.GetDirectoryName(writePath);
             string path = EditorUtility.SaveFilePanel("Export Customer Records",
-                SaveFolderPath, "Customers", "json");
+                defaultPath, "Customers", "json");
 
             if (!string.IsNullOrEmpty(path))
             {
@@ -548,9 +537,9 @@ namespace PopLife.Customers.Editor
                         $"Exported {records.Count} customer records to:\n{path}", "OK");
 
                     // 如果导出到默认位置，提示用户
-                    if (path == DefaultFilePath)
+                    if (path == writePath)
                     {
-                        Debug.Log($"Exported to default location: {DefaultFilePath}. This file will be used by CustomerRepository at runtime.");
+                        Debug.Log($"Exported to default location: {writePath}. This file will be used by CustomerRepository at runtime.");
                     }
                 }
                 catch (Exception e)
@@ -563,7 +552,8 @@ namespace PopLife.Customers.Editor
 
         private void ImportFromCsv()
         {
-            string path = EditorUtility.OpenFilePanel("Import Customer Records (CSV)", SaveFolderPath, "csv");
+            string defaultPath = Path.GetDirectoryName(DefaultReadPath);
+            string path = EditorUtility.OpenFilePanel("Import Customer Records (CSV)", defaultPath, "csv");
             if (!string.IsNullOrEmpty(path))
             {
                 try
@@ -596,7 +586,7 @@ namespace PopLife.Customers.Editor
                             visitCount = int.TryParse(fields[8], out int visits) ? visits : 0,
                             lifetimeSpent = int.TryParse(fields[9], out int spent) ? spent : 0,
                             walletCapBase = 100,
-                            appearance = new AppearanceParts(),
+                            appearanceId = "",
                             interestPersonalDelta = new float[6],
                             schemaVersion = 1
                         };
@@ -639,8 +629,9 @@ namespace PopLife.Customers.Editor
 
         private void ExportToCsv()
         {
+            string defaultPath = Path.GetDirectoryName(DefaultWritePath);
             string path = EditorUtility.SaveFilePanel("Export Customer Records (CSV)",
-                SaveFolderPath, "Customers", "csv");
+                defaultPath, "Customers", "csv");
 
             if (!string.IsNullOrEmpty(path))
             {

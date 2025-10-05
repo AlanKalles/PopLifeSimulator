@@ -11,6 +11,7 @@ namespace PopLife.Customers.Services
         public float patienceMul;
         public float embarrassmentCapMul;
         public float priceSensitivityMul;
+        public float moveSpeedMul;
     }
 
 
@@ -18,7 +19,7 @@ namespace PopLife.Customers.Services
     {
         public static EffectiveStats Compute(IReadOnlyList<Trait> traits)
         {
-            var e = new EffectiveStats{ walletCapMul = 1f, patienceMul = 1f, embarrassmentCapMul = 1f, priceSensitivityMul = 1f };
+            var e = new EffectiveStats{ walletCapMul = 1f, patienceMul = 1f, embarrassmentCapMul = 1f, priceSensitivityMul = 1f, moveSpeedMul = 1f };
             if (traits == null) return e;
             for (int i = 0; i < traits.Count; i++)
             {
@@ -27,6 +28,7 @@ namespace PopLife.Customers.Services
                 e.patienceMul *= t.patienceMul;
                 e.embarrassmentCapMul *= t.embarrassmentCapMul;
                 e.priceSensitivityMul *= t.priceSensitivityMul;
+                e.moveSpeedMul *= t.moveSpeedMul;
             }
             return e;
         }

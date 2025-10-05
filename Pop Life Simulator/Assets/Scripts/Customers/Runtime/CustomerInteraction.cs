@@ -1,4 +1,5 @@
 using UnityEngine;
+using PopLife;
 using PopLife.Runtime;
 using PopLife.Customers.Services;
 using PopLife.Data;
@@ -221,6 +222,12 @@ namespace PopLife.Customers.Runtime
                 Debug.LogWarning($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogWarning(blackboard.customerId, msg);
                 return false;
+            }
+
+            // 记录销售额到 DayLoopManager
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.RecordSale(blackboard.pendingPayment);
             }
 
             // 结账 - 增加玩家金钱

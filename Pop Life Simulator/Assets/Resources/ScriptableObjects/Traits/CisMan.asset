@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CisMan
   m_EditorClassIdentifier: 
   traitId: cisman
-  displayNameKey: CisMan
+  displayNameKey: Cis-Man
   description: 
   interestAdd:
   - 0
@@ -33,3 +33,4 @@ MonoBehaviour:
   patienceMul: 1
   embarrassmentCapMul: 1
   priceSensitivityMul: 1
+  moveSpeedMul: 1

@@ -56,6 +56,14 @@ public Sprite portrait;
 public float moveSpeed = 2.0f;
 [Range(0, 300)] public int queueToleranceSeconds = 60;
 
+[Header("生成时间控制")]
+[Tooltip("该原型可被生成的时间窗口")]
+public TimePreference spawnTimeWindow = new TimePreference
+{
+    startHour = 12f,   // 默认开店时间
+    endHour = 22.5f    // 默认闭店前半小时
+};
+
 
 [Header("兴趣与上限（基线）")]
 public InterestArray baseInterest = new(); // 对齐你项目里的 ProductCategory

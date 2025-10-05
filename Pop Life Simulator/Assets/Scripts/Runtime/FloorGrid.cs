@@ -352,6 +352,16 @@ namespace PopLife.Runtime
         {
             foreach (var kv in instances) if (kv.Value is ShelfInstance s) yield return s;
         }
+
+        public IEnumerable<BuildingInstance> AllBuildings()
+        {
+            foreach (var kv in instances) yield return kv.Value;
+        }
+
+        public IEnumerable<FacilityInstance> AllFacilities()
+        {
+            foreach (var kv in instances) if (kv.Value is FacilityInstance f) yield return f;
+        }
 #if UNITY_EDITOR
         private void OnValidate() {
             if (!origin && buildingContainer) origin = buildingContainer; // 你想用container当原点时，拖好一次即可

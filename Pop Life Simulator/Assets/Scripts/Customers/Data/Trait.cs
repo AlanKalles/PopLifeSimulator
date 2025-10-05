@@ -16,5 +16,14 @@ namespace PopLife.Customers.Data
         public float patienceMul = 1f;
         public float embarrassmentCapMul = 1f;
         public float priceSensitivityMul = 1f;
+        public float moveSpeedMul = 1f;
+
+        [Header("时间倾向")]
+        [Tooltip("该特质偏好的时间段（可多个）")]
+        public TimePreference[] preferredTimeRanges;
+
+        [Tooltip("在偏好时间段内的权重倍率")]
+        [Range(0f, 3f)]
+        public float timePreferenceWeight = 1f;
     }
 }

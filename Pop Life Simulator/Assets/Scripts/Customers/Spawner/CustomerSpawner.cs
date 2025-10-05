@@ -5,6 +5,7 @@ using UnityEngine;
 using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
+using PopLife;
 
 
 namespace PopLife.Customers.Spawner
@@ -13,9 +14,26 @@ namespace PopLife.Customers.Spawner
     {
         [Header("基础配置")]
         public GameObject customerPrefab; // 带 CustomerAgent + CustomerBlackboardAdapter
-        public Transform spawnPoint;
         [Tooltip("与 ProductCategory 对齐的品类数量")]
         public int categoriesCount = 6;
+
+        [Header("生成点配置")]
+        [Tooltip("多个生成点，随机选择")]
+        public Transform[] spawnPoints;
+
+        [Header("流量控制")]
+        [Tooltip("随机生成间隔选项 (秒)")]
+        public float[] spawnIntervalOptions = { 3f, 5f, 8f, 10f };
+
+        [Tooltip("场上顾客数量上限")]
+        public int maxCustomersOnFloor = 10;
+
+        [Header("节奏控制")]
+        [Tooltip("开店后延迟多久开始生成第一个顾客 (秒)")]
+        public float initialSpawnDelay = 5f;
+
+        [Tooltip("在间隔基础上的随机抖动范围 (秒)")]
+        public Vector2 spawnJitter = new Vector2(-1f, 1f);
 
         [Header("默认配置 (当找不到顾客记录时使用)")]
         public CustomerArchetype defaultArchetype;
@@ -31,9 +49,14 @@ namespace PopLife.Customers.Spawner
         [Header("调试信息")]
         [SerializeField] private int loadedCustomerCount = 0;
         [SerializeField] private string lastSpawnedCustomer = "";
+        [SerializeField] private int currentCustomerCount = 0;
+        [SerializeField] private float nextSpawnTime = 0f;
+        [SerializeField] private bool isSpawning = false;
 
         private CustomerRepository repository;
         private bool repositoryLoaded = false;
+        private List<CustomerRecord> customerPool = new List<CustomerRecord>();
+        private TimeBasedSpawnFilter timeFilter;
 
         void Awake()
         {
@@ -48,6 +71,39 @@ namespace PopLife.Customers.Spawner
                 Debug.LogError("CustomerSpawner: 找不到 CustomerRepository！");
                 return;
             }
+
+            // 初始化时间过滤器
+            timeFilter = new TimeBasedSpawnFilter(repository);
+        }
+
+        void OnEnable()
+        {
+            // 订阅DayLoopManager事件
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnStoreOpen += InitializeDailyPool;
+                DayLoopManager.Instance.OnStoreClose += StopSpawning;
+
+                // 热加入：如果已经开门，立即初始化
+                if (DayLoopManager.Instance.isStoreOpen)
+                {
+                    InitializeDailyPool();
+                }
+            }
+            else
+            {
+                Debug.LogWarning("CustomerSpawner: 找不到 DayLoopManager，自动生成功能将不可用");
+            }
+        }
+
+        void OnDisable()
+        {
+            // 退订事件，防止内存泄漏
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnStoreOpen -= InitializeDailyPool;
+                DayLoopManager.Instance.OnStoreClose -= StopSpawning;
+            }
         }
 
         void Start()
@@ -57,11 +113,21 @@ namespace PopLife.Customers.Spawner
 
         void Update()
         {
+            // 手动生成逻辑
             if (spawnTargetCustomer)
             {
                 spawnTargetCustomer = false;
                 SpawnCustomerById(targetCustomerId);
             }
+
+            // 自动生成逻辑
+            if (isSpawning && Time.time >= nextSpawnTime)
+            {
+                TrySpawnCustomer();
+            }
+
+            // 更新当前场上人数
+            currentCustomerCount = GetCurrentCustomerCount();
         }
 
         void LoadCustomerData()
@@ -107,7 +173,7 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            if (spawnPoint == null)
+            if (spawnPoints == null)
             {
                 Debug.LogWarning("CustomerSpawner: 未设置生成点，将在原点生成");
             }
@@ -177,7 +243,9 @@ namespace PopLife.Customers.Spawner
 
             int daySeed = UnityEngine.Random.Range(0, int.MaxValue);
 
-            Vector3 spawnPosition = spawnPoint != null ? spawnPoint.position : Vector3.zero;
+            // 获取生成点位置
+            Transform selectedSpawnPoint = GetRandomSpawnPoint();
+            Vector3 spawnPosition = selectedSpawnPoint != null ? selectedSpawnPoint.position : Vector3.zero;
             GameObject go = Instantiate(customerPrefab, spawnPosition, Quaternion.identity);
 
             CustomerAgent agent = go.GetComponent<CustomerAgent>();
@@ -189,6 +257,12 @@ namespace PopLife.Customers.Spawner
             }
 
             agent.Initialize(record, archetype, traits, categoriesCount, daySeed);
+
+            // 记录顾客访问到 DayLoopManager
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.RecordCustomerVisit();
+            }
 
             lastSpawnedCustomer = $"{record.customerId}: {record.name}";
             Debug.Log($"成功生成顾客: {lastSpawnedCustomer}");
@@ -204,6 +278,294 @@ namespace PopLife.Customers.Spawner
         public void SpawnTargetCustomerFromMenu()
         {
             SpawnCustomerById(targetCustomerId);
+        }
+
+        /// <summary>
+        /// 初始化每日顾客池（开店时调用）
+        /// </summary>
+        private void InitializeDailyPool()
+        {
+            Debug.Log("[CustomerSpawner] 开店，初始化每日顾客池");
+
+            // 1. 加载SpawnerProfile
+            var profile = SpawnerProfile.Load();
+
+            // 2. 根据解锁ID从Repository获取records
+            customerPool.Clear();
+            foreach (var customerId in profile.unlockedCustomerIds)
+            {
+                var record = repository.Get(customerId);
+                if (record != null)
+                {
+                    customerPool.Add(record);
+                }
+                else
+                {
+                    Debug.LogWarning($"[CustomerSpawner] 解锁列表中的顾客 {customerId} 在Repository中未找到");
+                }
+            }
+
+            Debug.Log($"[CustomerSpawner] 顾客池初始化完成，共 {customerPool.Count} 个可生成顾客");
+
+            // 3. 重置生成计时器（加上初始延迟）
+            nextSpawnTime = Time.time + initialSpawnDelay;
+            isSpawning = true;
+        }
+
+        /// <summary>
+        /// 停止生成（关店时调用）
+        /// </summary>
+        private void StopSpawning()
+        {
+            Debug.Log("[CustomerSpawner] 关店，停止自动生成");
+            isSpawning = false;
+        }
+
+        /// <summary>
+        /// 尝试生成顾客（自动生成主逻辑）
+        /// </summary>
+        private void TrySpawnCustomer()
+        {
+            // 1. 检查是否超过场上人数上限
+            if (currentCustomerCount >= maxCustomersOnFloor)
+            {
+                ScheduleNextSpawn();
+                return;
+            }
+
+            // 2. 检查顾客池是否为空
+            if (customerPool.Count == 0)
+            {
+                Debug.LogWarning("[CustomerSpawner] 顾客池为空，无法生成");
+                ScheduleNextSpawn();
+                return;
+            }
+
+            // 3. 获取当前游戏时间
+            float currentHour = GetCurrentGameHour();
+
+            // 4. 使用时间过滤器筛选符合条件的顾客
+            var eligibleCustomers = timeFilter.GetEligibleCustomers(customerPool, currentHour);
+
+            if (eligibleCustomers.Count == 0)
+            {
+                Debug.Log($"[CustomerSpawner] 当前时间 {currentHour:F2} 没有符合条件的顾客");
+                ScheduleNextSpawn();
+                return;
+            }
+
+            // 5. 加权随机选择顾客
+            var selectedCustomer = WeightedRandom(eligibleCustomers);
+
+            // 6. 生成顾客
+            SpawnCustomer(selectedCustomer);
+
+            // 7. 安排下次生成时间
+            ScheduleNextSpawn();
+        }
+
+        /// <summary>
+        /// 安排下次生成时间
+        /// </summary>
+        private void ScheduleNextSpawn()
+        {
+            // 从间隔选项中随机选择基础间隔
+            float baseInterval = spawnIntervalOptions[UnityEngine.Random.Range(0, spawnIntervalOptions.Length)];
+
+            // 加上随机抖动
+            float jitter = UnityEngine.Random.Range(spawnJitter.x, spawnJitter.y);
+            float finalInterval = Mathf.Max(0.1f, baseInterval + jitter);
+
+            nextSpawnTime = Time.time + finalInterval;
+        }
+
+        /// <summary>
+        /// 加权随机算法
+        /// </summary>
+        private CustomerRecord WeightedRandom(List<WeightedCustomer> weighted)
+        {
+            if (weighted.Count == 0)
+                return null;
+
+            // 计算总权重
+            float totalWeight = 0f;
+            foreach (var wc in weighted)
+                totalWeight += wc.finalWeight;
+
+            // 随机选择
+            float rand = UnityEngine.Random.Range(0f, totalWeight);
+            float cumulative = 0f;
+
+            foreach (var wc in weighted)
+            {
+                cumulative += wc.finalWeight;
+                if (rand <= cumulative)
+                    return wc.record;
+            }
+
+            // fallback
+            return weighted[weighted.Count - 1].record;
+        }
+
+        /// <summary>
+        /// 生成顾客实例（内部方法）
+        /// </summary>
+        private void SpawnCustomer(CustomerRecord record)
+        {
+            if (record == null)
+            {
+                Debug.LogError("[CustomerSpawner] 尝试生成空的顾客记录");
+                return;
+            }
+
+            if (customerPrefab == null)
+            {
+                Debug.LogError("[CustomerSpawner] 缺少顾客预制体!");
+                return;
+            }
+
+            // 随机选择生成点
+            Transform spawnPoint = GetRandomSpawnPoint();
+            Vector3 spawnPosition = spawnPoint != null ? spawnPoint.position : Vector3.zero;
+
+            // 加载Archetype
+            CustomerArchetype archetype = LoadArchetype(record.archetypeId);
+            if (archetype == null)
+            {
+                archetype = defaultArchetype;
+            }
+
+            if (archetype == null)
+            {
+                Debug.LogError($"[CustomerSpawner] 无法为顾客 '{record.name}' 找到原型");
+                return;
+            }
+
+            // 加载Traits
+            Trait[] traits = LoadTraits(record.traitIds);
+
+            // 实例化
+            int daySeed = UnityEngine.Random.Range(0, int.MaxValue);
+            GameObject go = Instantiate(customerPrefab, spawnPosition, Quaternion.identity);
+
+            CustomerAgent agent = go.GetComponent<CustomerAgent>();
+            if (agent == null)
+            {
+                Debug.LogError("[CustomerSpawner] 顾客预制体缺少 CustomerAgent 组件!");
+                Destroy(go);
+                return;
+            }
+
+            agent.Initialize(record, archetype, traits, categoriesCount, daySeed);
+
+            // 记录访问
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.RecordCustomerVisit();
+            }
+
+            lastSpawnedCustomer = $"{record.customerId}: {record.name}";
+            Debug.Log($"[CustomerSpawner] 自动生成顾客: {lastSpawnedCustomer}");
+        }
+
+        /// <summary>
+        /// 获取随机生成点
+        /// </summary>
+        private Transform GetRandomSpawnPoint()
+        {
+            if (spawnPoints == null || spawnPoints.Length == 0)
+            {
+                Debug.LogWarning("[CustomerSpawner] 未设置生成点数组，使用默认位置");
+                return null;
+            }
+
+            return spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
+        }
+
+        /// <summary>
+        /// 获取当前游戏时间（24小时制）
+        /// </summary>
+        private float GetCurrentGameHour()
+        {
+            if (DayLoopManager.Instance != null)
+            {
+                return DayLoopManager.Instance.currentHour;
+            }
+
+            // 默认返回营业时间中段
+            return 17f;
+        }
+
+        /// <summary>
+        /// 获取场上当前顾客数量
+        /// </summary>
+        private int GetCurrentCustomerCount()
+        {
+            return FindObjectsByType<CustomerAgent>(FindObjectsSortMode.None).Length;
+        }
+
+        /// <summary>
+        /// 加载Archetype
+        /// </summary>
+        private CustomerArchetype LoadArchetype(string archetypeId)
+        {
+            if (string.IsNullOrEmpty(archetypeId))
+                return null;
+
+            var archetype = Resources.Load<CustomerArchetype>($"ScriptableObjects/CustomerArchetypes/{archetypeId}");
+
+            if (archetype == null)
+            {
+                var allArchetypes = Resources.LoadAll<CustomerArchetype>("ScriptableObjects");
+                foreach (var a in allArchetypes)
+                {
+                    if (a.archetypeId == archetypeId || a.name == archetypeId)
+                    {
+                        return a;
+                    }
+                }
+            }
+
+            return archetype;
+        }
+
+        /// <summary>
+        /// 加载Traits（支持数组）
+        /// </summary>
+        private Trait[] LoadTraits(string[] traitIds)
+        {
+            var traitsList = new List<Trait>();
+
+            if (traitIds == null || traitIds.Length == 0)
+                return defaultTraits ?? new Trait[0];
+
+            var allTraits = Resources.LoadAll<Trait>("ScriptableObjects/Traits");
+
+            foreach (string traitId in traitIds)
+            {
+                if (string.IsNullOrEmpty(traitId)) continue;
+
+                Trait trait = Resources.Load<Trait>($"ScriptableObjects/Traits/{traitId}");
+
+                if (trait == null)
+                {
+                    foreach (var t in allTraits)
+                    {
+                        if (t.traitId == traitId || t.name == traitId)
+                        {
+                            trait = t;
+                            break;
+                        }
+                    }
+                }
+
+                if (trait != null)
+                {
+                    traitsList.Add(trait);
+                }
+            }
+
+            return traitsList.Count > 0 ? traitsList.ToArray() : (defaultTraits ?? new Trait[0]);
         }
     }
 }
