@@ -13,7 +13,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         public float normalWaitTime = 1.0f;
 
         [Tooltip("闭店时的等待时间（秒）")]
-        public float urgentWaitTime = 0.1f;
+        public float urgentWaitTime = 0.2f;
 
         private float elapsedTime;
         private float targetWaitTime;
