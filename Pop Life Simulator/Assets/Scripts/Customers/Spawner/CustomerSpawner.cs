@@ -333,8 +333,32 @@ namespace PopLife.Customers.Spawner
         /// </summary>
         private void StopSpawning()
         {
-            Debug.Log("[CustomerSpawner] 关店，停止自动生成");
+            Debug.Log("[CustomerSpawner] 关店，停止自动生成，设置所有顾客闭店状态");
             isSpawning = false;
+
+            // 设置所有在场顾客的 isClosingTime = true
+            var allCustomers = FindObjectsByType<CustomerAgent>(FindObjectsSortMode.None);
+            Debug.Log($"[CustomerSpawner] 当前场上有 {allCustomers.Length} 个顾客");
+
+            foreach (var customer in allCustomers)
+            {
+                var bb = customer.GetComponent<CustomerBlackboardAdapter>();
+                if (bb != null)
+                {
+                    bb.isClosingTime = true;
+
+                    // 同步到 NodeCanvas 黑板
+#if NODECANVAS
+                    if (bb.ncBlackboard != null)
+                    {
+                        bb.ncBlackboard.SetVariableValue("isClosingTime", true);
+                    }
+#endif
+
+                    Debug.Log($"[CustomerSpawner] 设置顾客 {bb.customerId} 闭店状态 (pendingPayment: ${bb.pendingPayment})");
+                }
+            }
+
             activeCustomerIds.Clear();
         }
 

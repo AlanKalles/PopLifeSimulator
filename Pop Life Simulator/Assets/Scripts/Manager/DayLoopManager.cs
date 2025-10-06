@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using PopLife.Customers.Runtime;
 
 namespace PopLife
 {
@@ -94,15 +96,66 @@ namespace PopLife
         private void TriggerDailySettlement()
         {
             isStoreOpen = false;
-            OnStoreClose?.Invoke();
+            OnStoreClose?.Invoke(); // 触发 CustomerSpawner.StopSpawning()
 
+            // 等待所有顾客离开后再显示结算界面
+            StartCoroutine(WaitForCustomersToLeave());
+        }
+
+        /// <summary>
+        /// 等待所有顾客离开
+        /// </summary>
+        private IEnumerator WaitForCustomersToLeave()
+        {
+            float timeout = 30f; // 超时保护（30秒）
+            float elapsed = 0f;
+
+            Debug.Log("[DayLoopManager] 等待所有顾客离开...");
+
+            while (true)
+            {
+                var remainingCustomers = FindObjectsByType<CustomerAgent>(FindObjectsSortMode.None);
+                int count = remainingCustomers.Length;
+
+                if (count == 0)
+                {
+                    Debug.Log("[DayLoopManager] 所有顾客已离开，显示结算界面");
+                    break;
+                }
+
+                elapsed += Time.deltaTime;
+
+                if (elapsed >= timeout)
+                {
+                    Debug.LogWarning($"[DayLoopManager] 顾客清场超时，强制结算（剩余 {count} 个顾客）");
+
+                    // 强制销毁剩余顾客
+                    foreach (var agent in remainingCustomers)
+                    {
+                        Destroy(agent.gameObject);
+                    }
+                    break;
+                }
+
+                yield return new WaitForSeconds(0.5f); // 每0.5秒检查一次
+            }
+
+            // 所有顾客离开，显示结算界面
+            ShowSettlementUI();
+        }
+
+        /// <summary>
+        /// 显示结算界面
+        /// </summary>
+        private void ShowSettlementUI()
+        {
             // 计算每日数据
             DailySettlementData data = CalculateDailySettlement();
 
             // 触发结算事件
             OnDailySettlement?.Invoke(data);
 
-            // 暂停时间，等待UI关闭后再继续
+            // 暂停时间
             PauseTime();
         }
 

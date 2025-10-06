@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/github/PopLifeSimulator/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

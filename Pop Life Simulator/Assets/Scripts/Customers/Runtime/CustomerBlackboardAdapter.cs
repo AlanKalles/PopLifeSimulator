@@ -32,6 +32,9 @@ namespace PopLife.Customers.Runtime
         public Transform targetExitPoint; // 目标离店点的 Transform
         public HashSet<string> purchasedArchetypes = new HashSet<string>(); // 本次访问已购买的货架archetype ID
 
+        [Header("商店状态")]
+        public bool isClosingTime = false; // 商店是否闭店
+
         [Header("策略集合（只读引用）")]
         public BehaviorPolicySet policies;
 
@@ -66,6 +69,7 @@ namespace PopLife.Customers.Runtime
                 ncBlackboard.SetVariableValue("policies", policies);
                 ncBlackboard.SetVariableValue("moneyBag", moneyBag);
                 ncBlackboard.SetVariableValue("purchaseQuantity", 0); // 初始化为0
+                ncBlackboard.SetVariableValue("isClosingTime", isClosingTime); // 初始化闭店状态
             }
 #endif
         }

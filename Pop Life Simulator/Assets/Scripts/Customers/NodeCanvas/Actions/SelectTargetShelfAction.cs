@@ -37,6 +37,25 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
+            // 【闭店检查】如果商店闭店且顾客有待结账金额，跳过货架选择
+            if (adapter.isClosingTime)
+            {
+                if (adapter.pendingPayment > 0)
+                {
+                    // 有待结账金额 → 跳过购物，返回失败触发 Repeater 退出
+                    Debug.Log($"[SelectTargetShelfAction] 商店闭店，顾客 {adapter.customerId} 跳过购物 (待结账: ${adapter.pendingPayment})");
+
+                    // 清空目标货架ID
+                    targetShelfId.value = string.Empty;
+                    adapter.targetShelfId = string.Empty;
+
+                    EndAction(false);
+                    return;
+                }
+                // 无待结账金额 → 继续正常选货架（可能需要买东西才能结账）
+                Debug.Log($"[SelectTargetShelfAction] 商店闭店，但顾客 {adapter.customerId} 无待结账金额，继续尝试购物");
+            }
+
             // 获取策略集
             var policySet = policies.value;
             if (policySet == null || policySet.targetSelector == null)

@@ -58,8 +58,19 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // 使用策略选择收银台
-            int selectedIndex = policySet.checkout.ChooseCashier(customerContext, cashierSnapshots);
+            int selectedIndex;
+
+            // 【闭店逻辑】如果商店闭店，选择最近的收银台（忽略队列长度）
+            if (adapter.isClosingTime)
+            {
+                Debug.Log($"[SelectCashierAction] 商店闭店，顾客 {adapter.customerId} 选择最近的收银台（忽略队列）");
+                selectedIndex = FindNearestCashierIndex(cashierSnapshots, agent.transform.position);
+            }
+            else
+            {
+                // 正常营业：使用策略选择收银台
+                selectedIndex = policySet.checkout.ChooseCashier(customerContext, cashierSnapshots);
+            }
 
             if (selectedIndex < 0 || selectedIndex >= cashierSnapshots.Count)
             {
@@ -80,6 +91,34 @@ namespace PopLife.Customers.NodeCanvas.Actions
             Debug.Log($"[SelectCashierAction] 顾客 {adapter.customerId} 选择了收银台 {selectedCashier.cashierId}");
 
             EndAction(true);
+        }
+
+        /// <summary>
+        /// 查找最近的收银台索引（用于闭店时忽略队列）
+        /// </summary>
+        private int FindNearestCashierIndex(System.Collections.Generic.List<CashierSnapshot> cashiers, Vector3 customerPosition)
+        {
+            if (cashiers == null || cashiers.Count == 0)
+                return -1;
+
+            int nearestIndex = 0;
+            float nearestDistance = float.MaxValue;
+
+            for (int i = 0; i < cashiers.Count; i++)
+            {
+                // 将网格坐标转换为世界坐标（简化计算，假设每格1单位）
+                Vector2 cashierPos = new Vector2(cashiers[i].gridCell.x, cashiers[i].gridCell.y);
+                Vector2 customerPos2D = new Vector2(customerPosition.x, customerPosition.y);
+                float distance = Vector2.Distance(customerPos2D, cashierPos);
+
+                if (distance < nearestDistance)
+                {
+                    nearestDistance = distance;
+                    nearestIndex = i;
+                }
+            }
+
+            return nearestIndex;
         }
     }
 }
