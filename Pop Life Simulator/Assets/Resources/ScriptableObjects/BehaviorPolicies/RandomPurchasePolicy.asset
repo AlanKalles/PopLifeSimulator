@@ -66,7 +66,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   budgetReserveRatio: 0.2
   allowEmptyWallet: 0
-  lowBudgetThreshold: 50
+  lowBudgetThreshold: 10
   conservativeFirstPurchase: 1
   firstPurchaseMaxQty: 2
   enableDebugLog: 0

@@ -69,6 +69,7 @@ MonoBehaviour:
   pendingPayment: 0
   assignedQueueSlot: {fileID: 0}
   targetExitPoint: {fileID: 0}
+  isClosingTime: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
 --- !u!114 &6812213515813458708
@@ -119,6 +120,9 @@ MonoBehaviour:
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"interestFinal":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.interestFinal","_name":"interestFinal","_id":"1e9277b4-8940-4559-9261-171a77ca13d4","$type":"NodeCanvas.Framework.Variable`1[[System.Single[],
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"Has
     Reached Target":{"_name":"Has Reached Target","_id":"3d578d9a-c7f4-438c-956d-cf1d08eb6b78","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"urgent
+    speed multiplier":{"_value":2.0,"_name":"urgent speed multiplier","_id":"8e814f4e-ddfc-4fe6-9742-fbcf57c4fe84","$type":"NodeCanvas.Framework.Variable`1[[System.Single,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"isClosingTime":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.isClosingTime","_name":"isClosingTime","_id":"ad6e2b0b-1c07-4bc5-a223-6edda7f6d945","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}}}'
   _objectReferences: []
   _serializedVariables:
@@ -179,6 +183,12 @@ MonoBehaviour:
   - _json: '{"_name":"Has Reached Target","_id":"3d578d9a-c7f4-438c-956d-cf1d08eb6b78","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
     _references: []
+  - _json: '{"_value":2.0,"_name":"urgent speed multiplier","_id":"8e814f4e-ddfc-4fe6-9742-fbcf57c4fe84","$type":"NodeCanvas.Framework.Variable`1[[System.Single,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.isClosingTime","_name":"isClosingTime","_id":"ad6e2b0b-1c07-4bc5-a223-6edda7f6d945","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
 --- !u!114 &5441276965745480517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,10 +230,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dab8e137d070af447b94f54fb44b8ac5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionRadius: 1
-  interactableLayer:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!50 &5890530169586344179
 Rigidbody2D:
   serializedVersion: 5

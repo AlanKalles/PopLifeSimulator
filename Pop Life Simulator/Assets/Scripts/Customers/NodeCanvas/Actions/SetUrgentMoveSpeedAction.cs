@@ -10,8 +10,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
     [Description("设置紧急移动速度（闭店时加速）")]
     public class SetUrgentMoveSpeedAction : ActionTask
     {
-        [Tooltip("闭店时的速度倍率")]
-        public float urgentSpeedMultiplier = 2.0f;
+        [BlackboardOnly]
+        [Tooltip("闭店时的速度倍率（从黑板读取）")]
+        public BBParameter<float> urgentSpeedMultiplier;
 
         protected override string info
         {
@@ -40,8 +41,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (blackboard.isClosingTime)
             {
-                finalSpeed *= urgentSpeedMultiplier;
-                Debug.Log($"[SetUrgentMoveSpeed] Customer {blackboard.customerId} 紧急模式: speed = {finalSpeed} (×{urgentSpeedMultiplier})");
+                float multiplier = urgentSpeedMultiplier.value;
+                finalSpeed *= multiplier;
+                Debug.Log($"[SetUrgentMoveSpeed] Customer {blackboard.customerId} 紧急模式: speed = {finalSpeed} (×{multiplier})");
             }
             else
             {

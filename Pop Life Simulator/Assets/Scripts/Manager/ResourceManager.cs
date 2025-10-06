@@ -12,5 +12,6 @@ namespace PopLife
         public void Spend(int moneyCost, int fameCost){ money -= moneyCost; fame -= fameCost; }
         public void SpendMoney(int m){ money -= m; }
         public void AddMoney(int m){ money += m; }
+        public void AddFame(int f){ fame += f; }
     }
 }
