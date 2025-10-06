@@ -59,7 +59,10 @@ namespace Poplife.Dialogue
             }
 
             var worldPos = npc.transform.position + Vector3.up * 2f;
-            uiButtonInstance = GameObject.Instantiate(dialogueUIPrefab, worldPos, Quaternion.identity);
+            uiButtonInstance = GameObject.Instantiate(dialogueUIPrefab);
+            GameObject tmpUI = uiButtonInstance.GetComponentInChildren<DialogueTriggerClickable>().gameObject;
+            tmpUI.transform.position = worldPos;
+            
 
             // ✅ Canvas 的 World Camera
             var canvas = uiButtonInstance.GetComponentInChildren<Canvas>();
@@ -68,11 +71,13 @@ namespace Poplife.Dialogue
                 canvas.worldCamera = Camera.main;
             }
 
+            /*
             // ✅ Add Collider if missing
             if (uiButtonInstance.GetComponent<Collider>() == null)
             {
                 uiButtonInstance.AddComponent<BoxCollider>();
             }
+            */
 
             // ✅ Add Button Listener
             Button buttonComponent = uiButtonInstance.GetComponentInChildren<Button>();
