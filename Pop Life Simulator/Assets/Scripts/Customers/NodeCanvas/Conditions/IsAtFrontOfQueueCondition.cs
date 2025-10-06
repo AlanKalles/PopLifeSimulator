@@ -5,124 +5,117 @@ using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
 using PopLife.Runtime;
 
-namespace PopLife.Customers.NodeCanvas.Actions
+namespace PopLife.Customers.NodeCanvas.Conditions
 {
     [Category("PopLife/Customer/Queue")]
-    [Description("释放队列位置（购买完成或离开时调用）")]
-    public class ReleaseQueueSlotAction : ActionTask
+    [Description("检查顾客是否在队列的队首位置（位置0）")]
+    public class IsAtFrontOfQueueCondition : ConditionTask
     {
         [BlackboardOnly]
-        [Tooltip("目标货架ID")]
+        [Tooltip("目标货架ID（用于检查货架队列）")]
         public BBParameter<string> targetShelfId;
 
         [BlackboardOnly]
-        [Tooltip("目标收银台ID")]
+        [Tooltip("目标收银台ID（用于检查收银台队列）")]
         public BBParameter<string> targetCashierId;
 
         private CustomerBlackboardAdapter blackboard;
 
         protected override string info
         {
-            get { return "释放队列位置"; }
+            get { return "检查是否在队首"; }
         }
 
-        protected override void OnExecute()
+        protected override bool OnCheck()
         {
             blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
             if (blackboard == null)
             {
-                Debug.LogError("[ReleaseQueueSlotAction] 找不到 CustomerBlackboardAdapter");
-                EndAction(false);
-                return;
+                Debug.LogError("[IsAtFrontOfQueueCondition] 找不到 CustomerBlackboardAdapter");
+                return false;
             }
 
-            bool released = false;
-
-            // 优先释放货架队列
+            // 优先检查货架队列
             if (!string.IsNullOrEmpty(targetShelfId.value))
             {
-                released = ReleaseShelfQueueSlot(targetShelfId.value);
-
-                // 释放成功后清空货架ID,避免重复释放
-                if (released)
-                {
-                    targetShelfId.value = string.Empty;
-                    blackboard.targetShelfId = string.Empty;
-                }
+                return CheckShelfQueuePosition(targetShelfId.value);
             }
-            // 其次释放收银台队列
+            // 其次检查收银台队列
             else if (!string.IsNullOrEmpty(targetCashierId.value))
             {
-                released = ReleaseCashierQueueSlot(targetCashierId.value);
-
-                // 释放成功后清空收银台ID,避免重复释放
-                if (released)
-                {
-                    targetCashierId.value = string.Empty;
-                    blackboard.targetCashierId = string.Empty;
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"[ReleaseQueueSlotAction] 顾客 {blackboard.customerId} 没有指定目标");
-                EndAction(true); // 即便没有目标也算成功（可能是系统状态）
-                return;
+                return CheckCashierQueuePosition(targetCashierId.value);
             }
 
-            if (released)
-            {
-                // 清空黑板中的队位引用
-                blackboard.assignedQueueSlot = null;
-                Debug.Log($"[ReleaseQueueSlotAction] 顾客 {blackboard.customerId} 成功释放队位");
-            }
-
-            EndAction(true); // 释放操作总是返回成功
+            Debug.LogWarning($"[IsAtFrontOfQueueCondition] 顾客 {blackboard.customerId} 没有指定目标");
+            return false;
         }
 
         /// <summary>
-        /// 释放货架队列位置
+        /// 检查货架队列位置
         /// </summary>
-        private bool ReleaseShelfQueueSlot(string shelfId)
+        private bool CheckShelfQueuePosition(string shelfId)
         {
             var shelf = FindShelfById(shelfId);
             if (shelf == null)
             {
-                Debug.LogWarning($"[ReleaseQueueSlotAction] 找不到货架 {shelfId}");
+                Debug.LogWarning($"[IsAtFrontOfQueueCondition] 找不到货架 {shelfId}");
                 return false;
             }
 
             var queueController = shelf.GetComponent<ShelfQueueController>();
             if (queueController == null)
             {
-                Debug.LogWarning($"[ReleaseQueueSlotAction] 货架 {shelfId} 没有 ShelfQueueController");
+                Debug.LogWarning($"[IsAtFrontOfQueueCondition] 货架 {shelfId} 没有 ShelfQueueController");
                 return false;
             }
 
-            queueController.ReleaseSlot(blackboard.customerId);
-            return true;
+            int position = queueController.GetQueuePosition(blackboard.customerId);
+            bool isAtFront = position == 0;
+
+            if (!isAtFront)
+            {
+                Debug.Log($"[IsAtFrontOfQueueCondition] 顾客 {blackboard.customerId} 在货架队列位置 {position}，等待前移...");
+            }
+            else
+            {
+                Debug.Log($"[IsAtFrontOfQueueCondition] 顾客 {blackboard.customerId} 已到达货架队首");
+            }
+
+            return isAtFront;
         }
 
         /// <summary>
-        /// 释放收银台队列位置
+        /// 检查收银台队列位置
         /// </summary>
-        private bool ReleaseCashierQueueSlot(string cashierId)
+        private bool CheckCashierQueuePosition(string cashierId)
         {
             var cashier = FindFacilityById(cashierId);
             if (cashier == null)
             {
-                Debug.LogWarning($"[ReleaseQueueSlotAction] 找不到收银台 {cashierId}");
+                Debug.LogWarning($"[IsAtFrontOfQueueCondition] 找不到收银台 {cashierId}");
                 return false;
             }
 
             var queueController = cashier.GetComponent<CashierQueueController>();
             if (queueController == null)
             {
-                Debug.LogWarning($"[ReleaseQueueSlotAction] 收银台 {cashierId} 没有 CashierQueueController");
+                Debug.LogWarning($"[IsAtFrontOfQueueCondition] 收银台 {cashierId} 没有 CashierQueueController");
                 return false;
             }
 
-            queueController.ReleaseSlot(blackboard.customerId);
-            return true;
+            int position = queueController.GetQueuePosition(blackboard.customerId);
+            bool isAtFront = position == 0;
+
+            if (!isAtFront)
+            {
+                Debug.Log($"[IsAtFrontOfQueueCondition] 顾客 {blackboard.customerId} 在收银台队列位置 {position}，等待前移...");
+            }
+            else
+            {
+                Debug.Log($"[IsAtFrontOfQueueCondition] 顾客 {blackboard.customerId} 已到达收银台队首");
+            }
+
+            return isAtFront;
         }
 
         /// <summary>

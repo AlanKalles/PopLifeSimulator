@@ -13,11 +13,8 @@ namespace PopLife.Runtime
         [Tooltip("是否激活该楼层")]
         public bool isActive = true;
 
-        [Tooltip("楼层ID（自动分配）")]
-        [ReadOnly] public int floorId = -1;
-
-        // 自定义属性特性，使字段在Inspector中只读
-        public class ReadOnlyAttribute : PropertyAttribute { }
+        // 楼层ID直接从 FloorGrid 读取，不再存储在这里
+        public int FloorId => floor != null ? floor.floorId : -1;
     }
 
     public class FloorManager : MonoBehaviour
@@ -27,9 +24,11 @@ namespace PopLife.Runtime
 
         [Header("当前焦点楼层")]
         [SerializeField] private int currentFloorIndex = 0;
+        
+        [Header("编辑器")]
+        [SerializeField] private bool autoAssignFloorIds = false; // 启用后自动分配唯一楼层ID
 
         [Header("调试")]
-        [SerializeField] private bool autoAssignFloorIds = true;
         [SerializeField] private bool hideInactiveFloors = false;
 
         // 缓存活跃楼层列表
@@ -69,21 +68,21 @@ namespace PopLife.Runtime
         // 根据ID获取楼层（无论是否激活）
         public FloorGrid GetFloor(int id)
         {
-            var entry = floors.FirstOrDefault(f => f != null && f.floor != null && f.floorId == id);
+            var entry = floors.FirstOrDefault(f => f != null && f.floor != null && f.floor.floorId == id);
             return entry?.floor;
         }
 
         // 根据ID获取激活的楼层
         public FloorGrid GetActiveFloor(int id)
         {
-            var entry = floors.FirstOrDefault(f => f != null && f.floor != null && f.floorId == id && f.isActive);
+            var entry = floors.FirstOrDefault(f => f != null && f.floor != null && f.floor.floorId == id && f.isActive);
             return entry?.floor;
         }
 
         // 设置楼层激活状态
         public void SetFloorActive(int floorId, bool active)
         {
-            var entry = floors.FirstOrDefault(f => f != null && f.floorId == floorId);
+            var entry = floors.FirstOrDefault(f => f != null && f.floor != null && f.floor.floorId == floorId);
             if (entry != null)
             {
                 entry.isActive = active;
@@ -107,7 +106,7 @@ namespace PopLife.Runtime
         // 切换楼层激活状态
         public void ToggleFloorActive(int floorId)
         {
-            var entry = floors.FirstOrDefault(f => f != null && f.floorId == floorId);
+            var entry = floors.FirstOrDefault(f => f != null && f.floor != null && f.floor.floorId == floorId);
             if (entry != null)
             {
                 entry.isActive = !entry.isActive;
@@ -146,9 +145,9 @@ namespace PopLife.Runtime
         {
             foreach (var entry in floors)
             {
-                if (entry != null)
+                if (entry != null && entry.floor != null)
                 {
-                    entry.isActive = (entry.floorId == floorId);
+                    entry.isActive = (entry.floor.floorId == floorId);
                 }
             }
             ApplyFloorActivation();
@@ -162,7 +161,7 @@ namespace PopLife.Runtime
         // 获取楼层的激活状态
         public bool IsFloorActive(int floorId)
         {
-            var entry = floors.FirstOrDefault(f => f != null && f.floorId == floorId);
+            var entry = floors.FirstOrDefault(f => f != null && f.floor != null && f.floor.floorId == floorId);
             return entry?.isActive ?? false;
         }
 
@@ -174,52 +173,6 @@ namespace PopLife.Runtime
         {
             // 移除空条目
             floors.RemoveAll(f => f == null || f.floor == null);
-
-            // 自动分配楼层ID
-            if (autoAssignFloorIds)
-            {
-                AssignFloorIds();
-            }
-
-            // 同步楼层GameObject的ID
-            foreach (var entry in floors)
-            {
-                if (entry.floor != null)
-                {
-                    entry.floor.floorId = entry.floorId;
-                }
-            }
-        }
-
-        private void AssignFloorIds()
-        {
-            // 保留已有的ID，为新楼层分配未使用的ID
-            HashSet<int> usedIds = new HashSet<int>();
-
-            // 收集已使用的ID
-            foreach (var entry in floors)
-            {
-                if (entry.floorId >= 0)
-                {
-                    usedIds.Add(entry.floorId);
-                }
-            }
-
-            // 为没有ID的楼层分配新ID
-            int nextId = 0;
-            foreach (var entry in floors)
-            {
-                if (entry.floorId < 0)
-                {
-                    while (usedIds.Contains(nextId))
-                    {
-                        nextId++;
-                    }
-                    entry.floorId = nextId;
-                    usedIds.Add(nextId);
-                    nextId++;
-                }
-            }
         }
 
         private void ApplyFloorActivation()
@@ -235,7 +188,7 @@ namespace PopLife.Runtime
                     // 如果楼层激活且之前未初始化，则初始化
                     if (entry.isActive && entry.floor.enabled)
                     {
-                        entry.floor.Init();
+                        if (!entry.floor.HasAnyRegisteredBuildings()) { entry.floor.RebuildFromScene(); }
                     }
                 }
             }
@@ -259,6 +212,138 @@ namespace PopLife.Runtime
             cacheValid = false;
         }
 
+        // 清理旧序列化残留并校验数据一致性
+        private void CleanAndValidate(bool explicitInvoke)
+        {
+            if (floors == null) floors = new List<FloorEntry>();
+
+            bool changed = false;
+
+            // 1) 移除空条目
+            int before = floors.Count;
+            floors.RemoveAll(f => f == null);
+            if (floors.Count != before) changed = true;
+
+            // 2) 重建列表元素以丢弃旧的序列化字段（如旧的 floorId）并去重 FloorGrid 引用
+            var seen = new HashSet<FloorGrid>();
+            var rebuilt = new List<FloorEntry>(floors.Count);
+            foreach (var e in floors)
+            {
+                if (e == null)
+                    continue;
+
+                if (e.floor == null)
+                {
+                    Debug.LogWarning("FloorManager: 楼层条目缺少 FloorGrid 引用");
+                    rebuilt.Add(new FloorEntry { floor = null, isActive = e.isActive });
+                    changed = true;
+                    continue;
+                }
+
+                if (!seen.Add(e.floor))
+                {
+                    Debug.LogWarning($"FloorManager: 检测到重复引用楼层 '{e.floor.name}'，已去重");
+                    changed = true;
+                    continue;
+                }
+
+                // 重建元素实例，丢弃可能存在的旧序列化字段（如旧的 floorId）
+                rebuilt.Add(new FloorEntry { floor = e.floor, isActive = e.isActive });
+            }
+
+            if (rebuilt.Count != floors.Count) changed = true;
+            floors = rebuilt;
+
+            // 3) 校验楼层ID唯一性与有效性（>0），必要时按配置自动分配
+            EnsureUniqueFloorIds();
+
+            // 4) 索引校正
+            currentFloorIndex = Mathf.Max(0, currentFloorIndex);
+
+#if UNITY_EDITOR
+            if (changed || explicitInvoke)
+            {
+                UnityEditor.EditorUtility.SetDirty(this);
+                foreach (var e in floors)
+                {
+                    if (e != null && e.floor != null)
+                        UnityEditor.EditorUtility.SetDirty(e.floor);
+                }
+            }
+#endif
+        }
+
+        private void EnsureUniqueFloorIds()
+        {
+            var idToFloors = new Dictionary<int, List<FloorGrid>>();
+            var order = new List<FloorGrid>();
+
+            foreach (var e in floors)
+            {
+                if (e == null || e.floor == null) continue;
+                order.Add(e.floor);
+                int id = e.floor.floorId;
+                if (!idToFloors.TryGetValue(id, out var list))
+                {
+                    list = new List<FloorGrid>();
+                    idToFloors[id] = list;
+                }
+                list.Add(e.floor);
+            }
+
+            bool hasProblem = false;
+            foreach (var kv in idToFloors)
+            {
+                if (kv.Key <= 0)
+                {
+                    hasProblem = true;
+                }
+                if (kv.Value.Count > 1)
+                {
+                    hasProblem = true;
+                }
+            }
+
+            if (!hasProblem) return;
+
+            if (autoAssignFloorIds)
+            {
+                // 依照 floors 列表顺序分配 1..N 的唯一正整数ID
+                var used = new HashSet<int>();
+                int next = 1;
+                foreach (var fg in order)
+                {
+                    while (used.Contains(next)) next++;
+                    fg.floorId = next;
+                    used.Add(next);
+                    next++;
+#if UNITY_EDITOR
+                    UnityEditor.EditorUtility.SetDirty(fg);
+#endif
+                }
+                Debug.Log("FloorManager: 已自动分配唯一的楼层ID");
+            }
+            else
+            {
+                // 仅提示问题，方便用户手动修复
+                foreach (var kv in idToFloors)
+                {
+                    if (kv.Key <= 0)
+                    {
+                        foreach (var fg in kv.Value)
+                        {
+                            Debug.LogWarning($"FloorManager: FloorGrid '{fg.name}' 的 floorId = {kv.Key}，请设置为正且唯一的ID，或启用 autoAssignFloorIds 自动分配。");
+                        }
+                    }
+                    if (kv.Value.Count > 1)
+                    {
+                        var names = string.Join(", ", kv.Value.Select(f => f.name));
+                        Debug.LogWarning($"FloorManager: 检测到重复的 floorId = {kv.Key}，涉及楼层: {names}。请调整或启用 autoAssignFloorIds。");
+                    }
+                }
+            }
+        }
+
         // Unity编辑器
         #if UNITY_EDITOR
         private void OnValidate()
@@ -277,32 +362,9 @@ namespace PopLife.Runtime
                         Debug.LogWarning($"FloorManager: 楼层条目缺少FloorGrid引用");
                     }
                 }
-
-                // 自动分配ID
-                if (autoAssignFloorIds)
-                {
-                    AssignFloorIds();
-                }
             }
 
             currentFloorIndex = Mathf.Max(0, currentFloorIndex);
-        }
-
-        [ContextMenu("刷新楼层ID")]
-        private void RefreshFloorIds()
-        {
-            AssignFloorIds();
-
-            // 同步到FloorGrid
-            foreach (var entry in floors)
-            {
-                if (entry != null && entry.floor != null)
-                {
-                    entry.floor.floorId = entry.floorId;
-                }
-            }
-
-            Debug.Log($"已刷新 {floors.Count} 个楼层的ID");
         }
 
         [ContextMenu("激活所有楼层")]
@@ -324,9 +386,16 @@ namespace PopLife.Runtime
                 {
                     string status = entry.isActive ? "激活" : "未激活";
                     string name = entry.floor != null ? entry.floor.name : "空引用";
-                    Debug.Log($"楼层 ID {entry.floorId}: {name} - {status}");
+                    int floorId = entry.floor != null ? entry.floor.floorId : -1;
+                    Debug.Log($"楼层 ID {floorId}: {name} - {status}");
                 }
             }
+        }
+        [ContextMenu("清理楼层序列化残留并校验")]
+        private void CleanupAndValidateMenu()
+        {
+            CleanAndValidate(true);
+            Debug.Log("已清理旧的序列化残留并完成校验");
         }
         #endif
     }

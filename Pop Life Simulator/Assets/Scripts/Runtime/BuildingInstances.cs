@@ -23,11 +23,14 @@ namespace PopLife.Runtime
         [Header("原型引用")]
         public BuildingArchetype archetype;
 
-        [Header("实例数据")]
+        [Header("实例数据（会被序列化保存）")]
         public string instanceId;
         public int currentLevel = 1;
+        [SerializeField] // 确保被序列化保存到场景
         public Vector2Int gridPosition;
+        [SerializeField] // 确保被序列化保存到场景
         public int floorId;
+        [SerializeField] // 确保被序列化保存到场景
         public int rotation;
 
         [Header("运行状态")]

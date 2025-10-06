@@ -189,7 +189,11 @@
             "appearanceId": "CSP007",
             "archetypeId": "RegularCustomer",
             "traitIds": [
-                "Asexual"
+                "BlueCollar",
+                "Married",
+                "Poor",
+                "CisMan",
+                "Straight"
             ],
             "interestPersonalDelta": [
                 0.0,
@@ -203,6 +207,96 @@
             "loyaltyLevel": 0,
             "xp": 0,
             "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C008",
+            "name": "Tsuki",
+            "bio": "A 24-year-old lifestyle vlogger. She is open about her bisexuality online and tries out trendy products to boost her channel content.",
+            "appearanceId": "CSP008",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Curious",
+                "Bisexual",
+                "Influencer",
+                "CisWoman"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C009",
+            "name": "Takumi",
+            "bio": "A 19-year-old law student. Still closeted, nervous when browsing the store, usually buys small things quickly.",
+            "appearanceId": "CSP009",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Student",
+                "Shy",
+                "Gay",
+                "CisMan"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C010",
+            "name": "Haruka",
+            "bio": "A 30-year-old yoga instructor. Confident and body-positive, enjoys exploring intimacy with partners of any gender.",
+            "appearanceId": "CSP010",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Fitness",
+                "Liberal",
+                "PanSexual",
+                "CisWoman"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 100,
             "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",

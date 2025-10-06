@@ -57,6 +57,7 @@ namespace PopLife.Customers.Spawner
         private bool repositoryLoaded = false;
         private List<CustomerRecord> customerPool = new List<CustomerRecord>();
         private TimeBasedSpawnFilter timeFilter;
+        private HashSet<string> activeCustomerIds = new HashSet<string>();
 
         void Awake()
         {
@@ -84,8 +85,9 @@ namespace PopLife.Customers.Spawner
                 DayLoopManager.Instance.OnStoreOpen += InitializeDailyPool;
                 DayLoopManager.Instance.OnStoreClose += StopSpawning;
 
-                // 热加入：如果已经开门，立即初始化
-                if (DayLoopManager.Instance.isStoreOpen)
+                // 热加入：只有在营业阶段且已开店时才初始化
+                if (DayLoopManager.Instance.currentPhase == GamePhase.OpenPhase &&
+                    DayLoopManager.Instance.isStoreOpen)
                 {
                     InitializeDailyPool();
                 }
@@ -134,13 +136,21 @@ namespace PopLife.Customers.Spawner
         {
             if (repository == null) return;
 
-            repository.Load();
-            repositoryLoaded = true;
-
+            // 确保Repository已加载数据（处理热加入情况）
             var allCustomers = repository.All().ToList();
+
+            // 如果Repository为空，强制重新加载
+            if (allCustomers.Count == 0)
+            {
+                Debug.Log("CustomerSpawner: Repository为空，尝试重新加载...");
+                repository.Load();
+                allCustomers = repository.All().ToList();
+            }
+
+            repositoryLoaded = true;
             loadedCustomerCount = allCustomers.Count;
 
-            Debug.Log($"CustomerSpawner: 成功加载 {loadedCustomerCount} 个顾客记录");
+            Debug.Log($"CustomerSpawner: Repository 中有 {loadedCustomerCount} 个顾客记录");
 
             if (loadedCustomerCount > 0)
             {
@@ -287,6 +297,12 @@ namespace PopLife.Customers.Spawner
         {
             Debug.Log("[CustomerSpawner] 开店，初始化每日顾客池");
 
+            // 确保Repository已加载数据
+            if (!repositoryLoaded)
+            {
+                LoadCustomerData();
+            }
+
             // 1. 加载SpawnerProfile
             var profile = SpawnerProfile.Load();
 
@@ -319,6 +335,7 @@ namespace PopLife.Customers.Spawner
         {
             Debug.Log("[CustomerSpawner] 关店，停止自动生成");
             isSpawning = false;
+            activeCustomerIds.Clear();
         }
 
         /// <summary>
@@ -341,10 +358,21 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            // 3. 获取当前游戏时间
+            // 3. 更新场上顾客ID缓存
+            UpdateActiveCustomerIds();
+
+            // 4. 检查是否所有顾客池成员都已在场
+            if (activeCustomerIds.Count >= customerPool.Count)
+            {
+                Debug.Log("[CustomerSpawner] 顾客池中所有顾客都已在场，等待顾客离开");
+                ScheduleNextSpawn();
+                return;
+            }
+
+            // 5. 获取当前游戏时间
             float currentHour = GetCurrentGameHour();
 
-            // 4. 使用时间过滤器筛选符合条件的顾客
+            // 6. 使用时间过滤器筛选符合条件的顾客
             var eligibleCustomers = timeFilter.GetEligibleCustomers(customerPool, currentHour);
 
             if (eligibleCustomers.Count == 0)
@@ -354,13 +382,23 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            // 5. 加权随机选择顾客
+            // 7. 过滤掉已在场的顾客
+            eligibleCustomers.RemoveAll(wc => activeCustomerIds.Contains(wc.record.customerId));
+
+            if (eligibleCustomers.Count == 0)
+            {
+                Debug.Log("[CustomerSpawner] 所有符合时间条件的顾客都已在场");
+                ScheduleNextSpawn();
+                return;
+            }
+
+            // 8. 加权随机选择顾客
             var selectedCustomer = WeightedRandom(eligibleCustomers);
 
-            // 6. 生成顾客
+            // 9. 生成顾客
             SpawnCustomer(selectedCustomer);
 
-            // 7. 安排下次生成时间
+            // 10. 安排下次生成时间
             ScheduleNextSpawn();
         }
 
@@ -502,6 +540,22 @@ namespace PopLife.Customers.Spawner
         private int GetCurrentCustomerCount()
         {
             return FindObjectsByType<CustomerAgent>(FindObjectsSortMode.None).Length;
+        }
+
+        /// <summary>
+        /// 更新场上顾客ID缓存
+        /// </summary>
+        private void UpdateActiveCustomerIds()
+        {
+            activeCustomerIds.Clear();
+            var agents = FindObjectsByType<CustomerAgent>(FindObjectsSortMode.None);
+            foreach (var agent in agents)
+            {
+                if (!string.IsNullOrEmpty(agent.customerID))
+                {
+                    activeCustomerIds.Add(agent.customerID);
+                }
+            }
         }
 
         /// <summary>

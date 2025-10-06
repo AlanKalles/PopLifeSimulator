@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c6b8a152a77251f4cb1e9684b23ab5e6, type: 3}
-  m_Name: Student
+  m_Name: BlueCollar
   m_EditorClassIdentifier: 
-  traitId: student
-  displayNameKey: Student
+  traitId: bluecollar
+  displayNameKey: Blue Collar
   description: 
   interestAdd:
   - 0
@@ -29,12 +29,12 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  walletCapMul: 0.6
+  walletCapMul: 1.1
   patienceMul: 1
   embarrassmentCapMul: 1
   priceSensitivityMul: 1
   moveSpeedMul: 1
   preferredTimeRanges:
-  - startHour: 16
-    endHour: 23
+  - startHour: 19
+    endHour: 21
   timePreferenceWeight: 1

@@ -37,8 +37,27 @@ namespace PopLife.Runtime
 
         void Start()
         {
+            // 若在运行态时已由外部（如 FloorManager）完成重建，则避免重复注册
+            if (Application.isPlaying && instances.Count > 0)
+                return;
             // 自动注册场景中已存在的建筑（用于编辑器预建造）
             RegisterAllChildBuildings();
+        }
+
+        // 运行时/楼层激活时：从场景子物体重建占用与实例映射
+        public void RebuildFromScene()
+        {
+            // 清理格子、列占用、缓存与实例映射，然后按场景子物体重建
+            Init();
+            occupiedCells.Clear();
+            instances.Clear();
+            RegisterAllChildBuildings();
+        }
+
+        // 判断当前是否已经有任何建筑注册到该楼层（用于避免重复重建）
+        public bool HasAnyRegisteredBuildings()
+        {
+            return instances.Count > 0;
         }
 
         public void Init()
@@ -62,17 +81,31 @@ namespace PopLife.Runtime
             foreach (var building in allBuildings)
             {
                 // 跳过已注册的建筑
-                if (instances.ContainsKey(building.instanceId)) continue;
-
-                // 从建筑的Transform推断网格位置和旋转
-                Vector2Int gridPos = WorldToGrid(building.transform.position);
-                int rotation = Mathf.RoundToInt(building.transform.eulerAngles.z / 90f) % 4;
+                if (!string.IsNullOrEmpty(building.instanceId) && instances.ContainsKey(building.instanceId)) continue;
 
                 // 确保建筑数据完整
                 if (building.archetype == null)
                 {
                     Debug.LogWarning($"FloorGrid: Building {building.name} missing archetype, skipping registration");
                     continue;
+                }
+
+                // 优先使用保存的数据，如果没有则从Transform推断
+                Vector2Int gridPos;
+                int rotation;
+
+                // 使用 instanceId 判断是否有有效的序列化数据（避免 (0,0) 位置被误判）
+                if (!string.IsNullOrEmpty(building.instanceId) && building.floorId == this.floorId)
+                {
+                    // 使用序列化保存的数据（更可靠）
+                    gridPos = building.gridPosition;
+                    rotation = building.rotation;
+                }
+                else
+                {
+                    // 从Transform推断（用于旧版本兼容或手动放置的建筑）
+                    gridPos = WorldToGrid(building.transform.position);
+                    rotation = Mathf.RoundToInt(building.transform.eulerAngles.z / 90f) % 4;
                 }
 
                 var footprint = building.archetype.GetRotatedFootprint(rotation);
@@ -84,6 +117,12 @@ namespace PopLife.Runtime
                     building.rotation = rotation;
                     building.gridPosition = gridPos;
                     building.floorId = this.floorId;
+
+                    // 生成 instanceId（如果没有）
+                    if (string.IsNullOrEmpty(building.instanceId))
+                    {
+                        building.instanceId = System.Guid.NewGuid().ToString();
+                    }
 
                     // 注册到网格
                     if (RegisterExistingBuilding(building, gridPos, rotation))

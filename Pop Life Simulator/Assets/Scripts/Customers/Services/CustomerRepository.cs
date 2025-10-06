@@ -10,11 +10,17 @@ namespace PopLife.Customers.Services
 {
     [Serializable]
     internal class CustomerRecordList { public List<CustomerRecord> items = new(); }
+
+    [DefaultExecutionOrder(-50)]
     public class CustomerRepository : MonoBehaviour
     {
         public static CustomerRepository Instance;
         void Awake(){ Instance = this; }
 
+        void Start()
+        {
+            Load(); // 启动时自动加载顾客数据
+        }
 
         private readonly Dictionary<string, CustomerRecord> _byId = new();
         [SerializeField] private string fileName = "Customers.json";

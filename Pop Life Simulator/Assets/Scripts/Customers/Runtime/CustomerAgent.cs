@@ -25,6 +25,9 @@ namespace PopLife.Customers.Runtime
 // 原型期的最小初始化：由 Spawner 调用
         public void Initialize(CustomerRecord record, CustomerArchetype archetype, Trait[] traits, int categories, int daySeed)
         {
+// 0) 设置顾客ID
+            customerID = record.customerId;
+
 // 1) 设置外貌
             if (!string.IsNullOrEmpty(record.appearanceId) && appearanceDB != null)
             {

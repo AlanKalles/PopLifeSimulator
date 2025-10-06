@@ -60,7 +60,7 @@ namespace PopLife
             // 隐藏面板
             gameObject.SetActive(false);
 
-            // 通知 DayLoopManager 进入下一天
+            // 通知 DayLoopManager 进入下一天的建造阶段
             if (DayLoopManager.Instance != null)
             {
                 DayLoopManager.Instance.AdvanceToNextDay();

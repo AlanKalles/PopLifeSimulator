@@ -3,12 +3,23 @@ using UnityEngine;
 
 namespace PopLife
 {
+    /// <summary>
+    /// 游戏阶段枚举
+    /// </summary>
+    public enum GamePhase
+    {
+        BuildPhase,  // 建造阶段：早上6:00，时间暂停
+        OpenPhase    // 营业阶段：12:00-23:00，时间流动
+    }
+
+    [DefaultExecutionOrder(-100)]
     public class DayLoopManager : MonoBehaviour
     {
         public static DayLoopManager Instance;
 
         [Header("Time Settings")]
         [SerializeField] private float realSecondsPerDay = 30f; // 现实30秒 = 游戏1天
+        [SerializeField] private float buildPhaseHour = 6f; // 6:00 建造阶段
         [SerializeField] private float storeOpenHour = 12f; // 12:00
         [SerializeField] private float storeCloseHour = 23f; // 23:00
         [SerializeField] private float settlementHour = 23f; // 23:00 开始结算
@@ -19,8 +30,9 @@ namespace PopLife
 
         [Header("Current State")]
         public int currentDay = 1;
-        public float currentHour = 12f; // 当前游戏时间（小时）
-        public bool isStoreOpen = true;
+        public float currentHour = 6f; // 当前游戏时间（小时）
+        public GamePhase currentPhase = GamePhase.BuildPhase;
+        public bool isStoreOpen = false;
 
         [Header("Daily Statistics")]
         public float dailyTotalSale = 0f;
@@ -28,6 +40,7 @@ namespace PopLife
         public int dailyTotalCustomers = 0;
 
         // Events
+        public event Action OnBuildPhaseStart; // 建造阶段开始
         public event Action OnStoreOpen;
         public event Action OnStoreClose;
         public event Action<DailySettlementData> OnDailySettlement;
@@ -48,23 +61,33 @@ namespace PopLife
 
         private void Start()
         {
-            currentHour = storeOpenHour;
-            isStoreOpen = true;
-            OnStoreOpen?.Invoke();
+            // 游戏开始时进入建造阶段
+            currentHour = buildPhaseHour;
+            currentPhase = GamePhase.BuildPhase;
+            isStoreOpen = false;
+            OnBuildPhaseStart?.Invoke();
         }
 
         private void Update()
         {
             if (isPaused) return;
 
-            // 计算游戏时间流速
-            float hoursPerSecond = 24f / realSecondsPerDay;
-            currentHour += hoursPerSecond * timeScale * Time.deltaTime;
+            // 建造阶段不计时
+            if (currentPhase == GamePhase.BuildPhase)
+                return;
 
-            // 检查是否到达营业结束时间
-            if (isStoreOpen && currentHour >= settlementHour)
+            // 营业阶段才计时
+            if (currentPhase == GamePhase.OpenPhase)
             {
-                TriggerDailySettlement();
+                // 计算游戏时间流速
+                float hoursPerSecond = 24f / realSecondsPerDay;
+                currentHour += hoursPerSecond * timeScale * Time.deltaTime;
+
+                // 检查是否到达营业结束时间
+                if (isStoreOpen && currentHour >= settlementHour)
+                {
+                    TriggerDailySettlement();
+                }
             }
         }
 
@@ -113,7 +136,7 @@ namespace PopLife
             float total = 0f;
 
             // 遍历所有楼层的所有建筑
-            var floors = FindObjectsOfType<Runtime.FloorGrid>();
+            var floors = FindObjectsByType<Runtime.FloorGrid>(FindObjectsSortMode.None);
             foreach (var floor in floors)
             {
                 foreach (var building in floor.AllBuildings())
@@ -134,7 +157,29 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 结算完成后调用，进入下一天
+        /// 开店：从建造阶段切换到营业阶段
+        /// 玩家点击按钮调用此方法
+        /// </summary>
+        public void OpenStore()
+        {
+            if (currentPhase != GamePhase.BuildPhase)
+            {
+                Debug.LogWarning("DayLoopManager: 只能在建造阶段开店");
+                return;
+            }
+
+            // 切换到营业阶段
+            currentPhase = GamePhase.OpenPhase;
+            currentHour = storeOpenHour;
+            isStoreOpen = true;
+
+            OnStoreOpen?.Invoke();
+
+            Debug.Log($"[DayLoopManager] Day {currentDay} 开店，时间从 {buildPhaseHour:F1} 跳转到 {storeOpenHour:F1}");
+        }
+
+        /// <summary>
+        /// 结算完成后调用，进入下一天的建造阶段
         /// </summary>
         public void AdvanceToNextDay()
         {
@@ -147,19 +192,21 @@ namespace PopLife
             }
 
             currentDay++;
-            currentHour = storeOpenHour;
+            currentHour = buildPhaseHour;
 
             // 重置每日统计
             dailyTotalSale = 0f;
             dailyTotalExpenses = 0f;
             dailyTotalCustomers = 0;
 
-            isStoreOpen = true;
+            // 进入建造阶段
+            currentPhase = GamePhase.BuildPhase;
+            isStoreOpen = false;
 
             OnDayChanged?.Invoke(currentDay);
-            OnStoreOpen?.Invoke();
+            OnBuildPhaseStart?.Invoke();
 
-            ResumeTime();
+            Debug.Log($"[DayLoopManager] 进入 Day {currentDay} 建造阶段，时间设为 {buildPhaseHour:F1}:00");
         }
 
         /// <summary>

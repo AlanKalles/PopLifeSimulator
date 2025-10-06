@@ -34,3 +34,7 @@ MonoBehaviour:
   embarrassmentCapMul: 1
   priceSensitivityMul: 1
   moveSpeedMul: 1
+  preferredTimeRanges:
+  - startHour: 21
+    endHour: 23
+  timePreferenceWeight: 2

@@ -92,15 +92,6 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // 【调试】每帧输出状态
-            var target = assignedQueueSlot.value;
-            float dist = target != null ? Vector3.Distance(agent.transform.position, target.position) : -1f;
-            Debug.Log($"[MoveToTargetAction] OnUpdate - Customer {blackboard?.customerId}:\n" +
-                      $"  - Distance to target: {dist:F2}m\n" +
-                      $"  - followerEntity.reachedDestination: {followerEntity.reachedDestination}\n" +
-                      $"  - followerEntity.isStopped: {followerEntity.isStopped}\n" +
-                      $"  - stoppingDistance: {stoppingDistance}");
-
             // 首选：FollowerEntity 内置到达判断
             if (followerEntity.reachedDestination)
             {
@@ -115,8 +106,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
 
             // 兼容 RVO 的距离容忍度检查
+            var target = assignedQueueSlot.value;
             if (target != null)
             {
+                float dist = Vector3.Distance(agent.transform.position, target.position);
                 if (dist <= stoppingDistance)
                 {
                     hasReachedTarget.value = true;

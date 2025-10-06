@@ -27,3 +27,9 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}
   - id: CSP007
     sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP008
+    sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}
+  - id: CSP009
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP010
+    sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}

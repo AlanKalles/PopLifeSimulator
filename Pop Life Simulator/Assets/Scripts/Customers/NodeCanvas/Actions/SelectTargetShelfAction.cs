@@ -64,7 +64,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (selectedIndex < 0 || selectedIndex >= shelfSnapshots.Count)
             {
-                Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 策略返回无效索引");
+                Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 策略返回无效索引 (索引: {selectedIndex}, 货架数量: {shelfSnapshots.Count})。" +
+                                 "可能原因: 所有货架已购买/库存不足/兴趣过滤。顾客将跳过购物环节,直接前往收银台。");
+
+                // 清空目标货架ID,确保行为树跳过购物环节
+                targetShelfId.value = string.Empty;
+                adapter.targetShelfId = string.Empty;
+
                 EndAction(false);
                 return;
             }
