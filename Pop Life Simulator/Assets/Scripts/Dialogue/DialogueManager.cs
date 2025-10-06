@@ -10,7 +10,7 @@ namespace Poplife.Dialogue
         [SerializeField] private GameObject dialogueUIPrefab;
 
         private List<DialogueEvent> dialogueEvents = new List<DialogueEvent>();
-        private List<DialogueEvent> archivedEvents = new List<DialogueEvent>();
+        private List<DialogueEvent> archivedEvents = new List<DialogueEvent>();//存储/读取需要存档的data
 
         private static Camera mainCamera;
 
@@ -21,7 +21,7 @@ namespace Poplife.Dialogue
 
             AddEvent("D001", "Meet Midori", "V001", () => true, new List<string>());
             /*
-            AddEvent("D002", "Build Tutorial", "V001", () => buildModeEntered, new List<string> { "B001", "B002" });
+            AddEvent("D002", "Build Tutorial", "V001", () => buildModeEntered, new List<string> { "B001", "B002" });//buildModeEntered = store not opened
             AddEvent("D003", "Open Store", "V001", () => shelfCount >= 2, new List<string> { "C001", "C002", "C003" });
             AddEvent("D004", "First Customer", "C001", () => storeOpened, new List<string> { "fame +500" });
             AddEvent("D005", "Fame System", "V001", () => famePoints > 0, new List<string> { "R004", "R005" });

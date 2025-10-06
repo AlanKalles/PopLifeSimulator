@@ -574,10 +574,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1948353074468286885, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
-      propertyPath: m_PresetInfoIsWorld
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2178909320675916884, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -609,18 +605,6 @@ PrefabInstance:
     - target: {fileID: 2178909320675916884, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
       propertyPath: m_SizeDelta.y
       value: 1080
-      objectReference: {fileID: 0}
-    - target: {fileID: 2178909320675916884, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.009259259
-      objectReference: {fileID: 0}
-    - target: {fileID: 2178909320675916884, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.009259259
-      objectReference: {fileID: 0}
-    - target: {fileID: 2178909320675916884, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.009259259
       objectReference: {fileID: 0}
     - target: {fileID: 2178909320675916884, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
       propertyPath: m_LocalPosition.x
@@ -674,17 +658,13 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 934504409}
-    - target: {fileID: 2981277994746724823, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
-      propertyPath: m_RenderMode
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 8370148016652205704, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
       propertyPath: m_Name
       value: CanvasDialogueUI
       objectReference: {fileID: 0}
     - target: {fileID: 8370148016652205704, guid: 21a248a33a75344f5acac73f11f0e9fa, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
