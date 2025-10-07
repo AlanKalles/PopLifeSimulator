@@ -158,6 +158,36 @@ namespace PopLife.Runtime
         public int GetTotalFloorCount() => floors.Count;
         public int GetActiveFloorCount() => GetAllActiveFloors().Count;
 
+        // 获取所有激活楼层的货架总数
+        public int GetTotalShelfCount()
+        {
+            int count = 0;
+            var activeFloors = GetAllActiveFloors();
+            foreach (var floor in activeFloors)
+            {
+                foreach (var _ in floor.AllShelves())
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // 获取所有激活楼层的建筑总数
+        public int GetTotalBuildingCount()
+        {
+            int count = 0;
+            var activeFloors = GetAllActiveFloors();
+            foreach (var floor in activeFloors)
+            {
+                foreach (var _ in floor.AllBuildings())
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
         // 获取楼层的激活状态
         public bool IsFloorActive(int floorId)
         {

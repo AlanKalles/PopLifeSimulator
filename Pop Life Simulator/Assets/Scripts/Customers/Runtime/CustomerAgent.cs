@@ -1,6 +1,7 @@
 using UnityEngine;
 using PopLife.Customers.Data;
 using PopLife.Customers.Services;
+using TMPro;
 
 
 namespace PopLife.Customers.Runtime
@@ -14,11 +15,13 @@ namespace PopLife.Customers.Runtime
         public AppearanceDatabase appearanceDB;
 
         private SpriteRenderer spriteRenderer;
+        private TextMeshPro nameText;
 
         void Awake()
         {
             if (!bb) bb = GetComponent<CustomerBlackboardAdapter>();
             if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
+            if (!nameText) nameText = GetComponentInChildren<TextMeshPro>();
         }
 
 
@@ -63,6 +66,11 @@ namespace PopLife.Customers.Runtime
             bb.embarrassment = 0;
             bb.queueToleranceSec = queueTolerance;
 
+// 6) 设置头顶名字显示
+            if (nameText != null)
+            {
+                nameText.text = record.name;
+            }
 
             CustomerEventBus.RaiseSpawned(this);
         }

@@ -58,6 +58,7 @@ namespace PopLife.Customers.Spawner
         private List<CustomerRecord> customerPool = new List<CustomerRecord>();
         private TimeBasedSpawnFilter timeFilter;
         private HashSet<string> activeCustomerIds = new HashSet<string>();
+        private SpawnerProfile spawnerProfile; // 运行时缓存的解锁配置
 
         void Awake()
         {
@@ -83,7 +84,7 @@ namespace PopLife.Customers.Spawner
             if (DayLoopManager.Instance != null)
             {
                 DayLoopManager.Instance.OnStoreOpen += InitializeDailyPool;
-                DayLoopManager.Instance.OnStoreClose += StopSpawning;
+                DayLoopManager.Instance.OnStopSpawning += StopSpawning;
 
                 // 热加入：只有在营业阶段且已开店时才初始化
                 if (DayLoopManager.Instance.currentPhase == GamePhase.OpenPhase &&
@@ -104,7 +105,7 @@ namespace PopLife.Customers.Spawner
             if (DayLoopManager.Instance != null)
             {
                 DayLoopManager.Instance.OnStoreOpen -= InitializeDailyPool;
-                DayLoopManager.Instance.OnStoreClose -= StopSpawning;
+                DayLoopManager.Instance.OnStopSpawning -= StopSpawning;
             }
         }
 
@@ -644,6 +645,104 @@ namespace PopLife.Customers.Spawner
             }
 
             return traitsList.Count > 0 ? traitsList.ToArray() : (defaultTraits ?? new Trait[0]);
+        }
+
+        /// <summary>
+        /// 运行时解锁顾客（不立刻刷新顾客池）
+        /// - Build Phase 解锁 → 当晚开店时生效
+        /// - Open Phase 解锁 → 次日开店时生效
+        /// </summary>
+        public void UnlockCustomer(string customerId)
+        {
+            if (string.IsNullOrEmpty(customerId))
+            {
+                Debug.LogWarning("[CustomerSpawner] Cannot unlock customer with empty ID");
+                return;
+            }
+
+            // 懒加载 SpawnerProfile
+            if (spawnerProfile == null)
+            {
+                spawnerProfile = SpawnerProfile.Load();
+            }
+
+            // 解锁顾客
+            spawnerProfile.UnlockCustomer(customerId);
+
+            // 保存到 persistentDataPath（Build 中可持久化）
+            spawnerProfile.Save();
+
+            // 提示生效时机
+            if (DayLoopManager.Instance != null && DayLoopManager.Instance.currentPhase == GamePhase.BuildPhase)
+            {
+                Debug.Log($"[CustomerSpawner] Unlocked customer '{customerId}' during Build Phase. They will visit when store opens today.");
+            }
+            else
+            {
+                Debug.Log($"[CustomerSpawner] Unlocked customer '{customerId}' during Open Phase. They will visit from next day.");
+            }
+        }
+
+        /// <summary>
+        /// 批量解锁顾客（不立刻刷新顾客池）
+        /// </summary>
+        public void UnlockCustomers(IEnumerable<string> customerIds)
+        {
+            if (customerIds == null)
+            {
+                Debug.LogWarning("[CustomerSpawner] Cannot unlock null customer list");
+                return;
+            }
+
+            // 懒加载 SpawnerProfile
+            if (spawnerProfile == null)
+            {
+                spawnerProfile = SpawnerProfile.Load();
+            }
+
+            int count = 0;
+            foreach (var customerId in customerIds)
+            {
+                if (!string.IsNullOrEmpty(customerId))
+                {
+                    spawnerProfile.UnlockCustomer(customerId);
+                    count++;
+                }
+            }
+
+            // 保存到 persistentDataPath
+            spawnerProfile.Save();
+
+            Debug.Log($"[CustomerSpawner] Unlocked {count} customers. They will take effect on next store open.");
+        }
+
+        /// <summary>
+        /// 检查顾客是否已解锁
+        /// </summary>
+        public bool IsCustomerUnlocked(string customerId)
+        {
+            if (spawnerProfile == null)
+            {
+                spawnerProfile = SpawnerProfile.Load();
+            }
+
+            return spawnerProfile.IsUnlocked(customerId);
+        }
+
+        /// <summary>
+        /// 锁定顾客（运行时）
+        /// </summary>
+        public void LockCustomer(string customerId)
+        {
+            if (spawnerProfile == null)
+            {
+                spawnerProfile = SpawnerProfile.Load();
+            }
+
+            spawnerProfile.LockCustomer(customerId);
+            spawnerProfile.Save();
+
+            Debug.Log($"[CustomerSpawner] Locked customer '{customerId}'");
         }
     }
 }

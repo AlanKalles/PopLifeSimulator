@@ -275,7 +275,7 @@
         },
         {
             "customerId": "C010",
-            "name": "Haruka",
+            "name": "Ayako",
             "bio": "A 30-year-old yoga instructor. Confident and body-positive, enjoys exploring intimacy with partners of any gender.",
             "appearanceId": "CSP010",
             "archetypeId": "RegularCustomer",
@@ -296,7 +296,7 @@
             "trust": 0,
             "loyaltyLevel": 0,
             "xp": 0,
-            "walletCapBase": 100,
+            "walletCapBase": 50,
             "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",

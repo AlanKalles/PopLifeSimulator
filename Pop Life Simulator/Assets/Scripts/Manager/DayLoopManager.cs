@@ -23,12 +23,13 @@ namespace PopLife
         [SerializeField] private float realSecondsPerDay = 30f; // 现实30秒 = 游戏1天
         [SerializeField] private float buildPhaseHour = 6f; // 6:00 建造阶段
         [SerializeField] private float storeOpenHour = 12f; // 12:00
-        [SerializeField] private float storeCloseHour = 23f; // 23:00
-        [SerializeField] private float settlementHour = 23f; // 23:00 开始结算
+        [SerializeField] private float stopSpawningHour = 22f; // 22:00 停止生成新顾客
+        [SerializeField] private float storeCloseHour = 23f; // 23:00 强制清场
 
         [Header("Time Flow")]
         [SerializeField] private float timeScale = 1f; // 时间倍速
         private bool isPaused = false;
+        private bool hasStoppedSpawning = false; // 防止重复触发停止生成事件
 
         [Header("Current State")]
         public int currentDay = 1;
@@ -44,7 +45,8 @@ namespace PopLife
         // Events
         public event Action OnBuildPhaseStart; // 建造阶段开始
         public event Action OnStoreOpen;
-        public event Action OnStoreClose;
+        public event Action OnStopSpawning; // 停止生成新顾客
+        public event Action OnStoreClose; // 所有顾客离开后触发
         public event Action<DailySettlementData> OnDailySettlement;
         public event Action<int> OnDayChanged;
         public event Action OnBankruptcy; // 破产事件
@@ -85,18 +87,37 @@ namespace PopLife
                 float hoursPerSecond = 24f / realSecondsPerDay;
                 currentHour += hoursPerSecond * timeScale * Time.deltaTime;
 
-                // 检查是否到达营业结束时间
-                if (isStoreOpen && currentHour >= settlementHour)
+                // 检查是否到达停止生成时间
+                if (isStoreOpen && currentHour >= stopSpawningHour && !hasStoppedSpawning)
                 {
-                    TriggerDailySettlement();
+                    hasStoppedSpawning = true;
+                    OnStopSpawning?.Invoke();
+                    Debug.Log($"[DayLoopManager] 到达停止生成时间 {stopSpawningHour:F1}:00，停止生成新顾客");
+                }
+
+                // 检查是否到达强制清场时间
+                if (isStoreOpen && currentHour >= storeCloseHour)
+                {
+                    TriggerStoreClose();
                 }
             }
         }
 
-        private void TriggerDailySettlement()
+        private void TriggerStoreClose()
         {
             isStoreOpen = false;
-            OnStoreClose?.Invoke(); // 触发 CustomerSpawner.StopSpawning()
+
+            // 如果还未触发停止生成，先触发一次
+            if (!hasStoppedSpawning)
+            {
+                hasStoppedSpawning = true;
+                OnStopSpawning?.Invoke();
+                Debug.Log("[DayLoopManager] 到达关店时间，触发停止生成顾客");
+            }
+
+            // 立即暂停时间流动
+            PauseTime();
+            Debug.Log($"[DayLoopManager] 到达关店时间 {storeCloseHour:F1}:00，暂停时间流动，开始清场");
 
             // 等待所有顾客离开后再显示结算界面
             StartCoroutine(WaitForCustomersToLeave());
@@ -119,11 +140,11 @@ namespace PopLife
 
                 if (count == 0)
                 {
-                    Debug.Log("[DayLoopManager] 所有顾客已离开，显示结算界面");
+                    Debug.Log("[DayLoopManager] 所有顾客已离开");
                     break;
                 }
 
-                elapsed += Time.deltaTime;
+                elapsed += Time.unscaledDeltaTime; // 使用 unscaledDeltaTime 因为时间已暂停
 
                 if (elapsed >= timeout)
                 {
@@ -137,8 +158,12 @@ namespace PopLife
                     break;
                 }
 
-                yield return new WaitForSeconds(0.5f); // 每0.5秒检查一次
+                yield return new WaitForSecondsRealtime(0.5f); // 使用 Realtime 因为时间已暂停
             }
+
+            // 触发关店事件（所有顾客已离开）
+            OnStoreClose?.Invoke();
+            Debug.Log("[DayLoopManager] 触发 OnStoreClose 事件");
 
             // 所有顾客离开，显示结算界面
             ShowSettlementUI();
@@ -154,9 +179,9 @@ namespace PopLife
 
             // 触发结算事件
             OnDailySettlement?.Invoke(data);
+            Debug.Log("[DayLoopManager] 显示结算界面");
 
-            // 暂停时间
-            PauseTime();
+            // 时间已经在 TriggerStoreClose() 中暂停，这里无需再暂停
         }
 
         private DailySettlementData CalculateDailySettlement()
@@ -251,6 +276,9 @@ namespace PopLife
             dailyTotalSale = 0f;
             dailyTotalExpenses = 0f;
             dailyTotalCustomers = 0;
+
+            // 重置状态标志
+            hasStoppedSpawning = false;
 
             // 进入建造阶段
             currentPhase = GamePhase.BuildPhase;

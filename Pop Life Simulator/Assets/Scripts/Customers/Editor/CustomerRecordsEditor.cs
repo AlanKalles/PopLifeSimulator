@@ -291,7 +291,12 @@ namespace PopLife.Customers.Editor
 
             if (EditorGUI.EndChangeCheck())
             {
-                EditorUtility.SetDirty(this);
+                // EditorWindow instances are not persistent assets and usually
+                // have HideFlags.DontSaveInEditor/HideAndDontSave. Marking the
+                // window itself dirty triggers Unity's assert about trying to
+                // make DontSave objects persistent. We only need to refresh
+                // the UI; persistence happens when the user saves to JSON.
+                Repaint();
             }
 
             EditorGUILayout.EndScrollView();
