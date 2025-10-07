@@ -2944,8 +2944,8 @@ MonoBehaviour:
   realSecondsPerDay: 90
   buildPhaseHour: 6
   storeOpenHour: 12
+  stopSpawningHour: 22
   storeCloseHour: 23
-  settlementHour: 23.5
   timeScale: 1
   currentDay: 1
   currentHour: 12

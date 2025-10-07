@@ -36,5 +36,5 @@ MonoBehaviour:
   moveSpeedMul: 1
   preferredTimeRanges:
   - startHour: 21
-    endHour: 23
+    endHour: 22.5
   timePreferenceWeight: 2
