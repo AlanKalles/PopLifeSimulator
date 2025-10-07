@@ -18,7 +18,7 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
 
 ## Unity 环境配置
 - Unity 项目位置：`Pop Life Simulator/`
-- Unity 版本：6000.0.46f1 (Unity 6)
+- Unity 版本：6000.0.58f2 (Unity 6)
 - 构建方式：Unity 编辑器 → File → Build Settings → Build
 - 运行模式：Unity 编辑器 Play 按钮或 Ctrl+P
 - 第三方框架：
