@@ -36,6 +36,7 @@ namespace PopLife
         public float currentHour = 6f; // 当前游戏时间（小时）
         public GamePhase currentPhase = GamePhase.BuildPhase;
         public bool isStoreOpen = false;
+        public GameObject buildbuttons;
 
         [Header("Daily Statistics")]
         public float dailyTotalSale = 0f;
@@ -180,7 +181,7 @@ namespace PopLife
             // 触发结算事件
             OnDailySettlement?.Invoke(data);
             Debug.Log("[DayLoopManager] 显示结算界面");
-
+            buildbuttons.SetActive(true);
             // 时间已经在 TriggerStoreClose() 中暂停，这里无需再暂停
         }
 
@@ -250,7 +251,7 @@ namespace PopLife
             currentPhase = GamePhase.OpenPhase;
             currentHour = storeOpenHour;
             isStoreOpen = true;
-
+            buildbuttons.SetActive(false);
             OnStoreOpen?.Invoke();
 
             Debug.Log($"[DayLoopManager] Day {currentDay} 开店，时间从 {buildPhaseHour:F1} 跳转到 {storeOpenHour:F1}");
@@ -279,6 +280,9 @@ namespace PopLife
 
             // 重置状态标志
             hasStoppedSpawning = false;
+
+            // 恢复时间流动（修复第二天时间不计时的bug）
+            ResumeTime();
 
             // 进入建造阶段
             currentPhase = GamePhase.BuildPhase;

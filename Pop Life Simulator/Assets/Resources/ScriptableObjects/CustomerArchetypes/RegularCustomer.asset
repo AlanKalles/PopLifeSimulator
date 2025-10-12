@@ -17,11 +17,11 @@ MonoBehaviour:
   defaultAppearancePresetId: 
   portrait: {fileID: 0}
   spawnWeight: 0.1
-  moveSpeed: 3
+  moveSpeed: 4
   queueToleranceSeconds: 60
   spawnTimeWindow:
     startHour: 12
-    endHour: 23
+    endHour: 22.5
   baseInterest:
     values:
     - 2

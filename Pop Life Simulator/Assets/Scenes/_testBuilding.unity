@@ -291,7 +291,7 @@ MonoBehaviour:
   - 4
   - 6
   - 3
-  maxCustomersOnFloor: 2
+  maxCustomersOnFloor: 4
   initialSpawnDelay: 2
   spawnJitter: {x: -1, y: 1}
   defaultArchetype: {fileID: 0}
@@ -745,17 +745,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 298949394}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 359178964}
-  m_Father: {fileID: 1615115558}
+  m_Father: {fileID: 956013902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 555, y: -246}
+  m_AnchoredPosition: {x: 0, y: -101.000015}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &298949396
@@ -928,9 +928,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'lingerie
-
-'
+  m_text: lingerie 150
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1200,7 +1198,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: fleshlight
+  m_text: fleshlight 200
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2428,17 +2426,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 866270193}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1655198042}
-  m_Father: {fileID: 1615115558}
+  m_Father: {fileID: 956013902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 555, y: -177}
+  m_AnchoredPosition: {x: 0, y: -31.999985}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &866270195
@@ -2825,7 +2823,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1073741824
   data:
-    dataString: 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
+    dataString: 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
     file_cachedStartup: {fileID: 0}
     cacheStartup: 0
   showNavGraphs: 1
@@ -2941,16 +2939,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb1da8677d9e15342aec8f26026c1912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realSecondsPerDay: 90
+  realSecondsPerDay: 60
   buildPhaseHour: 6
   storeOpenHour: 12
-  stopSpawningHour: 22
+  stopSpawningHour: 22.5
   storeCloseHour: 23
   timeScale: 1
   currentDay: 1
   currentHour: 12
   currentPhase: 0
   isStoreOpen: 1
+  buildbuttons: {fileID: 956013901}
   dailyTotalSale: 0
   dailyTotalExpenses: 0
   dailyTotalCustomers: 0
@@ -3136,6 +3135,45 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7370189282645152845, guid: f0fc7078b4dca164199e74a86f2607b6, type: 3}
   m_PrefabInstance: {fileID: 950833406}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &956013901
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 956013902}
+  m_Layer: 5
+  m_Name: buttons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &956013902
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 956013901}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1213941956}
+  - {fileID: 2115528469}
+  - {fileID: 866270194}
+  - {fileID: 298949395}
+  m_Father: {fileID: 1615115558}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 555, y: -145}
+  m_SizeDelta: {x: 160, y: 232}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1037164309
 GameObject:
   m_ObjectHideFlags: 0
@@ -3482,17 +3520,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1213941955}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 329513684}
-  m_Father: {fileID: 1615115558}
+  m_Father: {fileID: 956013902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 555, y: -44}
+  m_AnchoredPosition: {x: 0, y: 101.000015}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1213941957
@@ -4619,10 +4657,7 @@ RectTransform:
   m_Children:
   - {fileID: 943955933}
   - {fileID: 1544210867}
-  - {fileID: 1213941956}
-  - {fileID: 2115528469}
-  - {fileID: 866270194}
-  - {fileID: 298949395}
+  - {fileID: 956013902}
   - {fileID: 1616701492}
   - {fileID: 21533577}
   - {fileID: 1904905307}
@@ -4774,7 +4809,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1616701492
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4960,7 +4995,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: vibrator
+  m_text: vibrator 150
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5096,7 +5131,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: condom
+  m_text: condom 150
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6630,17 +6665,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2115528468}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1661761901}
-  m_Father: {fileID: 1615115558}
+  m_Father: {fileID: 956013902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 555, y: -108}
+  m_AnchoredPosition: {x: 0, y: 37.000015}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2115528470

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RandomPurchasePolicy
   m_EditorClassIdentifier: 
   defaultMinBuy: 1
-  defaultMaxBuy: 3
+  defaultMaxBuy: 4
   categoryOverrides: []
   loyaltyMultiplierCurve:
     serializedVersion: 2
@@ -65,8 +65,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   budgetReserveRatio: 0.2
-  allowEmptyWallet: 0
-  lowBudgetThreshold: 10
-  conservativeFirstPurchase: 1
+  allowEmptyWallet: 1
+  lowBudgetThreshold: 5
+  conservativeFirstPurchase: 0
   firstPurchaseMaxQty: 2
   enableDebugLog: 0
