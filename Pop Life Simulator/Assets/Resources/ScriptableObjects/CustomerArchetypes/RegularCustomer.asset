@@ -123,4 +123,4 @@ MonoBehaviour:
   - minSpent: 46
     maxSpent: -1
     multiplier: 1.8
-  levelUpThresholds: 0a000000fa000000f4010000e8030000
+  levelUpThresholds: 64000000fa000000f4010000e8030000
