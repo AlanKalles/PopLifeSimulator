@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2147490fad2383340a3a28f8be020c4c, type: 3}
+  m_Name: AudioConfig
+  m_EditorClassIdentifier: 
+  soundClips:
+  - key: Build_Lingerie
+    clip: {fileID: 8300000, guid: 487c3591504704c45a7703c37aa8f39f, type: 3}
+  - key: Build_Condom
+    clip: {fileID: 8300000, guid: 0769e19a7d5137244bd543fb8225066b, type: 3}
+  - key: Build_Vibrator
+    clip: {fileID: 8300000, guid: 3168f9c951ace624abee58e2717e3568, type: 3}
+  - key: Build_Fleshlight
+    clip: {fileID: 8300000, guid: 3034fcc8b2b0ede45aa5449cfaba9276, type: 3}
+  - key: Build_Lubricant
+    clip: {fileID: 0}
+  - key: Build_BDSM
+    clip: {fileID: 8300000, guid: 077c40bcb3952164582319c2aac9f595, type: 3}
+  musicClips:
+  - key: BGM_SHOP
+    clip: {fileID: 8300000, guid: 0122b01505303b94791133ad075d8caa, type: 3}
+    loop: 1
+    volume: 0.5

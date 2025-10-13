@@ -346,7 +346,8 @@ namespace PopLife.Runtime
                 var inst = floor.PlaceBuildingTransactional(selectedArchetype, gp, previewRot);
                 if (inst)
                 {
-                    AudioManager.Instance.PlaySound("BuildingPlaced");
+                    // 根据建筑类型播放不同音效
+                    PlayBuildSound(selectedArchetype);
                     if (!Input.GetKey(KeyCode.LeftShift)) Cancel();
                 }
                 else UIManager.Instance.ShowMessage("放置失败");
@@ -455,7 +456,7 @@ namespace PopLife.Runtime
                     // 同楼层移动
                     if (targetFloor.MoveBuilding(selectedInstance, gp, previewRot))
                     {
-                        AudioManager.Instance.PlaySound("BuildingMoved");
+                        AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
                         Cancel();
                     }
                     else UIManager.Instance.ShowMessage("移动失败");
@@ -465,7 +466,7 @@ namespace PopLife.Runtime
                     // 跨楼层移动：需要先从原楼层移除，再添加到新楼层
                     if (MoveBuilingAcrossFloors(selectedInstance, targetFloor, gp, previewRot))
                     {
-                        AudioManager.Instance.PlaySound("BuildingMoved");
+                        AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
                         Cancel();
                     }
                     else UIManager.Instance.ShowMessage("跨楼层移动失败");
@@ -520,7 +521,7 @@ namespace PopLife.Runtime
             var floor = floorManager.GetFloor(bi.floorId);
             floor.RemoveBuilding(bi, refundBlueprint: true);
             Destroy(bi.gameObject);
-            AudioManager.Instance.PlaySound("BuildingDestroyed");
+            AudioManager.Instance.PlaySound(AudioKeys.BUILDING_DESTROYED);
         }
 
         private void UpdatePreviewColor(bool canPlace)
@@ -652,5 +653,26 @@ namespace PopLife.Runtime
 
         // 获取当前目标楼层ID
         public int GetCurrentTargetFloorId() => targetFloor != null ? targetFloor.floorId : -1;
+
+        // 根据建筑类型播放对应的建造音效
+        private void PlayBuildSound(BuildingArchetype archetype)
+        {
+            if (archetype is ShelfArchetype shelfArchetype)
+            {
+                // 货架：根据商品类别播放音效
+                string soundKey = AudioKeys.GetBuildSoundKey(shelfArchetype.category);
+                AudioManager.Instance.PlaySound(soundKey);
+            }
+            else if (archetype is FacilityArchetype)
+            {
+                // 设施：通用建造音效
+                AudioManager.Instance.PlaySound(AudioKeys.BUILD_FACILITY);
+            }
+            else
+            {
+                // 其他建筑类型：通用音效
+                AudioManager.Instance.PlaySound(AudioKeys.BUILDING_PLACED);
+            }
+        }
     }
 }

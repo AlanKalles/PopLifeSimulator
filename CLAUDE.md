@@ -833,7 +833,7 @@ ScriptableObject：
 - 建造管理：Scripts/Runtime/ConstructionManager.cs:
 
 说明文档：
-- 一切产出的说明文档全部存储在：Documents文件夹中
+- 一切产出的说明文档全部存储在：PopLifeSimulator\Pop Life Simulator\Assets\Documents文件夹中
 ```
 
 ### 常用Manager引用
