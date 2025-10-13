@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Poor Quality Condoms
+  m_Name: DarexCondom
   m_EditorClassIdentifier: 
   archetypeId: B002
-  displayName: Poor Quality Condoms
+  displayName: Darex Condom
   icon: {fileID: 0}
   prefab: {fileID: 2535633934883308398, guid: 3b44ec541961b194da6766fdf9ad78b4, type: 3}
   buildCost: 150
@@ -21,6 +21,7 @@ MonoBehaviour:
   requiresBlueprint: 0
   footprintPattern:
   - {x: 0, y: 0}
+  - {x: 0, y: 1}
   canRotate: 0
   levels: []
   category: 1

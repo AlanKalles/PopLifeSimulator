@@ -43,6 +43,10 @@ namespace PopLife
         public float dailyTotalExpenses = 0f;
         public int dailyTotalCustomers = 0;
 
+        [Header("Customer Level Up Tracking")]
+        private System.Collections.Generic.List<CustomerLevelUpInfo> todayLevelUps = new System.Collections.Generic.List<CustomerLevelUpInfo>();
+        public System.Collections.Generic.IReadOnlyList<CustomerLevelUpInfo> TodayLevelUps => todayLevelUps;
+
         // Events
         public event Action OnBuildPhaseStart; // 建造阶段开始
         public event Action OnStoreOpen;
@@ -197,6 +201,7 @@ namespace PopLife
             data.totalExpenses = dailyTotalExpenses + totalMaintenanceFee;
             data.dailyIncome = dailyTotalSale - data.totalExpenses;
             data.totalCustomers = dailyTotalCustomers;
+            data.levelUps = todayLevelUps.ToArray(); // 传递升级列表
 
             // 计算声誉奖励 (可以根据设计调整公式)
             data.fameEarned = CalculateFameReward(data.dailyIncome, data.totalCustomers);
@@ -277,6 +282,7 @@ namespace PopLife
             dailyTotalSale = 0f;
             dailyTotalExpenses = 0f;
             dailyTotalCustomers = 0;
+            todayLevelUps.Clear();
 
             // 重置状态标志
             hasStoppedSpawning = false;
@@ -327,6 +333,11 @@ namespace PopLife
             dailyTotalCustomers++;
         }
 
+        public void RecordCustomerLevelUp(CustomerLevelUpInfo info)
+        {
+            todayLevelUps.Add(info);
+        }
+
         // 获取格式化时间字符串
         public string GetFormattedTime()
         {
@@ -345,5 +356,6 @@ namespace PopLife
         public float dailyIncome;
         public int totalCustomers;
         public int fameEarned;
+        public CustomerLevelUpInfo[] levelUps; // 当日升级的顾客列表
     }
 }

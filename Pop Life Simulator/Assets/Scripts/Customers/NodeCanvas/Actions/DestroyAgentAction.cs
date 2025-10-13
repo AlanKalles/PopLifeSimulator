@@ -24,6 +24,30 @@ namespace PopLife.Customers.NodeCanvas.Actions
             var blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
             var customerAgent = agent.GetComponent<CustomerAgent>();
 
+            // 1. 应用经验和升级（在销毁前保存数据）
+            if (customerAgent != null && customerAgent.currentSession != null)
+            {
+                // 获取 CustomerRecord
+                var repository = CustomerRepository.Instance;
+                if (repository != null)
+                {
+                    var record = repository.GetRecord(customerAgent.customerID);
+                    if (record != null)
+                    {
+                        // 使用缓存的 Archetype 和 Traits
+                        CustomerProgressService.ApplySessionRewards(
+                            record,
+                            customerAgent.currentSession,
+                            customerAgent.cachedArchetype,
+                            customerAgent.cachedTraits
+                        );
+
+                        // 线程安全保存单个记录
+                        repository.SaveSingleRecord(record);
+                    }
+                }
+            }
+
             if (blackboard != null)
             {
                 Debug.Log($"[DestroyAgentAction] 顾客 {blackboard.customerId} 离店");

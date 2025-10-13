@@ -67,6 +67,18 @@ namespace PopLife.Customers.Runtime
                 Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogPurchase(blackboard.customerId, msg);
 
+                // 记录到当前会话
+                if (customerAgent.currentSession != null)
+                {
+                    var shelfArchetype = targetShelf.archetype as ShelfArchetype;
+                    customerAgent.currentSession.visitedShelves.Add(new ShelfVisit
+                    {
+                        shelfId = targetShelf.instanceId,
+                        categoryIndex = shelfArchetype != null ? (int)shelfArchetype.category : 0,
+                        boughtQty = 1
+                    });
+                }
+
                 // 触发购买事件（此时只是拿货，未结账）
                 CustomerEventBus.RaisePurchased(customerAgent, targetShelf, 1, targetShelf.currentPrice);
 
@@ -113,6 +125,12 @@ namespace PopLife.Customers.Runtime
             string logMsg = $"Checkout completed at {targetCashier.instanceId}, paid ${blackboard.pendingPayment}";
             Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {logMsg}");
             ScreenLogger.LogPurchase(blackboard.customerId, logMsg);
+
+            // 记录到当前会话
+            if (customerAgent.currentSession != null)
+            {
+                customerAgent.currentSession.moneySpent += blackboard.pendingPayment;
+            }
 
             // 清空待结账金额
             blackboard.pendingPayment = 0;

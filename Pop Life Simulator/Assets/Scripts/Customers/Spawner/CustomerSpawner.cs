@@ -269,6 +269,20 @@ namespace PopLife.Customers.Spawner
 
             agent.Initialize(record, archetype, traits, categoriesCount, daySeed);
 
+            // 设置生成点（用于离开）
+            if (agent.bb != null)
+            {
+                agent.bb.spawnPoint = selectedSpawnPoint;
+
+                // 同步到 NodeCanvas 黑板
+#if NODECANVAS
+                if (agent.bb.ncBlackboard != null)
+                {
+                    agent.bb.ncBlackboard.SetVariableValue("spawnPoint", selectedSpawnPoint);
+                }
+#endif
+            }
+
             // 记录顾客访问到 DayLoopManager
             if (DayLoopManager.Instance != null)
             {
@@ -520,6 +534,20 @@ namespace PopLife.Customers.Spawner
             }
 
             agent.Initialize(record, archetype, traits, categoriesCount, daySeed);
+
+            // 设置生成点（用于离开）
+            if (agent.bb != null)
+            {
+                agent.bb.spawnPoint = spawnPoint;
+
+                // 同步到 NodeCanvas 黑板
+#if NODECANVAS
+                if (agent.bb.ncBlackboard != null)
+                {
+                    agent.bb.ncBlackboard.SetVariableValue("spawnPoint", spawnPoint);
+                }
+#endif
+            }
 
             // 记录访问
             if (DayLoopManager.Instance != null)

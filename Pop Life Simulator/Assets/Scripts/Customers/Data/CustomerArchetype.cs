@@ -75,6 +75,24 @@ public StatCurve embarrassmentCapCurve = new();
 [Header("默认行为策略集合")]
 public BehaviorPolicySet defaultPolicies;
 
+[Header("经验值系统")]
+[Tooltip("基础经验值增量")]
+public float baseXpGain = 10f;
+
+[Tooltip("消费金额对应的经验乘数阈值")]
+public SpendingThreshold[] spendingThresholds = new SpendingThreshold[]
+{
+    new() { minSpent = 0,  maxSpent = 0,   multiplier = 0f },
+    new() { minSpent = 1,  maxSpent = 15,  multiplier = 1.2f },
+    new() { minSpent = 16, maxSpent = 25,  multiplier = 1.4f },
+    new() { minSpent = 26, maxSpent = 45,  multiplier = 1.6f },
+    new() { minSpent = 46, maxSpent = -1,  multiplier = 1.8f }
+};
+
+[Header("等级系统")]
+[Tooltip("累积经验阈值，达到阈值[i]时升到等级i+1")]
+public int[] levelUpThresholds = new int[] { 100, 250, 500, 1000 };
+
 
 public float[] GetBaseInterest(int categories)
 {
@@ -83,6 +101,31 @@ var arr = new float[categories];
 for (int i = 0; i < categories; i++) arr[i] = Mathf.Max(baseInterest.values[i], 0f);
 return arr;
 }
+
+/// <summary>
+/// 根据消费金额获取对应的经验乘数
+/// </summary>
+public float GetSpendingMultiplier(int moneySpent)
+{
+foreach (var threshold in spendingThresholds)
+{
+if (moneySpent >= threshold.minSpent &&
+    (threshold.maxSpent == -1 || moneySpent <= threshold.maxSpent))
+{
+    return threshold.multiplier;
+}
+}
+return 1.0f;
+}
+}
+
+
+[Serializable]
+public class SpendingThreshold
+{
+public int minSpent;
+public int maxSpent;  // -1 表示无上限
+public float multiplier;
 }
 
 }

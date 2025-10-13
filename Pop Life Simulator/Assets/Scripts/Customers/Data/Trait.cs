@@ -18,6 +18,10 @@ namespace PopLife.Customers.Data
         public float priceSensitivityMul = 1f;
         public float moveSpeedMul = 1f;
 
+        [Header("经验影响")]
+        [Tooltip("经验获取倍率，1.0为正常，大于1增加经验，小于1减少经验")]
+        public float xpMultiplier = 1.0f;
+
         [Header("时间倾向")]
         [Tooltip("该特质偏好的时间段（可多个）")]
         public TimePreference[] preferredTimeRanges;

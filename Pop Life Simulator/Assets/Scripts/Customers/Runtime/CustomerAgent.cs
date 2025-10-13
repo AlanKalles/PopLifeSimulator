@@ -14,6 +14,13 @@ namespace PopLife.Customers.Runtime
         public string customerID;
         public AppearanceDatabase appearanceDB;
 
+        // 当前访问会话
+        public CustomerSession currentSession;
+
+        // 缓存的原型和特质（用于经验计算）
+        public CustomerArchetype cachedArchetype;
+        public Trait[] cachedTraits;
+
         private SpriteRenderer spriteRenderer;
         private TextMeshPro nameText;
 
@@ -71,6 +78,22 @@ namespace PopLife.Customers.Runtime
             {
                 nameText.text = record.name;
             }
+
+// 7) 创建当前会话
+            currentSession = new CustomerSession
+            {
+                customerId = record.customerId,
+                dayId = PopLife.DayLoopManager.Instance?.currentDay.ToString() ?? "0",
+                sessionId = System.Guid.NewGuid().ToString(),
+                moneyBagStart = bb.moneyBag,
+                moneySpent = 0,
+                trustDelta = 0,
+                visitedShelves = new System.Collections.Generic.List<ShelfVisit>()
+            };
+
+// 8) 缓存原型和特质（用于销毁时计算经验）
+            cachedArchetype = archetype;
+            cachedTraits = traits;
 
             CustomerEventBus.RaiseSpawned(this);
         }

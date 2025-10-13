@@ -106,3 +106,21 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   defaultPolicies: {fileID: 11400000, guid: e97ca964d00958243a6f86ab26eb20ca, type: 2}
+  baseXpGain: 10
+  spendingThresholds:
+  - minSpent: 0
+    maxSpent: 0
+    multiplier: 0
+  - minSpent: 1
+    maxSpent: 15
+    multiplier: 1.2
+  - minSpent: 16
+    maxSpent: 25
+    multiplier: 1.4
+  - minSpent: 26
+    maxSpent: 45
+    multiplier: 1.6
+  - minSpent: 46
+    maxSpent: -1
+    multiplier: 1.8
+  levelUpThresholds: 0a000000fa000000f4010000e8030000

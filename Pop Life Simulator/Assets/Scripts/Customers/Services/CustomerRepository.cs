@@ -27,8 +27,12 @@ namespace PopLife.Customers.Services
         private string FilePath => SavePathManager.GetReadPath(fileName);
         private string SavePath => SavePathManager.GetWritePath(fileName);
 
+        // 线程安全保存的锁对象
+        private static readonly object saveLock = new object();
+
 
         public CustomerRecord Get(string id) => _byId.TryGetValue(id, out var r) ? r : null;
+        public CustomerRecord GetRecord(string id) => Get(id); // 别名方法，为了兼容性
         public void Put(CustomerRecord r){ _byId[r.customerId] = r; }
         public IEnumerable<CustomerRecord> All() { return _byId.Values; }
 
@@ -69,6 +73,36 @@ namespace PopLife.Customers.Services
             var json = JsonUtility.ToJson(list, true);
             File.WriteAllText(path, json);
             Debug.Log($"Saved {list.items.Count} customer records to {path}");
+        }
+
+        /// <summary>
+        /// 线程安全地保存单个顾客记录
+        /// 用于顾客离店时更新数据，避免多个顾客同时离开导致数据丢失
+        /// </summary>
+        public void SaveSingleRecord(CustomerRecord record)
+        {
+            if (record == null)
+            {
+                Debug.LogWarning("[CustomerRepository] SaveSingleRecord: record is null");
+                return;
+            }
+
+            lock (saveLock)
+            {
+                // 1. 更新内存中的记录
+                _byId[record.customerId] = record;
+
+                // 2. 重新保存所有记录到文件
+                string path = SavePath;
+                SavePathManager.EnsureDirectoryExists(path);
+
+                var list = new CustomerRecordList();
+                list.items.AddRange(_byId.Values);
+                var json = JsonUtility.ToJson(list, true);
+                File.WriteAllText(path, json);
+
+                Debug.Log($"[CustomerRepository] Saved customer {record.customerId} (Total: {list.items.Count} records)");
+            }
         }
     }
 }

@@ -19,7 +19,27 @@ namespace PopLife.Customers.Editor
         private int selectedIndex = -1;
         private bool showDetails = false;
 
-        // 默认保存路径 (使用 SavePathManager 统一管理)
+        // 数据源选择
+        private enum DataSource { StreamingAssets, PersistentDataPath }
+        private DataSource currentDataSource = DataSource.StreamingAssets;
+        private string loadedFromPath = "";
+
+        // 动态获取路径（根据数据源选择）
+        private string GetCurrentReadPath()
+        {
+            return currentDataSource == DataSource.StreamingAssets
+                ? Path.Combine(Application.streamingAssetsPath, "Customers.json")
+                : Path.Combine(Application.persistentDataPath, "Customers.json");
+        }
+
+        private string GetCurrentWritePath()
+        {
+            return currentDataSource == DataSource.StreamingAssets
+                ? Path.Combine(Application.streamingAssetsPath, "Customers.json")
+                : Path.Combine(Application.persistentDataPath, "Customers.json");
+        }
+
+        // 保持旧的静态方法以兼容性（默认使用 StreamingAssets）
         private static string DefaultReadPath => SavePathManager.GetReadPath("Customers.json");
         private static string DefaultWritePath => SavePathManager.GetWritePath("Customers.json");
 
@@ -76,6 +96,7 @@ namespace PopLife.Customers.Editor
 
         private void OnGUI()
         {
+            DrawDataSourceSelector();
             DrawToolbar();
 
             EditorGUILayout.BeginHorizontal();
@@ -88,6 +109,125 @@ namespace PopLife.Customers.Editor
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawDataSourceSelector()
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+
+            EditorGUILayout.LabelField("Data Source:", EditorStyles.boldLabel, GUILayout.Width(80));
+
+            var newDataSource = (DataSource)EditorGUILayout.EnumPopup(currentDataSource, GUILayout.Width(150));
+
+            if (newDataSource != currentDataSource)
+            {
+                currentDataSource = newDataSource;
+                LoadFromJson();
+            }
+
+            // 显示当前数据源路径
+            string currentPath = GetCurrentReadPath();
+            bool fileExists = File.Exists(currentPath);
+
+            GUILayout.Space(10);
+
+            if (fileExists)
+            {
+                EditorGUILayout.LabelField($"✓ File exists: {records.Count} records loaded", GUILayout.Width(250));
+            }
+            else
+            {
+                GUI.color = Color.yellow;
+                EditorGUILayout.LabelField("⚠ File not found at this location", GUILayout.Width(250));
+                GUI.color = Color.white;
+            }
+
+            GUILayout.FlexibleSpace();
+
+            // 同步按钮
+            if (currentDataSource == DataSource.StreamingAssets)
+            {
+                if (GUILayout.Button("Sync to Runtime →", GUILayout.Width(130)))
+                {
+                    SyncToRuntime();
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("← Sync from StreamingAssets", GUILayout.Width(180)))
+                {
+                    SyncFromStreamingAssets();
+                }
+            }
+
+            // 显示文件路径（可复制）
+            if (GUILayout.Button("📁", GUILayout.Width(30)))
+            {
+                EditorGUIUtility.systemCopyBuffer = currentPath;
+                Debug.Log($"Path copied to clipboard: {currentPath}");
+                ShowNotification(new GUIContent("Path copied!"));
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            // 显示详细路径信息
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField($"Path: {currentPath}", EditorStyles.miniLabel);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(5);
+        }
+
+        private void SyncToRuntime()
+        {
+            if (EditorUtility.DisplayDialog("Sync to Runtime",
+                "This will copy the current data from StreamingAssets to PersistentDataPath.\n\n" +
+                "Runtime save data will be overwritten!\n\n" +
+                "Continue?",
+                "Sync", "Cancel"))
+            {
+                try
+                {
+                    string sourcePath = Path.Combine(Application.streamingAssetsPath, "Customers.json");
+                    string destPath = Path.Combine(Application.persistentDataPath, "Customers.json");
+
+                    SavePathManager.EnsureDirectoryExists(destPath);
+
+                    if (File.Exists(sourcePath))
+                    {
+                        File.Copy(sourcePath, destPath, true);
+                        EditorUtility.DisplayDialog("Sync Successful",
+                            $"Synced {records.Count} records to Runtime.\n\nPath: {destPath}",
+                            "OK");
+                        Debug.Log($"[CustomerRecordsEditor] Synced to: {destPath}");
+                    }
+                    else
+                    {
+                        EditorUtility.DisplayDialog("Sync Failed",
+                            "Source file not found in StreamingAssets.",
+                            "OK");
+                    }
+                }
+                catch (Exception e)
+                {
+                    EditorUtility.DisplayDialog("Sync Failed",
+                        $"Error: {e.Message}",
+                        "OK");
+                }
+            }
+        }
+
+        private void SyncFromStreamingAssets()
+        {
+            if (EditorUtility.DisplayDialog("Sync from StreamingAssets",
+                "This will load data from StreamingAssets and reload the editor.\n\n" +
+                "Current runtime data will NOT be modified.\n\n" +
+                "Continue?",
+                "Load", "Cancel"))
+            {
+                currentDataSource = DataSource.StreamingAssets;
+                LoadFromJson();
+            }
         }
 
         private void DrawToolbar()
@@ -435,7 +575,8 @@ namespace PopLife.Customers.Editor
 
         private void LoadFromJson()
         {
-            string path = DefaultReadPath;
+            string path = GetCurrentReadPath();
+            loadedFromPath = path;
 
             // 确保目录存在
             SavePathManager.EnsureDirectoryExists(path);
@@ -479,7 +620,7 @@ namespace PopLife.Customers.Editor
 
         private void ImportFromJson()
         {
-            string defaultPath = Path.GetDirectoryName(DefaultReadPath);
+            string defaultPath = Path.GetDirectoryName(GetCurrentReadPath());
             string path = EditorUtility.OpenFilePanel("Import Customer Records", defaultPath, "json");
             if (!string.IsNullOrEmpty(path))
             {
@@ -520,7 +661,7 @@ namespace PopLife.Customers.Editor
 
         private void ExportToJson()
         {
-            string writePath = DefaultWritePath;
+            string writePath = GetCurrentWritePath();
 
             // 确保目录存在
             SavePathManager.EnsureDirectoryExists(writePath);
@@ -557,7 +698,7 @@ namespace PopLife.Customers.Editor
 
         private void ImportFromCsv()
         {
-            string defaultPath = Path.GetDirectoryName(DefaultReadPath);
+            string defaultPath = Path.GetDirectoryName(GetCurrentReadPath());
             string path = EditorUtility.OpenFilePanel("Import Customer Records (CSV)", defaultPath, "csv");
             if (!string.IsNullOrEmpty(path))
             {
@@ -634,7 +775,7 @@ namespace PopLife.Customers.Editor
 
         private void ExportToCsv()
         {
-            string defaultPath = Path.GetDirectoryName(DefaultWritePath);
+            string defaultPath = Path.GetDirectoryName(GetCurrentWritePath());
             string path = EditorUtility.SaveFilePanel("Export Customer Records (CSV)",
                 defaultPath, "Customers", "csv");
 
