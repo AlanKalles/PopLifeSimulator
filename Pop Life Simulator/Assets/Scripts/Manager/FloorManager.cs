@@ -24,6 +24,12 @@ namespace PopLife.Runtime
 
         [Header("当前焦点楼层")]
         [SerializeField] private int currentFloorIndex = 0;
+
+        // === 事件系统 ===
+        /// <summary>
+        /// 当前激活楼层发生变化时触发
+        /// </summary>
+        public event System.Action<FloorGrid> OnActiveFloorChanged;
         
         [Header("编辑器")]
         [SerializeField] private bool autoAssignFloorIds = false; // 启用后自动分配唯一楼层ID
@@ -428,5 +434,54 @@ namespace PopLife.Runtime
             Debug.Log("已清理旧的序列化残留并完成校验");
         }
         #endif
+
+        // === 程序化楼层切换接口（用于鼠标自动检测系统） ===
+
+        /// <summary>
+        /// 程序化切换到指定楼层（由检测系统调用）
+        /// </summary>
+        /// <param name="targetFloor">目标楼层，null表示取消激活</param>
+        public void SetActiveFloorProgrammatic(FloorGrid targetFloor)
+        {
+            // 获取当前激活的楼层
+            FloorGrid currentActiveFloor = GetActiveFloor();
+
+            // 避免重复切换
+            if (targetFloor == currentActiveFloor)
+            {
+                return;
+            }
+
+            // 停用旧楼层的视觉高亮
+            if (currentActiveFloor != null)
+            {
+                SetFloorHighlight(currentActiveFloor, false);
+            }
+
+            // 激活新楼层的视觉高亮
+            if (targetFloor != null)
+            {
+                SetFloorHighlight(targetFloor, true);
+            }
+
+            // 触发事件
+            OnActiveFloorChanged?.Invoke(targetFloor);
+        }
+
+        /// <summary>
+        /// 设置楼层的视觉高亮状态
+        /// </summary>
+        /// <param name="floor">目标楼层</param>
+        /// <param name="enabled">是否启用高亮</param>
+        private void SetFloorHighlight(FloorGrid floor, bool enabled)
+        {
+            if (floor == null) return;
+
+            // 使用FloorGrid内置的isSelected字段
+            floor.isSelected = enabled;
+
+            // FloorGrid的OnDrawGizmos会自动根据isSelected字段切换颜色
+            // 参见FloorGrid.cs:409-418
+        }
     }
 }

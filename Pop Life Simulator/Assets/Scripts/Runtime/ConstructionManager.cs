@@ -1,5 +1,6 @@
 using UnityEngine;
 using PopLife.Data;
+using PopLife.Services;
 
 namespace PopLife.Runtime
 {
@@ -29,6 +30,12 @@ namespace PopLife.Runtime
         public ResourceManager resourceManager;  // 需由你项目提供
         private Camera mainCamera;               // 缓存主相机引用
 
+        [Header("楼层自动检测")]
+        [SerializeField] private int detectionInterval = 3; // 检测间隔（帧），默认3帧检测一次
+        private FloorDetectionService floorDetector;        // 楼层检测服务
+        private FloorGrid currentDetectedFloor;             // 当前检测到的楼层
+        private FloorGrid lastPreviewFloor;                 // 上一次预览所在楼层
+
         void Awake()
         {
             // 缓存主相机
@@ -36,6 +43,12 @@ namespace PopLife.Runtime
             if (mainCamera == null)
             {
                 Debug.LogError("ConstructionManager: 找不到主相机！请确保场景中有一个相机的tag设置为'MainCamera'");
+            }
+
+            // 初始化楼层检测服务
+            if (mainCamera != null)
+            {
+                floorDetector = new FloorDetectionService(mainCamera, detectionInterval);
             }
 
             // 初始化时设置默认目标楼层
@@ -69,11 +82,49 @@ namespace PopLife.Runtime
 
         void Update()
         {
-            // 处理楼层切换输入
+            // 处理楼层切换输入（保留Tab键功能）
             HandleFloorSwitching();
 
-            if (mode == Mode.Place) { UpdatePlacePreview(); HandlePlaceInput(); }
-            else if (mode == Mode.Move) { UpdateMovePreview(); HandleMoveInput(); }
+            if (mode == Mode.Place)
+            {
+                // 自动检测鼠标所在楼层
+                if (floorDetector != null)
+                {
+                    currentDetectedFloor = floorDetector.DetectFloorAtMouse();
+
+                    // 楼层变化时切换预览
+                    if (currentDetectedFloor != lastPreviewFloor)
+                    {
+                        SwitchPreviewFloor(currentDetectedFloor);
+                        lastPreviewFloor = currentDetectedFloor;
+                    }
+                }
+
+                // 始终更新预览位置（即使没有检测到楼层）
+                UpdatePlacePreview();
+
+                HandlePlaceInput();
+            }
+            else if (mode == Mode.Move)
+            {
+                // 自动检测鼠标所在楼层（Move模式也支持）
+                if (floorDetector != null)
+                {
+                    currentDetectedFloor = floorDetector.DetectFloorAtMouse();
+
+                    // 楼层变化时切换预览
+                    if (currentDetectedFloor != lastPreviewFloor)
+                    {
+                        SwitchMovePreviewFloor(currentDetectedFloor);
+                        lastPreviewFloor = currentDetectedFloor;
+                    }
+                }
+
+                // 始终更新预览位置（即使没有检测到楼层）
+                UpdateMovePreview();
+
+                HandleMoveInput();
+            }
         }
 
         // 处理楼层切换
@@ -227,8 +278,9 @@ namespace PopLife.Runtime
         private void UpdatePlacePreview()
         {
             if (!preview) return;
-            var floor = GetTargetFloor();
-            if (floor == null) return;
+
+            // 使用自动检测的楼层（如果可用），否则使用目标楼层
+            var floor = currentDetectedFloor ?? GetTargetFloor();
 
             // 检查相机是否存在
             if (mainCamera == null)
@@ -242,15 +294,29 @@ namespace PopLife.Runtime
             }
 
             var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
-            var gridPos = floor.WorldToGrid(mouse);
 
-            preview.transform.SetPositionAndRotation(floor.GridToWorld(gridPos), Quaternion.Euler(0, 0, previewRot * 90));
+            // 如果有楼层，使用楼层坐标系；否则直接使用鼠标世界坐标
+            bool canPlace = false;
+            if (floor != null)
+            {
+                var gridPos = floor.WorldToGrid(mouse);
+                preview.transform.SetPositionAndRotation(floor.GridToWorld(gridPos), Quaternion.Euler(0, 0, previewRot * 90));
 
-            bool ok = floor.CanPlaceFootprint(selectedArchetype.GetRotatedFootprint(previewRot), gridPos)
-                      && selectedArchetype.ValidatePlacement(floor, gridPos, previewRot);
+                canPlace = floor.CanPlaceFootprint(selectedArchetype.GetRotatedFootprint(previewRot), gridPos)
+                          && selectedArchetype.ValidatePlacement(floor, gridPos, previewRot);
+            }
+            else
+            {
+                // 没有楼层时，预览直接跟随鼠标（但标记为不可建造）
+                preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
+                canPlace = false;
+            }
 
             // 更新所有渲染器的颜色
-            UpdatePreviewColor(ok);
+            UpdatePreviewColor(canPlace);
+
+            // 确保预览可见
+            ShowPreview();
         }
 
         private void HandlePlaceInput()
@@ -260,10 +326,11 @@ namespace PopLife.Runtime
 
             if (Input.GetMouseButtonDown(0))
             {
-                var floor = GetTargetFloor();
+                // 使用自动检测的楼层（如果可用），否则使用目标楼层
+                var floor = currentDetectedFloor ?? GetTargetFloor();
                 if (floor == null)
                 {
-                    UIManager.Instance.ShowMessage("未选择楼层");
+                    UIManager.Instance.ShowMessage("请将鼠标移动到楼层区域");
                     return;
                 }
 
@@ -309,9 +376,8 @@ namespace PopLife.Runtime
         {
             if (!preview || !selectedInstance) return;
 
-            // 移动模式下，使用目标楼层（可以是不同楼层）
-            var floor = GetTargetFloor();
-            if (floor == null) return;
+            // 使用自动检测的楼层（如果可用），否则使用目标楼层
+            var floor = currentDetectedFloor ?? GetTargetFloor();
 
             // 检查相机是否存在
             if (mainCamera == null)
@@ -325,25 +391,38 @@ namespace PopLife.Runtime
             }
 
             var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
-            var gp = floor.WorldToGrid(mouse);
 
-            preview.transform.SetPositionAndRotation(floor.GridToWorld(gp), Quaternion.Euler(0, 0, previewRot * 90));
-
-            // 如果是跨楼层移动，不允许自身占用检查
-            bool ok;
-            if (floor.floorId == selectedInstance.floorId)
+            // 如果有楼层，使用楼层坐标系；否则直接使用鼠标世界坐标
+            bool canPlace = false;
+            if (floor != null)
             {
-                // 同楼层移动，允许自身占用
-                ok = floor.CanPlaceFootprintAllowSelf(selectedInstance.archetype.GetRotatedFootprint(previewRot), gp, selectedInstance.instanceId);
+                var gp = floor.WorldToGrid(mouse);
+                preview.transform.SetPositionAndRotation(floor.GridToWorld(gp), Quaternion.Euler(0, 0, previewRot * 90));
+
+                // 如果是跨楼层移动，不允许自身占用检查
+                if (floor.floorId == selectedInstance.floorId)
+                {
+                    // 同楼层移动，允许自身占用
+                    canPlace = floor.CanPlaceFootprintAllowSelf(selectedInstance.archetype.GetRotatedFootprint(previewRot), gp, selectedInstance.instanceId);
+                }
+                else
+                {
+                    // 跨楼层移动，不允许自身占用
+                    canPlace = floor.CanPlaceFootprint(selectedInstance.archetype.GetRotatedFootprint(previewRot), gp);
+                }
             }
             else
             {
-                // 跨楼层移动，不允许自身占用
-                ok = floor.CanPlaceFootprint(selectedInstance.archetype.GetRotatedFootprint(previewRot), gp);
+                // 没有楼层时，预览直接跟随鼠标（但标记为不可建造）
+                preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
+                canPlace = false;
             }
 
             // 更新所有渲染器的颜色
-            UpdatePreviewColor(ok);
+            UpdatePreviewColor(canPlace);
+
+            // 确保预览可见
+            ShowPreview();
         }
 
         private void HandleMoveInput()
@@ -353,10 +432,11 @@ namespace PopLife.Runtime
 
             if (Input.GetMouseButtonDown(0))
             {
-                var targetFloor = GetTargetFloor();
+                // 使用自动检测的楼层（如果可用），否则使用目标楼层
+                var targetFloor = currentDetectedFloor ?? GetTargetFloor();
                 if (targetFloor == null)
                 {
-                    UIManager.Instance.ShowMessage("未选择目标楼层");
+                    UIManager.Instance.ShowMessage("请将鼠标移动到楼层区域");
                     return;
                 }
 
@@ -465,6 +545,89 @@ namespace PopLife.Runtime
             }
         }
 
+        // 切换预览楼层（Place模式）
+        private void SwitchPreviewFloor(FloorGrid newFloor)
+        {
+            // 如果新楼层为null（鼠标离开所有楼层），不需要清理预览
+            // 预览会被HidePreview()方法处理
+
+            if (newFloor == null)
+            {
+                return;
+            }
+
+            // 更新目标楼层（这会自动更新FloorManager的选中状态）
+            SetTargetFloor(newFloor);
+
+            // 通知FloorManager切换楼层（触发高亮效果）
+            if (floorManager != null)
+            {
+                floorManager.SetActiveFloorProgrammatic(newFloor);
+            }
+        }
+
+        // 切换预览楼层（Move模式）
+        private void SwitchMovePreviewFloor(FloorGrid newFloor)
+        {
+            if (newFloor == null)
+            {
+                return;
+            }
+
+            // 更新目标楼层
+            SetTargetFloor(newFloor);
+
+            // 通知FloorManager切换楼层
+            if (floorManager != null)
+            {
+                floorManager.SetActiveFloorProgrammatic(newFloor);
+            }
+
+            // 检查是否跨楼层移动（用于成本显示）
+            if (selectedInstance != null)
+            {
+                bool isCrossFloor = (newFloor.floorId != selectedInstance.floorId);
+                if (isCrossFloor && showFloorIndicator)
+                {
+                    Debug.Log($"跨楼层移动：{selectedInstance.floorId} → {newFloor.floorId} (成本×2)");
+                    // TODO: 更新UI显示移动成本
+                }
+            }
+        }
+
+        // 隐藏预览（鼠标不在任何楼层上时）
+        private void HidePreview()
+        {
+            if (preview == null || previewRenderers == null) return;
+
+            // 设置透明度为0（而不是销毁对象，避免频繁创建销毁）
+            foreach (var renderer in previewRenderers)
+            {
+                if (renderer != null)
+                {
+                    Color c = renderer.color;
+                    c.a = 0f;
+                    renderer.color = c;
+                }
+            }
+        }
+
+        // 显示预览（恢复透明度）
+        private void ShowPreview()
+        {
+            if (preview == null || previewRenderers == null) return;
+
+            foreach (var renderer in previewRenderers)
+            {
+                if (renderer != null)
+                {
+                    Color c = renderer.color;
+                    c.a = 0.7f;
+                    renderer.color = c;
+                }
+            }
+        }
+
         public void Cancel()
         {
             mode = Mode.None;
@@ -472,6 +635,16 @@ namespace PopLife.Runtime
             selectedInstance = null;
             if (preview) Destroy(preview);
             previewRenderers = null;
+
+            // 重置检测状态
+            currentDetectedFloor = null;
+            lastPreviewFloor = null;
+
+            // 重置FloorDetector缓存
+            if (floorDetector != null)
+            {
+                floorDetector.ResetCache();
+            }
         }
 
         // 获取当前目标楼层（供UI显示）

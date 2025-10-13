@@ -37,11 +37,59 @@ namespace PopLife.Runtime
 
         void Start()
         {
+            // 初始化楼层检测碰撞体
+            InitializeFloorDetection();
+
             // 若在运行态时已由外部（如 FloorManager）完成重建，则避免重复注册
             if (Application.isPlaying && instances.Count > 0)
                 return;
             // 自动注册场景中已存在的建筑（用于编辑器预建造）
             RegisterAllChildBuildings();
+        }
+
+        // 初始化楼层检测碰撞体（用于鼠标自动检测系统）
+        private void InitializeFloorDetection()
+        {
+            // 检查是否已有BoxCollider2D
+            BoxCollider2D collider = GetComponent<BoxCollider2D>();
+            bool isNewCollider = (collider == null);
+
+            if (isNewCollider)
+            {
+                collider = gameObject.AddComponent<BoxCollider2D>();
+            }
+
+            // 配置Collider为触发器
+            collider.isTrigger = true;
+
+            // 只在新建Collider时设置大小和偏移
+            if (isNewCollider)
+            {
+                // 计算Collider大小（覆盖整个网格）
+                Vector2 size = new Vector2(
+                    gridSize.x * cellSize,
+                    gridSize.y * cellSize
+                );
+                collider.size = size;
+
+                // 计算中心点（网格中心）
+                Vector2 center = new Vector2(
+                    size.x / 2f,
+                    size.y / 2f
+                );
+                collider.offset = center;
+            }
+
+            // 设置专用Layer（如果Layer存在）
+            int layerId = LayerMask.NameToLayer("FloorDetection");
+            if (layerId != -1)
+            {
+                gameObject.layer = layerId;
+            }
+            else
+            {
+                Debug.LogWarning($"FloorGrid '{name}': Layer 'FloorDetection' not found. Please create it in Project Settings.");
+            }
         }
 
         // 运行时/楼层激活时：从场景子物体重建占用与实例映射
