@@ -10,43 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Bad Fleshlight
+  m_Name: Darex XL Condoms
   m_EditorClassIdentifier: 
-  archetypeId: B004
-  displayName: Bad Fleshlight
+  archetypeId: B010
+  displayName: Darex XL Condoms
   icon: {fileID: 0}
-  prefab: {fileID: 9121478431460335272, guid: 3f1e057eee8d514448663c3208c25566, type: 3}
+  prefab: {fileID: 2535633934883308398, guid: 3b44ec541961b194da6766fdf9ad78b4, type: 3}
   buildCost: 200
   moveCost: 0
-  requiresBlueprint: 0
+  requiresBlueprint: 1
   footprintPattern:
   - {x: 0, y: 0}
-  - {x: 1, y: 0}
+  - {x: 0, y: 1}
   canRotate: 0
   levels: []
-  category: 3
+  category: 1
   shelfLevels:
   - level: 1
-    upgradeFameCost: 250
-    maintenanceFee: 4
+    upgradeFameCost: 10
+    maintenanceFee: 2
     price: 7
-    maxStock: 5
-    attractiveness: 15
-  - level: 2
-    upgradeFameCost: 300
-    maintenanceFee: 5
-    price: 6
-    maxStock: 6
-    attractiveness: 18
-  - level: 3
-    upgradeFameCost: 400
-    maintenanceFee: 7
-    price: 8
-    maxStock: 7
-    attractiveness: 21
-  - level: 4
-    upgradeFameCost: 550
-    maintenanceFee: 12
-    price: 10
     maxStock: 10
+    attractiveness: 4
+  - level: 2
+    upgradeFameCost: 20
+    maintenanceFee: 5
+    price: 15
+    maxStock: 15
+    attractiveness: 10
+  - level: 3
+    upgradeFameCost: 30
+    maintenanceFee: 9
+    price: 35
+    maxStock: 23
+    attractiveness: 18
+  - level: 4
+    upgradeFameCost: 40
+    maintenanceFee: 14
+    price: 75
+    maxStock: 34
     attractiveness: 28

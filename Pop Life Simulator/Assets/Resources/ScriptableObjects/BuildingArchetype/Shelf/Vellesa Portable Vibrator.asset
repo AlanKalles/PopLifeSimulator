@@ -10,43 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: DarexCondom
+  m_Name: Vellesa Portable Vibrator
   m_EditorClassIdentifier: 
-  archetypeId: B002
-  displayName: Darex Condom
+  archetypeId: B014
+  displayName: Vellesa Portable Vibrator
   icon: {fileID: 0}
-  prefab: {fileID: 2535633934883308398, guid: 3b44ec541961b194da6766fdf9ad78b4, type: 3}
-  buildCost: 150
+  prefab: {fileID: 5659159893351281282, guid: d36028b3a0d1f874d9e8f8529596ff90, type: 3}
+  buildCost: 200
   moveCost: 0
-  requiresBlueprint: 0
+  requiresBlueprint: 1
   footprintPattern:
   - {x: 0, y: 0}
-  - {x: 0, y: 1}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
-  category: 1
+  category: 2
   shelfLevels:
   - level: 1
-    upgradeFameCost: 200
-    maintenanceFee: 3
-    price: 4
-    maxStock: 15
-    attractiveness: 10
-  - level: 2
-    upgradeFameCost: 250
-    maintenanceFee: 4
+    upgradeFameCost: 8
+    maintenanceFee: 1
     price: 5
-    maxStock: 19
-    attractiveness: 10
-  - level: 3
-    upgradeFameCost: 400
-    maintenanceFee: 6
-    price: 7
-    maxStock: 21
-    attractiveness: 13
-  - level: 4
-    upgradeFameCost: 500
-    maintenanceFee: 10
+    maxStock: 10
+    attractiveness: 2.6
+  - level: 2
+    upgradeFameCost: 16
+    maintenanceFee: 3
     price: 9
-    maxStock: 25
-    attractiveness: 18
+    maxStock: 15
+    attractiveness: 7.2
+  - level: 3
+    upgradeFameCost: 24
+    maintenanceFee: 6
+    price: 21
+    maxStock: 23
+    attractiveness: 13.8
+  - level: 4
+    upgradeFameCost: 32
+    maintenanceFee: 10
+    price: 45
+    maxStock: 34
+    attractiveness: 22.4

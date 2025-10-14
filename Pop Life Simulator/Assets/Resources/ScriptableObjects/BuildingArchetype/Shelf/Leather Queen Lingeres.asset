@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
+  m_Name: Leather Queen Lingeres
+  m_EditorClassIdentifier: 
+  archetypeId: B019
+  displayName: Leather Queen Lingeres
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  buildCost: 300
+  moveCost: 0
+  requiresBlueprint: 1
+  footprintPattern: []
+  canRotate: 0
+  levels: []
+  category: 0
+  shelfLevels:
+  - level: 1
+    upgradeFameCost: 35
+    maintenanceFee: 3
+    price: 10
+    maxStock: 10
+    attractiveness: 8.1
+  - level: 2
+    upgradeFameCost: 70
+    maintenanceFee: 7
+    price: 16
+    maxStock: 15
+    attractiveness: 18.2
+  - level: 3
+    upgradeFameCost: 105
+    maintenanceFee: 12
+    price: 38
+    maxStock: 23
+    attractiveness: 30.3
+  - level: 4
+    upgradeFameCost: 140
+    maintenanceFee: 18
+    price: 82
+    maxStock: 34
+    attractiveness: 44.4

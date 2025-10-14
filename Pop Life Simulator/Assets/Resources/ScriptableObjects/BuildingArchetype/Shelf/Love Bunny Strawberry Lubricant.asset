@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
+  m_Name: Love Bunny Strawberry Lubricant
+  m_EditorClassIdentifier: 
+  archetypeId: B013
+  displayName: Love Bunny Strawberry Lubricant
+  icon: {fileID: 0}
+  prefab: {fileID: 2553700819061216157, guid: 6efbeb67910474856b377107fd823579, type: 3}
+  buildCost: 250
+  moveCost: 0
+  requiresBlueprint: 1
+  footprintPattern:
+  - {x: 0, y: 0}
+  canRotate: 0
+  levels: []
+  category: 4
+  shelfLevels:
+  - level: 1
+    upgradeFameCost: 30
+    maintenanceFee: 2
+    price: 6
+    maxStock: 10
+    attractiveness: 6.9
+  - level: 2
+    upgradeFameCost: 60
+    maintenanceFee: 5
+    price: 14
+    maxStock: 15
+    attractiveness: 15.8
+  - level: 3
+    upgradeFameCost: 90
+    maintenanceFee: 9
+    price: 32
+    maxStock: 23
+    attractiveness: 26.7
+  - level: 4
+    upgradeFameCost: 120
+    maintenanceFee: 14
+    price: 68
+    maxStock: 34
+    attractiveness: 39.6

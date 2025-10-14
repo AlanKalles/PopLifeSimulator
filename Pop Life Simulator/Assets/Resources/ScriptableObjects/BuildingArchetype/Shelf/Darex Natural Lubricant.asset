@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
+  m_Name: Darex Natural Lubricant
+  m_EditorClassIdentifier: 
+  archetypeId: B008
+  displayName: Darex Natural Lubricant
+  icon: {fileID: 0}
+  prefab: {fileID: 2553700819061216157, guid: 6efbeb67910474856b377107fd823579, type: 3}
+  buildCost: 200
+  moveCost: 0
+  requiresBlueprint: 1
+  footprintPattern: []
+  canRotate: 0
+  levels: []
+  category: 4
+  shelfLevels:
+  - level: 1
+    upgradeFameCost: 15
+    maintenanceFee: 2
+    price: 7
+    maxStock: 10
+    attractiveness: 4
+  - level: 2
+    upgradeFameCost: 30
+    maintenanceFee: 5
+    price: 15
+    maxStock: 15
+    attractiveness: 10
+  - level: 3
+    upgradeFameCost: 45
+    maintenanceFee: 9
+    price: 35
+    maxStock: 23
+    attractiveness: 18
+  - level: 4
+    upgradeFameCost: 60
+    maintenanceFee: 14
+    price: 75
+    maxStock: 34
+    attractiveness: 28

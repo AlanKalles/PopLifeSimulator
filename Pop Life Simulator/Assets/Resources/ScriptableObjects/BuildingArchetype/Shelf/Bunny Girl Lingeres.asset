@@ -10,43 +10,41 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Outdated Lingeres
+  m_Name: Bunny Girl Lingeres
   m_EditorClassIdentifier: 
-  archetypeId: B001
-  displayName: Outdated Lingeres
+  archetypeId: B012
+  displayName: Bunny Girl Lingeres
   icon: {fileID: 0}
   prefab: {fileID: 6477555939506826541, guid: ffb62aef7beb7ee438a84c69f3c593da, type: 3}
-  buildCost: 150
+  buildCost: 250
   moveCost: 0
-  requiresBlueprint: 0
-  footprintPattern:
-  - {x: 0, y: 0}
-  - {x: 0, y: 1}
+  requiresBlueprint: 1
+  footprintPattern: []
   canRotate: 0
   levels: []
   category: 0
   shelfLevels:
   - level: 1
-    upgradeFameCost: 200
-    maintenanceFee: 3
+    upgradeFameCost: 25
+    maintenanceFee: 1
     price: 6
     maxStock: 10
-    attractiveness: 13
+    attractiveness: 5.9
   - level: 2
-    upgradeFameCost: 250
-    maintenanceFee: 4
-    price: 5
-    maxStock: 11
-    attractiveness: 16
+    upgradeFameCost: 50
+    maintenanceFee: 3
+    price: 14
+    maxStock: 15
+    attractiveness: 13.8
   - level: 3
-    upgradeFameCost: 400
+    upgradeFameCost: 75
     maintenanceFee: 6
-    price: 7
-    maxStock: 13
-    attractiveness: 19
+    price: 32
+    maxStock: 23
+    attractiveness: 23.7
   - level: 4
-    upgradeFameCost: 500
+    upgradeFameCost: 100
     maintenanceFee: 10
-    price: 9
-    maxStock: 18
-    attractiveness: 23
+    price: 68
+    maxStock: 34
+    attractiveness: 35.6

@@ -10,43 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Outdated Lingeres
+  m_Name: Darex Super Thin Condoms
   m_EditorClassIdentifier: 
-  archetypeId: B001
-  displayName: Outdated Lingeres
+  archetypeId: B015
+  displayName: Darex Super Thin Condoms
   icon: {fileID: 0}
-  prefab: {fileID: 6477555939506826541, guid: ffb62aef7beb7ee438a84c69f3c593da, type: 3}
-  buildCost: 150
+  prefab: {fileID: 2535633934883308398, guid: 3b44ec541961b194da6766fdf9ad78b4, type: 3}
+  buildCost: 200
   moveCost: 0
-  requiresBlueprint: 0
+  requiresBlueprint: 1
   footprintPattern:
   - {x: 0, y: 0}
   - {x: 0, y: 1}
-  canRotate: 0
+  canRotate: 1
   levels: []
-  category: 0
+  category: 1
   shelfLevels:
   - level: 1
-    upgradeFameCost: 200
-    maintenanceFee: 3
-    price: 6
-    maxStock: 10
-    attractiveness: 13
-  - level: 2
-    upgradeFameCost: 250
-    maintenanceFee: 4
+    upgradeFameCost: 10
+    maintenanceFee: 1
     price: 5
-    maxStock: 11
-    attractiveness: 16
-  - level: 3
-    upgradeFameCost: 400
-    maintenanceFee: 6
-    price: 7
-    maxStock: 13
-    attractiveness: 19
-  - level: 4
-    upgradeFameCost: 500
-    maintenanceFee: 10
+    maxStock: 10
+    attractiveness: 3.6
+  - level: 2
+    upgradeFameCost: 20
+    maintenanceFee: 3
     price: 9
-    maxStock: 18
-    attractiveness: 23
+    maxStock: 15
+    attractiveness: 9.2
+  - level: 3
+    upgradeFameCost: 30
+    maintenanceFee: 6
+    price: 21
+    maxStock: 23
+    attractiveness: 16.8
+  - level: 4
+    upgradeFameCost: 40
+    maintenanceFee: 10
+    price: 45
+    maxStock: 34
+    attractiveness: 26.4

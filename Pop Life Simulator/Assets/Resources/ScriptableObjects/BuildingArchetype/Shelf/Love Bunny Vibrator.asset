@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Bad Vibrator
+  m_Name: Love Bunny Vibrator
   m_EditorClassIdentifier: 
-  archetypeId: B003
-  displayName: Bad Vibrator
+  archetypeId: B009
+  displayName: Love Bunny Vibrator
   icon: {fileID: 0}
   prefab: {fileID: 5659159893351281282, guid: d36028b3a0d1f874d9e8f8529596ff90, type: 3}
-  buildCost: 150
+  buildCost: 200
   moveCost: 0
-  requiresBlueprint: 0
+  requiresBlueprint: 1
   footprintPattern:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
@@ -27,26 +27,26 @@ MonoBehaviour:
   category: 2
   shelfLevels:
   - level: 1
-    upgradeFameCost: 250
-    maintenanceFee: 5
-    price: 8
-    maxStock: 5
-    attractiveness: 18
+    upgradeFameCost: 20
+    maintenanceFee: 2
+    price: 7
+    maxStock: 10
+    attractiveness: 5
   - level: 2
-    upgradeFameCost: 300
-    maintenanceFee: 6
-    price: 6
-    maxStock: 7
-    attractiveness: 20
+    upgradeFameCost: 40
+    maintenanceFee: 5
+    price: 15
+    maxStock: 15
+    attractiveness: 12
   - level: 3
-    upgradeFameCost: 400
-    maintenanceFee: 8
-    price: 8
-    maxStock: 7
-    attractiveness: 25
+    upgradeFameCost: 60
+    maintenanceFee: 9
+    price: 35
+    maxStock: 23
+    attractiveness: 21
   - level: 4
-    upgradeFameCost: 550
-    maintenanceFee: 13
-    price: 10
-    maxStock: 12
-    attractiveness: 30
+    upgradeFameCost: 80
+    maintenanceFee: 14
+    price: 75
+    maxStock: 34
+    attractiveness: 32

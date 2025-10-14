@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Bad Fleshlight
+  m_Name: Love Bunny Fleshlight
   m_EditorClassIdentifier: 
-  archetypeId: B004
-  displayName: Bad Fleshlight
-  icon: {fileID: 0}
+  archetypeId: B006
+  displayName: Love Bunny Fleshlight
+  icon: {fileID: 21300000, guid: a22d7a2884da19a4d85ff920f7991809, type: 3}
   prefab: {fileID: 9121478431460335272, guid: 3f1e057eee8d514448663c3208c25566, type: 3}
-  buildCost: 200
+  buildCost: 150
   moveCost: 0
-  requiresBlueprint: 0
+  requiresBlueprint: 1
   footprintPattern:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
@@ -27,26 +27,26 @@ MonoBehaviour:
   category: 3
   shelfLevels:
   - level: 1
-    upgradeFameCost: 250
-    maintenanceFee: 4
+    upgradeFameCost: 12
+    maintenanceFee: 1
     price: 7
-    maxStock: 5
-    attractiveness: 15
-  - level: 2
-    upgradeFameCost: 300
-    maintenanceFee: 5
-    price: 6
-    maxStock: 6
-    attractiveness: 18
-  - level: 3
-    upgradeFameCost: 400
-    maintenanceFee: 7
-    price: 8
-    maxStock: 7
-    attractiveness: 21
-  - level: 4
-    upgradeFameCost: 550
-    maintenanceFee: 12
-    price: 10
     maxStock: 10
-    attractiveness: 28
+    attractiveness: 3.7
+  - level: 2
+    upgradeFameCost: 24
+    maintenanceFee: 3
+    price: 10
+    maxStock: 15
+    attractiveness: 9.4
+  - level: 3
+    upgradeFameCost: 36
+    maintenanceFee: 6
+    price: 24
+    maxStock: 23
+    attractiveness: 17.1
+  - level: 4
+    upgradeFameCost: 48
+    maintenanceFee: 10
+    price: 52
+    maxStock: 34
+    attractiveness: 26.8
