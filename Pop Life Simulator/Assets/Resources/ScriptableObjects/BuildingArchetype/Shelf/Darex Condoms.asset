@@ -15,11 +15,13 @@ MonoBehaviour:
   archetypeId: B005
   displayName: Darex Condoms
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 2535633934883308398, guid: 1ff6959a9f6824f7baaa47dee5123193, type: 3}
   buildCost: 150
   moveCost: 0
   requiresBlueprint: 1
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 0}
+  - {x: 0, y: 1}
   canRotate: 0
   levels: []
   category: 1

@@ -15,11 +15,13 @@ MonoBehaviour:
   archetypeId: B016
   displayName: Tenga Egg Fleshlight
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 9121478431460335272, guid: f95df394ecaf74324aefdb336b46af97, type: 3}
   buildCost: 200
   moveCost: 0
   requiresBlueprint: 1
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 3

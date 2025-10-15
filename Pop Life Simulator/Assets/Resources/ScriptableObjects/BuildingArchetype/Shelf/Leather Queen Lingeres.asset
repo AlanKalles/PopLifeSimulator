@@ -15,11 +15,13 @@ MonoBehaviour:
   archetypeId: B019
   displayName: Leather Queen Lingeres
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 6477555939506826541, guid: f543fd184b6164e10a7b022d2fbba5c8, type: 3}
   buildCost: 300
   moveCost: 0
   requiresBlueprint: 1
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 0}
+  - {x: 0, y: 1}
   canRotate: 0
   levels: []
   category: 0

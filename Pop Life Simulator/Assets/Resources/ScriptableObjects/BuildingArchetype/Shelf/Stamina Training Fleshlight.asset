@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: B011
   displayName: Stamina Training Fleshlight
   icon: {fileID: 0}
-  prefab: {fileID: 9121478431460335272, guid: 3f1e057eee8d514448663c3208c25566, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 69fa063c3c8c3480182e084accf7f26f, type: 3}
   buildCost: 250
   moveCost: 0
   requiresBlueprint: 1

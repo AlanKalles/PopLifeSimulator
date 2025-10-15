@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: B010
   displayName: Darex XL Condoms
   icon: {fileID: 0}
-  prefab: {fileID: 2535633934883308398, guid: 3b44ec541961b194da6766fdf9ad78b4, type: 3}
+  prefab: {fileID: 2535633934883308398, guid: c82d0e57187e342d0b7548fb1a4a210a, type: 3}
   buildCost: 200
   moveCost: 0
   requiresBlueprint: 1

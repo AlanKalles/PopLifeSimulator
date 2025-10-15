@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: B015
   displayName: Darex Super Thin Condoms
   icon: {fileID: 0}
-  prefab: {fileID: 2535633934883308398, guid: 3b44ec541961b194da6766fdf9ad78b4, type: 3}
+  prefab: {fileID: 2535633934883308398, guid: 2d9a0e05075854a58a1cc44a63a00992, type: 3}
   buildCost: 200
   moveCost: 0
   requiresBlueprint: 1

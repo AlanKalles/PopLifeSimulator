@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: B014
   displayName: Vellesa Portable Vibrator
   icon: {fileID: 0}
-  prefab: {fileID: 5659159893351281282, guid: d36028b3a0d1f874d9e8f8529596ff90, type: 3}
+  prefab: {fileID: 5659159893351281282, guid: 1da1b78d61f18491d9337a4d246e8e80, type: 3}
   buildCost: 200
   moveCost: 0
   requiresBlueprint: 1

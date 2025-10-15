@@ -15,11 +15,13 @@ MonoBehaviour:
   archetypeId: B012
   displayName: Bunny Girl Lingeres
   icon: {fileID: 0}
-  prefab: {fileID: 6477555939506826541, guid: ffb62aef7beb7ee438a84c69f3c593da, type: 3}
+  prefab: {fileID: 6477555939506826541, guid: e8a2faf0dadcd4cec8cf93d8f5cde4ae, type: 3}
   buildCost: 250
   moveCost: 0
   requiresBlueprint: 1
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 0}
+  - {x: 0, y: 1}
   canRotate: 0
   levels: []
   category: 0
