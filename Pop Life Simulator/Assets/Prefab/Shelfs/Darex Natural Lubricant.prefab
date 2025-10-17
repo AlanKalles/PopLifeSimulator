@@ -186,9 +186,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7370189282645152845}
   - component: {fileID: 2317391761308328036}
-  - component: {fileID: 4989136009641450194}
   - component: {fileID: -6074794458981150526}
   - component: {fileID: -2203640040846282862}
+  - component: {fileID: -2960149954525875600}
   m_Layer: 6
   m_Name: Darex Natural Lubricant
   m_TagString: Untagged
@@ -269,25 +269,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4989136009641450194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2553700819061216157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62900fd14900d6148bfbe0cbc471b4a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  archetype: {fileID: 11400000, guid: f5d3aa716cd9c41aca3c80a87e73cd0b, type: 2}
-  instanceId: 
-  currentLevel: 1
-  gridPosition: {x: 0, y: 0}
-  floorId: 0
-  rotation: 0
-  isOperational: 1
 --- !u!61 &-6074794458981150526
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -353,6 +334,29 @@ MonoBehaviour:
   queueSlots: []
   secondsPerCustomer: 1
   arrivalDistance: 0.8
+--- !u!114 &-2960149954525875600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2553700819061216157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80fa9e3dbc5e8af44866755f1e7b8018, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  archetype: {fileID: 11400000, guid: f5d3aa716cd9c41aca3c80a87e73cd0b, type: 2}
+  instanceId: 
+  currentLevel: 1
+  gridPosition: {x: 0, y: 0}
+  floorId: 0
+  rotation: 0
+  isOperational: 1
+  currentStock: 0
+  maxStock: 0
+  todaySales: 0
+  currentPrice: 0
 --- !u!1 &6010174927108085024
 GameObject:
   m_ObjectHideFlags: 0
