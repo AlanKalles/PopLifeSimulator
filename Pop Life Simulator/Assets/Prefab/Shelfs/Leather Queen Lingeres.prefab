@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80fa9e3dbc5e8af44866755f1e7b8018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  archetype: {fileID: 11400000, guid: 2efd23cd574797c449fa53364e2ba223, type: 2}
+  archetype: {fileID: 11400000, guid: 0a06a07c0249b40a6abcefd784ebecb5, type: 2}
   instanceId: 0
   currentLevel: 1
   gridPosition: {x: 0, y: 0}

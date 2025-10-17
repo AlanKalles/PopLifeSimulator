@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80fa9e3dbc5e8af44866755f1e7b8018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  archetype: {fileID: 11400000, guid: a76e9ea6a33194e4cbd788da9036a0b6, type: 2}
+  archetype: {fileID: 11400000, guid: 2e2b92dbce1404641a297de91c342ef0, type: 2}
   instanceId: 
   currentLevel: 1
   gridPosition: {x: 0, y: 0}

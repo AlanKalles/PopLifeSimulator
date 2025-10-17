@@ -245,6 +245,7 @@ MonoBehaviour:
   pendingPayment: 0
   assignedQueueSlot: {fileID: 0}
   targetExitPoint: {fileID: 0}
+  spawnPoint: {fileID: 0}
   isClosingTime: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
@@ -263,6 +264,21 @@ MonoBehaviour:
   bb: {fileID: 3895705249127242884}
   customerID: 
   appearanceDB: {fileID: 11400000, guid: f039d8cc3db4d00419a7f62eabb43978, type: 2}
+  currentSession:
+    customerId: 
+    dayId: 
+    sessionId: 
+    moneyBagStart: 0
+    moneySpent: 0
+    trustDelta: 0
+    embarrassmentPeak: 0
+    leaveReason: 
+    timeInStore: 0
+    pathLength: 0
+    cashierQueueTime: 0
+    visitedShelves: []
+  cachedArchetype: {fileID: 0}
+  cachedTraits: []
 --- !u!114 &3176050706865594096
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80fa9e3dbc5e8af44866755f1e7b8018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  archetype: {fileID: 11400000, guid: 8a4fa3c2306c3c74abb9c46bbba777ed, type: 2}
+  archetype: {fileID: 11400000, guid: 3e3940b2bb0984e8e8459b82ce8b16d9, type: 2}
   instanceId: 
   currentLevel: 1
   gridPosition: {x: 0, y: 0}
@@ -241,7 +241,7 @@ MonoBehaviour:
   queueDirection: {x: -1, y: 0, z: 0}
   slotSpacing: 0.5
   queueSlots: []
-  secondsPerCustomer: 10
+  secondsPerCustomer: 1
   arrivalDistance: 0.8
 --- !u!1 &6078544471668588768
 GameObject:

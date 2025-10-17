@@ -22,7 +22,7 @@ MonoBehaviour:
   footprintPattern:
   - {x: 0, y: 0}
   - {x: 0, y: 1}
-  canRotate: 1
+  canRotate: 0
   levels: []
   category: 1
   shelfLevels:

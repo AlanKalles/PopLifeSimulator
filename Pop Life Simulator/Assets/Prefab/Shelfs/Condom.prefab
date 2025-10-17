@@ -241,7 +241,7 @@ MonoBehaviour:
   queueDirection: {x: -1, y: 0, z: 0}
   slotSpacing: 0.5
   queueSlots: []
-  secondsPerCustomer: 10
+  secondsPerCustomer: 1
   arrivalDistance: 0.8
 --- !u!1 &6078544471668588768
 GameObject:
