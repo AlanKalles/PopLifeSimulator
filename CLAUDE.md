@@ -402,6 +402,28 @@ EffectType {
   - `DayCounterUI.cs` - 天数计数器
   - `ScreenLogger.cs` - 屏幕日志
 
+- **建筑交互系统** (`UI/BuildingInteraction/`) ⭐ **新增设计**：
+  - **`BuildingInteractionManager.cs`** - 核心管理器（单例）
+    - Raycast检测"interactableShelf"层建筑
+    - 管理悬停/单击/双击状态
+    - 双击逻辑：2秒内对同一建筑再次点击 → 显示详情面板
+  - **`BuildingHighlighter.cs`** - 轮廓高亮控制器
+    - 使用LineRenderer动态绘制建筑占用网格的外轮廓
+    - 支持不规则形状（L形、T形等）
+    - 外轮廓计算：去除内部边，保留边界边
+  - **`BuildingInfoBubble.cs`** - 信息气泡（World Space Canvas）
+    - 显示：建筑名称、等级、库存（仅货架）
+    - 动画：淡入0.2s → 显示1.3s → 淡出0.5s → 2s消失
+    - 对象池复用，避免GC
+  - **`BuildingDetailPanel.cs`** - 详情面板（Screen Space Canvas）
+    - 显示完整信息：名称、图标、类别、价格、库存、吸引力
+    - 升级按钮：仅BuildPhase可用，OpenPhase变灰
+    - 升级逻辑：调用`BuildingInstance.TryUpgrade()`
+  - **交互条件**：
+    - 仅在`ConstructionManager.currentMode == None`时启用
+    - 建造/移动模式时自动禁用交互
+  - **详细文档**：`Assets/Documents/建筑交互设计.md`
+
 - **工具类**：
   - `SavePathManager.cs` - 保存路径管理（StreamingAssets/persistentDataPath）
 
