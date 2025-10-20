@@ -352,26 +352,33 @@ namespace PopLife.Runtime
             }
         }
 
+        /// <summary>
+        /// 移动建筑到新位置（同楼层）
+        /// 注意：调用此方法前应先检查资源是否足够！
+        /// </summary>
         public bool MoveBuilding(BuildingInstance bi, Vector2Int newPos, int newRot)
         {
             var oldFp = bi.archetype.GetRotatedFootprint(bi.rotation);
             var newFp = bi.archetype.GetRotatedFootprint(newRot);
 
-            // 不清旧格先验证
-            if (!CanPlaceFootprintAllowSelf(newFp, newPos, bi.instanceId)) return false;
-            if (!ResourceManager.Instance.CanAfford(bi.archetype.moveCost, 0)) return false;
+            // 验证新位置是否可用（允许自身占用）
+            if (!CanPlaceFootprintAllowSelf(newFp, newPos, bi.instanceId))
+                return false;
 
+            // 扣除移动费用（调用方应先检查 CanAfford）
             ResourceManager.Instance.SpendMoney(bi.archetype.moveCost);
 
-            // 清旧
+            // 清除旧位置占用
             MarkOccupied(bi, oldFp, bi.gridPosition, false);
 
-            // 写新
+            // 标记新位置占用
             MarkOccupied(bi, newFp, newPos, true);
 
+            // 更新建筑数据和Transform
             bi.gridPosition = newPos;
             bi.rotation = newRot;
             bi.transform.SetPositionAndRotation(GridToWorld(newPos), Quaternion.Euler(0, 0, newRot * 90));
+
             return true;
         }
 

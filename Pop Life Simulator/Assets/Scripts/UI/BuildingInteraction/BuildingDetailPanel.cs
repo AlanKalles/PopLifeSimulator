@@ -320,21 +320,42 @@ namespace PopLife.UI.BuildingInteraction
                 return;
             }
 
-            // Try to upgrade
+            // 检查是否已达到最高等级
+            if (currentBuilding.currentLevel >= currentBuilding.archetype.MaxLevel)
+            {
+                Debug.Log("Already at max level!");
+                return;
+            }
+
+            // 获取下一等级数据
+            var nextLevel = currentBuilding.archetype.GetLevel(currentBuilding.currentLevel + 1);
+            if (nextLevel == null)
+            {
+                Debug.LogWarning("Cannot get next level data!");
+                return;
+            }
+
+            // 检查声望是否足够
+            if (!resourceManager.CanAfford(0, nextLevel.upgradeFameCost))
+            {
+                // 声望不足 - 显示警告弹窗
+                UIManager.Instance.ShowAlert(AlertType.NotEnoughFame);
+                return;
+            }
+
+            // 尝试升级
             bool success = currentBuilding.TryUpgrade();
 
             if (success)
             {
-                // Refresh panel
+                // 升级成功 - 刷新面板
                 UpdateContent(currentBuilding);
-
-                // Show success feedback (you can add visual effects here)
                 Debug.Log($"Building upgraded to level {currentBuilding.currentLevel}!");
             }
             else
             {
-                // Show failure feedback
-                Debug.Log("Upgrade failed! Not enough Fame or already at max level.");
+                // 升级失败（理论上不应该发生，因为已经检查过资源）
+                Debug.LogWarning("Upgrade failed unexpectedly!");
             }
         }
 

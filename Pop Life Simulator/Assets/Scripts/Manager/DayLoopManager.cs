@@ -252,6 +252,15 @@ namespace PopLife
                 return;
             }
 
+            // 开店前检查破产（防止玩家在建造阶段花光所有钱后仍开店）
+            if (CheckBankruptcy())
+            {
+                Debug.LogWarning("[DayLoopManager] 无法开店：资金不足，已破产");
+                OnBankruptcy?.Invoke();
+                PauseTime();
+                return;
+            }
+
             // 切换到营业阶段
             currentPhase = GamePhase.OpenPhase;
             currentHour = storeOpenHour;

@@ -208,15 +208,39 @@ namespace PopLife.Runtime
         // —— 放置模式 ——
         public void BeginPlace(BuildingArchetype arch)
         {
-            // 资源校验
+            // 资源校验：蓝图检查
             if (arch.requiresBlueprint && !blueprintManager.HasBlueprint(arch.archetypeId))
             {
-                UIManager.Instance.ShowMessage("需要蓝图");
+                if (UIManager.Instance != null)
+                {
+                    UIManager.Instance.ShowAlert(AlertType.BlueprintRequired);
+                }
                 return;
             }
+
+            // 资源校验：金钱和声望检查
             if (!resourceManager.CanAfford(arch.buildCost, 0))
             {
-                UIManager.Instance.ShowMessage("资金不足");
+                // 判断具体缺少哪种资源
+                AlertType alertType = AlertType.NotEnoughMoney;
+                if (resourceManager.GetMoney() < arch.buildCost)
+                {
+                    alertType = AlertType.NotEnoughMoney;
+                }
+                else if (resourceManager.GetFame() < 0) // 如果未来有声望消耗
+                {
+                    alertType = AlertType.NotEnoughFame;
+                }
+
+                // 显示警告弹窗，关闭时自动取消建造
+                if (UIManager.Instance != null)
+                {
+                    UIManager.Instance.ShowAlert(alertType, onClose: () =>
+                    {
+                        // 弹窗关闭时取消建造模式（等同于右键取消）
+                        Cancel();
+                    });
+                }
                 return;
             }
 
@@ -330,7 +354,7 @@ namespace PopLife.Runtime
                 var floor = currentDetectedFloor ?? GetTargetFloor();
                 if (floor == null)
                 {
-                    UIManager.Instance.ShowMessage("请将鼠标移动到楼层区域");
+                    // 鼠标不在楼层区域 - 不弹窗，预览已经变红
                     return;
                 }
 
@@ -350,7 +374,7 @@ namespace PopLife.Runtime
                     PlayBuildSound(selectedArchetype);
                     if (!Input.GetKey(KeyCode.LeftShift)) Cancel();
                 }
-                else UIManager.Instance.ShowMessage("放置失败");
+                // 注意：放置失败时预览已经是红色，不需要额外弹窗
             }
 
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)) Cancel();
@@ -437,7 +461,7 @@ namespace PopLife.Runtime
                 var targetFloor = currentDetectedFloor ?? GetTargetFloor();
                 if (targetFloor == null)
                 {
-                    UIManager.Instance.ShowMessage("请将鼠标移动到楼层区域");
+                    // 鼠标不在楼层区域 - 不弹窗，预览已经变红
                     return;
                 }
 
@@ -450,58 +474,68 @@ namespace PopLife.Runtime
                 var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
                 var gp = targetFloor.WorldToGrid(mouse);
 
-                // 检查是否是跨楼层移动
-                if (targetFloor.floorId == selectedInstance.floorId)
+                // 统一移动逻辑：先检查资源，再执行移动
+                bool isCrossFloor = (targetFloor.floorId != selectedInstance.floorId);
+                int moveCost = isCrossFloor ? selectedInstance.archetype.moveCost * 2 : selectedInstance.archetype.moveCost;
+
+                // 1. 资源检查（统一在此处处理）
+                if (!resourceManager.CanAfford(moveCost, 0))
                 {
-                    // 同楼层移动
-                    if (targetFloor.MoveBuilding(selectedInstance, gp, previewRot))
+                    // 资金不足 - 显示警告弹窗并取消移动
+                    UIManager.Instance.ShowAlert(AlertType.NotEnoughMoney, onClose: () =>
                     {
-                        AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
-                        Cancel();
-                    }
-                    else UIManager.Instance.ShowMessage("移动失败");
+                        Cancel(); // 取消移动模式
+                    });
+                    return;
+                }
+
+                // 2. 执行移动
+                bool moveSuccess = false;
+                if (isCrossFloor)
+                {
+                    // 跨楼层移动
+                    moveSuccess = MoveBuilingAcrossFloors(selectedInstance, targetFloor, gp, previewRot);
                 }
                 else
                 {
-                    // 跨楼层移动：需要先从原楼层移除，再添加到新楼层
-                    if (MoveBuilingAcrossFloors(selectedInstance, targetFloor, gp, previewRot))
-                    {
-                        AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
-                        Cancel();
-                    }
-                    else UIManager.Instance.ShowMessage("跨楼层移动失败");
+                    // 同楼层移动
+                    moveSuccess = targetFloor.MoveBuilding(selectedInstance, gp, previewRot);
                 }
+
+                // 3. 处理结果
+                if (moveSuccess)
+                {
+                    AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
+                    Cancel();
+                }
+                // 注意：移动失败时预览已经是红色，不需要额外弹窗
             }
 
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)) Cancel();
         }
 
-        // 跨楼层移动建筑
+        /// <summary>
+        /// 跨楼层移动建筑
+        /// 注意：调用此方法前应先检查资源是否足够！
+        /// </summary>
         private bool MoveBuilingAcrossFloors(BuildingInstance bi, FloorGrid targetFloor, Vector2Int newPos, int newRot)
         {
-            // 检查目标位置是否可用
+            // 1. 检查目标位置是否可用
             var footprint = bi.archetype.GetRotatedFootprint(newRot);
             if (!targetFloor.CanPlaceFootprint(footprint, newPos))
                 return false;
 
-            // 检查资源
-            if (!resourceManager.CanAfford(bi.archetype.moveCost * 2, 0)) // 跨楼层移动成本加倍
-            {
-                UIManager.Instance.ShowMessage("跨楼层移动需要更多资金");
-                return false;
-            }
-
-            // 从原楼层移除
+            // 2. 从原楼层移除
             var sourceFloor = floorManager.GetFloor(bi.floorId);
             if (sourceFloor == null) return false;
 
             sourceFloor.RemoveBuilding(bi, false); // 不返还蓝图
 
-            // 移动GameObject到新楼层
+            // 3. 移动GameObject到新楼层
             bi.transform.SetPositionAndRotation(targetFloor.GridToWorld(newPos), Quaternion.Euler(0, 0, newRot * 90));
             bi.transform.SetParent(targetFloor.buildingContainer);
 
-            // 注册到新楼层
+            // 4. 注册到新楼层
             if (!targetFloor.RegisterExistingBuilding(bi, newPos, newRot))
             {
                 // 如果注册失败，恢复到原楼层
@@ -510,7 +544,7 @@ namespace PopLife.Runtime
                 return false;
             }
 
-            // 扣除资源
+            // 5. 扣除资源（跨楼层移动成本×2，调用方应先检查 CanAfford）
             resourceManager.SpendMoney(bi.archetype.moveCost * 2);
 
             return true;
