@@ -62,6 +62,8 @@ namespace PopLife.UI.BuildingInteraction
                 panelRoot.SetActive(false);
             }
             canvasGroup.alpha = 0f;
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
         }
 
         private void Start()
@@ -365,6 +367,7 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private void OnCloseClicked()
         {
+            Debug.Log("Close button clicked!"); // 调试日志
             Hide();
         }
 
@@ -374,6 +377,11 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private IEnumerator FadeIn()
         {
+            // Enable interaction BEFORE animation
+            // 在动画前启用交互
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+
             float elapsed = 0f;
 
             while (elapsed < fadeInDuration)
@@ -392,6 +400,11 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private IEnumerator FadeOut()
         {
+            // Disable interaction immediately when closing
+            // 关闭时立即禁用交互
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+
             float elapsed = 0f;
 
             while (elapsed < fadeOutDuration)
