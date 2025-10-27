@@ -3749,7 +3749,7 @@ GameObject:
   - component: {fileID: 599628295}
   - component: {fileID: 599628294}
   m_Layer: 5
-  m_Name: resourceUI (2)
+  m_Name: fame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9234,7 +9234,7 @@ MonoBehaviour:
   messageContainer: {fileID: 975449961}
   messageText: {fileID: 1403132337}
   maskRect: {fileID: 1514632860}
-  scrollSpeed: 50
+  scrollSpeed: 200
   messageSpacing: 100
   maxQueueSize: 10
   currentQueueCount: 0
@@ -11238,7 +11238,7 @@ GameObject:
   - component: {fileID: 1737603824}
   - component: {fileID: 1737603823}
   m_Layer: 5
-  m_Name: resourceUI (1)
+  m_Name: money
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12058,7 +12058,7 @@ GameObject:
   - component: {fileID: 1859432694}
   - component: {fileID: 1859432693}
   m_Layer: 5
-  m_Name: Canvas (1)
+  m_Name: CanvasForPopUpWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
