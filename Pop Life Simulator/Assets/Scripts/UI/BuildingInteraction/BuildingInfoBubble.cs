@@ -266,6 +266,15 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private void LateUpdate()
         {
+            // Check if building was destroyed (Unity's null check)
+            // 检查建筑是否已被销毁（Unity的空值检查）
+            if (currentBuilding != null && !currentBuilding)
+            {
+                Hide();
+                currentBuilding = null;
+                return;
+            }
+
             // Keep bubble above building
             if (currentBuilding != null)
             {

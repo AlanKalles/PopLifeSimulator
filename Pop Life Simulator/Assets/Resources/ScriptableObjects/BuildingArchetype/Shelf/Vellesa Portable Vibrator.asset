@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B014
   displayName: Vellesa Portable Vibrator
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 5909b049d3680e343bcc671373461a17, type: 3}
   prefab: {fileID: 5659159893351281282, guid: 1da1b78d61f18491d9337a4d246e8e80, type: 3}
   buildCost: 200
   moveCost: 0
@@ -22,6 +22,8 @@ MonoBehaviour:
   footprintPattern:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
+  - {x: 1, y: 1}
+  - {x: 0, y: 1}
   canRotate: 0
   levels: []
   category: 2

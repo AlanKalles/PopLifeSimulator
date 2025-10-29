@@ -23,6 +23,13 @@ namespace PopLife.UI.BuildingInteraction
         [SerializeField] private TextMeshProUGUI stockText;
         [SerializeField] private TextMeshProUGUI attractivenessText;
         [SerializeField] private TextMeshProUGUI maintenanceText;
+
+        [Header("Next Level Stats")]
+        [SerializeField] private TextMeshProUGUI nextLevelPriceText;
+        [SerializeField] private TextMeshProUGUI nextLevelStockText;
+        [SerializeField] private TextMeshProUGUI nextLevelAttractivenessText;
+        [SerializeField] private TextMeshProUGUI nextLevelMaintenanceText;
+        [SerializeField] private TextMeshProUGUI nextLevelUpgradeCostText; // 升级所需Fame
         [SerializeField] private Button upgradeButton;
         [SerializeField] private TextMeshProUGUI upgradeButtonText;
         [SerializeField] private Button closeButton;
@@ -243,8 +250,151 @@ namespace PopLife.UI.BuildingInteraction
                 }
             }
 
+            // Next level info - 下一级属性对比
+            UpdateNextLevelInfo(building);
+
             // Update upgrade button
             UpdateUpgradeButton();
+        }
+
+        /// <summary>
+        /// Update next level info display
+        /// 更新下一级属性对比显示
+        /// </summary>
+        private void UpdateNextLevelInfo(BuildingInstance building)
+        {
+            if (building == null || building.archetype == null)
+            {
+                return;
+            }
+
+            bool isMaxLevel = building.currentLevel >= building.archetype.MaxLevel;
+
+            // 获取下一等级数据
+            var currentLevelData = building.archetype.GetLevel(building.currentLevel);
+            var nextLevelData = building.archetype.GetLevel(building.currentLevel + 1);
+
+            // Price (货架专属)
+            if (nextLevelPriceText != null)
+            {
+                if (building is ShelfInstance shelf && building.archetype is ShelfArchetype shelfArch)
+                {
+                    if (isMaxLevel)
+                    {
+                        nextLevelPriceText.text = "MAX";
+                    }
+                    else
+                    {
+                        var currentShelfData = shelfArch.GetShelfLevel(building.currentLevel);
+                        var nextShelfData = shelfArch.GetShelfLevel(building.currentLevel + 1);
+                        if (currentShelfData != null && nextShelfData != null)
+                        {
+                            nextLevelPriceText.text = $"${currentShelfData.price} → ${nextShelfData.price}";
+                        }
+                    }
+                    nextLevelPriceText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    nextLevelPriceText.gameObject.SetActive(false);
+                }
+            }
+
+            // Stock (货架专属)
+            if (nextLevelStockText != null)
+            {
+                if (building is ShelfInstance shelf && building.archetype is ShelfArchetype shelfArch)
+                {
+                    if (isMaxLevel)
+                    {
+                        nextLevelStockText.text = "MAX";
+                    }
+                    else
+                    {
+                        var currentShelfData = shelfArch.GetShelfLevel(building.currentLevel);
+                        var nextShelfData = shelfArch.GetShelfLevel(building.currentLevel + 1);
+                        if (currentShelfData != null && nextShelfData != null)
+                        {
+                            nextLevelStockText.text = $"{currentShelfData.maxStock} → {nextShelfData.maxStock}";
+                        }
+                    }
+                    nextLevelStockText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    nextLevelStockText.gameObject.SetActive(false);
+                }
+            }
+
+            // Attractiveness (货架专属)
+            if (nextLevelAttractivenessText != null)
+            {
+                if (building is ShelfInstance shelf && building.archetype is ShelfArchetype shelfArch)
+                {
+                    if (isMaxLevel)
+                    {
+                        nextLevelAttractivenessText.text = "MAX";
+                    }
+                    else
+                    {
+                        var currentShelfData = shelfArch.GetShelfLevel(building.currentLevel);
+                        var nextShelfData = shelfArch.GetShelfLevel(building.currentLevel + 1);
+                        if (currentShelfData != null && nextShelfData != null)
+                        {
+                            nextLevelAttractivenessText.text = $"{currentShelfData.attractiveness:F1} → {nextShelfData.attractiveness:F1}";
+                        }
+                    }
+                    nextLevelAttractivenessText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    nextLevelAttractivenessText.gameObject.SetActive(false);
+                }
+            }
+
+            // Maintenance (所有建筑都有)
+            if (nextLevelMaintenanceText != null)
+            {
+                if (isMaxLevel)
+                {
+                    nextLevelMaintenanceText.text = "MAX";
+                }
+                else if (currentLevelData != null && nextLevelData != null)
+                {
+                    nextLevelMaintenanceText.text = $"${currentLevelData.maintenanceFee} → ${nextLevelData.maintenanceFee}";
+                }
+                else
+                {
+                    nextLevelMaintenanceText.gameObject.SetActive(false);
+                    return;
+                }
+                nextLevelMaintenanceText.gameObject.SetActive(true);
+            }
+
+            // Upgrade Cost (升级所需Fame)
+            if (nextLevelUpgradeCostText != null)
+            {
+                if (isMaxLevel)
+                {
+                    nextLevelUpgradeCostText.text = "MAX";
+                    nextLevelUpgradeCostText.gameObject.SetActive(true);
+                }
+                else if (nextLevelData != null)
+                {
+                    // 检查是否有足够的Fame
+                    bool hasEnoughFame = resourceManager != null &&
+                                        resourceManager.CanAfford(0, nextLevelData.upgradeFameCost);
+
+                    // 根据是否足够设置颜色
+                    string colorTag = hasEnoughFame ? "<color=#00FF00>" : "<color=#FF6B6B>";
+                    nextLevelUpgradeCostText.text = $"Upgrade Cost: {colorTag}{nextLevelData.upgradeFameCost} Fame</color>";
+                    nextLevelUpgradeCostText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    nextLevelUpgradeCostText.gameObject.SetActive(false);
+                }
+            }
         }
 
         /// <summary>
@@ -428,6 +578,15 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private void Update()
         {
+            // Check if building was destroyed (Unity's null check)
+            // 检查建筑是否已被销毁（Unity的空值检查）
+            if (currentBuilding != null && !currentBuilding)
+            {
+                Hide();
+                currentBuilding = null;
+                return;
+            }
+
             if (panelRoot != null && panelRoot.activeSelf && currentBuilding != null)
             {
                 // Update upgrade button state in case phase changed

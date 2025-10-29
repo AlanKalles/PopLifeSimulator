@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B008
   displayName: Darex Natural Lubricant
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f7f5f34f46d7afd4583bc72c06371bf8, type: 3}
   prefab: {fileID: 2553700819061216157, guid: 941a9a7e4c7cc43c89830867624dc93f, type: 3}
   buildCost: 200
   moveCost: 0

@@ -41,12 +41,47 @@ namespace PopLife.UI
 
         void Awake()
         {
+            // 验证必需的引用
+            if (!ValidateReferences())
+            {
+                enabled = false; // 禁用组件避免运行时错误
+                return;
+            }
+
             // 计算遮罩边界
             if (maskRect != null)
             {
                 maskRightEdge = maskRect.rect.width / 2f;
                 maskLeftEdge = -maskRect.rect.width / 2f;
             }
+        }
+
+        /// <summary>
+        /// 验证必需的引用是否已设置
+        /// </summary>
+        private bool ValidateReferences()
+        {
+            bool isValid = true;
+
+            if (messageContainer == null)
+            {
+                Debug.LogError("[ScrollingMessageBar] messageContainer 未设置！请在 Inspector 中分配引用。", this);
+                isValid = false;
+            }
+
+            if (messageText == null)
+            {
+                Debug.LogError("[ScrollingMessageBar] messageText 未设置！请在 Inspector 中分配 TextMeshProUGUI 组件。", this);
+                isValid = false;
+            }
+
+            if (maskRect == null)
+            {
+                Debug.LogWarning("[ScrollingMessageBar] maskRect 未设置，将无法正确计算边界。", this);
+                // 不标记为无效，因为可以使用默认值
+            }
+
+            return isValid;
         }
 
         void OnEnable()
@@ -63,7 +98,7 @@ namespace PopLife.UI
 
         void Update()
         {
-            if (isScrolling)
+            if (isScrolling && messageContainer != null && messageText != null)
             {
                 // 从右向左移动
                 messageContainer.localPosition += Vector3.left * scrollSpeed * Time.deltaTime;
@@ -146,6 +181,14 @@ namespace PopLife.UI
                 return;
             }
 
+            // 验证必需组件
+            if (messageText == null || messageContainer == null)
+            {
+                Debug.LogError("[ScrollingMessageBar] 无法显示消息：messageText 或 messageContainer 为空！");
+                isScrolling = false;
+                return;
+            }
+
             // 出队并显示
             string message = messageQueue.Dequeue();
             currentQueueCount = messageQueue.Count;
@@ -173,7 +216,12 @@ namespace PopLife.UI
             messageQueue.Clear();
             currentQueueCount = 0;
             isScrolling = false;
-            messageText.text = "";
+
+            if (messageText != null)
+            {
+                messageText.text = "";
+            }
+
             Debug.Log("[ScrollingMessageBar] Message queue cleared");
         }
 

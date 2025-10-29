@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B009
   displayName: Love Bunny Vibrator
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cd1ae570bd1154e46b8a694138465e41, type: 3}
   prefab: {fileID: 5659159893351281282, guid: e31bf11384d7a447b9047fbfc04452be, type: 3}
   buildCost: 200
   moveCost: 0
@@ -22,6 +22,8 @@ MonoBehaviour:
   footprintPattern:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
+  - {x: 1, y: 1}
+  - {x: 0, y: 1}
   canRotate: 0
   levels: []
   category: 2

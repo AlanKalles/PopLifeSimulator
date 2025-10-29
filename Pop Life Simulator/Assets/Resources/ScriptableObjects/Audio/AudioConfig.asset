@@ -28,7 +28,7 @@ MonoBehaviour:
   - key: UI_Error
     clip: {fileID: 8300000, guid: 3d63fcc6dd53b88478295e435f918226, type: 3}
   musicClips:
-  - key: BGM_SHOP
+  - key: BGM_Shop
     clip: {fileID: 8300000, guid: 0122b01505303b94791133ad075d8caa, type: 3}
     loop: 1
     volume: 0.5

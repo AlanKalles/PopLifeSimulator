@@ -535,16 +535,39 @@ namespace PopLife.Customers.Spawner
 
             agent.Initialize(record, archetype, traits, categoriesCount, daySeed);
 
-            // 设置生成点（用于离开）
+            // 设置生成点（用于最终撤离）
             if (agent.bb != null)
             {
                 agent.bb.spawnPoint = spawnPoint;
+
+                // 设置商店入口锚点
+                if (EntranceManager.Instance != null)
+                {
+                    var entrance = EntranceManager.Instance.GetMainEntrance();
+                    if (entrance != null)
+                    {
+                        agent.bb.entranceOutsideAnchor = entrance.outsideAnchor;
+                        agent.bb.entranceInsideAnchor = entrance.insideAnchor;
+                        Debug.Log($"[CustomerSpawner] 顾客 {record.customerId} 入口已设置: {entrance.entranceId}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[CustomerSpawner] 无法为顾客 {record.customerId} 设置入口：EntranceManager 没有可用入口");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("[CustomerSpawner] EntranceManager 未找到，无法设置入口锚点");
+                }
 
                 // 同步到 NodeCanvas 黑板
 #if NODECANVAS
                 if (agent.bb.ncBlackboard != null)
                 {
                     agent.bb.ncBlackboard.SetVariableValue("spawnPoint", spawnPoint);
+                    agent.bb.ncBlackboard.SetVariableValue("entranceOutsideAnchor", agent.bb.entranceOutsideAnchor);
+                    agent.bb.ncBlackboard.SetVariableValue("entranceInsideAnchor", agent.bb.entranceInsideAnchor);
+                    agent.bb.ncBlackboard.SetVariableValue("hasEnteredStore", false);
                 }
 #endif
             }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B012
   displayName: Bunny Girl Lingeres
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4d97f64399a8d884cbb3ab91e72c7def, type: 3}
   prefab: {fileID: 6477555939506826541, guid: e8a2faf0dadcd4cec8cf93d8f5cde4ae, type: 3}
   buildCost: 250
   moveCost: 0

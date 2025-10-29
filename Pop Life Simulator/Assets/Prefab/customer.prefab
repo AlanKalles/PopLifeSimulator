@@ -246,6 +246,9 @@ MonoBehaviour:
   assignedQueueSlot: {fileID: 0}
   targetExitPoint: {fileID: 0}
   spawnPoint: {fileID: 0}
+  entranceOutsideAnchor: {fileID: 0}
+  entranceInsideAnchor: {fileID: 0}
+  hasEnteredStore: 0
   isClosingTime: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
@@ -315,7 +318,10 @@ MonoBehaviour:
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"urgent
     speed multiplier":{"_value":4.0,"_name":"urgent speed multiplier","_id":"8e814f4e-ddfc-4fe6-9742-fbcf57c4fe84","$type":"NodeCanvas.Framework.Variable`1[[System.Single,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"isClosingTime":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.isClosingTime","_name":"isClosingTime","_id":"ad6e2b0b-1c07-4bc5-a223-6edda7f6d945","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
-    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}}}'
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"hasEnteredStore":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.hasEnteredStore","_name":"hasEnteredStore","_id":"b657e641-468f-496c-96ba-4f4349ffd62e","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"entranceOutsideAnchor":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceOutsideAnchor","_name":"entranceOutsideAnchor","_id":"d62925ac-2e35-4c32-b4ab-17eb8e6a3659","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
+    UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"entranceInsideAnchor":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceInsideAnchor","_name":"entranceInsideAnchor","_id":"4e110af2-9d53-4237-b559-c85e4cc9bbb7","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
+    UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}}}'
   _objectReferences: []
   _serializedVariables:
   - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.customerId","_name":"customerId","_id":"5d567434-7a78-4a26-bd7d-261896895d73","$type":"NodeCanvas.Framework.Variable`1[[System.String,
@@ -380,6 +386,15 @@ MonoBehaviour:
     _references: []
   - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.isClosingTime","_name":"isClosingTime","_id":"ad6e2b0b-1c07-4bc5-a223-6edda7f6d945","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.hasEnteredStore","_name":"hasEnteredStore","_id":"b657e641-468f-496c-96ba-4f4349ffd62e","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceOutsideAnchor","_name":"entranceOutsideAnchor","_id":"d62925ac-2e35-4c32-b4ab-17eb8e6a3659","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
+      UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}'
+    _references: []
+  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceInsideAnchor","_name":"entranceInsideAnchor","_id":"4e110af2-9d53-4237-b559-c85e4cc9bbb7","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
+      UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}'
     _references: []
 --- !u!114 &5441276965745480517
 MonoBehaviour:
@@ -492,7 +507,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -518,21 +533,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   version: 1073741831
   shape:
-    radius: 0.66
+    radius: 0.5
     height: 1
   movement:
     follower:
-      rotationSpeed: 600
+      rotationSpeed: 360
       speed: 3
-      maxRotationSpeed: 720
+      maxRotationSpeed: 400
       maxOnSpotRotationSpeed: 720
       slowdownTime: 0.2
       slowdownTimeWhenTurningOnSpot: 0
-      desiredWallDistance: 0.8
-      leadInRadiusWhenApproachingDestination: 0
-      allowRotatingOnSpotBacking: 0
+      desiredWallDistance: 2
+      leadInRadiusWhenApproachingDestination: 2
+      allowRotatingOnSpotBacking: 1
     debugFlags: 64
-    stopDistance: 0.1
+    stopDistance: 0.05
     rotationSmoothing: 0
     positionSmoothing: 0
     groundMask:

@@ -30,8 +30,13 @@ namespace PopLife.Customers.Runtime
         public int pendingPayment; // 待结账金额（在收银台结算）
         public Transform assignedQueueSlot; // 分配的队列位置（由 QueueController 分配）
         public Transform targetExitPoint; // 目标离店点的 Transform
-        public Transform spawnPoint; // 顾客生成点（也是离开点）
+        public Transform spawnPoint; // 顾客生成点（也是最终撤离点）
         public HashSet<string> purchasedArchetypes = new HashSet<string>(); // 本次访问已购买的货架archetype ID
+
+        [Header("入口/出口状态")]
+        public Transform entranceOutsideAnchor; // 商店入口外部锚点（街道侧）
+        public Transform entranceInsideAnchor;  // 商店入口内部锚点（商店一楼侧）
+        public bool hasEnteredStore = false;    // 是否已进入商店（用于区分入店/离店状态）
 
         [Header("商店状态")]
         public bool isClosingTime = false; // 商店是否闭店

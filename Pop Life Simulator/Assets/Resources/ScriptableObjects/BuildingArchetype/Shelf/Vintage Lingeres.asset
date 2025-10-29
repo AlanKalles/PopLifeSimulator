@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B007
   displayName: Vintage Lingeres
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 98c0aedd48cecbf448566f27bb343a1e, type: 3}
   prefab: {fileID: 6477555939506826541, guid: a76d84d37126f46efb73013778c96ea3, type: 3}
   buildCost: 150
   moveCost: 0

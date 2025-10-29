@@ -161,8 +161,9 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private void ValidateBuildingReferences()
         {
-            // Check if hovered building was destroyed
-            if (currentHoveredBuilding != null && currentHoveredBuilding == null)
+            // Check if hovered building was destroyed (Unity's null check vs C# null check)
+            // Unity重载了==运算符，被销毁的对象会返回true，但引用本身不为null
+            if (currentHoveredBuilding != null && !currentHoveredBuilding)
             {
                 if (highlighter != null)
                 {
@@ -172,7 +173,7 @@ namespace PopLife.UI.BuildingInteraction
             }
 
             // Check if last clicked building was destroyed
-            if (lastClickedBuilding != null && lastClickedBuilding == null)
+            if (lastClickedBuilding != null && !lastClickedBuilding)
             {
                 HideBubble();
                 HideDetailPanel();
