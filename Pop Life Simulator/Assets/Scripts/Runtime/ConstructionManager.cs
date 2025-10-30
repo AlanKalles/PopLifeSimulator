@@ -206,6 +206,14 @@ namespace PopLife.Runtime
         }
 
         // —— 放置模式 ——
+        /// <summary>
+        /// Select a building archetype for placement (called by BuildingListPanel)
+        /// </summary>
+        public void SelectArchetypeForPlacement(BuildingArchetype arch)
+        {
+            BeginPlace(arch);
+        }
+
         public void BeginPlace(BuildingArchetype arch)
         {
             // 资源校验：蓝图检查
