@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Leather Queen Lingeres
   m_EditorClassIdentifier: 
-  archetypeId: B019
+  archetypeId: B016
   displayName: Leather Queen Lingeres
   icon: {fileID: 0}
   prefab: {fileID: 6477555939506826541, guid: f543fd184b6164e10a7b022d2fbba5c8, type: 3}
-  buildCost: 300
+  buildCost: 375
   moveCost: 0
   requiresBlueprint: 1
+  destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}
   - {x: 1, y: 3}
@@ -31,28 +32,29 @@ MonoBehaviour:
   canRotate: 0
   levels: []
   category: 0
+  selectPages: 00000000
   shelfLevels:
   - level: 1
     upgradeFameCost: 35
     maintenanceFee: 3
-    price: 10
+    price: 7
     maxStock: 10
     attractiveness: 8.1
   - level: 2
     upgradeFameCost: 70
-    maintenanceFee: 7
-    price: 16
-    maxStock: 15
-    attractiveness: 18.2
+    maintenanceFee: 4
+    price: 11
+    maxStock: 5
+    attractiveness: 10.1
   - level: 3
     upgradeFameCost: 105
-    maintenanceFee: 12
-    price: 38
-    maxStock: 23
-    attractiveness: 30.3
+    maintenanceFee: 7
+    price: 22
+    maxStock: 8
+    attractiveness: 12.1
   - level: 4
     upgradeFameCost: 140
-    maintenanceFee: 18
-    price: 82
-    maxStock: 34
-    attractiveness: 44.4
+    maintenanceFee: 8
+    price: 44
+    maxStock: 11
+    attractiveness: 14.1

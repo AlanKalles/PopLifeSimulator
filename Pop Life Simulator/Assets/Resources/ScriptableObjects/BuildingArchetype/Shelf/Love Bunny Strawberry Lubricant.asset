@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Love Bunny Strawberry Lubricant
   m_EditorClassIdentifier: 
-  archetypeId: B013
+  archetypeId: B011
   displayName: Love Bunny Strawberry Lubricant
   icon: {fileID: 21300000, guid: cd1ae570bd1154e46b8a694138465e41, type: 3}
   prefab: {fileID: 2553700819061216157, guid: fe833171da70c409fb08d65db7113553, type: 3}
-  buildCost: 250
+  buildCost: 175
   moveCost: 0
   requiresBlueprint: 1
+  destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}
   - {x: 1, y: 3}
@@ -35,6 +36,7 @@ MonoBehaviour:
   canRotate: 0
   levels: []
   category: 4
+  selectPages: 04000000
   shelfLevels:
   - level: 1
     upgradeFameCost: 30
@@ -44,19 +46,19 @@ MonoBehaviour:
     attractiveness: 6.9
   - level: 2
     upgradeFameCost: 60
-    maintenanceFee: 5
-    price: 14
-    maxStock: 15
-    attractiveness: 15.8
+    maintenanceFee: 3
+    price: 9
+    maxStock: 5
+    attractiveness: 8.9
   - level: 3
     upgradeFameCost: 90
-    maintenanceFee: 9
-    price: 32
-    maxStock: 23
-    attractiveness: 26.7
+    maintenanceFee: 6
+    price: 18
+    maxStock: 8
+    attractiveness: 10.9
   - level: 4
     upgradeFameCost: 120
-    maintenanceFee: 14
-    price: 68
-    maxStock: 34
-    attractiveness: 39.6
+    maintenanceFee: 8
+    price: 36
+    maxStock: 11
+    attractiveness: 12.9

@@ -12,6 +12,7 @@ namespace PopLife
         [SerializeField] private DailySettlementPanel dailySettlementPanel;
         [SerializeField] private AlertPanel alertPanel;
         [SerializeField] private ScrollingMessageBar scrollingMessageBar;
+        [SerializeField] private UI.ConfirmationPanel confirmationPanel;
 
         private void Awake()
         {
@@ -129,6 +130,35 @@ namespace PopLife
             {
                 scrollingMessageBar.ClearQueue();
             }
+        }
+
+        /// <summary>
+        /// 显示确认对话框（用于建筑销毁等操作）
+        /// </summary>
+        /// <param name="buildingName">建筑名称</param>
+        /// <param name="refundAmount">退款金额</param>
+        /// <param name="onConfirm">确认回调</param>
+        /// <param name="onCancel">取消回调（可选）</param>
+        public void ShowConfirmation(string buildingName, int refundAmount, Action onConfirm, Action onCancel = null)
+        {
+            if (confirmationPanel != null)
+            {
+                confirmationPanel.Show(buildingName, refundAmount, onConfirm, onCancel);
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] ConfirmationPanel is not assigned!");
+                // Fallback: 直接执行确认操作
+                onConfirm?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// 检查是否有确认对话框正在显示
+        /// </summary>
+        public bool IsConfirmationShowing()
+        {
+            return confirmationPanel != null && confirmationPanel.IsShowing();
         }
     }
 }

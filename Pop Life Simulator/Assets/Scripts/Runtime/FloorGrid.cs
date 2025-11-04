@@ -382,14 +382,32 @@ namespace PopLife.Runtime
             return true;
         }
 
-        public void RemoveBuilding(BuildingInstance bi, bool refundBlueprint)
+        /// <summary>
+        /// 从楼层移除建筑
+        /// </summary>
+        /// <param name="bi">建筑实例</param>
+        /// <param name="refundBlueprint">是否返还蓝图（蓝图已改为永久解锁，此参数保留兼容性）</param>
+        /// <param name="refundMoney">是否返还建造成本</param>
+        public void RemoveBuilding(BuildingInstance bi, bool refundBlueprint, bool refundMoney = false)
         {
             var fp = bi.archetype.GetRotatedFootprint(bi.rotation);
             MarkOccupied(bi, fp, bi.gridPosition, false);
             instances.Remove(bi.instanceId);
 
+            // 蓝图系统已改为永久解锁，不再需要返还
+            // 保留此代码以兼容旧设计
             if (refundBlueprint && bi.archetype.requiresBlueprint)
                 BlueprintManager.Instance.AddBlueprint(bi.archetype.archetypeId);
+
+            // 返还建造成本（按比例）
+            if (refundMoney && bi.archetype != null)
+            {
+                int refundAmount = Mathf.RoundToInt(bi.archetype.buildCost * bi.archetype.destroyRefundRate);
+                if (refundAmount > 0)
+                {
+                    ResourceManager.Instance.AddMoney(refundAmount);
+                }
+            }
         }
 
         // 注册一个已存在的建筑到楼层（用于跨楼层移动）

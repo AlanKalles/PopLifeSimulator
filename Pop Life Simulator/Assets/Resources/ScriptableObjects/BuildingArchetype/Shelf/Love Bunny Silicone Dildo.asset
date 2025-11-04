@@ -10,49 +10,54 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Stamina Training Fleshlight
+  m_Name: Love Bunny Silicone Dildo
   m_EditorClassIdentifier: 
-  archetypeId: B011
-  displayName: Stamina Training Fleshlight
+  archetypeId: B003
+  displayName: Love Bunny Silicone Dildo
   icon: {fileID: 0}
-  prefab: {fileID: 9121478431460335272, guid: 69fa063c3c8c3480182e084accf7f26f, type: 3}
-  buildCost: 250
+  prefab: {fileID: 0}
+  buildCost: 75
   moveCost: 0
   requiresBlueprint: 1
+  destroyRefundRate: 0.75
   footprintPattern:
+  - {x: 0, y: 3}
+  - {x: 1, y: 3}
+  - {x: 2, y: 3}
+  - {x: 0, y: 2}
+  - {x: 1, y: 2}
+  - {x: 2, y: 2}
   - {x: 0, y: 1}
   - {x: 1, y: 1}
   - {x: 2, y: 1}
-  - {x: 3, y: 1}
-  - {x: 0, y: 0}
   - {x: 1, y: 0}
   - {x: 2, y: 0}
-  - {x: 3, y: 0}
   canRotate: 0
   levels: []
-  category: 3
+  category: 6
+  selectPages: 0200000003000000
   shelfLevels:
   - level: 1
-    upgradeFameCost: 20
+    upgradeFameCost: 12
     maintenanceFee: 1
-    price: 6
+    price: 4
     maxStock: 10
-    attractiveness: 4.9
+    attractiveness: 3.7
   - level: 2
-    upgradeFameCost: 40
-    maintenanceFee: 3
-    price: 14
-    maxStock: 15
-    attractiveness: 11.8
+    upgradeFameCost: 22
+    maintenanceFee: 2
+    price: 7
+    maxStock: 5
+    attractiveness: 5.3
   - level: 3
-    upgradeFameCost: 60
-    maintenanceFee: 6
-    price: 32
-    maxStock: 23
-    attractiveness: 20.7
+    upgradeFameCost: 45
+    maintenanceFee: 5
+    price: 14
+    maxStock: 8
+    attractiveness: 8
   - level: 4
-    upgradeFameCost: 80
-    maintenanceFee: 10
-    price: 68
-    maxStock: 34
-    attractiveness: 31.6
+    upgradeFameCost: 65
+    maintenanceFee: 7
+    price: 28
+    maxStock: 11
+    attractiveness: 10.5

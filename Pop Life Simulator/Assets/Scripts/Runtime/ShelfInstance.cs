@@ -34,8 +34,10 @@ namespace PopLife.Runtime
         {
             var lv = SA.GetShelfLevel(currentLevel);
             maxStock = lv.maxStock;
-            currentStock = maxStock; // 可改为不自动补满
             currentPrice = lv.price;
+
+            // 升级后自动补货
+            Restock();
         }
 
         public float GetAttractiveness()

@@ -6,7 +6,7 @@ namespace PopLife.Runtime
 {
     public class ConstructionManager : MonoBehaviour
     {
-        public enum Mode { None, Place, Move }
+        public enum Mode { None, Place, Move, Destroy }
 
         [Header("状态")]
         public Mode mode = Mode.None;
@@ -124,6 +124,10 @@ namespace PopLife.Runtime
                 UpdateMovePreview();
 
                 HandleMoveInput();
+            }
+            else if (mode == Mode.Destroy)
+            {
+                HandleDestroyInput();
             }
         }
 
@@ -537,7 +541,7 @@ namespace PopLife.Runtime
             var sourceFloor = floorManager.GetFloor(bi.floorId);
             if (sourceFloor == null) return false;
 
-            sourceFloor.RemoveBuilding(bi, false); // 不返还蓝图
+            sourceFloor.RemoveBuilding(bi, refundBlueprint: false, refundMoney: false); // 移动时不返还任何资源
 
             // 3. 移动GameObject到新楼层
             bi.transform.SetPositionAndRotation(targetFloor.GridToWorld(newPos), Quaternion.Euler(0, 0, newRot * 90));
@@ -558,12 +562,113 @@ namespace PopLife.Runtime
             return true;
         }
 
-        public void DestroyBuilding(BuildingInstance bi)
+        // —— 销毁模式 ——
+        /// <summary>
+        /// 进入销毁模式
+        /// </summary>
+        public void BeginDestroy()
+        {
+            mode = Mode.Destroy;
+            Debug.Log("Entered Destroy mode - Click any building to destroy");
+        }
+
+        /// <summary>
+        /// 处理销毁模式的输入
+        /// </summary>
+        private void HandleDestroyInput()
+        {
+            // 右键或ESC取消销毁模式
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                Cancel();
+                return;
+            }
+
+            // 左键点击建筑
+            if (Input.GetMouseButtonDown(0))
+            {
+                // 检查相机是否存在
+                if (mainCamera == null)
+                {
+                    mainCamera = Camera.main;
+                    if (mainCamera == null)
+                    {
+                        Debug.LogError("ConstructionManager: 无法获取主相机引用");
+                        return;
+                    }
+                }
+
+                // Raycast检测点击的建筑
+                Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("interactableShelf"));
+
+                if (hit.collider != null)
+                {
+                    BuildingInstance building = hit.collider.GetComponent<BuildingInstance>();
+                    if (building != null)
+                    {
+                        // 显示确认弹窗
+                        ShowDestroyConfirmation(building);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 显示销毁确认弹窗
+        /// </summary>
+        private void ShowDestroyConfirmation(BuildingInstance building)
+        {
+            // 计算退款金额
+            int refundAmount = Mathf.RoundToInt(building.archetype.buildCost * building.archetype.destroyRefundRate);
+
+            // 显示确认弹窗
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ShowConfirmation(
+                    buildingName: building.archetype.displayName,
+                    refundAmount: refundAmount,
+                    onConfirm: () => {
+                        // 确认销毁
+                        ExecuteDestroyBuilding(building);
+                    },
+                    onCancel: () => {
+                        // 取消销毁，继续保持Destroy模式
+                        Debug.Log("Destroy cancelled, staying in Destroy mode");
+                    }
+                );
+            }
+            else
+            {
+                // 如果没有UIManager，直接销毁（调试用）
+                Debug.LogWarning("UIManager not found, destroying directly without confirmation");
+                ExecuteDestroyBuilding(building);
+            }
+        }
+
+        /// <summary>
+        /// 执行销毁建筑并返还部分建造成本
+        /// </summary>
+        private void ExecuteDestroyBuilding(BuildingInstance bi)
         {
             var floor = floorManager.GetFloor(bi.floorId);
-            floor.RemoveBuilding(bi, refundBlueprint: true);
+
+            // 蓝图已改为永久解锁，不需要返还
+            // 但返还建造成本（按destroyRefundRate比例，默认80%）
+            floor.RemoveBuilding(bi, refundBlueprint: false, refundMoney: true);
+
             Destroy(bi.gameObject);
             AudioManager.Instance.PlaySound(AudioKeys.BUILDING_DESTROYED);
+
+            Debug.Log($"Destroyed {bi.archetype.displayName}, refunded ${Mathf.RoundToInt(bi.archetype.buildCost * bi.archetype.destroyRefundRate)}");
+        }
+
+        /// <summary>
+        /// 销毁建筑（公开接口，供外部直接调用，不显示确认弹窗）
+        /// </summary>
+        public void DestroyBuilding(BuildingInstance bi)
+        {
+            ExecuteDestroyBuilding(bi);
         }
 
         private void UpdatePreviewColor(bool canPlace)

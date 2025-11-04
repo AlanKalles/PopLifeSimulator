@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Lovehoney Strap-On Dildo
+  m_Name: Lovehoney Strap on Dildo
   m_EditorClassIdentifier: 
-  archetypeId: B017
-  displayName: Lovehoney Strap-On Dildo
-  icon: {fileID: 21300000, guid: 49403d2a2ce7cad4d9a24e9955fa190e, type: 3}
-  prefab: {fileID: 9121478431460335272, guid: 42891d301d3be46a89cf634d9e12a5db, type: 3}
+  archetypeId: B015
+  displayName: Lovehoney Strap on Dildo
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
   buildCost: 300
   moveCost: 0
   requiresBlueprint: 1
+  destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}
   - {x: 1, y: 3}
@@ -34,29 +35,30 @@ MonoBehaviour:
   - {x: 2, y: 0}
   canRotate: 0
   levels: []
-  category: 0
+  category: 6
+  selectPages: 0200000003000000
   shelfLevels:
   - level: 1
     upgradeFameCost: 25
     maintenanceFee: 3
-    price: 9
+    price: 8
     maxStock: 10
     attractiveness: 6.1
   - level: 2
     upgradeFameCost: 50
-    maintenanceFee: 7
-    price: 16
-    maxStock: 15
-    attractiveness: 14.2
+    maintenanceFee: 4
+    price: 11
+    maxStock: 5
+    attractiveness: 8.1
   - level: 3
     upgradeFameCost: 75
-    maintenanceFee: 12
-    price: 38
-    maxStock: 23
-    attractiveness: 24.3
+    maintenanceFee: 7
+    price: 22
+    maxStock: 8
+    attractiveness: 10.1
   - level: 4
     upgradeFameCost: 100
-    maintenanceFee: 18
-    price: 82
-    maxStock: 34
-    attractiveness: 36.4
+    maintenanceFee: 8
+    price: 44
+    maxStock: 11
+    attractiveness: 12.1

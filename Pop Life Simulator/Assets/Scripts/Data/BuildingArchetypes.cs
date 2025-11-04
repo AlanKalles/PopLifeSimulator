@@ -13,7 +13,7 @@ namespace PopLife.Data
         public int maintenanceFee;
     }
 
-    public enum ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant, BDSM }
+    public enum ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant, BDSM, Dildo }
     public enum FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
     public enum EffectType { ReduceEmbarrassment, IncreaseAttractiveness, IncreaseCustomerSpeed, RestoreMoney }
 
@@ -30,6 +30,11 @@ namespace PopLife.Data
         public int buildCost;
         public int moveCost = 0;
         public bool requiresBlueprint = true;
+
+        [Header("拆除返还")]
+        [Range(0f, 1f)]
+        [Tooltip("Percentage of buildCost refunded when destroyed (0-100%)")]
+        public float destroyRefundRate = 0.8f;
 
         [Header("占用空间")]
         [SerializeField] private List<Vector2Int> footprintPattern = new(); // 相对原点

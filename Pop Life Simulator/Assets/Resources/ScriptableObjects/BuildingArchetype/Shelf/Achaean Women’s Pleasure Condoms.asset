@@ -10,45 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Darex Super Thin Condoms
+  m_Name: "Achaean Women\u2019s Pleasure Condoms"
   m_EditorClassIdentifier: 
-  archetypeId: B015
-  displayName: Darex Super Thin Condoms
-  icon: {fileID: 21300000, guid: 482247b9f019a844f9b0ec5382b74077, type: 3}
-  prefab: {fileID: 2535633934883308398, guid: 2d9a0e05075854a58a1cc44a63a00992, type: 3}
-  buildCost: 240
+  archetypeId: B013
+  displayName: "Achaean Women\u2019s Pleasure Condoms"
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  buildCost: 225
   moveCost: 0
   requiresBlueprint: 1
-  footprintPattern:
-  - {x: 0, y: 1}
-  - {x: 1, y: 1}
-  - {x: 0, y: 0}
-  - {x: 1, y: 0}
+  destroyRefundRate: 0.75
+  footprintPattern: []
   canRotate: 0
   levels: []
   category: 1
+  selectPages: 04000000
   shelfLevels:
   - level: 1
     upgradeFameCost: 10
     maintenanceFee: 1
-    price: 10
+    price: 6
     maxStock: 10
     attractiveness: 3.6
   - level: 2
     upgradeFameCost: 20
-    maintenanceFee: 3
-    price: 15
-    maxStock: 15
-    attractiveness: 9.2
+    maintenanceFee: 2
+    price: 6
+    maxStock: 5
+    attractiveness: 5.6
   - level: 3
     upgradeFameCost: 30
-    maintenanceFee: 6
-    price: 28
-    maxStock: 23
-    attractiveness: 16.8
+    maintenanceFee: 5
+    price: 12
+    maxStock: 8
+    attractiveness: 7.6
   - level: 4
     upgradeFameCost: 40
-    maintenanceFee: 10
-    price: 60
-    maxStock: 34
-    attractiveness: 26.4
+    maintenanceFee: 7
+    price: 24
+    maxStock: 11
+    attractiveness: 9.6

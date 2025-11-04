@@ -10,45 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Darex XL Condoms
+  m_Name: Darex Intense Polyisoprene Condoms
   m_EditorClassIdentifier: 
-  archetypeId: B010
-  displayName: Darex XL Condoms
-  icon: {fileID: 21300000, guid: 482247b9f019a844f9b0ec5382b74077, type: 3}
-  prefab: {fileID: 2535633934883308398, guid: c82d0e57187e342d0b7548fb1a4a210a, type: 3}
-  buildCost: 220
+  archetypeId: B007
+  displayName: Darex Intense Polyisoprene Condoms
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  buildCost: 150
   moveCost: 0
   requiresBlueprint: 1
-  footprintPattern:
-  - {x: 0, y: 1}
-  - {x: 1, y: 1}
-  - {x: 0, y: 0}
-  - {x: 1, y: 0}
+  destroyRefundRate: 0.75
+  footprintPattern: []
   canRotate: 0
   levels: []
   category: 1
+  selectPages: 04000000
   shelfLevels:
   - level: 1
     upgradeFameCost: 10
     maintenanceFee: 2
-    price: 8
-    maxStock: 12
+    price: 7
+    maxStock: 10
     attractiveness: 4
   - level: 2
     upgradeFameCost: 20
-    maintenanceFee: 5
-    price: 17
-    maxStock: 18
-    attractiveness: 10
+    maintenanceFee: 3
+    price: 10
+    maxStock: 5
+    attractiveness: 6
   - level: 3
     upgradeFameCost: 30
-    maintenanceFee: 9
-    price: 40
-    maxStock: 25
-    attractiveness: 18
+    maintenanceFee: 6
+    price: 20
+    maxStock: 8
+    attractiveness: 8
   - level: 4
     upgradeFameCost: 40
-    maintenanceFee: 14
-    price: 57
-    maxStock: 36
-    attractiveness: 28
+    maintenanceFee: 8
+    price: 40
+    maxStock: 11
+    attractiveness: 10

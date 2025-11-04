@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Tenga Egg Fleshlight
   m_EditorClassIdentifier: 
-  archetypeId: B016
+  archetypeId: B014
   displayName: Tenga Egg Fleshlight
   icon: {fileID: 21300000, guid: 757175648934638438c7d925056ff7c2, type: 3}
   prefab: {fileID: 9121478431460335272, guid: f95df394ecaf74324aefdb336b46af97, type: 3}
-  buildCost: 200
+  buildCost: 250
   moveCost: 0
   requiresBlueprint: 1
+  destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}
   - {x: 1, y: 3}
@@ -35,28 +36,29 @@ MonoBehaviour:
   canRotate: 0
   levels: []
   category: 3
+  selectPages: 02000000
   shelfLevels:
   - level: 1
     upgradeFameCost: 12
     maintenanceFee: 1
-    price: 5
+    price: 7
     maxStock: 10
     attractiveness: 4.6
   - level: 2
     upgradeFameCost: 24
-    maintenanceFee: 3
-    price: 9
-    maxStock: 15
-    attractiveness: 11.2
+    maintenanceFee: 2
+    price: 6
+    maxStock: 5
+    attractiveness: 6.6
   - level: 3
     upgradeFameCost: 36
-    maintenanceFee: 6
-    price: 21
-    maxStock: 23
-    attractiveness: 19.8
+    maintenanceFee: 5
+    price: 12
+    maxStock: 8
+    attractiveness: 8.6
   - level: 4
     upgradeFameCost: 48
-    maintenanceFee: 10
-    price: 45
-    maxStock: 34
-    attractiveness: 30.4
+    maintenanceFee: 7
+    price: 24
+    maxStock: 11
+    attractiveness: 10.6

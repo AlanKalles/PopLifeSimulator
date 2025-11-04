@@ -12,13 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Vintage Lingeres
   m_EditorClassIdentifier: 
-  archetypeId: B007
+  archetypeId: B004
   displayName: Vintage Lingeres
   icon: {fileID: 21300000, guid: 98c0aedd48cecbf448566f27bb343a1e, type: 3}
   prefab: {fileID: 6477555939506826541, guid: a76d84d37126f46efb73013778c96ea3, type: 3}
-  buildCost: 150
+  buildCost: 100
   moveCost: 0
   requiresBlueprint: 1
+  destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}
   - {x: 1, y: 3}
@@ -31,28 +32,29 @@ MonoBehaviour:
   canRotate: 0
   levels: []
   category: 0
+  selectPages: 00000000
   shelfLevels:
   - level: 1
     upgradeFameCost: 15
     maintenanceFee: 1
-    price: 7
+    price: 3
     maxStock: 10
-    attractiveness: 3.7
+    attractiveness: 5
   - level: 2
     upgradeFameCost: 30
-    maintenanceFee: 3
-    price: 10
-    maxStock: 15
-    attractiveness: 9.4
+    maintenanceFee: 2
+    price: 7
+    maxStock: 5
+    attractiveness: 5.7
   - level: 3
-    upgradeFameCost: 45
-    maintenanceFee: 6
-    price: 24
-    maxStock: 23
-    attractiveness: 17.1
+    upgradeFameCost: 40
+    maintenanceFee: 5
+    price: 14
+    maxStock: 8
+    attractiveness: 7.7
   - level: 4
     upgradeFameCost: 60
-    maintenanceFee: 10
-    price: 52
-    maxStock: 34
-    attractiveness: 26.8
+    maintenanceFee: 7
+    price: 28
+    maxStock: 11
+    attractiveness: 9.7

@@ -296,6 +296,9 @@ namespace PopLife
             // 重置状态标志
             hasStoppedSpawning = false;
 
+            // 自动补货所有货架
+            RestockAllShelves();
+
             // 恢复时间流动（修复第二天时间不计时的bug）
             ResumeTime();
 
@@ -307,6 +310,30 @@ namespace PopLife
             OnBuildPhaseStart?.Invoke();
 
             Debug.Log($"[DayLoopManager] 进入 Day {currentDay} 建造阶段，时间设为 {buildPhaseHour:F1}:00");
+        }
+
+        /// <summary>
+        /// 自动补货所有货架
+        /// </summary>
+        private void RestockAllShelves()
+        {
+            int restockedCount = 0;
+
+            // 遍历所有楼层的所有货架
+            var floors = FindObjectsByType<Runtime.FloorGrid>(FindObjectsSortMode.None);
+            foreach (var floor in floors)
+            {
+                foreach (var building in floor.AllBuildings())
+                {
+                    if (building is Runtime.ShelfInstance shelf)
+                    {
+                        shelf.Restock();
+                        restockedCount++;
+                    }
+                }
+            }
+
+            Debug.Log($"[DayLoopManager] 自动补货完成，共补货 {restockedCount} 个货架");
         }
 
         /// <summary>

@@ -10,47 +10,43 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Darex Condoms
+  m_Name: Arclight Textured Stroker
   m_EditorClassIdentifier: 
-  archetypeId: B001
-  displayName: Darex Condoms
-  icon: {fileID: 21300000, guid: d425033ea2641ba44973458dc737f8ae, type: 3}
-  prefab: {fileID: 2535633934883308398, guid: 1ff6959a9f6824f7baaa47dee5123193, type: 3}
-  buildCost: 50
+  archetypeId: B002
+  displayName: Arclight Textured Stroker
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  buildCost: 75
   moveCost: 0
   requiresBlueprint: 1
   destroyRefundRate: 0.75
-  footprintPattern:
-  - {x: 0, y: 1}
-  - {x: 1, y: 1}
-  - {x: 0, y: 0}
-  - {x: 1, y: 0}
+  footprintPattern: []
   canRotate: 0
   levels: []
-  category: 1
-  selectPages: 04000000
+  category: 3
+  selectPages: 02000000
   shelfLevels:
   - level: 1
-    upgradeFameCost: 10
+    upgradeFameCost: 12
     maintenanceFee: 1
-    price: 3
+    price: 4
     maxStock: 10
-    attractiveness: 2.7
+    attractiveness: 3.9
   - level: 2
-    upgradeFameCost: 20
+    upgradeFameCost: 24
     maintenanceFee: 2
     price: 7
     maxStock: 5
-    attractiveness: 4.7
+    attractiveness: 5.7
   - level: 3
-    upgradeFameCost: 30
+    upgradeFameCost: 36
     maintenanceFee: 5
     price: 14
     maxStock: 8
-    attractiveness: 6.7
+    attractiveness: 7.7
   - level: 4
-    upgradeFameCost: 40
+    upgradeFameCost: 48
     maintenanceFee: 7
     price: 28
     maxStock: 11
-    attractiveness: 8.7
+    attractiveness: 9.7
