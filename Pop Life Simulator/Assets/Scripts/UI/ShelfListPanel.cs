@@ -27,18 +27,9 @@ namespace PopLife.UI
         [SerializeField] private GameObject shelfItemPrefab; // ShelfListItem prefab
 
         [Header("Filter UI")]
-        [SerializeField] private Transform selectPageButtonContainer; // Left sidebar
+        [SerializeField] private SelectPageButton[] selectPageButtons; // 手动创建的 SelectPage 按钮数组（在 Inspector 中拖入）
         [SerializeField] private Transform categoryButtonContainer; // Top bar
-        [SerializeField] private GameObject filterButtonPrefab; // FilterToggleButton prefab
-
-        [Header("SelectPage Icons")]
-        [SerializeField] private Sprite bodyIcon;
-        [SerializeField] private Sprite headIcon;
-        [SerializeField] private Sprite frontIcon;
-        [SerializeField] private Sprite backIcon;
-        [SerializeField] private Sprite medicineBoxIcon;
-        [SerializeField] private Sprite kinkyIcon;
-        [SerializeField] private Sprite allPagesIcon; // Icon for "All" button
+        [SerializeField] private GameObject categoryButtonPrefab; // FilterToggleButton prefab (traditional Button)
 
         [Header("Tooltip")]
         [SerializeField] private ShelfTooltip tooltip;
@@ -144,12 +135,9 @@ namespace PopLife.UI
 
         private void InitializeFilterGroups()
         {
-            // Create SelectPage toggle group
-            if (selectPageButtonContainer != null)
-            {
-                selectPageToggleGroup = selectPageButtonContainer.gameObject.AddComponent<FilterToggleGroup>();
-                selectPageToggleGroup.OnSelectionChanged += OnSelectPageChanged;
-            }
+            // Create SelectPage toggle group (attached to panel root)
+            selectPageToggleGroup = gameObject.AddComponent<FilterToggleGroup>();
+            selectPageToggleGroup.OnSelectionChanged += OnSelectPageChanged;
 
             // Create Category toggle group
             if (categoryButtonContainer != null)
@@ -161,80 +149,76 @@ namespace PopLife.UI
 
         private void InitializeSelectPageButtons()
         {
-            if (selectPageButtonContainer == null || filterButtonPrefab == null)
+            if (selectPageButtons == null || selectPageButtons.Length == 0)
             {
-                Debug.LogWarning("ShelfListPanel: SelectPage button container or prefab not set.");
+                Debug.LogWarning("ShelfListPanel: No SelectPage buttons assigned. Please drag buttons into the selectPageButtons array.");
                 return;
             }
 
-            // Create "All" button with custom icon
-            CreateSelectPageButton(null, "All", allPagesIcon);
-
-            // Create button for each SelectPage enum value with custom icons
-            CreateSelectPageButton(SelectPage.Body, "Body", bodyIcon);
-            CreateSelectPageButton(SelectPage.Head, "Head", headIcon);
-            CreateSelectPageButton(SelectPage.Front, "Front", frontIcon);
-            CreateSelectPageButton(SelectPage.Back, "Back", backIcon);
-            CreateSelectPageButton(SelectPage.MedicineBox, "Medicine", medicineBoxIcon);
-            CreateSelectPageButton(SelectPage.Kinky, "Kinky", kinkyIcon);
-
-            // Select "All" by default
-            selectPageToggleGroup.SelectAll();
-        }
-
-        /// <summary>
-        /// Create a SelectPage button with custom icon
-        /// </summary>
-        private void CreateSelectPageButton(SelectPage? page, string displayText, Sprite icon)
-        {
-            GameObject buttonObj = Instantiate(filterButtonPrefab, selectPageButtonContainer);
-            FilterToggleButton toggleButton = buttonObj.GetComponent<FilterToggleButton>();
-
-            if (toggleButton != null)
+            // 注册所有手动创建的 SelectPage 按钮
+            foreach (var button in selectPageButtons)
             {
-                toggleButton.Initialize(page, displayText, (clickedToggle) =>
+                if (button == null)
+                {
+                    Debug.LogWarning("ShelfListPanel: Null SelectPageButton found in array. Skipping.");
+                    continue;
+                }
+
+                // Initialize button with click callback
+                button.Initialize((clickedToggle) =>
                 {
                     selectPageToggleGroup.OnToggleClicked(clickedToggle);
-                }, icon); // Pass custom icon
+                });
 
-                selectPageToggleGroup.RegisterToggle(toggleButton);
+                // Register to toggle group
+                selectPageToggleGroup.RegisterToggle(button);
             }
+
+            // Select "All" button by default (FilterValue == null)
+            selectPageToggleGroup.SelectAll();
         }
 
         private void InitializeCategoryButtons()
         {
-            if (categoryButtonContainer == null || filterButtonPrefab == null)
+            if (categoryButtonContainer == null || categoryButtonPrefab == null)
             {
                 Debug.LogWarning("ShelfListPanel: Category button container or prefab not set.");
                 return;
             }
 
             // Create "All" button
-            CreateFilterButton(null, "All", categoryButtonContainer, categoryToggleGroup);
+            CreateCategoryButton(null, "All");
 
             // Create button for each ProductCategory enum value
             foreach (ProductCategory category in System.Enum.GetValues(typeof(ProductCategory)))
             {
-                CreateFilterButton(category, category.ToString(), categoryButtonContainer, categoryToggleGroup);
+                CreateCategoryButton(category, category.ToString());
             }
 
             // Select "All" by default
             categoryToggleGroup.SelectAll();
         }
 
-        private void CreateFilterButton(object filterValue, string displayText, Transform parent, FilterToggleGroup group)
+        /// <summary>
+        /// Create a Category button (uses FilterToggleButton with traditional Button)
+        /// </summary>
+        private void CreateCategoryButton(object filterValue, string displayText)
         {
-            GameObject buttonObj = Instantiate(filterButtonPrefab, parent);
+            GameObject buttonObj = Instantiate(categoryButtonPrefab, categoryButtonContainer);
             FilterToggleButton toggleButton = buttonObj.GetComponent<FilterToggleButton>();
 
             if (toggleButton != null)
             {
                 toggleButton.Initialize(filterValue, displayText, (clickedToggle) =>
                 {
-                    group.OnToggleClicked(clickedToggle);
+                    categoryToggleGroup.OnToggleClicked(clickedToggle);
                 });
 
-                group.RegisterToggle(toggleButton);
+                categoryToggleGroup.RegisterToggle(toggleButton);
+            }
+            else
+            {
+                Debug.LogWarning($"ShelfListPanel: FilterToggleButton component not found on category prefab for '{displayText}'.");
             }
         }
 

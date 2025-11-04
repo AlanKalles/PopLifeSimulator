@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8cbe75c4ca908254c96de4814113a24c
+guid: e67e8ffd269af354ebf0b51899d2833c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2253513000980980943
-    second: Solid_white_0
+      213: 3605846330881029425
+    second: Ellipse 6 (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Solid_white_0
+      name: Ellipse 6 (1)_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1920
-        height: 1920
+        width: 69
+        height: 63
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fc422308226164f10800000000000000
-      internalID: 2253513000980980943
+      spriteID: 1353fc2222a8a0230800000000000000
+      internalID: 3605846330881029425
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Solid_white_0: 2253513000980980943
+      Ellipse 6 (1)_0: 3605846330881029425
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

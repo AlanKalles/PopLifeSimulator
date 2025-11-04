@@ -18,7 +18,7 @@ MonoBehaviour:
   prefab: {fileID: 9121478431460335272, guid: 5fb7190a5579144d0ad4eaba2daad65f, type: 3}
   buildCost: 200
   moveCost: 0
-  requiresBlueprint: 1
+  requiresBlueprint: 0
   destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}

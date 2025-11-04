@@ -4,7 +4,8 @@ using UnityEngine;
 namespace PopLife.UI
 {
     /// <summary>
-    /// Manages a group of FilterToggleButtons with single-selection behavior
+    /// Manages a group of IFilterButton instances with single-selection behavior
+    /// Supports both SelectPageButton (Alpha Hit Test) and FilterToggleButton (traditional Button)
     /// Ensures only one button is selected at a time
     /// </summary>
     public class FilterToggleGroup : MonoBehaviour
@@ -12,8 +13,8 @@ namespace PopLife.UI
         [Header("Settings")]
         [SerializeField] private bool allowNoneSelected = false; // If false, always have one selected
 
-        private List<FilterToggleButton> toggleButtons = new List<FilterToggleButton>();
-        private FilterToggleButton currentlySelected;
+        private List<IFilterButton> toggleButtons = new List<IFilterButton>();
+        private IFilterButton currentlySelected;
 
         /// <summary>
         /// Event fired when selection changes
@@ -24,7 +25,7 @@ namespace PopLife.UI
         /// <summary>
         /// Register a toggle button to this group
         /// </summary>
-        public void RegisterToggle(FilterToggleButton toggle)
+        public void RegisterToggle(IFilterButton toggle)
         {
             if (toggle == null || toggleButtons.Contains(toggle))
                 return;
@@ -41,7 +42,7 @@ namespace PopLife.UI
         /// <summary>
         /// Unregister a toggle button from this group
         /// </summary>
-        public void UnregisterToggle(FilterToggleButton toggle)
+        public void UnregisterToggle(IFilterButton toggle)
         {
             if (toggle == null) return;
 
@@ -62,7 +63,7 @@ namespace PopLife.UI
         /// <summary>
         /// Handle toggle button click
         /// </summary>
-        public void OnToggleClicked(FilterToggleButton clickedToggle)
+        public void OnToggleClicked(IFilterButton clickedToggle)
         {
             if (clickedToggle == null) return;
 
@@ -82,7 +83,7 @@ namespace PopLife.UI
         /// <summary>
         /// Programmatically select a toggle
         /// </summary>
-        private void SelectToggle(FilterToggleButton toggle, bool notifyChange)
+        private void SelectToggle(IFilterButton toggle, bool notifyChange)
         {
             if (toggle == null) return;
 
@@ -108,7 +109,7 @@ namespace PopLife.UI
         /// </summary>
         public void SelectByValue(object filterValue)
         {
-            FilterToggleButton targetToggle = toggleButtons.Find(t =>
+            IFilterButton targetToggle = toggleButtons.Find(t =>
                 (t.FilterValue == null && filterValue == null) ||
                 (t.FilterValue != null && t.FilterValue.Equals(filterValue))
             );
