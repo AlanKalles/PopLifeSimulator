@@ -160,5 +160,16 @@ namespace PopLife
         {
             return confirmationPanel != null && confirmationPanel.IsShowing();
         }
+
+        /// <summary>
+        /// 隐藏确认对话框（强制关闭）
+        /// </summary>
+        public void HideConfirmation()
+        {
+            if (confirmationPanel != null)
+            {
+                confirmationPanel.Hide();
+            }
+        }
     }
 }

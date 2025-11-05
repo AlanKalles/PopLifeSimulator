@@ -294,7 +294,7 @@ namespace PopLife.Runtime
             catch
             {
                 // 回滚资源
-                ResourceManager.Instance.AddMoney(arch.buildCost);
+                ResourceManager.Instance.RefundMoney(arch.buildCost);
                 if (arch.requiresBlueprint) BlueprintManager.Instance.AddBlueprint(arch.archetypeId);
                 if (inst) Destroy(inst.gameObject);
                 return null;
@@ -405,7 +405,7 @@ namespace PopLife.Runtime
                 int refundAmount = Mathf.RoundToInt(bi.archetype.buildCost * bi.archetype.destroyRefundRate);
                 if (refundAmount > 0)
                 {
-                    ResourceManager.Instance.AddMoney(refundAmount);
+                    ResourceManager.Instance.RefundMoney(refundAmount);
                 }
             }
         }

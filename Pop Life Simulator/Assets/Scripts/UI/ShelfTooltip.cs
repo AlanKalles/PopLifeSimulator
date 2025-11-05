@@ -86,8 +86,8 @@ namespace PopLife.UI
             RectTransform rectTransform = GetComponent<RectTransform>();
             if (rectTransform != null)
             {
-                // Offset tooltip to the right and slightly down from the button
-                Vector3 offset = new Vector3(10f, -10f, 0f);
+                // Offset tooltip to the right and above the button
+                Vector3 offset = new Vector3(10f, 50f, 0f);
                 rectTransform.position = position + offset;
 
                 // Ensure tooltip stays within screen bounds

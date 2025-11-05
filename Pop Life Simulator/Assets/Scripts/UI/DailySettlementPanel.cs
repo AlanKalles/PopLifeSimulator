@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using PopLife.Customers.Runtime;
 
 namespace PopLife
 {
@@ -8,12 +9,27 @@ namespace PopLife
     {
         [Header("UI References")]
         [SerializeField] private TextMeshProUGUI dayText;
-        [SerializeField] private TextMeshProUGUI totalSaleText;
-        [SerializeField] private TextMeshProUGUI totalExpensesText;
-        [SerializeField] private TextMeshProUGUI dailyIncomeText;
-        [SerializeField] private TextMeshProUGUI totalCustomersText;
-        [SerializeField] private TextMeshProUGUI fameEarnedText;
-        [SerializeField] private TextMeshProUGUI levelUpText;
+
+        [Header("Income Section")]
+        [SerializeField] private TextMeshProUGUI todaySalesText;           // 今日开店收益
+        [SerializeField] private TextMeshProUGUI todayBonusIncomeText;     // 今日开店额外收益
+        [SerializeField] private TextMeshProUGUI todayMaintenanceText;     // 今日维护费
+        [SerializeField] private TextMeshProUGUI todayMoneyChangeText;     // 今日金钱变化
+
+        [Header("Lifetime Statistics")]
+        [SerializeField] private TextMeshProUGUI totalIncomeText;          // 总收入
+        [SerializeField] private TextMeshProUGUI totalExpensesText;        // 总开支
+
+        [Header("Other Stats")]
+        [SerializeField] private TextMeshProUGUI todayFameEarnedText;      // 今日获得的Fame
+        [SerializeField] private TextMeshProUGUI totalCustomersText;       // 今日访客数
+
+        [Header("Level Up Section")]
+        [SerializeField] private GameObject levelUpContainer;              // ScrollView的Content容器
+        [SerializeField] private GameObject levelUpItemPrefab;             // 升级条目预制体
+        [SerializeField] private TextMeshProUGUI noLevelUpText;           // "没有顾客升级"的提示文本
+
+        [Header("Control")]
         [SerializeField] private Button continueButton;
 
         private void Awake()
@@ -26,69 +42,105 @@ namespace PopLife
 
         public void ShowSettlement(DailySettlementData data)
         {
-            // 更新UI文本
+            // 标题：天数
             if (dayText != null)
-                dayText.text = $"Day {data.day}";
+                dayText.text = $"Day {data.day} Settlement";
 
-            if (totalSaleText != null)
-                totalSaleText.text = $"Daily Total Sale: ${data.totalSale:F2}";
+            // === 收入部分 ===
+            if (todaySalesText != null)
+                todaySalesText.text = $"Today's Sale: ${data.totalSale:F2}";
 
-            if (totalExpensesText != null)
-                totalExpensesText.text = $"Daily Total Expenses: ${data.totalExpenses:F2}";
+            if (todayBonusIncomeText != null)
+                todayBonusIncomeText.text = $"Bonus Income: ${data.bonusIncome:F2}";
 
-            if (dailyIncomeText != null)
+            if (todayMaintenanceText != null)
+                todayMaintenanceText.text = $"Maintenance Fee: ${data.dailyExpenses:F2}";
+
+            if (todayMoneyChangeText != null)
             {
-                dailyIncomeText.text = $"Daily Income: ${data.dailyIncome:F2}";
-                // 根据收支情况改变颜色
-                dailyIncomeText.color = data.dailyIncome >= 0 ? Color.green : Color.red;
+                // 今日金钱变化（正数=亏损，负数=盈利）
+                int change = data.dailyMoneyChange;
+                todayMoneyChangeText.text = change > 0
+                    ? $"Money Change: -${change:F0}"
+                    : $"Money Change: +${Mathf.Abs(change):F0}";
+                todayMoneyChangeText.color = change > 0 ? Color.red : Color.green;
             }
 
+            // === 累计统计 ===
+            if (totalIncomeText != null)
+                totalIncomeText.text = $"Lifetime Income: ${data.lifetimeIncome:F0}";
+
+            if (totalExpensesText != null)
+                totalExpensesText.text = $"Lifetime Expense: ${data.lifetimeExpenses:F0}";
+
+            // === 其他统计 ===
+            if (todayFameEarnedText != null)
+                todayFameEarnedText.text = $"Fame Earned: +{data.fameEarned}";
+
             if (totalCustomersText != null)
-                totalCustomersText.text = $"Daily Total Customers: {data.totalCustomers}";
+                totalCustomersText.text = $"Customers Entered Today: {data.totalCustomers}";
 
-            if (fameEarnedText != null)
-                fameEarnedText.text = $"Fame Earned: +{data.fameEarned}";
+            // === 升级列表 ===
+            PopulateLevelUpList(data.levelUps);
 
-            // 显示升级信息
-            if (levelUpText != null)
+            // === 应用声誉奖励 ===
+            ResourceManager.Instance?.AddFame(data.fameEarned);
+        }
+
+        /// <summary>
+        /// 填充升级列表（使用ScrollView）
+        /// </summary>
+        private void PopulateLevelUpList(CustomerLevelUpInfo[] levelUps)
+        {
+            // 清空旧的升级条目
+            if (levelUpContainer != null)
             {
-                if (data.levelUps != null && data.levelUps.Length > 0)
+                foreach (Transform child in levelUpContainer.transform)
                 {
-                    // 构建升级列表文本
-                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
-                    sb.AppendLine($"<b>Leveled Up Customers ({data.levelUps.Length}):</b>");
-                    sb.AppendLine();
+                    Destroy(child.gameObject);
+                }
+            }
 
-                    foreach (var levelUp in data.levelUps)
+            // 如果没有升级
+            if (levelUps == null || levelUps.Length == 0)
+            {
+                if (noLevelUpText != null)
+                {
+                    noLevelUpText.gameObject.SetActive(true);
+                }
+                return;
+            }
+
+            // 有升级，隐藏提示文本
+            if (noLevelUpText != null)
+            {
+                noLevelUpText.gameObject.SetActive(false);
+            }
+
+            // 创建升级条目
+            if (levelUpItemPrefab != null && levelUpContainer != null)
+            {
+                foreach (var levelUp in levelUps)
+                {
+                    GameObject item = Instantiate(levelUpItemPrefab, levelUpContainer.transform);
+
+                    // 假设预制体中有一个TextMeshProUGUI组件
+                    TextMeshProUGUI text = item.GetComponent<TextMeshProUGUI>();
+                    if (text != null)
                     {
-                        // 格式：- Name: Lv X → Y (+Z XP)
-                        sb.Append($"- <b>{levelUp.customerName}</b>: ");
-                        sb.Append($"Lv {levelUp.oldLevel} → {levelUp.newLevel}");
-                        sb.Append($" <color=#FFD700>(+{levelUp.xpGained} XP)</color>");
+                        // 格式：Name: Lv X → Y (+Z XP)
+                        text.text = $"<b>{levelUp.customerName}</b>: " +
+                                   $"Lv {levelUp.oldLevel} → {levelUp.newLevel} " +
+                                   $"<color=#FFD700>(+{levelUp.xpGained} XP)</color>";
 
                         // 如果跨级升级，添加特殊标记
                         if (levelUp.newLevel - levelUp.oldLevel > 1)
                         {
                             int skippedLevels = levelUp.newLevel - levelUp.oldLevel - 1;
-                            sb.Append($" <color=#FF6347>🔥 Skipped {skippedLevels} level(s)!</color>");
+                            text.text += $" <color=#FF6347>🔥 Skipped {skippedLevels} level(s)!</color>";
                         }
-
-                        sb.AppendLine();
                     }
-
-                    levelUpText.text = sb.ToString();
                 }
-                else
-                {
-                    // 没有顾客升级
-                    levelUpText.text = "<b>Leveled Up Customers:</b>\n\n<i>None today</i>";
-                }
-            }
-
-            // 应用声誉奖励到 ResourceManager
-            if (ResourceManager.Instance != null)
-            {
-                ResourceManager.Instance.fame += data.fameEarned;
             }
         }
 
@@ -98,10 +150,7 @@ namespace PopLife
             gameObject.SetActive(false);
 
             // 通知 DayLoopManager 进入下一天的建造阶段
-            if (DayLoopManager.Instance != null)
-            {
-                DayLoopManager.Instance.AdvanceToNextDay();
-            }
+            DayLoopManager.Instance?.AdvanceToNextDay();
         }
     }
 }

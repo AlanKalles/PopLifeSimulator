@@ -17,7 +17,7 @@ namespace PopLife.UI.BuildingInteraction
         [SerializeField] private BuildingDetailPanel detailPanel;
 
         [Header("Settings")]
-        [SerializeField] private LayerMask buildingLayerMask = 1 << 8; // Default to layer 8 (interactableShelf)
+        [SerializeField] private LayerMask buildingLayerMask = 1 << 6; // Default to layer 6 (InteractableShelf)
         [SerializeField] private float doubleClickWindow = 2f;
 
         [Header("Object Pooling")]

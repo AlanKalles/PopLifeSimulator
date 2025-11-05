@@ -30,6 +30,12 @@ namespace PopLife.Runtime
         public ResourceManager resourceManager;  // 需由你项目提供
         private Camera mainCamera;               // 缓存主相机引用
 
+        [Header("Destroy模式高亮")]
+        [SerializeField] private PopLife.UI.BuildingInteraction.BuildingHighlighter buildingHighlighter; // 建筑高亮器
+        [SerializeField] private Color destroyHighlightColor = new Color(1f, 0.2f, 0.2f, 1f); // 红色高亮
+        private BuildingInstance hoveredBuildingInDestroyMode; // Destroy模式下鼠标悬停的建筑
+        private Vector3 lastMousePositionInDestroyMode;        // 上次鼠标位置（优化性能）
+
         [Header("楼层自动检测")]
         [SerializeField] private int detectionInterval = 3; // 检测间隔（帧），默认3帧检测一次
         private FloorDetectionService floorDetector;        // 楼层检测服务
@@ -127,6 +133,7 @@ namespace PopLife.Runtime
             }
             else if (mode == Mode.Destroy)
             {
+                UpdateDestroyHover();
                 HandleDestroyInput();
             }
         }
@@ -569,7 +576,61 @@ namespace PopLife.Runtime
         public void BeginDestroy()
         {
             mode = Mode.Destroy;
+            hoveredBuildingInDestroyMode = null;
+            lastMousePositionInDestroyMode = Vector3.zero;
             Debug.Log("Entered Destroy mode - Click any building to destroy");
+        }
+
+        /// <summary>
+        /// 更新销毁模式下的鼠标悬停高亮
+        /// </summary>
+        private void UpdateDestroyHover()
+        {
+            // 检查鼠标是否移动（性能优化）
+            Vector3 currentMousePos = Input.mousePosition;
+            if (currentMousePos == lastMousePositionInDestroyMode)
+            {
+                return;
+            }
+            lastMousePositionInDestroyMode = currentMousePos;
+
+            // 检查相机是否存在
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+                if (mainCamera == null)
+                {
+                    return;
+                }
+            }
+
+            // Raycast检测鼠标悬停的建筑
+            Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
+
+            BuildingInstance newHovered = null;
+            if (hit.collider != null)
+            {
+                newHovered = hit.collider.GetComponent<BuildingInstance>();
+            }
+
+            // 如果悬停建筑改变
+            if (newHovered != hoveredBuildingInDestroyMode)
+            {
+                // 隐藏之前的高亮
+                if (hoveredBuildingInDestroyMode != null && buildingHighlighter != null)
+                {
+                    buildingHighlighter.Hide();
+                }
+
+                // 显示新的红色高亮
+                if (newHovered != null && buildingHighlighter != null)
+                {
+                    buildingHighlighter.Show(newHovered, destroyHighlightColor);
+                }
+
+                hoveredBuildingInDestroyMode = newHovered;
+            }
         }
 
         /// <summary>
@@ -600,7 +661,7 @@ namespace PopLife.Runtime
 
                 // Raycast检测点击的建筑
                 Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("interactableShelf"));
+                RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
 
                 if (hit.collider != null)
                 {
@@ -792,6 +853,20 @@ namespace PopLife.Runtime
             if (floorDetector != null)
             {
                 floorDetector.ResetCache();
+            }
+
+            // 清理Destroy模式的高亮
+            if (hoveredBuildingInDestroyMode != null && buildingHighlighter != null)
+            {
+                buildingHighlighter.Hide();
+                hoveredBuildingInDestroyMode = null;
+            }
+
+            // 关闭确认面板（如果正在显示）
+            if (UIManager.Instance != null && UIManager.Instance.IsConfirmationShowing())
+            {
+                UIManager.Instance.HideConfirmation();
+                Debug.Log("Closed confirmation panel when exiting Destroy mode");
             }
         }
 

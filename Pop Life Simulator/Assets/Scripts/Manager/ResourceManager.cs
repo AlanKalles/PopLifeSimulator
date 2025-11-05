@@ -5,16 +5,28 @@ namespace PopLife
     public class ResourceManager : MonoBehaviour
     {
         public static ResourceManager Instance;
-        public int money, fame;
+
+        [Header("Current Resources")]
+        public int money;
+        public int fame;
+
+        [Header("Lifetime Statistics")]
+        [SerializeField] private int totalIncome = 0;      // 总收入（仅来自顾客结账）
+        [SerializeField] private int totalExpenses = 0;    // 总开支（SpendMoney的累计）
 
         void Awake()
         {
             Instance = this;
         }
 
-        public int GetFame() { return fame; }
-        public int GetMoney() { return money; }
+        #region Getters
+        public int GetFame() => fame;
+        public int GetMoney() => money;
+        public int GetTotalIncome() => totalIncome;
+        public int GetTotalExpenses() => totalExpenses;
+        #endregion
 
+        #region Resource Checks
         /// <summary>
         /// 检查玩家是否有足够的资源
         /// </summary>
@@ -22,26 +34,66 @@ namespace PopLife
         {
             return money >= moneyCost && fame >= fameCost;
         }
+        #endregion
 
+        #region Spend Methods
+        /// <summary>
+        /// 花费金钱和声望（会记录金钱开支到总开支）
+        /// </summary>
         public void Spend(int moneyCost, int fameCost)
         {
             money -= moneyCost;
             fame -= fameCost;
+            totalExpenses += moneyCost; // 记录金钱开支
         }
 
-        public void SpendMoney(int m)
+        /// <summary>
+        /// 仅花费金钱（会记录到总开支）
+        /// 用于：维护费、建造成本、移动成本等
+        /// </summary>
+        public void SpendMoney(int amount)
         {
-            money -= m;
+            money -= amount;
+            totalExpenses += amount;
         }
 
-        public void AddMoney(int m)
+        /// <summary>
+        /// 仅花费声望
+        /// </summary>
+        public void SpendFame(int amount)
         {
-            money += m;
+            fame -= amount;
+        }
+        #endregion
+
+        #region Add Methods
+        /// <summary>
+        /// 增加金钱（会记录到总收入）
+        /// ⚠️ 仅用于顾客结账收入！
+        /// </summary>
+        public void AddMoney(int amount)
+        {
+            money += amount;
+            totalIncome += amount;
         }
 
-        public void AddFame(int f)
+        /// <summary>
+        /// 直接增加金钱（不计入总收入）
+        /// 用于：拆除建筑返还、撤销建造返还等非营业收入
+        /// </summary>
+        public void RefundMoney(int amount)
         {
-            fame += f;
+            money += amount;
+            // 不计入 totalIncome
         }
+
+        /// <summary>
+        /// 增加声望
+        /// </summary>
+        public void AddFame(int amount)
+        {
+            fame += amount;
+        }
+        #endregion
     }
 }

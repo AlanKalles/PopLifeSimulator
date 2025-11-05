@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using PopLife.Customers.Runtime;
+using PopLife.UI;
 
 namespace PopLife
 {
@@ -36,16 +38,20 @@ namespace PopLife
         public float currentHour = 6f; // 当前游戏时间（小时）
         public GamePhase currentPhase = GamePhase.BuildPhase;
         public bool isStoreOpen = false;
-        public GameObject buildbuttons;
 
         [Header("Daily Statistics")]
         public float dailyTotalSale = 0f;
         public float dailyTotalExpenses = 0f;
         public int dailyTotalCustomers = 0;
+        private int buildPhaseStartMoney = 0; // 建造阶段开始时的金钱快照
 
         [Header("Customer Level Up Tracking")]
         private System.Collections.Generic.List<CustomerLevelUpInfo> todayLevelUps = new System.Collections.Generic.List<CustomerLevelUpInfo>();
         public System.Collections.Generic.IReadOnlyList<CustomerLevelUpInfo> TodayLevelUps => todayLevelUps;
+
+        [Header("UI References")]
+        [SerializeField] private Button buildButton; // 建造按钮，营业时禁用
+        [SerializeField] private ShelfListPanel buildingListPanel; // 建造面板，开店时需要关闭
 
         // Events
         public event Action OnBuildPhaseStart; // 建造阶段开始
@@ -74,6 +80,13 @@ namespace PopLife
             currentHour = buildPhaseHour;
             currentPhase = GamePhase.BuildPhase;
             isStoreOpen = false;
+
+            // 记录建造阶段开始时的金钱
+            if (ResourceManager.Instance != null)
+            {
+                buildPhaseStartMoney = ResourceManager.Instance.GetMoney();
+            }
+
             OnBuildPhaseStart?.Invoke();
         }
 
@@ -185,23 +198,32 @@ namespace PopLife
             // 触发结算事件
             OnDailySettlement?.Invoke(data);
             Debug.Log("[DayLoopManager] 显示结算界面");
-            buildbuttons.SetActive(true);
             // 时间已经在 TriggerStoreClose() 中暂停，这里无需再暂停
         }
 
         private DailySettlementData CalculateDailySettlement()
         {
-
             // 计算所有建筑的维护费用
             float totalMaintenanceFee = CalculateTotalMaintenanceFee();
 
             DailySettlementData data = new DailySettlementData();
             data.day = currentDay;
             data.totalSale = dailyTotalSale;
-            data.totalExpenses = dailyTotalExpenses + totalMaintenanceFee;
-            data.dailyIncome = dailyTotalSale - data.totalExpenses;
+            data.bonusIncome = 0f; // 目前为0，预留给未来的奖励系统
+            data.dailyExpenses = dailyTotalExpenses + totalMaintenanceFee;
+            data.dailyIncome = dailyTotalSale - data.dailyExpenses;
             data.totalCustomers = dailyTotalCustomers;
             data.levelUps = todayLevelUps.ToArray(); // 传递升级列表
+
+            // 计算今日金钱变化（建造阶段开始时的钱 - 当前的钱）
+            if (ResourceManager.Instance != null)
+            {
+                data.dailyMoneyChange = buildPhaseStartMoney - ResourceManager.Instance.GetMoney();
+
+                // 获取累计统计
+                data.lifetimeIncome = ResourceManager.Instance.GetTotalIncome();
+                data.lifetimeExpenses = ResourceManager.Instance.GetTotalExpenses();
+            }
 
             // 计算声誉奖励 (可以根据设计调整公式)
             data.fameEarned = CalculateFameReward(data.dailyIncome, data.totalCustomers);
@@ -261,11 +283,24 @@ namespace PopLife
                 return;
             }
 
+            // 禁用建造按钮
+            if (buildButton != null)
+            {
+                buildButton.interactable = false;
+                Debug.Log("[DayLoopManager] 建造按钮已禁用（营业阶段）");
+            }
+
+            // 关闭建造面板（如果打开的话）
+            if (buildingListPanel != null && buildingListPanel.IsOpen())
+            {
+                buildingListPanel.ClosePanel();
+                Debug.Log("[DayLoopManager] 建造面板已关闭");
+            }
+
             // 切换到营业阶段
             currentPhase = GamePhase.OpenPhase;
             currentHour = storeOpenHour;
             isStoreOpen = true;
-            buildbuttons.SetActive(false);
             OnStoreOpen?.Invoke();
 
             Debug.Log($"[DayLoopManager] Day {currentDay} 开店，时间从 {buildPhaseHour:F1} 跳转到 {storeOpenHour:F1}");
@@ -293,6 +328,12 @@ namespace PopLife
             dailyTotalCustomers = 0;
             todayLevelUps.Clear();
 
+            // 记录新一天建造阶段开始时的金钱
+            if (ResourceManager.Instance != null)
+            {
+                buildPhaseStartMoney = ResourceManager.Instance.GetMoney();
+            }
+
             // 重置状态标志
             hasStoppedSpawning = false;
 
@@ -305,6 +346,13 @@ namespace PopLife
             // 进入建造阶段
             currentPhase = GamePhase.BuildPhase;
             isStoreOpen = false;
+
+            // 恢复建造按钮可交互状态
+            if (buildButton != null)
+            {
+                buildButton.interactable = true;
+                Debug.Log("[DayLoopManager] 建造按钮已启用（建造阶段）");
+            }
 
             OnDayChanged?.Invoke(currentDay);
             OnBuildPhaseStart?.Invoke();
@@ -387,11 +435,15 @@ namespace PopLife
     public struct DailySettlementData
     {
         public int day;
-        public float totalSale;
-        public float totalExpenses;
-        public float dailyIncome;
-        public int totalCustomers;
-        public int fameEarned;
+        public float totalSale;              // 今日开店收益（当日销售总金额）
+        public float bonusIncome;            // 今日开店额外收益（目前为0，预留）
+        public float dailyExpenses;          // 今日维护费
+        public float dailyIncome;            // 今日净收入（totalSale - dailyExpenses）
+        public int dailyMoneyChange;         // 今日金钱变化（建造阶段开始时的钱 - 结算时的钱）
+        public int lifetimeIncome;           // 总收入（累计，仅来自顾客结账）
+        public int lifetimeExpenses;         // 总开支（累计，所有花费）
+        public int totalCustomers;           // 今日访客数
+        public int fameEarned;               // 今日获得的声望值
         public CustomerLevelUpInfo[] levelUps; // 当日升级的顾客列表
     }
 }

@@ -48,18 +48,35 @@ namespace PopLife.UI
             }
 
             // Setup button listeners
+            SetupButtonListeners();
+
+            // Hide panel initially
+            HidePanel();
+        }
+
+        private void OnEnable()
+        {
+            // Re-setup button listeners when enabled (in case Awake wasn't called)
+            SetupButtonListeners();
+        }
+
+        /// <summary>
+        /// Setup button listeners (centralized method to avoid duplication)
+        /// 设置按钮监听器（集中方法避免重复）
+        /// </summary>
+        private void SetupButtonListeners()
+        {
             if (confirmButton != null)
             {
+                confirmButton.onClick.RemoveListener(OnConfirmClicked);
                 confirmButton.onClick.AddListener(OnConfirmClicked);
             }
 
             if (cancelButton != null)
             {
+                cancelButton.onClick.RemoveListener(OnCancelClicked);
                 cancelButton.onClick.AddListener(OnCancelClicked);
             }
-
-            // Hide panel initially
-            HidePanel();
         }
 
         private void Update()
@@ -117,13 +134,14 @@ namespace PopLife.UI
                 AudioManager.Instance.PlaySound(AudioKeys.UI_CLICK);
             }
 
+            // Save callback before hiding (HidePanel clears callbacks)
+            Action callback = onConfirm;
+
             // Hide panel
             HidePanel();
 
-            // Trigger callback
-            onConfirm?.Invoke();
-            onConfirm = null;
-            onCancel = null;
+            // Trigger callback after hiding
+            callback?.Invoke();
 
             Debug.Log("[ConfirmationPanel] Confirmed");
         }
@@ -139,13 +157,14 @@ namespace PopLife.UI
                 AudioManager.Instance.PlaySound(AudioKeys.UI_CLICK);
             }
 
+            // Save callback before hiding (HidePanel clears callbacks)
+            Action callback = onCancel;
+
             // Hide panel
             HidePanel();
 
-            // Trigger callback
-            onCancel?.Invoke();
-            onConfirm = null;
-            onCancel = null;
+            // Trigger callback after hiding
+            callback?.Invoke();
 
             Debug.Log("[ConfirmationPanel] Cancelled");
         }
@@ -155,6 +174,15 @@ namespace PopLife.UI
         /// </summary>
         private void ShowPanel()
         {
+            // Ensure this GameObject is active (critical if it starts inactive)
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+            }
+
+            // Setup button listeners (in case Awake/OnEnable wasn't called)
+            SetupButtonListeners();
+
             if (blockingPanel != null)
             {
                 blockingPanel.SetActive(true);
@@ -180,6 +208,27 @@ namespace PopLife.UI
             {
                 contentPanel.SetActive(false);
             }
+
+            // Hide parent GameObject (optional, keeps panel hierarchy clean)
+            // 隐藏父对象（可选，保持面板层级清洁）
+            if (gameObject.activeSelf)
+            {
+                gameObject.SetActive(false);
+            }
+
+            // Clear callbacks
+            onConfirm = null;
+            onCancel = null;
+        }
+
+        /// <summary>
+        /// Hide the panel (public method)
+        /// 隐藏面板（公开方法）
+        /// </summary>
+        public void Hide()
+        {
+            HidePanel();
+            Debug.Log("[ConfirmationPanel] Hidden (forced)");
         }
 
         /// <summary>

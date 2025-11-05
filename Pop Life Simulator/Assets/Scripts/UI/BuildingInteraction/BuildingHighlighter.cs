@@ -30,9 +30,16 @@ namespace PopLife.UI.BuildingInteraction
         private bool isVisible = false;
         private float fadeProgress = 0f;
 
+        // Current color (can be different from highlightColor)
+        private Color currentColor;
+
         private void Awake()
         {
             lineRenderer = GetComponent<LineRenderer>();
+
+            // Initialize current color
+            currentColor = highlightColor;
+
             ConfigureLineRenderer();
 
             // Get FloorManager
@@ -81,6 +88,15 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         public void Show(BuildingInstance building)
         {
+            Show(building, highlightColor);
+        }
+
+        /// <summary>
+        /// Show outline for a building with custom color
+        /// 显示建筑轮廓（自定义颜色）
+        /// </summary>
+        public void Show(BuildingInstance building, Color color)
+        {
             if (building == null || building.archetype == null)
             {
                 Debug.LogWarning("BuildingHighlighter: Invalid building!");
@@ -107,6 +123,9 @@ namespace PopLife.UI.BuildingInteraction
             // Set line renderer positions
             lineRenderer.positionCount = vertices.Count;
             lineRenderer.SetPositions(vertices.ToArray());
+
+            // Use custom color
+            currentColor = color;
 
             // Show line renderer
             lineRenderer.enabled = true;
@@ -363,7 +382,7 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private void UpdateLineColor()
         {
-            Color color = highlightColor;
+            Color color = currentColor;
             color.a = fadeProgress;
 
             if (lineMaterial != null)
