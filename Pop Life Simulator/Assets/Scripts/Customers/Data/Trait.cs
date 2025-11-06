@@ -9,6 +9,15 @@ namespace PopLife.Customers.Data
         public string displayNameKey;
         [TextArea] public string description;
 
+        private void OnValidate()
+        {
+            // 如果 displayNameKey 为空且 traitId 不为空，自动设置为 traitId
+            if (string.IsNullOrEmpty(displayNameKey) && !string.IsNullOrEmpty(traitId))
+            {
+                displayNameKey = traitId;
+            }
+        }
+
         [Header("数值修饰（加法/乘法/覆盖）")]
         public float[] interestAdd;     // 与类别等长，可为空
         public float[] interestMul;     // 与类别等长，每个类别独立乘数，可为空（为空时视为全1）
@@ -23,7 +32,7 @@ namespace PopLife.Customers.Data
         public float xpMultiplier = 1.0f;
 
         [Header("时间倾向")]
-        [Tooltip("该特质偏好的时间段（可多个）")]
+        [Tooltip("该特质偏好的时间段（可多个，支持跨日如27.0表示次日03:00）")]
         public TimePreference[] preferredTimeRanges;
 
         [Tooltip("在偏好时间段内的权重倍率")]

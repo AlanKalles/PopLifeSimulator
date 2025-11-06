@@ -271,6 +271,16 @@ namespace PopLife.Customers.Editor
                 ExportToCsv();
             }
 
+            GUILayout.Space(20);
+
+            // 清除所有顾客记忆按钮
+            GUI.backgroundColor = new Color(1f, 0.6f, 0.6f); // 浅红色背景
+            if (GUILayout.Button("Clean All Customer Memory", EditorStyles.toolbarButton, GUILayout.Width(180)))
+            {
+                CleanAllCustomerMemory();
+            }
+            GUI.backgroundColor = Color.white;
+
             GUILayout.FlexibleSpace();
 
             EditorGUILayout.LabelField("Search:", GUILayout.Width(50));
@@ -869,6 +879,119 @@ namespace PopLife.Customers.Editor
 
             fields.Add(currentField.ToString());
             return fields.ToArray();
+        }
+
+        /// <summary>
+        /// 清除所有顾客的记忆数据（trust, loyalty level, xp, visit count, lifetime spent）
+        /// 并自动保存到StreamingAssets和PersistentDataPath
+        /// </summary>
+        private void CleanAllCustomerMemory()
+        {
+            if (records == null || records.Count == 0)
+            {
+                EditorUtility.DisplayDialog("No Records",
+                    "There are no customer records to clean.",
+                    "OK");
+                return;
+            }
+
+            // 确认对话框
+            bool confirmed = EditorUtility.DisplayDialog(
+                "Clean All Customer Memory",
+                $"This will reset the following fields to 0 for ALL {records.Count} customers:\n\n" +
+                "• Trust\n" +
+                "• Loyalty Level\n" +
+                "• XP\n" +
+                "• Visit Count\n" +
+                "• Lifetime Spent\n\n" +
+                "The changes will be saved to both StreamingAssets and PersistentDataPath.\n\n" +
+                "This action cannot be undone. Continue?",
+                "Clean All Memory",
+                "Cancel"
+            );
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            // 清除所有顾客的记忆数据
+            int cleanedCount = 0;
+            foreach (var record in records)
+            {
+                record.trust = 0;
+                record.loyaltyLevel = 0;
+                record.xp = 0;
+                record.visitCount = 0;
+                record.lifetimeSpent = 0;
+                cleanedCount++;
+            }
+
+            // 保存到StreamingAssets
+            string streamingAssetsPath = Path.Combine(Application.streamingAssetsPath, "Customers.json");
+            bool savedToStreamingAssets = SaveToPath(streamingAssetsPath);
+
+            // 保存到PersistentDataPath
+            string persistentDataPath = Path.Combine(Application.persistentDataPath, "Customers.json");
+            bool savedToPersistent = SaveToPath(persistentDataPath);
+
+            // 显示结果
+            string message = $"Successfully cleaned memory for {cleanedCount} customers.\n\n";
+
+            if (savedToStreamingAssets)
+            {
+                message += $"✓ Saved to StreamingAssets:\n{streamingAssetsPath}\n\n";
+            }
+            else
+            {
+                message += $"✗ Failed to save to StreamingAssets:\n{streamingAssetsPath}\n\n";
+            }
+
+            if (savedToPersistent)
+            {
+                message += $"✓ Saved to PersistentDataPath:\n{persistentDataPath}";
+            }
+            else
+            {
+                message += $"✗ Failed to save to PersistentDataPath:\n{persistentDataPath}";
+            }
+
+            EditorUtility.DisplayDialog("Clean Complete", message, "OK");
+
+            // 刷新UI
+            if (showDetails && selectedIndex >= 0 && selectedIndex < records.Count)
+            {
+                editingRecord = records[selectedIndex];
+            }
+            Repaint();
+
+            Debug.Log($"[CustomerRecordsEditor] Cleaned memory for {cleanedCount} customers and saved to both locations.");
+        }
+
+        /// <summary>
+        /// 保存顾客记录到指定路径
+        /// </summary>
+        /// <param name="path">保存路径</param>
+        /// <returns>是否保存成功</returns>
+        private bool SaveToPath(string path)
+        {
+            try
+            {
+                // 确保目录存在
+                SavePathManager.EnsureDirectoryExists(path);
+
+                // 使用 CustomerRepository 兼容的格式 (items 字段)
+                var list = new CustomerRecordList { items = records };
+                string json = JsonUtility.ToJson(list, true);
+                File.WriteAllText(path, json);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[CustomerRecordsEditor] Failed to save to {path}: {e.Message}");
+                return false;
+            }
         }
 
         [Serializable]

@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Asexual
   m_EditorClassIdentifier: 
   traitId: asexual
-  displayNameKey: Asexual
+  displayNameKey: asexual
   description: 
   interestAdd:
+  - 0
   - 0
   - 0
   - 0
@@ -29,8 +30,12 @@ MonoBehaviour:
   - 1
   - 1
   - 1
+  - 1
   walletCapMul: 1
   patienceMul: 1
   embarrassmentCapMul: 1
   priceSensitivityMul: 1
   moveSpeedMul: 1
+  xpMultiplier: 1
+  preferredTimeRanges: []
+  timePreferenceWeight: 1

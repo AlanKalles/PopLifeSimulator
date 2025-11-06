@@ -22,6 +22,7 @@ MonoBehaviour:
   - 0
   - 0
   - 0
+  - 0
   interestMul:
   - 1
   - 1
@@ -29,7 +30,12 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  walletCapMul: 1.2
+  - 1
+  walletCapMul: 2
   patienceMul: 1
   embarrassmentCapMul: 1
   priceSensitivityMul: 1
+  moveSpeedMul: 1
+  xpMultiplier: 1
+  preferredTimeRanges: []
+  timePreferenceWeight: 1

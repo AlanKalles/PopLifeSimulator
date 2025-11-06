@@ -57,11 +57,11 @@ public float moveSpeed = 2.0f;
 [Range(0, 300)] public int queueToleranceSeconds = 60;
 
 [Header("生成时间控制")]
-[Tooltip("该原型可被生成的时间窗口")]
+[Tooltip("该原型可被生成的时间窗口（支持跨日，如27.0表示次日03:00）")]
 public TimePreference spawnTimeWindow = new TimePreference
 {
     startHour = 12f,   // 默认开店时间
-    endHour = 22.5f    // 默认闭店前半小时
+    endHour = 22.5f    // 默认闭店前半小时（可设置为27.0以支持跨日营业）
 };
 
 

@@ -28,6 +28,9 @@ namespace PopLife.Customers.Spawner
         [Tooltip("场上顾客数量上限")]
         public int maxCustomersOnFloor = 10;
 
+        [Tooltip("防止顾客在同一天内离店后再次访问")]
+        public bool preventSameDayRevisit = false;
+
         [Header("节奏控制")]
         [Tooltip("开店后延迟多久开始生成第一个顾客 (秒)")]
         public float initialSpawnDelay = 5f;
@@ -52,12 +55,14 @@ namespace PopLife.Customers.Spawner
         [SerializeField] private int currentCustomerCount = 0;
         [SerializeField] private float nextSpawnTime = 0f;
         [SerializeField] private bool isSpawning = false;
+        [SerializeField] private int visitedTodayCount = 0;
 
         private CustomerRepository repository;
         private bool repositoryLoaded = false;
         private List<CustomerRecord> customerPool = new List<CustomerRecord>();
         private TimeBasedSpawnFilter timeFilter;
         private HashSet<string> activeCustomerIds = new HashSet<string>();
+        private HashSet<string> visitedTodayCustomerIds = new HashSet<string>(); // 今天已访问过的顾客ID
         private SpawnerProfile spawnerProfile; // 运行时缓存的解锁配置
 
         void Awake()
@@ -129,8 +134,9 @@ namespace PopLife.Customers.Spawner
                 TrySpawnCustomer();
             }
 
-            // 更新当前场上人数
+            // 更新当前场上人数和今日访问统计
             currentCustomerCount = GetCurrentCustomerCount();
+            visitedTodayCount = visitedTodayCustomerIds.Count;
         }
 
         void LoadCustomerData()
@@ -338,7 +344,10 @@ namespace PopLife.Customers.Spawner
 
             Debug.Log($"[CustomerSpawner] 顾客池初始化完成，共 {customerPool.Count} 个可生成顾客");
 
-            // 3. 重置生成计时器（加上初始延迟）
+            // 3. 清空今日访问记录（新的一天开始）
+            visitedTodayCustomerIds.Clear();
+
+            // 4. 重置生成计时器（加上初始延迟）
             nextSpawnTime = Time.time + initialSpawnDelay;
             isSpawning = true;
         }
@@ -424,20 +433,29 @@ namespace PopLife.Customers.Spawner
             // 7. 过滤掉已在场的顾客
             eligibleCustomers.RemoveAll(wc => activeCustomerIds.Contains(wc.record.customerId));
 
+            // 8. 如果启用了防止同日重复访问，过滤掉今天已访问过的顾客
+            if (preventSameDayRevisit)
+            {
+                eligibleCustomers.RemoveAll(wc => visitedTodayCustomerIds.Contains(wc.record.customerId));
+            }
+
             if (eligibleCustomers.Count == 0)
             {
-                Debug.Log("[CustomerSpawner] 所有符合时间条件的顾客都已在场");
+                string reason = preventSameDayRevisit
+                    ? "[CustomerSpawner] 所有符合时间条件的顾客都已在场或今天已访问过"
+                    : "[CustomerSpawner] 所有符合时间条件的顾客都已在场";
+                Debug.Log(reason);
                 ScheduleNextSpawn();
                 return;
             }
 
-            // 8. 加权随机选择顾客
+            // 9. 加权随机选择顾客
             var selectedCustomer = WeightedRandom(eligibleCustomers);
 
-            // 9. 生成顾客
+            // 10. 生成顾客
             SpawnCustomer(selectedCustomer);
 
-            // 10. 安排下次生成时间
+            // 11. 安排下次生成时间
             ScheduleNextSpawn();
         }
 
@@ -576,6 +594,13 @@ namespace PopLife.Customers.Spawner
             if (DayLoopManager.Instance != null)
             {
                 DayLoopManager.Instance.RecordCustomerVisit();
+            }
+
+            // 记录今日已访问（用于防止同日重复访问）
+            if (preventSameDayRevisit && !string.IsNullOrEmpty(record.customerId))
+            {
+                visitedTodayCustomerIds.Add(record.customerId);
+                Debug.Log($"[CustomerSpawner] 记录顾客 {record.customerId} 今日访问 (防止重复: {preventSameDayRevisit})");
             }
 
             lastSpawnedCustomer = $"{record.customerId}: {record.name}";

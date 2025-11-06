@@ -20,10 +20,11 @@ MonoBehaviour:
   moveSpeed: 4
   queueToleranceSeconds: 60
   spawnTimeWindow:
-    startHour: 12
-    endHour: 22.5
+    startHour: 11
+    endHour: 26
   baseInterest:
     values:
+    - 2
     - 2
     - 2
     - 2

@@ -29,17 +29,31 @@ namespace PopLife
 
         private void Update()
         {
-            if (showTime && DayLoopManager.Instance != null)
+            if (DayLoopManager.Instance != null)
             {
-                UpdateTimeDisplay();
+                // 每帧更新天数显示（因为可能从当日跳到次日）
+                UpdateDayDisplay(DayLoopManager.Instance.currentDay);
+
+                if (showTime)
+                {
+                    UpdateTimeDisplay();
+                }
             }
         }
 
         private void UpdateDayDisplay(int day)
         {
-            if (dayText != null)
+            if (dayText != null && DayLoopManager.Instance != null)
             {
-                dayText.text = string.Format(dayFormat, day);
+                int displayDay = day;
+
+                // 如果当前时间超过24小时，显示次日
+                if (DayLoopManager.Instance.currentHour >= 24f)
+                {
+                    displayDay = day + 1;
+                }
+
+                dayText.text = string.Format(dayFormat, displayDay);
             }
         }
 

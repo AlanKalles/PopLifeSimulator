@@ -48,7 +48,7 @@ namespace PopLife
         {
             // 标题：天数
             if (dayText != null)
-                dayText.text = $"Day {data.day} Settlement";
+                dayText.text = $"Day {data.day}";
 
             // === 收入部分 ===
             if (todaySalesText != null)

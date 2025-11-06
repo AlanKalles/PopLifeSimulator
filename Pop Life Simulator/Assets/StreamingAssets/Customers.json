@@ -19,16 +19,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 220,
+            "loyaltyLevel": 0,
+            "xp": 0,
             "walletCapBase": 50,
-            "visitCount": 18,
+            "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 215,
+            "lifetimeSpent": 0,
             "schemaVersion": 1
         },
         {
@@ -50,16 +51,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 2,
-            "xp": 292,
+            "loyaltyLevel": 0,
+            "xp": 0,
             "walletCapBase": 50,
-            "visitCount": 24,
+            "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 257,
+            "lifetimeSpent": 0,
             "schemaVersion": 1
         },
         {
@@ -80,16 +82,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 136,
+            "loyaltyLevel": 0,
+            "xp": 16,
             "walletCapBase": 50,
-            "visitCount": 11,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 158,
+            "lifetimeSpent": 34,
             "schemaVersion": 1
         },
         {
@@ -111,16 +114,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 136,
+            "loyaltyLevel": 0,
+            "xp": 16,
             "walletCapBase": 50,
-            "visitCount": 11,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 107,
+            "lifetimeSpent": 31,
             "schemaVersion": 1
         },
         {
@@ -140,16 +144,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 14,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 20,
             "schemaVersion": 1
         },
         {
@@ -170,16 +175,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 14,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 19,
             "schemaVersion": 1
         },
         {
@@ -201,16 +207,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 16,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 34,
             "schemaVersion": 1
         },
         {
@@ -226,6 +233,7 @@
                 "CisWoman"
             ],
             "interestPersonalDelta": [
+                0.0,
                 0.0,
                 0.0,
                 0.0,
@@ -261,16 +269,17 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 16,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 41,
             "schemaVersion": 1
         },
         {
@@ -291,6 +300,38 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 14,
+            "walletCapBase": 50,
+            "visitCount": 1,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 20,
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C011",
+            "name": "Jinhwan",
+            "bio": "A 33-year-old graphic designer. Works at night, shops after midnight, and prefers BDSM gear.",
+            "appearanceId": "CSP011",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "NightOwl",
+                "BDSM",
+                "CisMan",
+                "Straight",
+                "Freelancing"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
@@ -301,6 +342,67 @@
             "lastVisitDay": "",
             "lastLeaveReason": "",
             "lifetimeSpent": 0,
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C012",
+            "name": "Baozhen",
+            "bio": "A 52-year-old woman recently divorced. Lives alone, rediscovering her sexuality with women after leaving a long marriage.",
+            "appearanceId": "CSP012",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Lesbian",
+                "CisWoman",
+                "Single",
+                "Unemployed"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C020",
+            "name": "Shintaro",
+            "bio": "A 48-year-old accountant with a hidden BDSM interest. Buys high-end gear discreetly, never during the day.",
+            "appearanceId": "CSP020",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "BDSM",
+                "Married",
+                "CisMan",
+                "Straight"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 30,
+            "walletCapBase": 50,
+            "visitCount": 2,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 55,
             "schemaVersion": 1
         }
     ]

@@ -23,10 +23,10 @@ namespace PopLife
 
         [Header("Time Settings")]
         [SerializeField] private float realSecondsPerDay = 30f; // 现实30秒 = 游戏1天
-        [SerializeField] private float buildPhaseHour = 6f; // 6:00 建造阶段
-        [SerializeField] private float storeOpenHour = 12f; // 12:00
-        [SerializeField] private float stopSpawningHour = 22f; // 22:00 停止生成新顾客
-        [SerializeField] private float storeCloseHour = 23f; // 23:00 强制清场
+        [SerializeField][Range(0f, 36f)] private float buildPhaseHour = 6f; // 6:00 建造阶段
+        [SerializeField][Range(0f, 36f)] private float storeOpenHour = 12f; // 12:00 开店
+        [SerializeField][Range(0f, 36f)] private float stopSpawningHour = 22f; // 22:00 停止生成新顾客
+        [SerializeField][Range(0f, 36f)] private float storeCloseHour = 23f; // 23:00 强制清场（支持跨日，如27.0表示次日03:00）
 
         [Header("Time Flow")]
         [SerializeField] private float timeScale = 1f; // 时间倍速
@@ -422,11 +422,18 @@ namespace PopLife
             todayLevelUps.Add(info);
         }
 
-        // 获取格式化时间字符串
+        // 获取格式化时间字符串（将扩展时间转换为24小时制显示）
         public string GetFormattedTime()
         {
-            int hour = Mathf.FloorToInt(currentHour);
-            int minute = Mathf.FloorToInt((currentHour - hour) * 60);
+            // 将扩展时间转换为24小时制显示
+            float displayHour = currentHour;
+            if (currentHour >= 24f)
+            {
+                displayHour = currentHour - 24f;
+            }
+
+            int hour = Mathf.FloorToInt(displayHour);
+            int minute = Mathf.FloorToInt((displayHour - hour) * 60);
             return $"{hour:00}:{minute:00}";
         }
     }
