@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using PopLife.Data;
+using PopLife.Utility;
 
 namespace PopLife.Runtime
 {
@@ -48,6 +49,10 @@ namespace PopLife.Runtime
             floorId = floor;
             instanceId = Guid.NewGuid().ToString();
             operationStartTime = Time.time;
+
+            // 初始化时设置 sorting order
+            UpdateSortingOrder();
+
             OnInitialized();
         }
 
@@ -66,6 +71,13 @@ namespace PopLife.Runtime
             ResourceManager.Instance.Spend(0,next.upgradeFameCost);
             currentLevel++;
             OnUpgraded();
+
+            // 播放升级音效
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySound(AudioKeys.BUILDING_UPGRADED);
+            }
+
             return true;
         }
 
@@ -94,10 +106,22 @@ namespace PopLife.Runtime
             instanceId = data.instanceId;
             currentLevel = data.level;
             rotation = data.rotation;
+
+            // 加载时也需要设置 sorting order
+            UpdateSortingOrder();
+        }
+
+        /// <summary>
+        /// 更新建筑的 sorting order，用于实现透视关系
+        /// 调用时机：初始化、移动、加载存档
+        /// </summary>
+        public void UpdateSortingOrder()
+        {
+            SortingOrderUtility.UpdateBuildingSortingOrder(gameObject, gridPosition, floorId);
         }
     }
 
-    
 
-    
+
+
 }

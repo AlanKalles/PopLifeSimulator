@@ -118,15 +118,29 @@ namespace PopLife.UI
             BuildingArchetype[] allBuildings = Resources.LoadAll<BuildingArchetype>(shelfResourcePath);
 
             availableShelves.Clear();
+
+            // 获取已解锁的货架ID列表
+            var unlockedShelfIds = BlueprintManager.Instance?.GetUnlockedShelfIds();
+
+            if (unlockedShelfIds == null || unlockedShelfIds.Count == 0)
+            {
+                Debug.LogWarning("ShelfListPanel: No unlocked shelves found in BlueprintManager. Make sure BlueprintProfile.json is configured.");
+                return;
+            }
+
             foreach (var building in allBuildings)
             {
                 if (building is ShelfArchetype shelf)
                 {
-                    availableShelves.Add(shelf);
+                    // 只加载已解锁的货架
+                    if (unlockedShelfIds.Contains(shelf.archetypeId))
+                    {
+                        availableShelves.Add(shelf);
+                    }
                 }
             }
 
-            Debug.Log($"ShelfListPanel: Loaded {availableShelves.Count} shelves from Resources/{shelfResourcePath}");
+            Debug.Log($"ShelfListPanel: Loaded {availableShelves.Count} unlocked shelves from Resources/{shelfResourcePath} (Total unlocked: {unlockedShelfIds.Count})");
         }
 
         #endregion

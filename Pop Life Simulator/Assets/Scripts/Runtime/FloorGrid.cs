@@ -278,11 +278,13 @@ namespace PopLife.Runtime
             var fp = arch.GetRotatedFootprint(rot);
             if (!CanPlaceFootprint(fp, pos)) return null;
 
-            if (arch.requiresBlueprint && !BlueprintManager.Instance.HasBlueprint(arch.archetypeId)) return null;
+            // 检查蓝图是否已解锁（直接通过BlueprintManager判断）
+            if (!BlueprintManager.Instance.HasBlueprint(arch.archetypeId)) return null;
             if (!ResourceManager.Instance.CanAfford(arch.buildCost, 0)) return null;
 
             ResourceManager.Instance.SpendMoney(arch.buildCost);
-            if (arch.requiresBlueprint) BlueprintManager.Instance.ConsumeBlueprint(arch.archetypeId);
+            // 蓝图永久解锁，不需要消耗
+            BlueprintManager.Instance.ConsumeBlueprint(arch.archetypeId);
 
             BuildingInstance inst = null;
             try
@@ -293,9 +295,9 @@ namespace PopLife.Runtime
             }
             catch
             {
-                // 回滚资源
+                // 回滚资源（金钱）
                 ResourceManager.Instance.RefundMoney(arch.buildCost);
-                if (arch.requiresBlueprint) BlueprintManager.Instance.AddBlueprint(arch.archetypeId);
+                // 蓝图不需要回滚（永久解锁）
                 if (inst) Destroy(inst.gameObject);
                 return null;
             }
@@ -379,6 +381,9 @@ namespace PopLife.Runtime
             bi.rotation = newRot;
             bi.transform.SetPositionAndRotation(GridToWorld(newPos), Quaternion.Euler(0, 0, newRot * 90));
 
+            // 更新 sorting order（位置变化后需要重新计算）
+            bi.UpdateSortingOrder();
+
             return true;
         }
 
@@ -386,7 +391,7 @@ namespace PopLife.Runtime
         /// 从楼层移除建筑
         /// </summary>
         /// <param name="bi">建筑实例</param>
-        /// <param name="refundBlueprint">是否返还蓝图（蓝图已改为永久解锁，此参数保留兼容性）</param>
+        /// <param name="refundBlueprint">已废弃参数（蓝图已改为永久解锁）</param>
         /// <param name="refundMoney">是否返还建造成本</param>
         public void RemoveBuilding(BuildingInstance bi, bool refundBlueprint, bool refundMoney = false)
         {
@@ -395,9 +400,7 @@ namespace PopLife.Runtime
             instances.Remove(bi.instanceId);
 
             // 蓝图系统已改为永久解锁，不再需要返还
-            // 保留此代码以兼容旧设计
-            if (refundBlueprint && bi.archetype.requiresBlueprint)
-                BlueprintManager.Instance.AddBlueprint(bi.archetype.archetypeId);
+            // refundBlueprint 参数已废弃，但保留以兼容现有调用
 
             // 返还建造成本（按比例）
             if (refundMoney && bi.archetype != null)
@@ -431,6 +434,9 @@ namespace PopLife.Runtime
 
             // 标记占用
             MarkOccupied(bi, fp, newPos, true);
+
+            // 更新 sorting order（跨楼层移动后需要重新计算）
+            bi.UpdateSortingOrder();
 
             return true;
         }

@@ -31,6 +31,10 @@ namespace PopLife
 
         [Header("Control")]
         [SerializeField] private Button continueButton;
+        
+        [Header("Color")]
+        [SerializeField] private Color greenColor;
+        [SerializeField] private Color redColor;
 
         private void Awake()
         {
@@ -63,7 +67,7 @@ namespace PopLife
                 todayMoneyChangeText.text = change > 0
                     ? $"Money Change: -${change:F0}"
                     : $"Money Change: +${Mathf.Abs(change):F0}";
-                todayMoneyChangeText.color = change > 0 ? Color.red : Color.green;
+                todayMoneyChangeText.color = change > 0 ? redColor : greenColor;
             }
 
             // === 累计统计 ===
@@ -137,7 +141,7 @@ namespace PopLife
                         if (levelUp.newLevel - levelUp.oldLevel > 1)
                         {
                             int skippedLevels = levelUp.newLevel - levelUp.oldLevel - 1;
-                            text.text += $" <color=#FF6347>🔥 Skipped {skippedLevels} level(s)!</color>";
+                            text.text += $" <color=#FF6347> Skipped {skippedLevels} level(s)!</color>";
                         }
                     }
                 }
@@ -148,6 +152,9 @@ namespace PopLife
         {
             // 隐藏面板
             gameObject.SetActive(false);
+
+            // 重新加载蓝图配置（用户可能在外部修改了蓝图文件）
+            BlueprintManager.Instance?.ReloadProfile();
 
             // 通知 DayLoopManager 进入下一天的建造阶段
             DayLoopManager.Instance?.AdvanceToNextDay();

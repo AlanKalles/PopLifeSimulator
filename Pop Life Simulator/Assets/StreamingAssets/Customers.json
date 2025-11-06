@@ -23,12 +23,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 1,
-            "xp": 110,
+            "xp": 220,
             "walletCapBase": 50,
-            "visitCount": 9,
+            "visitCount": 18,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 84,
+            "lifetimeSpent": 215,
             "schemaVersion": 1
         },
         {
@@ -53,13 +53,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 182,
+            "loyaltyLevel": 2,
+            "xp": 292,
             "walletCapBase": 50,
-            "visitCount": 15,
+            "visitCount": 24,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 126,
+            "lifetimeSpent": 257,
             "schemaVersion": 1
         },
         {
@@ -83,13 +83,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 38,
+            "loyaltyLevel": 1,
+            "xp": 136,
             "walletCapBase": 50,
-            "visitCount": 3,
+            "visitCount": 11,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 42,
+            "lifetimeSpent": 158,
             "schemaVersion": 1
         },
         {
@@ -114,13 +114,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 38,
+            "loyaltyLevel": 1,
+            "xp": 136,
             "walletCapBase": 50,
-            "visitCount": 3,
+            "visitCount": 11,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 36,
+            "lifetimeSpent": 107,
             "schemaVersion": 1
         },
         {

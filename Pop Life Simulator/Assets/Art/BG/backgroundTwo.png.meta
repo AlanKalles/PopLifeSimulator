@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a02468bb9cc8c684f9b184ee9e4e58fe
+guid: 4bc04e44bf610c4478f4342c7daac047
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -17,9 +17,6 @@ TextureImporter:
   - first:
       213: -833525452633893693
     second: backgroundTwo_4
-  - first:
-      213: -7064761966381385475
-    second: backgroundTwo_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -39,7 +36,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -121,7 +118,7 @@ TextureImporter:
         x: 0
         y: 0
         width: 82
-        height: 517
+        height: 659
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,10 +137,10 @@ TextureImporter:
       name: backgroundTwo_1
       rect:
         serializedVersion: 2
-        x: 111
+        x: 110
         y: 0
-        width: 65
-        height: 573
+        width: 68
+        height: 632
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -165,7 +162,7 @@ TextureImporter:
         x: 186
         y: 0
         width: 73
-        height: 423
+        height: 565
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -187,7 +184,7 @@ TextureImporter:
         x: 399
         y: 0
         width: 359
-        height: 524
+        height: 673
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,8 +205,8 @@ TextureImporter:
         serializedVersion: 2
         x: 775
         y: 0
-        width: 47
-        height: 544
+        width: 613
+        height: 715
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -220,28 +217,6 @@ TextureImporter:
       bones: []
       spriteID: 3c4928c5409be64f0800000000000000
       internalID: -833525452633893693
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: backgroundTwo_5
-      rect:
-        serializedVersion: 2
-        x: 841
-        y: 0
-        width: 547
-        height: 573
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: df8b52b1c6ce4fd90800000000000000
-      internalID: -7064761966381385475
       vertices: []
       indices: 
       edges: []
@@ -265,7 +240,6 @@ TextureImporter:
       backgroundTwo_2: -7700938100975995534
       backgroundTwo_3: 7534608223295386755
       backgroundTwo_4: -833525452633893693
-      backgroundTwo_5: -7064761966381385475
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

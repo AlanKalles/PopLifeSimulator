@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B003
   displayName: Love Bunny Silicone Dildo
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 21300000, guid: 49403d2a2ce7cad4d9a24e9955fa190e, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 6ea29f3f20a9ea14080fe7495a84897f, type: 3}
   buildCost: 75
   moveCost: 0
-  requiresBlueprint: 0
   destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}
@@ -30,6 +29,7 @@ MonoBehaviour:
   - {x: 0, y: 1}
   - {x: 1, y: 1}
   - {x: 2, y: 1}
+  - {x: 0, y: 0}
   - {x: 1, y: 0}
   - {x: 2, y: 0}
   canRotate: 0

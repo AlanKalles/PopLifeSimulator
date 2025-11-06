@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 680b27a53ec5e1a4d8d11f182dafd865
+guid: 2373ea66789ed984cbb56d971b6b62ef
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -20,6 +20,18 @@ TextureImporter:
   - first:
       213: 8071154098246967579
     second: buildingBackground_5
+  - first:
+      213: 325655052567614761
+    second: buildingBackground_6
+  - first:
+      213: -3871259748008596916
+    second: buildingBackground_7
+  - first:
+      213: -1662123437985064570
+    second: buildingBackground_8
+  - first:
+      213: 4953301095679429138
+    second: buildingBackground_9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -39,7 +51,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -118,8 +130,8 @@ TextureImporter:
       name: buildingBackground_0
       rect:
         serializedVersion: 2
-        x: 213
-        y: 239
+        x: 262
+        y: 383
         width: 178
         height: 90
       alignment: 0
@@ -140,10 +152,10 @@ TextureImporter:
       name: buildingBackground_1
       rect:
         serializedVersion: 2
-        x: 309
-        y: 132
-        width: 178
-        height: 91
+        x: 235
+        y: 277
+        width: 69
+        height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,9 +174,9 @@ TextureImporter:
       name: buildingBackground_2
       rect:
         serializedVersion: 2
-        x: 588
-        y: 132
-        width: 139
+        x: 305
+        y: 277
+        width: 108
         height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -184,10 +196,10 @@ TextureImporter:
       name: buildingBackground_3
       rect:
         serializedVersion: 2
-        x: 212
-        y: 21
-        width: 229
-        height: 77
+        x: 632
+        y: 277
+        width: 178
+        height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -206,10 +218,10 @@ TextureImporter:
       name: buildingBackground_4
       rect:
         serializedVersion: 2
-        x: 512
-        y: 21
-        width: 64
-        height: 77
+        x: 332
+        y: 171
+        width: 69
+        height: 89
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -228,10 +240,10 @@ TextureImporter:
       name: buildingBackground_5
       rect:
         serializedVersion: 2
-        x: 581
-        y: 21
-        width: 147
-        height: 77
+        x: 402
+        y: 171
+        width: 106
+        height: 89
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -242,6 +254,94 @@ TextureImporter:
       bones: []
       spriteID: b11e279b3ef720070800000000000000
       internalID: 8071154098246967579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buildingBackground_6
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 170
+        width: 139
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9259a9f7b85f48400800000000000000
+      internalID: 325655052567614761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buildingBackground_7
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 59
+        width: 229
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4aedae15c5864ac0800000000000000
+      internalID: -3871259748008596916
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buildingBackground_8
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 59
+        width: 64
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6899c0a1a83fee8e0800000000000000
+      internalID: -1662123437985064570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: buildingBackground_9
+      rect:
+        serializedVersion: 2
+        x: 603
+        y: 59
+        width: 147
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21a86815a19adb440800000000000000
+      internalID: 4953301095679429138
       vertices: []
       indices: 
       edges: []
@@ -266,6 +366,10 @@ TextureImporter:
       buildingBackground_3: 4746377419801400668
       buildingBackground_4: 2342264202161793320
       buildingBackground_5: 8071154098246967579
+      buildingBackground_6: 325655052567614761
+      buildingBackground_7: -3871259748008596916
+      buildingBackground_8: -1662123437985064570
+      buildingBackground_9: 4953301095679429138
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -58,8 +58,7 @@ namespace PopLife.UI.BuildingInteraction
         {
             lineRenderer.loop = true;
             lineRenderer.useWorldSpace = true;
-            lineRenderer.sortingLayerName = "UI"; // Ensure it renders above buildings
-            lineRenderer.sortingOrder = 100;
+            lineRenderer.sortingLayerName = "FRAME";
 
             // Set width
             lineRenderer.startWidth = lineWidth;

@@ -82,7 +82,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
 
             // 允许使用所有图形，让 A* 通过 NodeLink2 自动选择路径
-            followerEntity.pathfindingSettings.graphMask = -1;
+            followerEntity.pathfindingSettings.graphMask = GraphMask.everything;
 
             // 设置 A* 寻路目标
             if (destinationSetter != null)
@@ -173,11 +173,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 更新黑板的队列位置（用于后续的 MoveToTargetAction）
             blackboard.assignedQueueSlot = targetTransform;
 
-            // 进入商店：改变 orderInLayer 从 5 到 -5
+            // 进入商店：切换到 InsideStoreLayer（sorting order 不变）
             if (spriteRenderer != null)
             {
-                spriteRenderer.sortingOrder = -5;
-                Debug.Log($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 进入商店，sortingOrder 改为 -5");
+                spriteRenderer.sortingLayerName = "InsideStoreLayer";
+                Debug.Log($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 进入商店，sortingLayer 切换到 InsideStoreLayer");
             }
 
             Debug.Log($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 已进入商店，graphMask 切换到内部图形");

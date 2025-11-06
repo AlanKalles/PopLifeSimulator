@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 53b609b4d8d2dd843b4330abb992a1e2
+guid: 2ef3ef6777620fe49b1cf5877a3960c6
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -27,7 +27,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -106,10 +106,10 @@ TextureImporter:
       name: backgroundOne_0
       rect:
         serializedVersion: 2
-        x: 26
+        x: 0
         y: 0
-        width: 191
-        height: 375
+        width: 217
+        height: 532
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,10 +128,10 @@ TextureImporter:
       name: backgroundOne_1
       rect:
         serializedVersion: 2
-        x: 223
+        x: 201
         y: 0
-        width: 803
-        height: 425
+        width: 1187
+        height: 574
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

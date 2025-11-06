@@ -227,8 +227,8 @@ namespace PopLife.Runtime
 
         public void BeginPlace(BuildingArchetype arch)
         {
-            // 资源校验：蓝图检查
-            if (arch.requiresBlueprint && !blueprintManager.HasBlueprint(arch.archetypeId))
+            // 资源校验：蓝图检查（直接通过BlueprintManager判断是否已解锁）
+            if (!blueprintManager.HasBlueprint(arch.archetypeId))
             {
                 if (UIManager.Instance != null)
                 {
@@ -283,15 +283,15 @@ namespace PopLife.Runtime
             // 获取所有的SpriteRenderer（支持多个子对象）
             previewRenderers = preview.GetComponentsInChildren<SpriteRenderer>(true);
 
-            // 设置初始透明度和层级
+            // 设置初始透明度和 sorting layer
             foreach (var renderer in previewRenderers)
             {
                 // 保存原始颜色并设置透明度
                 var originalColor = renderer.color;
                 renderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.7f);
 
-                // 提高排序层级，确保预览在最上层
-                renderer.sortingOrder += 100;
+                // 设置 sorting layer 为 FRAME
+                renderer.sortingLayerName = "FRAME";
             }
         }
 

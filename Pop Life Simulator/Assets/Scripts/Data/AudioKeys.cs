@@ -15,6 +15,7 @@ namespace PopLife.Data
         public const string BUILD_FLESHLIGHT = "Build_Fleshlight";
         public const string BUILD_LUBRICANT = "Build_Lubricant";
         public const string BUILD_BDSM = "Build_BDSM";
+        public const string BUILD_DILDO = "Build_Dildo";
 
         // 设施建造音效
         public const string BUILD_FACILITY = "Build_Facility";
@@ -28,6 +29,7 @@ namespace PopLife.Data
 
         public const string BUILDING_MOVED = "BuildingMoved";
         public const string BUILDING_DESTROYED = "BuildingDestroyed";
+        public const string BUILDING_UPGRADED = "BuildingUpgraded";
 
         #endregion
 
@@ -74,6 +76,7 @@ namespace PopLife.Data
                 ProductCategory.Fleshlight => BUILD_FLESHLIGHT,
                 ProductCategory.Lubricant => BUILD_LUBRICANT,
                 ProductCategory.BDSM => BUILD_BDSM,
+                ProductCategory.Dildo => BUILD_DILDO,
                 _ => BUILDING_PLACED // 兜底
             };
         }

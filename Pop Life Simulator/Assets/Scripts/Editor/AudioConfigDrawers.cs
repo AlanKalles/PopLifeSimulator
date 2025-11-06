@@ -6,6 +6,7 @@ namespace PopLife.Editor
 {
     /// <summary>
     /// 音效配置条目的自定义绘制器 - 显示键名而非 Element 0/1/2
+    /// 支持多个AudioClip的编辑
     /// </summary>
     [CustomPropertyDrawer(typeof(AudioConfigSO.SoundClipEntry))]
     public class SoundClipEntryDrawer : PropertyDrawer
@@ -16,12 +17,19 @@ namespace PopLife.Editor
 
             // 获取属性
             SerializedProperty keyProp = property.FindPropertyRelative("key");
-            SerializedProperty clipProp = property.FindPropertyRelative("clip");
+            SerializedProperty clipsProp = property.FindPropertyRelative("clips");
 
             // 使用键名作为显示标签，如果为空则显示默认标签
             string displayName = string.IsNullOrEmpty(keyProp.stringValue)
                 ? "(未命名音效)"
                 : keyProp.stringValue;
+
+            // 显示音频数量提示
+            int clipCount = clipsProp != null ? clipsProp.arraySize : 0;
+            if (clipCount > 1)
+            {
+                displayName += $" [{clipCount} variants]";
+            }
 
             // 绘制折叠标题
             property.isExpanded = EditorGUI.Foldout(
@@ -46,11 +54,13 @@ namespace PopLife.Editor
 
                 y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
-                // 绘制 Clip 字段
+                // 绘制 Clips 数组字段（使用默认的数组绘制器）
+                float clipsHeight = EditorGUI.GetPropertyHeight(clipsProp, true);
                 EditorGUI.PropertyField(
-                    new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight),
-                    clipProp,
-                    new GUIContent("Audio Clip", "音效文件")
+                    new Rect(position.x, y, position.width, clipsHeight),
+                    clipsProp,
+                    new GUIContent("Audio Clips", "音效文件列表（多个时随机播放）"),
+                    true // includeChildren
                 );
 
                 EditorGUI.indentLevel--;
@@ -64,13 +74,19 @@ namespace PopLife.Editor
             if (!property.isExpanded)
                 return EditorGUIUtility.singleLineHeight;
 
-            // 折叠标题 + Key + Clip
-            return EditorGUIUtility.singleLineHeight * 3 + EditorGUIUtility.standardVerticalSpacing * 2;
+            // 折叠标题 + Key + Clips数组
+            SerializedProperty clipsProp = property.FindPropertyRelative("clips");
+            float clipsHeight = EditorGUI.GetPropertyHeight(clipsProp, true);
+
+            return EditorGUIUtility.singleLineHeight * 2
+                   + EditorGUIUtility.standardVerticalSpacing * 2
+                   + clipsHeight;
         }
     }
 
     /// <summary>
     /// 背景音乐配置条目的自定义绘制器 - 显示键名而非 Element 0/1/2
+    /// 支持多个AudioClip的编辑
     /// </summary>
     [CustomPropertyDrawer(typeof(AudioConfigSO.MusicClipEntry))]
     public class MusicClipEntryDrawer : PropertyDrawer
@@ -81,7 +97,7 @@ namespace PopLife.Editor
 
             // 获取属性
             SerializedProperty keyProp = property.FindPropertyRelative("key");
-            SerializedProperty clipProp = property.FindPropertyRelative("clip");
+            SerializedProperty clipsProp = property.FindPropertyRelative("clips");
             SerializedProperty loopProp = property.FindPropertyRelative("loop");
             SerializedProperty volumeProp = property.FindPropertyRelative("volume");
 
@@ -89,6 +105,13 @@ namespace PopLife.Editor
             string displayName = string.IsNullOrEmpty(keyProp.stringValue)
                 ? "(未命名音乐)"
                 : keyProp.stringValue;
+
+            // 显示音频数量提示
+            int clipCount = clipsProp != null ? clipsProp.arraySize : 0;
+            if (clipCount > 1)
+            {
+                displayName += $" [{clipCount} variants]";
+            }
 
             // 绘制折叠标题
             property.isExpanded = EditorGUI.Foldout(
@@ -112,13 +135,15 @@ namespace PopLife.Editor
                 );
                 y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
-                // Clip
+                // Clips 数组
+                float clipsHeight = EditorGUI.GetPropertyHeight(clipsProp, true);
                 EditorGUI.PropertyField(
-                    new Rect(position.x, y, position.width, EditorGUIUtility.singleLineHeight),
-                    clipProp,
-                    new GUIContent("Audio Clip", "音乐文件")
+                    new Rect(position.x, y, position.width, clipsHeight),
+                    clipsProp,
+                    new GUIContent("Audio Clips", "音乐文件列表（多个时随机播放）"),
+                    true // includeChildren
                 );
-                y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+                y += clipsHeight + EditorGUIUtility.standardVerticalSpacing;
 
                 // Loop
                 EditorGUI.PropertyField(
@@ -146,8 +171,13 @@ namespace PopLife.Editor
             if (!property.isExpanded)
                 return EditorGUIUtility.singleLineHeight;
 
-            // 折叠标题 + Key + Clip + Loop + Volume
-            return EditorGUIUtility.singleLineHeight * 5 + EditorGUIUtility.standardVerticalSpacing * 4;
+            // 折叠标题 + Key + Clips数组 + Loop + Volume
+            SerializedProperty clipsProp = property.FindPropertyRelative("clips");
+            float clipsHeight = EditorGUI.GetPropertyHeight(clipsProp, true);
+
+            return EditorGUIUtility.singleLineHeight * 4
+                   + EditorGUIUtility.standardVerticalSpacing * 4
+                   + clipsHeight;
         }
     }
 }

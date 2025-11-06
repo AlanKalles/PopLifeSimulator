@@ -42,11 +42,29 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Upper
+  - name: StoreBackgroundLayer
+    uniqueID: 3022431455
+    locked: 0
+  - name: ShelfLayer
     uniqueID: 4193448049
     locked: 0
-  - name: UI
+  - name: InsideStoreLayer
+    uniqueID: 742409127
+    locked: 0
+  - name: WindowLayer
     uniqueID: 3663806603
+    locked: 0
+  - name: OutsideStoreLayer
+    uniqueID: 1970057691
+    locked: 0
+  - name: OutdoorLight
+    uniqueID: 3182604485
+    locked: 0
+  - name: FRAME
+    uniqueID: 2172318253
+    locked: 0
+  - name: UI
+    uniqueID: 750285763
     locked: 0
   m_RenderingLayers:
   - Default

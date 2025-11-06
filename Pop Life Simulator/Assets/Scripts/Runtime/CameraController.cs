@@ -19,7 +19,6 @@ namespace PopLife.Runtime
         [Header("边界设置")]
         [SerializeField] private Vector2 boundaryMin = new Vector2(-10f, -10f);
         [SerializeField] private Vector2 boundaryMax = new Vector2(10f, 10f);
-        [SerializeField] private bool useDynamicBoundary = true;
 
         private Camera targetCamera;
         private float currentZoom = 1f;
@@ -28,8 +27,6 @@ namespace PopLife.Runtime
         private bool isDragging = false;
         private Vector3 dragOrigin;
         private Vector3 lastMousePosition;
-
-        private Vector2 originalCameraBounds;
 
         private void Awake()
         {
@@ -44,8 +41,6 @@ namespace PopLife.Runtime
                 baseOrthographicSize = targetCamera.orthographicSize;
                 currentZoom = 1f;
                 targetZoom = 1f;
-
-                CalculateOriginalBounds();
             }
             else
             {
@@ -124,50 +119,35 @@ namespace PopLife.Runtime
         {
             Vector3 pos = targetCamera.transform.position;
 
-            Vector2 effectiveBoundaryMin = boundaryMin;
-            Vector2 effectiveBoundaryMax = boundaryMax;
+            // 计算当前相机视野的半宽和半高
+            float cameraHalfHeight = targetCamera.orthographicSize;
+            float cameraHalfWidth = cameraHalfHeight * targetCamera.aspect;
 
-            if (useDynamicBoundary)
+            // 计算相机中心点的有效边界（确保相机视野不超出矩形框）
+            float minX = boundaryMin.x + cameraHalfWidth;
+            float maxX = boundaryMax.x - cameraHalfWidth;
+            float minY = boundaryMin.y + cameraHalfHeight;
+            float maxY = boundaryMax.y - cameraHalfHeight;
+
+            // 防止边界翻转（当相机视野大于边界框时，限制在中心）
+            if (minX > maxX)
             {
-                float halfHeight = targetCamera.orthographicSize;
-                float halfWidth = halfHeight * targetCamera.aspect;
-
-                float maxHalfHeight = baseOrthographicSize * maxZoomMultiplier;
-                float maxHalfWidth = maxHalfHeight * targetCamera.aspect;
-
-                effectiveBoundaryMin = new Vector2(
-                    originalCameraBounds.x - (maxHalfWidth - halfWidth),
-                    originalCameraBounds.y - (maxHalfHeight - halfHeight)
-                );
-
-                effectiveBoundaryMax = new Vector2(
-                    -originalCameraBounds.x + (maxHalfWidth - halfWidth),
-                    -originalCameraBounds.y + (maxHalfHeight - halfHeight)
-                );
-
-                effectiveBoundaryMin = Vector2.Max(effectiveBoundaryMin, -originalCameraBounds);
-                effectiveBoundaryMax = Vector2.Min(effectiveBoundaryMax, originalCameraBounds);
+                float centerX = (boundaryMin.x + boundaryMax.x) * 0.5f;
+                minX = maxX = centerX;
+            }
+            if (minY > maxY)
+            {
+                float centerY = (boundaryMin.y + boundaryMax.y) * 0.5f;
+                minY = maxY = centerY;
             }
 
-            pos.x = Mathf.Clamp(pos.x, effectiveBoundaryMin.x, effectiveBoundaryMax.x);
-            pos.y = Mathf.Clamp(pos.y, effectiveBoundaryMin.y, effectiveBoundaryMax.y);
+            // 约束相机中心点位置
+            pos.x = Mathf.Clamp(pos.x, minX, maxX);
+            pos.y = Mathf.Clamp(pos.y, minY, maxY);
 
             targetCamera.transform.position = pos;
         }
 
-        private void CalculateOriginalBounds()
-        {
-            float maxHalfHeight = baseOrthographicSize * maxZoomMultiplier;
-            float maxHalfWidth = maxHalfHeight * targetCamera.aspect;
-
-            originalCameraBounds = new Vector2(maxHalfWidth, maxHalfHeight);
-
-            if (!useDynamicBoundary)
-            {
-                boundaryMin = -originalCameraBounds;
-                boundaryMax = originalCameraBounds;
-            }
-        }
 
         public void SetZoom(float zoomMultiplier)
         {
@@ -191,13 +171,77 @@ namespace PopLife.Runtime
         {
             boundaryMin = min;
             boundaryMax = max;
-            useDynamicBoundary = false;
         }
 
-        public void EnableDynamicBoundaries()
+        private void OnDrawGizmosSelected()
         {
-            useDynamicBoundary = true;
-            CalculateOriginalBounds();
+            if (targetCamera == null)
+            {
+                targetCamera = GetComponent<Camera>();
+                if (targetCamera == null) return;
+            }
+
+            // 绘制边界矩形框（红色）
+            Gizmos.color = Color.red;
+            Vector3 bottomLeft = new Vector3(boundaryMin.x, boundaryMin.y, 0);
+            Vector3 bottomRight = new Vector3(boundaryMax.x, boundaryMin.y, 0);
+            Vector3 topRight = new Vector3(boundaryMax.x, boundaryMax.y, 0);
+            Vector3 topLeft = new Vector3(boundaryMin.x, boundaryMax.y, 0);
+
+            Gizmos.DrawLine(bottomLeft, bottomRight);
+            Gizmos.DrawLine(bottomRight, topRight);
+            Gizmos.DrawLine(topRight, topLeft);
+            Gizmos.DrawLine(topLeft, bottomLeft);
+
+            // 计算相机视野大小
+            float cameraHalfHeight = targetCamera.orthographic ? targetCamera.orthographicSize : 5f;
+            float cameraHalfWidth = cameraHalfHeight * targetCamera.aspect;
+
+            // 计算相机中心点可移动范围
+            float minX = boundaryMin.x + cameraHalfWidth;
+            float maxX = boundaryMax.x - cameraHalfWidth;
+            float minY = boundaryMin.y + cameraHalfHeight;
+            float maxY = boundaryMax.y - cameraHalfHeight;
+
+            // 防止边界翻转
+            if (minX > maxX)
+            {
+                float centerX = (boundaryMin.x + boundaryMax.x) * 0.5f;
+                minX = maxX = centerX;
+            }
+            if (minY > maxY)
+            {
+                float centerY = (boundaryMin.y + boundaryMax.y) * 0.5f;
+                minY = maxY = centerY;
+            }
+
+            // 绘制相机中心点可移动范围（绿色）
+            Gizmos.color = Color.green;
+            Vector3 moveBottomLeft = new Vector3(minX, minY, 0);
+            Vector3 moveBottomRight = new Vector3(maxX, minY, 0);
+            Vector3 moveTopRight = new Vector3(maxX, maxY, 0);
+            Vector3 moveTopLeft = new Vector3(minX, maxY, 0);
+
+            Gizmos.DrawLine(moveBottomLeft, moveBottomRight);
+            Gizmos.DrawLine(moveBottomRight, moveTopRight);
+            Gizmos.DrawLine(moveTopRight, moveTopLeft);
+            Gizmos.DrawLine(moveTopLeft, moveBottomLeft);
+
+            // 绘制当前相机视野边界（黄色）
+            if (Application.isPlaying)
+            {
+                Gizmos.color = Color.yellow;
+                Vector3 camPos = targetCamera.transform.position;
+                Vector3 viewBottomLeft = new Vector3(camPos.x - cameraHalfWidth, camPos.y - cameraHalfHeight, 0);
+                Vector3 viewBottomRight = new Vector3(camPos.x + cameraHalfWidth, camPos.y - cameraHalfHeight, 0);
+                Vector3 viewTopRight = new Vector3(camPos.x + cameraHalfWidth, camPos.y + cameraHalfHeight, 0);
+                Vector3 viewTopLeft = new Vector3(camPos.x - cameraHalfWidth, camPos.y + cameraHalfHeight, 0);
+
+                Gizmos.DrawLine(viewBottomLeft, viewBottomRight);
+                Gizmos.DrawLine(viewBottomRight, viewTopRight);
+                Gizmos.DrawLine(viewTopRight, viewTopLeft);
+                Gizmos.DrawLine(viewTopLeft, viewBottomLeft);
+            }
         }
     }
 }

@@ -29,7 +29,6 @@ namespace PopLife.Data
         [Header("建造信息")]
         public int buildCost;
         public int moveCost = 0;
-        public bool requiresBlueprint = true;
 
         [Header("拆除返还")]
         [Range(0f, 1f)]

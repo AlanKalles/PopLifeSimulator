@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4371751616218082288}
   - component: {fileID: 5561296961307550753}
   - component: {fileID: 7916991200547164013}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: nameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 6942746766661632910}
   - component: {fileID: 7293041814008331557}
   - component: {fileID: 7838269845894777152}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 2430258643284286113}
   - component: {fileID: 7950115688167528519}
   - component: {fileID: 4408182321847192097}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: detailsTetx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 3764677408311065560}
   - component: {fileID: 2596951836165562169}
   - component: {fileID: 5701402294180744813}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: buildingInfoPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -408,8 +408,8 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: -631160693
-  m_SortingOrder: 200
+  m_SortingLayerID: 750285763
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!225 &2596951836165562169
 CanvasGroup:

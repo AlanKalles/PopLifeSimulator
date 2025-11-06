@@ -14,21 +14,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soundClips:
   - key: Build_Lingerie
-    clip: {fileID: 8300000, guid: 487c3591504704c45a7703c37aa8f39f, type: 3}
+    clips:
+    - {fileID: 8300000, guid: 487c3591504704c45a7703c37aa8f39f, type: 3}
   - key: Build_Condom
-    clip: {fileID: 8300000, guid: 0769e19a7d5137244bd543fb8225066b, type: 3}
+    clips:
+    - {fileID: 8300000, guid: 0769e19a7d5137244bd543fb8225066b, type: 3}
   - key: Build_Vibrator
-    clip: {fileID: 8300000, guid: 3168f9c951ace624abee58e2717e3568, type: 3}
+    clips:
+    - {fileID: 8300000, guid: 3168f9c951ace624abee58e2717e3568, type: 3}
   - key: Build_Fleshlight
-    clip: {fileID: 8300000, guid: 3034fcc8b2b0ede45aa5449cfaba9276, type: 3}
+    clips:
+    - {fileID: 8300000, guid: 3034fcc8b2b0ede45aa5449cfaba9276, type: 3}
   - key: Build_Lubricant
-    clip: {fileID: 0}
+    clips:
+    - {fileID: 8300000, guid: 3034fcc8b2b0ede45aa5449cfaba9276, type: 3}
   - key: Build_BDSM
-    clip: {fileID: 8300000, guid: 077c40bcb3952164582319c2aac9f595, type: 3}
+    clips:
+    - {fileID: 8300000, guid: 077c40bcb3952164582319c2aac9f595, type: 3}
   - key: UI_Error
-    clip: {fileID: 8300000, guid: 3d63fcc6dd53b88478295e435f918226, type: 3}
+    clips:
+    - {fileID: 8300000, guid: 3d63fcc6dd53b88478295e435f918226, type: 3}
+    - {fileID: 8300000, guid: 7241c641f32484b4c862f507b6ef4327, type: 3}
+  - key: BuildingDestroyed
+    clips:
+    - {fileID: 8300000, guid: 9aa7070803af1564da119d753f617274, type: 3}
+    - {fileID: 8300000, guid: ea734e711524a0a48b26a270f9090ea3, type: 3}
+  - key: Build_Dildo
+    clips:
+    - {fileID: 8300000, guid: af742818f5221a844b886ff5942e3aeb, type: 3}
+  - key: BuildingUpgraded
+    clips:
+    - {fileID: 8300000, guid: 2b0dfcb1a8a1628428781007bba772e9, type: 3}
   musicClips:
   - key: BGM_Shop
-    clip: {fileID: 8300000, guid: 0122b01505303b94791133ad075d8caa, type: 3}
+    clips:
+    - {fileID: 8300000, guid: 0122b01505303b94791133ad075d8caa, type: 3}
     loop: 1
     volume: 0.5

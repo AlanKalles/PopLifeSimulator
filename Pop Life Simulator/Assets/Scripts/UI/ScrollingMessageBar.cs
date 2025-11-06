@@ -9,6 +9,7 @@ namespace PopLife.UI
     /// <summary>
     /// 滚动播报条 - 从右向左滚动显示消息队列
     /// 自动监听顾客结账事件并播报
+    /// 支持随机插入新闻文本
     /// </summary>
     public class ScrollingMessageBar : MonoBehaviour
     {
@@ -27,8 +28,16 @@ namespace PopLife.UI
         [Tooltip("最大队列容量")]
         [SerializeField] private int maxQueueSize = 10;
 
+        [Header("News Settings")]
+        [Tooltip("新闻文本库（可选）- 未设置则不播放新闻")]
+        [SerializeField] private NewsLibrary newsLibrary;
+
+        [Tooltip("启用自动新闻插入")]
+        [SerializeField] private bool enableRandomNews = true;
+
         [Header("Debug Info")]
         [SerializeField] private int currentQueueCount = 0; // 当前队列消息数（仅显示）
+        [SerializeField] private float nextNewsTime = 0f;   // 下次插入新闻的时间（仅显示）
 
         // 消息队列
         private Queue<string> messageQueue = new Queue<string>();
@@ -38,6 +47,10 @@ namespace PopLife.UI
         private float messageWidth = 0f;        // 当前消息宽度
         private float maskRightEdge = 0f;       // 遮罩右边缘X坐标
         private float maskLeftEdge = 0f;        // 遮罩左边缘X坐标
+
+        // 新闻插入定时器
+        private float newsTimer = 0f;           // 当前计时器
+        private float currentNewsInterval = 0f; // 当前随机间隔
 
         void Awake()
         {
@@ -53,6 +66,19 @@ namespace PopLife.UI
             {
                 maskRightEdge = maskRect.rect.width / 2f;
                 maskLeftEdge = -maskRect.rect.width / 2f;
+            }
+
+            // 初始化新闻定时器
+            ResetNewsTimer();
+        }
+
+        void Start()
+        {
+            // 验证新闻库配置
+            if (enableRandomNews && newsLibrary == null)
+            {
+                Debug.LogWarning("[ScrollingMessageBar] Random news enabled but NewsLibrary not assigned. Disabling random news.");
+                enableRandomNews = false;
             }
         }
 
@@ -98,6 +124,7 @@ namespace PopLife.UI
 
         void Update()
         {
+            // 滚动逻辑
             if (isScrolling && messageContainer != null && messageText != null)
             {
                 // 从右向左移动
@@ -121,6 +148,23 @@ namespace PopLife.UI
                         messageText.text = "";
                     }
                 }
+            }
+
+            // 新闻插入定时器
+            if (enableRandomNews && newsLibrary != null)
+            {
+                newsTimer += Time.deltaTime;
+
+                if (newsTimer >= currentNewsInterval)
+                {
+                    // 时间到，插入随机新闻
+                    InsertRandomNews();
+                    // 重置定时器
+                    ResetNewsTimer();
+                }
+
+                // 更新调试显示
+                nextNewsTime = currentNewsInterval - newsTimer;
             }
         }
 
@@ -244,6 +288,115 @@ namespace PopLife.UI
         private void TestClearQueue()
         {
             ClearQueue();
+        }
+
+        /// <summary>
+        /// 插入随机新闻到队列
+        /// </summary>
+        private void InsertRandomNews()
+        {
+            if (newsLibrary == null)
+            {
+                Debug.LogWarning("[ScrollingMessageBar] Cannot insert news: NewsLibrary is null");
+                return;
+            }
+
+            string randomNews = newsLibrary.GetRandomNews();
+
+            if (string.IsNullOrEmpty(randomNews))
+            {
+                Debug.LogWarning("[ScrollingMessageBar] No news available in library");
+                return;
+            }
+
+            // 添加到队列
+            EnqueueMessage(randomNews);
+            Debug.Log($"[ScrollingMessageBar] Random news inserted: {randomNews}");
+        }
+
+        /// <summary>
+        /// 重置新闻定时器（获取新的随机间隔）
+        /// </summary>
+        private void ResetNewsTimer()
+        {
+            newsTimer = 0f;
+
+            if (newsLibrary != null)
+            {
+                currentNewsInterval = newsLibrary.GetRandomInterval();
+            }
+            else
+            {
+                currentNewsInterval = 10f; // 默认间隔
+            }
+
+            nextNewsTime = currentNewsInterval;
+            Debug.Log($"[ScrollingMessageBar] Next news will be inserted in {currentNewsInterval:F1} seconds");
+        }
+
+        /// <summary>
+        /// 手动插入新闻（供外部调用）
+        /// </summary>
+        public void InsertNewsManually(string newsText)
+        {
+            if (string.IsNullOrWhiteSpace(newsText))
+            {
+                Debug.LogWarning("[ScrollingMessageBar] Cannot insert empty news");
+                return;
+            }
+
+            EnqueueMessage(newsText);
+            Debug.Log($"[ScrollingMessageBar] Manual news inserted: {newsText}");
+        }
+
+        /// <summary>
+        /// 启用/禁用随机新闻
+        /// </summary>
+        public void SetRandomNewsEnabled(bool enabled)
+        {
+            enableRandomNews = enabled;
+
+            if (enabled)
+            {
+                ResetNewsTimer();
+                Debug.Log("[ScrollingMessageBar] Random news enabled");
+            }
+            else
+            {
+                Debug.Log("[ScrollingMessageBar] Random news disabled");
+            }
+        }
+
+        /// <summary>
+        /// 设置新闻库（运行时）
+        /// </summary>
+        public void SetNewsLibrary(NewsLibrary library)
+        {
+            newsLibrary = library;
+
+            if (library != null && enableRandomNews)
+            {
+                ResetNewsTimer();
+                Debug.Log($"[ScrollingMessageBar] News library set: {library.name}");
+            }
+        }
+
+        /// <summary>
+        /// 测试方法 - 手动插入一条随机新闻
+        /// </summary>
+        [ContextMenu("Test - Insert Random News Now")]
+        private void TestInsertRandomNews()
+        {
+            InsertRandomNews();
+        }
+
+        /// <summary>
+        /// 测试方法 - 切换随机新闻开关
+        /// </summary>
+        [ContextMenu("Test - Toggle Random News")]
+        private void TestToggleRandomNews()
+        {
+            SetRandomNewsEnabled(!enableRandomNews);
         }
     }
 }

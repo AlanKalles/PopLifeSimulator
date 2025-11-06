@@ -124,10 +124,19 @@ namespace PopLife
                 return;
             }
 
-            AudioClip clip = audioConfig.GetMusic(key);
+            // 获取音乐配置条目（包含clip、loop、volume等信息）
+            var musicEntry = audioConfig.GetMusicEntry(key);
+            if (musicEntry == null)
+            {
+                Debug.LogWarning($"[AudioManager] 未找到音乐配置: {key}");
+                return;
+            }
+
+            // 随机获取一个AudioClip
+            AudioClip clip = musicEntry.GetRandomClip();
             if (clip == null)
             {
-                Debug.LogWarning($"[AudioManager] 未找到音乐: {key}");
+                Debug.LogWarning($"[AudioManager] 音乐配置 {key} 没有有效的AudioClip");
                 return;
             }
 
@@ -137,9 +146,10 @@ namespace PopLife
                 musicSource.Stop();
             }
 
-            // 播放新音乐
+            // 播放新音乐（应用配置中的loop和volume设置）
             musicSource.clip = clip;
-            musicSource.volume = masterVolume * musicVolume;
+            musicSource.loop = musicEntry.loop;
+            musicSource.volume = masterVolume * musicVolume * musicEntry.volume;
             musicSource.Play();
             currentMusicKey = key;
 

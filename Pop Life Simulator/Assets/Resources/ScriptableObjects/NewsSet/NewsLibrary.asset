@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0df2516dc31b974fb02357276616287, type: 3}
+  m_Name: NewsLibrary
+  m_EditorClassIdentifier: 
+  newsTexts:
+  - "News: New study links city light pollution to declining sperm health\u2014experts
+    urge residents to turn off their lights at night."
+  - 'News: Employment rates have climbed this quarter, signaling steady growth across
+    multiple sectors.'
+  - 'News: Scientists announce the development of Vitamin 08-Alpha, hailed as the
+    strongest restorative tonic to date.'
+  - "News: Murrow R. returns to court for his fourth divorce\u2014sources say the
+    battle over inheritance is already turning ugly.\nNews Sponsored by J.P Film"
+  - 'News: National Police Department issues a warning against the growing propaganda
+    of the the White Ring Sect, citing concerns over extremist influence.'
+  - "News: Sampling or Stealing?! South Star Label\u2019s new contract singer sparks
+    controversy after relying heavily on \u2018sampling\u2019."
+  - 'News: Festive Winter Approaching before you notice: Dec 16th. National holiday
+    on Dec 16-17th.'
+  - "News: Nearly three-quarters of the nation\u2019s provinces now host PEI facilities,
+    marking a major milestone in the program\u2019s expansion"
+  - 'News: Ride w. the Trend: KUNI$Konig new album release. Sponsored by Exit App'
+  - 'News: Famed boy band N.O.X begins filming their first adult-rated music video'
+  minInsertInterval: 6
+  maxInsertInterval: 10
