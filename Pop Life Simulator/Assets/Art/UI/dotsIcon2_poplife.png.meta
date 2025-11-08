@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: b2b5caad61379ab40a3dbfbf5a2735df
+guid: 26ddf6c728134b24e8d24ae998706e35
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1227564049746678622
-    second: dotsIcon_poplife_0
+      213: -4680678088677872694
+    second: dotsIcon2_poplife_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: dotsIcon_poplife_0
+      name: dotsIcon2_poplife_0
       rect:
         serializedVersion: 2
         x: 7
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2ac2fcb2001d6fee0800000000000000
-      internalID: -1227564049746678622
+      spriteID: acba660e314ea0fb0800000000000000
+      internalID: -4680678088677872694
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      dotsIcon_poplife_0: -1227564049746678622
+      dotsIcon2_poplife_0: -4680678088677872694
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
