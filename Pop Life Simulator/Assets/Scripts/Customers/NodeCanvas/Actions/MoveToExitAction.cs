@@ -219,6 +219,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (spriteRenderer != null)
             {
                 spriteRenderer.sortingLayerName = "OutsideStoreLayer";
+
+                // 同步emoji子对象的sorting layer
+                SpriteRenderer emojiRenderer = agent.transform.Find("emoji")?.GetComponent<SpriteRenderer>();
+                if (emojiRenderer != null)
+                {
+                    emojiRenderer.sortingLayerName = "OutsideStoreLayer";
+                }
+
                 Debug.Log($"[MoveToExitAction] 顾客 {blackboard.customerId} 离开商店，sortingLayer 切换到 OutsideStoreLayer");
             }
 

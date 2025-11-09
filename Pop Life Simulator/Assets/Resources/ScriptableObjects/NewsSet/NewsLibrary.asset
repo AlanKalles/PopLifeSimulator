@@ -13,23 +13,23 @@ MonoBehaviour:
   m_Name: NewsLibrary
   m_EditorClassIdentifier: 
   newsTexts:
-  - "News: New study links city light pollution to declining sperm health\u2014experts
+  - "New study links city light pollution to declining sperm health\u2014experts
     urge residents to turn off their lights at night."
-  - 'News: Employment rates have climbed this quarter, signaling steady growth across
-    multiple sectors.'
-  - 'News: Scientists announce the development of Vitamin 08-Alpha, hailed as the
-    strongest restorative tonic to date.'
-  - "News: Murrow R. returns to court for his fourth divorce\u2014sources say the
-    battle over inheritance is already turning ugly.\nNews Sponsored by J.P Film"
-  - 'News: National Police Department issues a warning against the growing propaganda
-    of the the White Ring Sect, citing concerns over extremist influence.'
-  - "News: Sampling or Stealing?! South Star Label\u2019s new contract singer sparks
-    controversy after relying heavily on \u2018sampling\u2019."
-  - 'News: Festive Winter Approaching before you notice: Dec 16th. National holiday
-    on Dec 16-17th.'
-  - "News: Nearly three-quarters of the nation\u2019s provinces now host PEI facilities,
+  - Employment rates have climbed this quarter, signaling steady growth across multiple
+    sectors.
+  - Scientists announce the development of Vitamin 08-Alpha, hailed as the strongest
+    restorative tonic to date.
+  - "Murrow R. returns to court for his fourth divorce\u2014sources say the battle
+    over inheritance is already turning ugly - News Sponsored by J.P Film"
+  - National Police Department issues a warning against the growing propaganda of
+    the the White Ring Sect, citing concerns over extremist influence.
+  - "Sampling or Stealing?! South Star Label\u2019s new contract singer sparks controversy
+    after relying heavily on \u2018sampling\u2019."
+  - 'Festive Winter Approaching before you notice: Dec 16th. National holiday on
+    Dec 16-17th.'
+  - "Nearly three-quarters of the nation\u2019s provinces now host PEI facilities,
     marking a major milestone in the program\u2019s expansion"
-  - 'News: Ride w. the Trend: KUNI$Konig new album release. Sponsored by Exit App'
-  - 'News: Famed boy band N.O.X begins filming their first adult-rated music video'
-  minInsertInterval: 6
+  - 'Ride w. the Trend: KUNI$Konig new album release. Sponsored by Exit App'
+  - Famed boy band N.O.X begins filming their first adult-rated music video
+  minInsertInterval: 8
   maxInsertInterval: 10

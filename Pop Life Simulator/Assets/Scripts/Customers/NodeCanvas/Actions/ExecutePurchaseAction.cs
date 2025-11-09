@@ -20,6 +20,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
         [Tooltip("目标货架ID（用于记录已购买archetype）")]
         public BBParameter<string> targetShelfId;
 
+        [BlackboardOnly]
+        [Tooltip("购买是否成功（用于判断是否播放拾取动画）")]
+        public BBParameter<bool> lastPurchaseSuccessful;
+
         [Tooltip("是否每次只购买1件（推荐true，因为TryPurchase一次买一件）")]
         public bool purchaseOneByOne = true;
 
@@ -114,6 +118,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 // 记录已购买的货架archetype
                 RecordPurchasedArchetype();
 
+                // 设置购买成功标志（用于触发拾取动画）
+                if (lastPurchaseSuccessful != null)
+                {
+                    lastPurchaseSuccessful.value = true;
+                }
+
                 string msg = $"Successfully purchased {successCount}/{targetQty} items, remaining money: ${blackboard.moneyBag}";
                 Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogPurchase(blackboard.customerId, msg);
@@ -121,6 +131,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
             else
             {
+                // 设置购买失败标志（不触发拾取动画）
+                if (lastPurchaseSuccessful != null)
+                {
+                    lastPurchaseSuccessful.value = false;
+                }
+
                 string msg = "Purchase failed, no items purchased";
                 Debug.LogWarning($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogWarning(blackboard.customerId, msg);

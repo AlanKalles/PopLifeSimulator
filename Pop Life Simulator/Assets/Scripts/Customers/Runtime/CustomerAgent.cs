@@ -8,6 +8,8 @@ namespace PopLife.Customers.Runtime
 {
     [RequireComponent(typeof(CustomerBlackboardAdapter))]
     [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(Animator))]
+    [RequireComponent(typeof(CustomerAnimationController))]
     public class CustomerAgent : MonoBehaviour
     {
         public CustomerBlackboardAdapter bb;
@@ -23,12 +25,14 @@ namespace PopLife.Customers.Runtime
 
         private SpriteRenderer spriteRenderer;
         private TextMeshPro nameText;
+        private CustomerAnimationController animationController;
 
         void Awake()
         {
             if (!bb) bb = GetComponent<CustomerBlackboardAdapter>();
             if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
             if (!nameText) nameText = GetComponentInChildren<TextMeshPro>();
+            if (!animationController) animationController = GetComponent<CustomerAnimationController>();
         }
 
 

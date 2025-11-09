@@ -194,6 +194,7 @@ GameObject:
   - component: {fileID: 2995252074383847997}
   - component: {fileID: 7018504740481146283}
   - component: {fileID: 7583473206932270773}
+  - component: {fileID: 8287113208773629315}
   m_Layer: 7
   m_Name: customer
   m_TagString: Untagged
@@ -323,7 +324,8 @@ MonoBehaviour:
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"hasEnteredStore":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.hasEnteredStore","_name":"hasEnteredStore","_id":"b657e641-468f-496c-96ba-4f4349ffd62e","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"entranceOutsideAnchor":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceOutsideAnchor","_name":"entranceOutsideAnchor","_id":"d62925ac-2e35-4c32-b4ab-17eb8e6a3659","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
     UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"entranceInsideAnchor":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceInsideAnchor","_name":"entranceInsideAnchor","_id":"4e110af2-9d53-4237-b559-c85e4cc9bbb7","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
-    UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}}}'
+    UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"lastPurchaseSuccessful":{"_name":"lastPurchaseSuccessful","_id":"3bc003df-9063-4195-b307-9006910dea9f","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}}}'
   _objectReferences: []
   _serializedVariables:
   - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.customerId","_name":"customerId","_id":"5d567434-7a78-4a26-bd7d-261896895d73","$type":"NodeCanvas.Framework.Variable`1[[System.String,
@@ -397,6 +399,9 @@ MonoBehaviour:
     _references: []
   - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceInsideAnchor","_name":"entranceInsideAnchor","_id":"4e110af2-9d53-4237-b559-c85e4cc9bbb7","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
       UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}'
+    _references: []
+  - _json: '{"_name":"lastPurchaseSuccessful","_id":"3bc003df-9063-4195-b307-9006910dea9f","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
     _references: []
 --- !u!114 &5441276965745480517
 MonoBehaviour:
@@ -685,6 +690,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8287113208773629315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7018696242757326488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a09301a8316732c479bf859ea024b2bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 2995252074383847997}
+  idleThreshold: 0.1
 --- !u!1 &8191261946253030153
 GameObject:
   m_ObjectHideFlags: 0
@@ -758,9 +777,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 750285763
+  m_SortingLayer: 8
+  m_SortingOrder: 10
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
