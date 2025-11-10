@@ -22,13 +22,13 @@ MonoBehaviour:
   - id: CSP004
     sprite: {fileID: 21300000, guid: ce6828b9da8624b409a0774c8b3af8bc, type: 3}
   - id: CSP005
-    sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}
+    sprite: {fileID: 21300000, guid: d800b75c844cefc49a5cca8c0690214f, type: 3}
   - id: CSP006
-    sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}
+    sprite: {fileID: 21300000, guid: ce8e29ba034bb69489fd2e2e5a75e29f, type: 3}
   - id: CSP007
-    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+    sprite: {fileID: 21300000, guid: 4456c234b9419bb41b24bdb1c1be6df4, type: 3}
   - id: CSP008
-    sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}
+    sprite: {fileID: 21300000, guid: 04b8bca1621652248a907f624862de3b, type: 3}
   - id: CSP009
     sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
   - id: CSP010

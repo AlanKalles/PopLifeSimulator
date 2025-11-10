@@ -26,7 +26,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         private FollowerEntity followerEntity;
         private AIDestinationSetter destinationSetter;
-        private CustomerBlackboardAdapter blackboard;
+        private CustomerBlackboardAdapter customerBlackboard;
 
         protected override string info
         {
@@ -38,7 +38,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 获取组件
             followerEntity = agent.GetComponent<FollowerEntity>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
-            blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
 
             if (followerEntity == null)
             {
@@ -52,9 +52,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             {
                 followerEntity.maxSpeed = moveSpeed.value;
             }
-            else if (blackboard != null && blackboard.moveSpeed > 0)
+            else if (customerBlackboard != null && customerBlackboard.moveSpeed > 0)
             {
-                followerEntity.maxSpeed = blackboard.moveSpeed;
+                followerEntity.maxSpeed = customerBlackboard.moveSpeed;
             }
 
             // 获取目标 Transform（真实坐标法）
@@ -62,7 +62,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (targetTransform == null)
             {
-                Debug.LogError($"[MoveToTargetAction] 顾客 {blackboard?.customerId} 没有分配队列位置");
+                Debug.LogError($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 没有分配队列位置");
                 EndAction(false);
                 return;
             }
@@ -81,7 +81,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             followerEntity.isStopped = false;
             hasReachedTarget.value = false;
 
-            Debug.Log($"[MoveToTargetAction] 顾客 {blackboard?.customerId} 开始移动到 {targetTransform.position}");
+            Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 开始移动到 {targetTransform.position}");
         }
 
         protected override void OnUpdate()
@@ -96,7 +96,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (followerEntity.reachedDestination)
             {
                 hasReachedTarget.value = true;
-                Debug.Log($"[MoveToTargetAction] 顾客 {blackboard?.customerId} 到达目标 (reachedDestination = true)");
+                Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 到达目标 (reachedDestination = true)");
 
                 // 停止移动
                 followerEntity.isStopped = true;
@@ -114,7 +114,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 {
                     hasReachedTarget.value = true;
                     followerEntity.isStopped = true;
-                    Debug.Log($"[MoveToTargetAction] 顾客 {blackboard?.customerId} 到达目标 (distance {dist:F2}m <= {stoppingDistance}m)");
+                    Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 到达目标 (distance {dist:F2}m <= {stoppingDistance}m)");
                     EndAction(true);
                     return;
                 }

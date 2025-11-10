@@ -37,23 +37,17 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // 【闭店检查】如果商店闭店且顾客有待结账金额，跳过货架选择
+            // 【闭店检查】如果商店闭店，停止寻找新货架，退出购物循环
             if (adapter.isClosingTime)
             {
-                if (adapter.pendingPayment > 0)
-                {
-                    // 有待结账金额 → 跳过购物，返回失败触发 Repeater 退出
-                    Debug.Log($"[SelectTargetShelfAction] 商店闭店，顾客 {adapter.customerId} 跳过购物 (待结账: ${adapter.pendingPayment})");
+                Debug.Log($"[SelectTargetShelfAction] 商店已闭店，顾客 {adapter.customerId} 停止购物，准备结账 (待结账: ${adapter.pendingPayment})");
 
-                    // 清空目标货架ID
-                    targetShelfId.value = string.Empty;
-                    adapter.targetShelfId = string.Empty;
+                // 清空目标货架ID，确保行为树退出购物循环
+                targetShelfId.value = string.Empty;
+                adapter.targetShelfId = string.Empty;
 
-                    EndAction(false);
-                    return;
-                }
-                // 无待结账金额 → 继续正常选货架（可能需要买东西才能结账）
-                Debug.Log($"[SelectTargetShelfAction] 商店闭店，但顾客 {adapter.customerId} 无待结账金额，继续尝试购物");
+                EndAction(false); // 返回 Failure 触发 Repeater 退出循环
+                return;
             }
 
             // 获取策略集

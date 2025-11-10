@@ -15,7 +15,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         [Tooltip("闭店时的等待时间（秒）")]
         public float urgentWaitTime = 0.2f;
 
-        private float elapsedTime;
+        private float skipwaitElapsedTime;
         private float targetWaitTime;
 
         protected override string info
@@ -33,7 +33,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            elapsedTime = 0f;
+            skipwaitElapsedTime = 0f;
             targetWaitTime = blackboard.isClosingTime ? urgentWaitTime : normalWaitTime;
 
             Debug.Log($"[SkipWaitIfClosing] Customer {blackboard.customerId} 等待 {targetWaitTime}s (closing: {blackboard.isClosingTime})");
@@ -41,9 +41,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnUpdate()
         {
-            elapsedTime += Time.deltaTime;
+            skipwaitElapsedTime += Time.deltaTime;
 
-            if (elapsedTime >= targetWaitTime)
+            if (skipwaitElapsedTime >= targetWaitTime)
             {
                 EndAction(true);
             }

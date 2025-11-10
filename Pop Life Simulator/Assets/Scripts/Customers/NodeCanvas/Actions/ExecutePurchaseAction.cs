@@ -28,7 +28,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         public bool purchaseOneByOne = true;
 
         private CustomerInteraction interaction;
-        private CustomerBlackboardAdapter blackboard;
+        private CustomerBlackboardAdapter customerBlackboard;
         private int successCount = 0;
 
         protected override string info
@@ -40,7 +40,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         {
             // 获取组件
             interaction = agent.GetComponent<CustomerInteraction>();
-            blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
 
             if (interaction == null)
             {
@@ -49,7 +49,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            if (blackboard == null)
+            if (customerBlackboard == null)
             {
                 Debug.LogError("[ExecutePurchaseAction] CustomerBlackboardAdapter component not found");
                 EndAction(false);
@@ -61,8 +61,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (targetQty <= 0)
             {
                 string msg = $"Purchase quantity is 0, skipping purchase";
-                Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
-                ScreenLogger.LogWarning(blackboard.customerId, msg);
+                Debug.Log($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(customerBlackboard.customerId, msg);
                 EndAction(false);
                 return;
             }
@@ -83,8 +83,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     {
                         // 购买失败（库存不足或钱不够），停止
                         string msg = $"Purchase failed at item {i + 1} (out of stock or insufficient money)";
-                        Debug.LogWarning($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
-                        ScreenLogger.LogWarning(blackboard.customerId, msg);
+                        Debug.LogWarning($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} {msg}");
+                        ScreenLogger.LogWarning(customerBlackboard.customerId, msg);
                         break;
                     }
                 }
@@ -102,14 +102,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
             purchaseQuantity.value = successCount;
 
             // 同步到CustomerBlackboardAdapter
-            blackboard.purchaseQuantity = successCount;
+            customerBlackboard.purchaseQuantity = successCount;
 
             // 同步到NodeCanvas黑板
 #if NODECANVAS
-            if (blackboard.ncBlackboard != null)
+            if (customerBlackboard.ncBlackboard != null)
             {
-                blackboard.ncBlackboard.SetVariableValue("moneyBag", blackboard.moneyBag);
-                blackboard.ncBlackboard.SetVariableValue("purchaseQuantity", successCount);
+                customerBlackboard.ncBlackboard.SetVariableValue("moneyBag", customerBlackboard.moneyBag);
+                customerBlackboard.ncBlackboard.SetVariableValue("purchaseQuantity", successCount);
             }
 #endif
 
@@ -124,9 +124,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     lastPurchaseSuccessful.value = true;
                 }
 
-                string msg = $"Successfully purchased {successCount}/{targetQty} items, remaining money: ${blackboard.moneyBag}";
-                Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
-                ScreenLogger.LogPurchase(blackboard.customerId, msg);
+                string msg = $"Successfully purchased {successCount}/{targetQty} items, remaining money: ${customerBlackboard.moneyBag}";
+                Debug.Log($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} {msg}");
+                ScreenLogger.LogPurchase(customerBlackboard.customerId, msg);
                 EndAction(true);
             }
             else
@@ -138,8 +138,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 }
 
                 string msg = "Purchase failed, no items purchased";
-                Debug.LogWarning($"[ExecutePurchaseAction] Customer {blackboard.customerId} {msg}");
-                ScreenLogger.LogWarning(blackboard.customerId, msg);
+                Debug.LogWarning($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(customerBlackboard.customerId, msg);
                 EndAction(false);
             }
         }
@@ -172,15 +172,15 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
 
             // 添加到已购买列表
-            if (blackboard.purchasedArchetypes == null)
+            if (customerBlackboard.purchasedArchetypes == null)
             {
-                blackboard.purchasedArchetypes = new System.Collections.Generic.HashSet<string>();
+                customerBlackboard.purchasedArchetypes = new System.Collections.Generic.HashSet<string>();
             }
 
-            bool added = blackboard.purchasedArchetypes.Add(shelfArchetype.archetypeId);
+            bool added = customerBlackboard.purchasedArchetypes.Add(shelfArchetype.archetypeId);
             if (added)
             {
-                Debug.Log($"[ExecutePurchaseAction] Customer {blackboard.customerId} marked archetype {shelfArchetype.archetypeId} as purchased");
+                Debug.Log($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} marked archetype {shelfArchetype.archetypeId} as purchased");
             }
         }
 

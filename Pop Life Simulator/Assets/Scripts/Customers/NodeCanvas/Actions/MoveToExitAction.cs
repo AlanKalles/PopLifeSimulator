@@ -18,7 +18,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         private FollowerEntity followerEntity;
         private AIDestinationSetter destinationSetter;
-        private CustomerBlackboardAdapter blackboard;
+        private CustomerBlackboardAdapter customerBlackboard;
         private Transform targetTransform;
         private float startTime;
         private bool reachedInside = false;
@@ -34,7 +34,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 获取组件
             followerEntity = agent.GetComponent<FollowerEntity>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
-            blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
             spriteRenderer = agent.GetComponent<SpriteRenderer>();
 
             if (followerEntity == null)
@@ -44,7 +44,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            if (blackboard == null)
+            if (customerBlackboard == null)
             {
                 Debug.LogError("[MoveToExitAction] 找不到 CustomerBlackboardAdapter 组件");
                 EndAction(false);
@@ -59,27 +59,27 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
 
             // 验证出口配置
-            if (blackboard.entranceInsideAnchor == null)
+            if (customerBlackboard.entranceInsideAnchor == null)
             {
-                Debug.LogError($"[MoveToExitAction] 顾客 {blackboard.customerId} 没有设置 entranceInsideAnchor");
+                Debug.LogError($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 没有设置 entranceInsideAnchor");
                 EndAction(false);
                 return;
             }
 
-            if (blackboard.entranceOutsideAnchor == null)
+            if (customerBlackboard.entranceOutsideAnchor == null)
             {
-                Debug.LogError($"[MoveToExitAction] 顾客 {blackboard.customerId} 没有设置 entranceOutsideAnchor");
+                Debug.LogError($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 没有设置 entranceOutsideAnchor");
                 EndAction(false);
                 return;
             }
 
             // 设置目标为内部锚点（出口内侧）
-            targetTransform = blackboard.entranceInsideAnchor;
+            targetTransform = customerBlackboard.entranceInsideAnchor;
 
             // 设置移动速度
-            if (blackboard.moveSpeed > 0)
+            if (customerBlackboard.moveSpeed > 0)
             {
-                followerEntity.maxSpeed = blackboard.moveSpeed;
+                followerEntity.maxSpeed = customerBlackboard.moveSpeed;
             }
 
             // 允许使用所有图形，让 A* 通过 NodeLink2 自动选择路径
@@ -102,12 +102,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
             startTime = Time.time;
             reachedInside = false;
 
-            Debug.Log($"[MoveToExitAction] 顾客 {blackboard.customerId} 开始移动到出口内侧 {targetTransform.position}");
+            Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 开始移动到出口内侧 {targetTransform.position}");
         }
 
         protected override void OnUpdate()
         {
-            if (followerEntity == null || blackboard == null)
+            if (followerEntity == null || customerBlackboard == null)
             {
                 EndAction(false);
                 return;
@@ -116,7 +116,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 检查超时
             if (Time.time - startTime > timeoutSeconds)
             {
-                Debug.LogWarning($"[MoveToExitAction] 顾客 {blackboard.customerId} 移动到出口超时");
+                Debug.LogWarning($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 移动到出口超时");
                 followerEntity.isStopped = true;
                 EndAction(false);
                 return;
@@ -147,9 +147,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             else
             {
                 // 检查是否到达外侧锚点
-                if (blackboard.entranceOutsideAnchor != null)
+                if (customerBlackboard.entranceOutsideAnchor != null)
                 {
-                    float dist = Vector3.Distance(agent.transform.position, blackboard.entranceOutsideAnchor.position);
+                    float dist = Vector3.Distance(agent.transform.position, customerBlackboard.entranceOutsideAnchor.position);
                     if (dist <= stoppingDistance * 1.5f) // 稍微宽松一些
                     {
                         OnReachedOutsideAnchor();
@@ -171,13 +171,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
         /// </summary>
         private void OnReachedInsideAnchor()
         {
-            Debug.Log($"[MoveToExitAction] 顾客 {blackboard.customerId} 到达出口内侧，准备离开商店");
+            Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 到达出口内侧，准备离开商店");
 
             // 停止移动
             followerEntity.isStopped = true;
 
             // 切换目标到外部锚点（A* 会自动通过 NodeLink2）
-            targetTransform = blackboard.entranceOutsideAnchor;
+            targetTransform = customerBlackboard.entranceOutsideAnchor;
 
             if (destinationSetter != null)
             {
@@ -196,7 +196,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 标记已到达内侧
             reachedInside = true;
 
-            Debug.Log($"[MoveToExitAction] 顾客 {blackboard.customerId} 开始穿过出口到外部，graphMask 切换到外部图形");
+            Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 开始穿过出口到外部，graphMask 切换到外部图形");
         }
 
         /// <summary>
@@ -204,16 +204,16 @@ namespace PopLife.Customers.NodeCanvas.Actions
         /// </summary>
         private void OnReachedOutsideAnchor()
         {
-            Debug.Log($"[MoveToExitAction] 顾客 {blackboard.customerId} 已离开商店到达外部街道");
+            Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 已离开商店到达外部街道");
 
             // 停止移动
             followerEntity.isStopped = true;
 
             // 标记已离开商店
-            blackboard.hasEnteredStore = false;
+            customerBlackboard.hasEnteredStore = false;
 
             // 更新黑板的队列位置（用于后续的 MoveToTargetAction）
-            blackboard.assignedQueueSlot = targetTransform;
+            customerBlackboard.assignedQueueSlot = targetTransform;
 
             // 离开商店：切换到 OutsideStoreLayer（sorting order 不变）
             if (spriteRenderer != null)
@@ -227,10 +227,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     emojiRenderer.sortingLayerName = "OutsideStoreLayer";
                 }
 
-                Debug.Log($"[MoveToExitAction] 顾客 {blackboard.customerId} 离开商店，sortingLayer 切换到 OutsideStoreLayer");
+                Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 离开商店，sortingLayer 切换到 OutsideStoreLayer");
             }
 
-            Debug.Log($"[MoveToExitAction] 顾客 {blackboard.customerId} 离店完成，准备前往最终撤离点");
+            Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 离店完成，准备前往最终撤离点");
 
             EndAction(true);
         }

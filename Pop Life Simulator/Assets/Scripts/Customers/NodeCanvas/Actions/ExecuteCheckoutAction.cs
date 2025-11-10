@@ -11,7 +11,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
     public class ExecuteCheckoutAction : ActionTask
     {
         private CustomerInteraction interaction;
-        private CustomerBlackboardAdapter blackboard;
+        private CustomerBlackboardAdapter customerBlackboard;
 
         protected override string info
         {
@@ -22,7 +22,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         {
             // Get components
             interaction = agent.GetComponent<CustomerInteraction>();
-            blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
 
             if (interaction == null)
             {
@@ -31,7 +31,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            if (blackboard == null)
+            if (customerBlackboard == null)
             {
                 Debug.LogError("[ExecuteCheckoutAction] CustomerBlackboardAdapter component not found");
                 EndAction(false);
@@ -44,14 +44,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (success)
             {
                 string msg = "Checkout completed successfully";
-                Debug.Log($"[ExecuteCheckoutAction] Customer {blackboard.customerId} {msg}");
-                ScreenLogger.LogPurchase(blackboard.customerId, msg);
+                Debug.Log($"[ExecuteCheckoutAction] Customer {customerBlackboard.customerId} {msg}");
+                ScreenLogger.LogPurchase(customerBlackboard.customerId, msg);
 
                 // Sync to NodeCanvas blackboard
 #if NODECANVAS
-                if (blackboard.ncBlackboard != null)
+                if (customerBlackboard.ncBlackboard != null)
                 {
-                    blackboard.ncBlackboard.SetVariableValue("pendingPayment", blackboard.pendingPayment);
+                    customerBlackboard.ncBlackboard.SetVariableValue("pendingPayment", customerBlackboard.pendingPayment);
                 }
 #endif
 
@@ -60,8 +60,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
             else
             {
                 string msg = "Checkout failed";
-                Debug.LogWarning($"[ExecuteCheckoutAction] Customer {blackboard.customerId} {msg}");
-                ScreenLogger.LogWarning(blackboard.customerId, msg);
+                Debug.LogWarning($"[ExecuteCheckoutAction] Customer {customerBlackboard.customerId} {msg}");
+                ScreenLogger.LogWarning(customerBlackboard.customerId, msg);
                 EndAction(false);
             }
         }

@@ -19,7 +19,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         [Tooltip("目标收银台ID")]
         public BBParameter<string> targetCashierId;
 
-        private CustomerBlackboardAdapter blackboard;
+        private CustomerBlackboardAdapter customerBlackboard;
 
         protected override string info
         {
@@ -28,8 +28,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnExecute()
         {
-            blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
-            if (blackboard == null)
+            customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            if (customerBlackboard == null)
             {
                 Debug.LogError("[ReleaseQueueSlotAction] 找不到 CustomerBlackboardAdapter");
                 EndAction(false);
@@ -47,7 +47,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 if (released)
                 {
                     targetShelfId.value = string.Empty;
-                    blackboard.targetShelfId = string.Empty;
+                    customerBlackboard.targetShelfId = string.Empty;
                 }
             }
             // 其次释放收银台队列
@@ -59,12 +59,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 if (released)
                 {
                     targetCashierId.value = string.Empty;
-                    blackboard.targetCashierId = string.Empty;
+                    customerBlackboard.targetCashierId = string.Empty;
                 }
             }
             else
             {
-                Debug.LogWarning($"[ReleaseQueueSlotAction] 顾客 {blackboard.customerId} 没有指定目标");
+                Debug.LogWarning($"[ReleaseQueueSlotAction] 顾客 {customerBlackboard.customerId} 没有指定目标");
                 EndAction(true); // 即便没有目标也算成功（可能是系统状态）
                 return;
             }
@@ -72,8 +72,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (released)
             {
                 // 清空黑板中的队位引用
-                blackboard.assignedQueueSlot = null;
-                Debug.Log($"[ReleaseQueueSlotAction] 顾客 {blackboard.customerId} 成功释放队位");
+                customerBlackboard.assignedQueueSlot = null;
+                Debug.Log($"[ReleaseQueueSlotAction] 顾客 {customerBlackboard.customerId} 成功释放队位");
             }
 
             EndAction(true); // 释放操作总是返回成功
@@ -98,7 +98,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return false;
             }
 
-            queueController.ReleaseSlot(blackboard.customerId);
+            queueController.ReleaseSlot(customerBlackboard.customerId);
             return true;
         }
 
@@ -121,7 +121,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return false;
             }
 
-            queueController.ReleaseSlot(blackboard.customerId);
+            queueController.ReleaseSlot(customerBlackboard.customerId);
             return true;
         }
 

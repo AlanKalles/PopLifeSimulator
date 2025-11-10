@@ -23,7 +23,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         [Tooltip("分配的队列位置（输出）")]
         public BBParameter<Transform> assignedQueueSlot;
 
-        private CustomerBlackboardAdapter blackboard;
+        private CustomerBlackboardAdapter customerBlackboard;
 
         protected override string info
         {
@@ -32,8 +32,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnExecute()
         {
-            blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
-            if (blackboard == null)
+            customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            if (customerBlackboard == null)
             {
                 Debug.LogError("[AcquireQueueSlotAction] 找不到 CustomerBlackboardAdapter");
                 EndAction(false);
@@ -54,23 +54,23 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
             else
             {
-                Debug.LogError($"[AcquireQueueSlotAction] 顾客 {blackboard.customerId} 没有指定目标");
+                Debug.LogError($"[AcquireQueueSlotAction] 顾客 {customerBlackboard.customerId} 没有指定目标");
                 EndAction(false);
                 return;
             }
 
             if (queueSlot == null)
             {
-                Debug.LogError($"[AcquireQueueSlotAction] 顾客 {blackboard.customerId} 申请队位失败");
+                Debug.LogError($"[AcquireQueueSlotAction] 顾客 {customerBlackboard.customerId} 申请队位失败");
                 EndAction(false);
                 return;
             }
 
             // 保存到黑板
             assignedQueueSlot.value = queueSlot;
-            blackboard.assignedQueueSlot = queueSlot;
+            customerBlackboard.assignedQueueSlot = queueSlot;
 
-            Debug.Log($"[AcquireQueueSlotAction] 顾客 {blackboard.customerId} 成功申请队位: {queueSlot.position}");
+            Debug.Log($"[AcquireQueueSlotAction] 顾客 {customerBlackboard.customerId} 成功申请队位: {queueSlot.position}");
             EndAction(true);
         }
 
@@ -94,7 +94,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return shelf.GetInteractionPoint();
             }
 
-            return queueController.AcquireSlot(blackboard.customerId);
+            return queueController.AcquireSlot(customerBlackboard.customerId);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return cashier.GetInteractionPoint();
             }
 
-            return queueController.AcquireSlot(blackboard.customerId);
+            return queueController.AcquireSlot(customerBlackboard.customerId);
         }
 
         /// <summary>

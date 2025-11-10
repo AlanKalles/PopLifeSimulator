@@ -64,7 +64,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  budgetReserveRatio: 0.2
+  budgetReserveRatio: 0
   allowEmptyWallet: 1
   lowBudgetThreshold: 5
   conservativeFirstPurchase: 0

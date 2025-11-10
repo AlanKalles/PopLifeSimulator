@@ -15,14 +15,20 @@ MonoBehaviour:
   _serializedGraph: '{"type":"NodeCanvas.DialogueTrees.DialogueTree","nodes":[{"statement":{"_text":"Looks
     perfect, sex expert."},"_position":{"x":295.0,"y":263.0},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"0"},{"statement":{"_text":"It\u2019s
     time. We always open at night."},"_position":{"x":390.0,"y":356.0},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"1"},{"statement":{"_text":"You
-    \u2014 and this store \u2014 will deliver pleasure to the people tonight."},"_position":{"x":383.0,"y":442.0},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"2"}],"connections":[{"_sourceNode":{"$ref":"0"},"_targetNode":{"$ref":"1"},"$type":"NodeCanvas.DialogueTrees.DTConnection"},{"_sourceNode":{"$ref":"1"},"_targetNode":{"$ref":"2"},"$type":"NodeCanvas.DialogueTrees.DTConnection"}],"canvasGroups":[],"localBlackboard":{"_variables":{}},"derivedData":{"actorParameters":[],"$type":"NodeCanvas.DialogueTrees.DialogueTree+DerivedSerializationData"}}'
-  _objectReferences: []
+    \u2014 and this store \u2014 will deliver pleasure to the people tonight."},"_position":{"x":383.0,"y":442.0},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"2"}],"connections":[{"_sourceNode":{"$ref":"0"},"_targetNode":{"$ref":"1"},"$type":"NodeCanvas.DialogueTrees.DTConnection"},{"_sourceNode":{"$ref":"1"},"_targetNode":{"$ref":"2"},"$type":"NodeCanvas.DialogueTrees.DTConnection"}],"canvasGroups":[],"localBlackboard":{"_variables":{}},"derivedData":{"actorParameters":[{"_keyName":"actor
+    parameter name","_actorObject":1}],"$type":"NodeCanvas.DialogueTrees.DialogueTree+DerivedSerializationData"}}'
+  _objectReferences:
+  - {fileID: 0}
+  - {fileID: 11400000, guid: bcc1df1988506e84e874e592f8a79417, type: 2}
   _graphSource:
     _version: 3.33
     _category: 
     _comments: 
-    _translation: {x: 0, y: 0}
+    _translation: {x: -31, y: -291}
     _zoomFactor: 1
   _haltSerialization: 0
   _externalSerializationFile: {fileID: 0}
-  actorParameters: []
+  actorParameters:
+  - _keyName: actor parameter name
+    _id: 
+    _actorObject: {fileID: 11400000, guid: bcc1df1988506e84e874e592f8a79417, type: 2}

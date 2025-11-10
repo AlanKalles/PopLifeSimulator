@@ -18,7 +18,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         private FollowerEntity followerEntity;
         private AIDestinationSetter destinationSetter;
-        private CustomerBlackboardAdapter blackboard;
+        private CustomerBlackboardAdapter customerBlackboard;
         private Transform targetTransform;
         private float startTime;
         private SpriteRenderer spriteRenderer;
@@ -33,7 +33,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 获取组件
             followerEntity = agent.GetComponent<FollowerEntity>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
-            blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
             spriteRenderer = agent.GetComponent<SpriteRenderer>();
 
             if (followerEntity == null)
@@ -43,7 +43,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            if (blackboard == null)
+            if (customerBlackboard == null)
             {
                 Debug.LogError("[MoveToEntranceAction] 找不到 CustomerBlackboardAdapter 组件");
                 EndAction(false);
@@ -58,27 +58,27 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
 
             // 验证入口配置
-            if (blackboard.entranceOutsideAnchor == null)
+            if (customerBlackboard.entranceOutsideAnchor == null)
             {
-                Debug.LogError($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 没有设置 entranceOutsideAnchor");
+                Debug.LogError($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 没有设置 entranceOutsideAnchor");
                 EndAction(false);
                 return;
             }
 
-            if (blackboard.entranceInsideAnchor == null)
+            if (customerBlackboard.entranceInsideAnchor == null)
             {
-                Debug.LogError($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 没有设置 entranceInsideAnchor");
+                Debug.LogError($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 没有设置 entranceInsideAnchor");
                 EndAction(false);
                 return;
             }
 
             // 设置目标为外部锚点
-            targetTransform = blackboard.entranceOutsideAnchor;
+            targetTransform = customerBlackboard.entranceOutsideAnchor;
 
             // 设置移动速度
-            if (blackboard.moveSpeed > 0)
+            if (customerBlackboard.moveSpeed > 0)
             {
-                followerEntity.maxSpeed = blackboard.moveSpeed;
+                followerEntity.maxSpeed = customerBlackboard.moveSpeed;
             }
 
             // 允许使用所有图形，让 A* 通过 NodeLink2 自动选择路径
@@ -100,12 +100,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 记录开始时间
             startTime = Time.time;
 
-            Debug.Log($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 开始移动到入口外侧 {targetTransform.position}");
+            Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 开始移动到入口外侧 {targetTransform.position}");
         }
 
         protected override void OnUpdate()
         {
-            if (followerEntity == null || blackboard == null)
+            if (followerEntity == null || customerBlackboard == null)
             {
                 EndAction(false);
                 return;
@@ -114,7 +114,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 检查超时
             if (Time.time - startTime > timeoutSeconds)
             {
-                Debug.LogWarning($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 移动到入口超时");
+                Debug.LogWarning($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 移动到入口超时");
                 followerEntity.isStopped = true;
                 EndAction(false);
                 return;
@@ -144,13 +144,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
         /// </summary>
         private void OnReachedEntrance()
         {
-            Debug.Log($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 到达入口外侧，准备进入商店");
+            Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 到达入口外侧，准备进入商店");
 
             // 停止移动
             followerEntity.isStopped = true;
 
             // 切换目标到内部锚点（A* 会自动通过 NodeLink2）
-            targetTransform = blackboard.entranceInsideAnchor;
+            targetTransform = customerBlackboard.entranceInsideAnchor;
 
             if (destinationSetter != null)
             {
@@ -168,10 +168,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
             followerEntity.isStopped = false;
 
             // 标记已进入商店
-            blackboard.hasEnteredStore = true;
+            customerBlackboard.hasEnteredStore = true;
 
             // 更新黑板的队列位置（用于后续的 MoveToTargetAction）
-            blackboard.assignedQueueSlot = targetTransform;
+            customerBlackboard.assignedQueueSlot = targetTransform;
 
             // 进入商店：切换到 InsideStoreLayer（sorting order 不变）
             if (spriteRenderer != null)
@@ -185,10 +185,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     emojiRenderer.sortingLayerName = "InsideStoreLayer";
                 }
 
-                Debug.Log($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 进入商店，sortingLayer 切换到 InsideStoreLayer");
+                Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 进入商店，sortingLayer 切换到 InsideStoreLayer");
             }
 
-            Debug.Log($"[MoveToEntranceAction] 顾客 {blackboard.customerId} 已进入商店，graphMask 切换到内部图形");
+            Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 已进入商店，graphMask 切换到内部图形");
 
             EndAction(true);
         }

@@ -30,11 +30,15 @@ namespace PopLife.Runtime
         public ResourceManager resourceManager;  // 需由你项目提供
         private Camera mainCamera;               // 缓存主相机引用
 
-        [Header("Destroy模式高亮")]
+        [Header("Destroy/Move模式高亮")]
         [SerializeField] private PopLife.UI.BuildingInteraction.BuildingHighlighter buildingHighlighter; // 建筑高亮器
         [SerializeField] private Color destroyHighlightColor = new Color(1f, 0.2f, 0.2f, 1f); // 红色高亮
+        [SerializeField] private Color moveHighlightColor = new Color(0.2f, 0.5f, 1f, 1f); // 蓝色高亮
         private BuildingInstance hoveredBuildingInDestroyMode; // Destroy模式下鼠标悬停的建筑
+        private BuildingInstance hoveredBuildingInMoveMode;    // Move模式下鼠标悬停的建筑
         private Vector3 lastMousePositionInDestroyMode;        // 上次鼠标位置（优化性能）
+        private Vector3 lastMousePositionInMoveMode;           // Move模式上次鼠标位置（优化性能）
+        private bool isMoveDragging = false;                   // Move模式：是否正在拖动建筑
 
         [Header("楼层自动检测")]
         [SerializeField] private int detectionInterval = 3; // 检测间隔（帧），默认3帧检测一次
@@ -113,21 +117,30 @@ namespace PopLife.Runtime
             }
             else if (mode == Mode.Move)
             {
-                // 自动检测鼠标所在楼层（Move模式也支持）
-                if (floorDetector != null)
+                if (isMoveDragging)
                 {
-                    currentDetectedFloor = floorDetector.DetectFloorAtMouse();
-
-                    // 楼层变化时切换预览
-                    if (currentDetectedFloor != lastPreviewFloor)
+                    // 拖动状态：显示预览并跟随鼠标
+                    // 自动检测鼠标所在楼层（Move模式也支持）
+                    if (floorDetector != null)
                     {
-                        SwitchMovePreviewFloor(currentDetectedFloor);
-                        lastPreviewFloor = currentDetectedFloor;
-                    }
-                }
+                        currentDetectedFloor = floorDetector.DetectFloorAtMouse();
 
-                // 始终更新预览位置（即使没有检测到楼层）
-                UpdateMovePreview();
+                        // 楼层变化时切换预览
+                        if (currentDetectedFloor != lastPreviewFloor)
+                        {
+                            SwitchMovePreviewFloor(currentDetectedFloor);
+                            lastPreviewFloor = currentDetectedFloor;
+                        }
+                    }
+
+                    // 始终更新预览位置（即使没有检测到楼层）
+                    UpdateMovePreview();
+                }
+                else
+                {
+                    // 选择状态：悬停高亮建筑
+                    UpdateMoveHover();
+                }
 
                 HandleMoveInput();
             }
@@ -400,11 +413,79 @@ namespace PopLife.Runtime
         }
 
         // —— 移动模式 ——
-        public void BeginMove(BuildingInstance bi)
+        /// <summary>
+        /// 进入移动模式（无参数，类似Destroy模式）
+        /// </summary>
+        public void BeginMove()
+        {
+            mode = Mode.Move;
+            isMoveDragging = false;
+            selectedInstance = null;
+            hoveredBuildingInMoveMode = null;
+            lastMousePositionInMoveMode = Vector3.zero;
+            Debug.Log("Entered Move mode - Click any building to select and move");
+        }
+
+        /// <summary>
+        /// 更新Move模式下的鼠标悬停高亮（选择阶段）
+        /// </summary>
+        private void UpdateMoveHover()
+        {
+            // 检查鼠标是否移动（性能优化）
+            Vector3 currentMousePos = Input.mousePosition;
+            if (currentMousePos == lastMousePositionInMoveMode)
+            {
+                return;
+            }
+            lastMousePositionInMoveMode = currentMousePos;
+
+            // 检查相机是否存在
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+                if (mainCamera == null)
+                {
+                    return;
+                }
+            }
+
+            // Raycast检测鼠标悬停的建筑
+            Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
+
+            BuildingInstance newHovered = null;
+            if (hit.collider != null)
+            {
+                newHovered = hit.collider.GetComponent<BuildingInstance>();
+            }
+
+            // 如果悬停建筑改变
+            if (newHovered != hoveredBuildingInMoveMode)
+            {
+                // 隐藏之前的高亮
+                if (hoveredBuildingInMoveMode != null && buildingHighlighter != null)
+                {
+                    buildingHighlighter.Hide();
+                }
+
+                // 显示新的蓝色高亮
+                if (newHovered != null && buildingHighlighter != null)
+                {
+                    buildingHighlighter.Show(newHovered, moveHighlightColor);
+                }
+
+                hoveredBuildingInMoveMode = newHovered;
+            }
+        }
+
+        /// <summary>
+        /// 开始拖动选中的建筑（从悬停状态进入拖动状态）
+        /// </summary>
+        private void BeginMoveDragging(BuildingInstance bi)
         {
             selectedInstance = bi;
             previewRot = bi.rotation;
-            mode = Mode.Move;
+            isMoveDragging = true;
 
             // 设置目标楼层为建筑所在楼层
             var floor = floorManager.GetFloor(bi.floorId);
@@ -413,7 +494,16 @@ namespace PopLife.Runtime
                 SetTargetFloor(floor);
             }
 
+            // 隐藏悬停高亮
+            if (buildingHighlighter != null)
+            {
+                buildingHighlighter.Hide();
+            }
+
+            // 创建预览
             CreatePreview(bi.archetype);
+
+            Debug.Log($"Started dragging building: {bi.archetype.displayName}");
         }
 
         private void UpdateMovePreview()
@@ -471,66 +561,105 @@ namespace PopLife.Runtime
 
         private void HandleMoveInput()
         {
-            if (Input.GetKeyDown(KeyCode.R) && selectedInstance.archetype.canRotate)
-                previewRot = (previewRot + 1) % 4;
-
-            if (Input.GetMouseButtonDown(0))
+            // 右键或ESC取消移动模式
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
-                // 使用自动检测的楼层（如果可用），否则使用目标楼层
-                var targetFloor = currentDetectedFloor ?? GetTargetFloor();
-                if (targetFloor == null)
-                {
-                    // 鼠标不在楼层区域 - 不弹窗，预览已经变红
-                    return;
-                }
-
-                if (mainCamera == null)
-                {
-                    Debug.LogError("ConstructionManager: 无法移动建筑 - 主相机未找到");
-                    return;
-                }
-
-                var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
-                var gp = targetFloor.WorldToGrid(mouse);
-
-                // 统一移动逻辑：先检查资源，再执行移动
-                bool isCrossFloor = (targetFloor.floorId != selectedInstance.floorId);
-                int moveCost = isCrossFloor ? selectedInstance.archetype.moveCost * 2 : selectedInstance.archetype.moveCost;
-
-                // 1. 资源检查（统一在此处处理）
-                if (!resourceManager.CanAfford(moveCost, 0))
-                {
-                    // 资金不足 - 显示警告弹窗并取消移动
-                    UIManager.Instance.ShowAlert(AlertType.NotEnoughMoney, onClose: () =>
-                    {
-                        Cancel(); // 取消移动模式
-                    });
-                    return;
-                }
-
-                // 2. 执行移动
-                bool moveSuccess = false;
-                if (isCrossFloor)
-                {
-                    // 跨楼层移动
-                    moveSuccess = MoveBuilingAcrossFloors(selectedInstance, targetFloor, gp, previewRot);
-                }
-                else
-                {
-                    // 同楼层移动
-                    moveSuccess = targetFloor.MoveBuilding(selectedInstance, gp, previewRot);
-                }
-
-                // 3. 处理结果
-                if (moveSuccess)
-                {
-                    AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
-                    Cancel();
-                }
-                // 注意：移动失败时预览已经是红色，不需要额外弹窗
+                Cancel();
+                return;
             }
 
-            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape)) Cancel();
+            if (!isMoveDragging)
+            {
+                // 阶段1：选择建筑
+                if (Input.GetMouseButtonDown(0))
+                {
+                    // 检查相机是否存在
+                    if (mainCamera == null)
+                    {
+                        mainCamera = Camera.main;
+                        if (mainCamera == null)
+                        {
+                            Debug.LogError("ConstructionManager: 无法获取主相机引用");
+                            return;
+                        }
+                    }
+
+                    // Raycast检测点击的建筑
+                    Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
+
+                    if (hit.collider != null)
+                    {
+                        BuildingInstance building = hit.collider.GetComponent<BuildingInstance>();
+                        if (building != null)
+                        {
+                            // 进入拖动阶段
+                            BeginMoveDragging(building);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // 阶段2：拖动并放置建筑
+                // 支持R键旋转
+                if (Input.GetKeyDown(KeyCode.R) && selectedInstance.archetype.canRotate)
+                    previewRot = (previewRot + 1) % 4;
+
+                // 点击放置
+                if (Input.GetMouseButtonDown(0))
+                {
+                    // 使用自动检测的楼层（如果可用），否则使用目标楼层
+                    var targetFloor = currentDetectedFloor ?? GetTargetFloor();
+                    if (targetFloor == null)
+                    {
+                        // 鼠标不在楼层区域 - 预览已经变红，不需要弹窗
+                        return;
+                    }
+
+                    if (mainCamera == null)
+                    {
+                        Debug.LogError("ConstructionManager: 无法移动建筑 - 主相机未找到");
+                        return;
+                    }
+
+                    var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
+                    var gp = targetFloor.WorldToGrid(mouse);
+
+                    // 统一移动逻辑：先检查资源，再执行移动
+                    bool isCrossFloor = (targetFloor.floorId != selectedInstance.floorId);
+                    int moveCost = isCrossFloor ? selectedInstance.archetype.moveCost * 2 : selectedInstance.archetype.moveCost;
+
+                    // 1. 资源检查
+                    if (!resourceManager.CanAfford(moveCost, 0))
+                    {
+                        // 资金不足 - 预览变红已经提示，不需要弹窗
+                        Debug.Log($"Not enough money to move building. Required: ${moveCost}, Current: ${resourceManager.GetMoney()}");
+                        return;
+                    }
+
+                    // 2. 执行移动
+                    bool moveSuccess = false;
+                    if (isCrossFloor)
+                    {
+                        // 跨楼层移动
+                        moveSuccess = MoveBuilingAcrossFloors(selectedInstance, targetFloor, gp, previewRot);
+                    }
+                    else
+                    {
+                        // 同楼层移动
+                        moveSuccess = targetFloor.MoveBuilding(selectedInstance, gp, previewRot);
+                    }
+
+                    // 3. 处理结果
+                    if (moveSuccess)
+                    {
+                        AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
+                        Cancel();
+                    }
+                    // 注意：移动失败时预览已经是红色，不需要额外弹窗
+                }
+            }
         }
 
         /// <summary>
@@ -861,6 +990,14 @@ namespace PopLife.Runtime
                 buildingHighlighter.Hide();
                 hoveredBuildingInDestroyMode = null;
             }
+
+            // 清理Move模式的高亮和状态
+            if (hoveredBuildingInMoveMode != null && buildingHighlighter != null)
+            {
+                buildingHighlighter.Hide();
+                hoveredBuildingInMoveMode = null;
+            }
+            isMoveDragging = false;
 
             // 关闭确认面板（如果正在显示）
             if (UIManager.Instance != null && UIManager.Instance.IsConfirmationShowing())

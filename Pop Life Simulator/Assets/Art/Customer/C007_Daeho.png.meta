@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 867dc3bec4f72ff4fbe5e1bf5a53dc1e
+guid: 4456c234b9419bb41b24bdb1c1be6df4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1394739805410685537
-    second: C001_Lucy_0
+      213: 1474399551551281804
+    second: C007_Daeho_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -24,7 +24,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -50,7 +50,7 @@ TextureImporter:
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
-  spritePivot: {x: 0, y: 0}
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 256
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -96,29 +96,16 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: C001_Lucy_0
+      name: C007_Daeho_0
       rect:
         serializedVersion: 2
-        x: 23
+        x: 39
         y: 0
-        width: 202
+        width: 170
         height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -128,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 162f99f967c1b5310800000000000000
-      internalID: 1394739805410685537
+      spriteID: c8a9537949e167410800000000000000
+      internalID: 1474399551551281804
       vertices: []
       indices: 
       edges: []
@@ -148,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      C001_Lucy_0: 1394739805410685537
+      C007_Daeho_0: 1474399551551281804
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

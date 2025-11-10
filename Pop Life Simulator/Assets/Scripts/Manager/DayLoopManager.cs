@@ -76,6 +76,9 @@ namespace PopLife
 
         private void Start()
         {
+            // 初始化Unity时间系统
+            Time.timeScale = 1f;
+
             // 游戏开始时进入建造阶段
             currentHour = buildPhaseHour;
             currentPhase = GamePhase.BuildPhase;
@@ -397,9 +400,27 @@ namespace PopLife
         }
 
         // 时间控制
-        public void PauseTime() => isPaused = true;
-        public void ResumeTime() => isPaused = false;
-        public void SetTimeScale(float scale) => timeScale = Mathf.Max(0, scale);
+        public void PauseTime()
+        {
+            isPaused = true;
+            Time.timeScale = 0f; // 完全冻结Unity时间系统
+        }
+
+        public void ResumeTime()
+        {
+            isPaused = false;
+            Time.timeScale = timeScale; // 恢复到当前倍速
+        }
+
+        public void SetTimeScale(float scale)
+        {
+            timeScale = Mathf.Max(0, scale);
+            // 同时设置Unity的Time.timeScale（影响所有基于Time.deltaTime的系统）
+            if (!isPaused)
+            {
+                Time.timeScale = timeScale;
+            }
+        }
 
         // 统计记录
         public void RecordSale(float amount)
