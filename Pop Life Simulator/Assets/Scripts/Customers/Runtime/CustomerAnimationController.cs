@@ -184,7 +184,7 @@ namespace PopLife.Customers.Runtime
         /// </summary>
         public void PlayPickProduct()
         {
-            PlayOneShot("customer_pickproduct", 0.25f);
+            PlayOneShot("customer_pickproduct", 0.3f);
         }
 
         /// <summary>

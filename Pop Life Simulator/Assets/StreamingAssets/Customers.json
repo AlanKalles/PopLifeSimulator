@@ -24,12 +24,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 26,
+            "xp": 40,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 3,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 29,
+            "lifetimeSpent": 54,
             "schemaVersion": 1
         },
         {
@@ -56,12 +56,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 30,
+            "xp": 44,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 3,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 51,
+            "lifetimeSpent": 76,
             "schemaVersion": 1
         },
         {
@@ -212,12 +212,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 44,
+            "xp": 60,
             "walletCapBase": 50,
-            "visitCount": 3,
+            "visitCount": 4,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 72,
+            "lifetimeSpent": 99,
             "schemaVersion": 1
         },
         {
@@ -243,12 +243,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 56,
+            "xp": 70,
             "walletCapBase": 50,
-            "visitCount": 4,
+            "visitCount": 5,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 79,
+            "lifetimeSpent": 104,
             "schemaVersion": 1
         },
         {
@@ -397,12 +397,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 72,
+            "xp": 88,
             "walletCapBase": 50,
-            "visitCount": 5,
+            "visitCount": 6,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 111,
+            "lifetimeSpent": 142,
             "schemaVersion": 1
         }
     ]
