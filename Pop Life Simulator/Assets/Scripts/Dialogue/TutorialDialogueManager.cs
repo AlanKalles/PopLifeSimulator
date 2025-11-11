@@ -46,35 +46,40 @@ namespace Poplife.Dialogue
 
         private void RegisterTutorialDialogues()
         {
-            // D001: 游戏开始时触发
+            // D001: 游戏开始时触发 - 屏幕中央
             AddEvent("D001", "Meet Midori",
                 TutorialMarker.GameStarted,
-                new List<string>());
+                new List<string>(),
+                new DialogueUIConfig("Tutorial", Vector2.zero, new Vector2(0.5f, 0.5f)));
 
-            // D002: 首次进入建造模式时触发
+            // D002: 首次进入建造模式时触发 - 左下角
             AddEvent("D002", "Build Tutorial",
                 TutorialMarker.FirstBuildPhaseEntered,
-                new List<string> { "Blueprint:B001", "Blueprint:B002" });
+                new List<string> { "Blueprint:B001", "Blueprint:B002" },
+                new DialogueUIConfig("Tutorial", new Vector2(100, 100), new Vector2(0f, 0f)));
 
-            // D003: 放置2个货架时触发
+            // D003: 放置2个货架时触发 - 右下角
             AddEvent("D003", "Open Store",
                 TutorialMarker.TwoShelvesPlaced,
-                new List<string> { "Customer:C001", "Customer:C002", "Customer:C003" });
+                new List<string> { "Customer:C001", "Customer:C002", "Customer:C003" },
+                new DialogueUIConfig("Tutorial", new Vector2(-100, 100), new Vector2(1f, 0f)));
 
-            // D004: 商店开张时触发
+            // D004: 商店开张时触发 - 屏幕顶部
             AddEvent("D004", "First Customer",
                 TutorialMarker.StoreOpened,
-                new List<string> { "Fame:500" });
+                new List<string> { "Fame:500" },
+                new DialogueUIConfig("Tutorial", new Vector2(0, -100), new Vector2(0.5f, 1f)));
 
-            // D005: 首次获得声望时触发
+            // D005: 首次获得声望时触发 - 屏幕中央（稍大）
             AddEvent("D005", "Fame System",
                 TutorialMarker.FirstFameEarned,
-                new List<string> { "Blueprint:R004", "Blueprint:R005" });
+                new List<string> { "Blueprint:R004", "Blueprint:R005" },
+                new DialogueUIConfig("Tutorial", Vector2.zero, new Vector2(0.5f, 0.5f), 1.2f));
 
             Debug.Log($"[Tutorial] Registered {markerDialogueMap.Count} tutorial dialogues");
         }
 
-        private void AddEvent(string code, string name, TutorialMarker marker, List<string> rewards)
+        private void AddEvent(string code, string name, TutorialMarker marker, List<string> rewards, DialogueUIConfig uiConfig = null)
         {
             var tree = Resources.Load<DialogueTree>($"DialogueTreeControllers/{code}");
             if (tree == null)
@@ -83,7 +88,7 @@ namespace Poplife.Dialogue
                 return;
             }
 
-            var dialogueEvent = new DialogueEvent(tree, code, name, rewards);
+            var dialogueEvent = new DialogueEvent(tree, code, name, rewards, uiConfig);
             dialogueEvent.OnDialogueCompleted += OnDialogueCompleted;
 
             // 添加到标记映射
@@ -93,7 +98,7 @@ namespace Poplife.Dialogue
             }
             markerDialogueMap[marker].Add(dialogueEvent);
 
-            Debug.Log($"[Tutorial] Registered dialogue '{name}' for marker '{marker}'");
+            Debug.Log($"[Tutorial] Registered dialogue '{name}' for marker '{marker}' with UI config");
         }
 
         private void OnMarkerTriggered(TutorialMarker marker)
