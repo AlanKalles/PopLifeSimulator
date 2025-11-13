@@ -53,6 +53,15 @@ namespace PopLife
         [SerializeField] private Button buildButton; // 建造按钮，营业时禁用
         [SerializeField] private ShelfListPanel buildingListPanel; // 建造面板，开店时需要关闭
 
+        [Header("Gate Settings")]
+        [Tooltip("商店大门GameObject（需要包含SpriteRenderer组件）")]
+        public GameObject gate;
+        [Tooltip("建造阶段的大门sprite")]
+        [SerializeField] private Sprite gateBuildPhaseSprite;
+        [Tooltip("营业阶段的大门sprite")]
+        [SerializeField] private Sprite gateOpenPhaseSprite;
+        private SpriteRenderer gateRenderer;
+
         // Events
         public event Action OnBuildPhaseStart; // 建造阶段开始
         public event Action OnStoreOpen;
@@ -72,6 +81,16 @@ namespace PopLife
             {
                 Destroy(gameObject);
             }
+
+            // 初始化gate的SpriteRenderer
+            if (gate != null)
+            {
+                gateRenderer = gate.GetComponent<SpriteRenderer>();
+                if (gateRenderer == null)
+                {
+                    Debug.LogWarning("[DayLoopManager] Gate GameObject没有SpriteRenderer组件！");
+                }
+            }
         }
 
         private void Start()
@@ -90,6 +109,9 @@ namespace PopLife
                 buildPhaseStartMoney = ResourceManager.Instance.GetMoney();
             }
 
+            // 设置建造阶段的gate sprite
+            SetGateSprite(GamePhase.BuildPhase);
+
             OnBuildPhaseStart?.Invoke();
         }
 
@@ -104,23 +126,28 @@ namespace PopLife
             // 营业阶段才计时
             if (currentPhase == GamePhase.OpenPhase)
             {
-                // 计算游戏时间流速
-                float hoursPerSecond = 24f / realSecondsPerDay;
-                currentHour += hoursPerSecond * timeScale * Time.deltaTime;
-
-                // 检查是否到达停止生成时间
-                if (isStoreOpen && currentHour >= stopSpawningHour && !hasStoppedSpawning)
+                // ⚠️ 如果已关店（isStoreOpen == false），停止计时器前进
+                if (isStoreOpen)
                 {
-                    hasStoppedSpawning = true;
-                    OnStopSpawning?.Invoke();
-                    Debug.Log($"[DayLoopManager] 到达停止生成时间 {stopSpawningHour:F1}:00，停止生成新顾客");
-                }
+                    // 计算游戏时间流速
+                    float hoursPerSecond = 24f / realSecondsPerDay;
+                    currentHour += hoursPerSecond * timeScale * Time.deltaTime;
 
-                // 检查是否到达强制清场时间
-                if (isStoreOpen && currentHour >= storeCloseHour)
-                {
-                    TriggerStoreClose();
+                    // 检查是否到达停止生成时间
+                    if (currentHour >= stopSpawningHour && !hasStoppedSpawning)
+                    {
+                        hasStoppedSpawning = true;
+                        OnStopSpawning?.Invoke();
+                        Debug.Log($"[DayLoopManager] 到达停止生成时间 {stopSpawningHour:F1}:00，停止生成新顾客");
+                    }
+
+                    // 检查是否到达强制清场时间
+                    if (currentHour >= storeCloseHour)
+                    {
+                        TriggerStoreClose();
+                    }
                 }
+                // 关店后：时间不再前进，但物理时间继续流动（让顾客离开）
             }
         }
 
@@ -136,9 +163,11 @@ namespace PopLife
                 Debug.Log("[DayLoopManager] 到达关店时间，触发停止生成顾客");
             }
 
-            // 立即暂停时间流动
-            PauseTime();
-            Debug.Log($"[DayLoopManager] 到达关店时间 {storeCloseHour:F1}:00，暂停时间流动，开始清场");
+            // ⚠️ 不暂停时间流动，保持当前倍速（让顾客继续移动离开）
+            Debug.Log($"[DayLoopManager] 到达关店时间 {storeCloseHour:F1}:00，保持当前时间倍速 {timeScale}x，等待顾客离开");
+
+            // 触发关店事件（禁用时间控制UI）
+            OnStoreClose?.Invoke();
 
             // 等待所有顾客离开后再显示结算界面
             StartCoroutine(WaitForCustomersToLeave());
@@ -195,13 +224,15 @@ namespace PopLife
         /// </summary>
         private void ShowSettlementUI()
         {
+            // 重置时间倍速为1x（为下一天准备）
+            SetTimeScale(1f);
+            Debug.Log("[DayLoopManager] 结算界面显示，时间倍速已重置为1x");
+
             // 计算每日数据
             DailySettlementData data = CalculateDailySettlement();
 
             // 触发结算事件
             OnDailySettlement?.Invoke(data);
-            Debug.Log("[DayLoopManager] 显示结算界面");
-            // 时间已经在 TriggerStoreClose() 中暂停，这里无需再暂停
         }
 
         private DailySettlementData CalculateDailySettlement()
@@ -304,6 +335,10 @@ namespace PopLife
             currentPhase = GamePhase.OpenPhase;
             currentHour = storeOpenHour;
             isStoreOpen = true;
+
+            // 切换gate sprite到营业阶段
+            SetGateSprite(GamePhase.OpenPhase);
+
             OnStoreOpen?.Invoke();
 
             Debug.Log($"[DayLoopManager] Day {currentDay} 开店，时间从 {buildPhaseHour:F1} 跳转到 {storeOpenHour:F1}");
@@ -349,6 +384,9 @@ namespace PopLife
             // 进入建造阶段
             currentPhase = GamePhase.BuildPhase;
             isStoreOpen = false;
+
+            // 切换gate sprite到建造阶段
+            SetGateSprite(GamePhase.BuildPhase);
 
             // 恢复建造按钮可交互状态
             if (buildButton != null)
@@ -456,6 +494,33 @@ namespace PopLife
             int hour = Mathf.FloorToInt(displayHour);
             int minute = Mathf.FloorToInt((displayHour - hour) * 60);
             return $"{hour:00}:{minute:00}";
+        }
+
+        /// <summary>
+        /// 根据游戏阶段设置gate的sprite
+        /// </summary>
+        private void SetGateSprite(GamePhase phase)
+        {
+            if (gateRenderer == null) return;
+
+            switch (phase)
+            {
+                case GamePhase.BuildPhase:
+                    if (gateBuildPhaseSprite != null)
+                    {
+                        gateRenderer.sprite = gateBuildPhaseSprite;
+                        Debug.Log("[DayLoopManager] Gate切换为建造阶段sprite");
+                    }
+                    break;
+
+                case GamePhase.OpenPhase:
+                    if (gateOpenPhaseSprite != null)
+                    {
+                        gateRenderer.sprite = gateOpenPhaseSprite;
+                        Debug.Log("[DayLoopManager] Gate切换为营业阶段sprite");
+                    }
+                    break;
+            }
         }
     }
 

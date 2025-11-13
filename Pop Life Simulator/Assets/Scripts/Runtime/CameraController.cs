@@ -1,8 +1,34 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace PopLife.Runtime
 {
+    /// <summary>
+    /// 建筑前景透明度配置
+    /// </summary>
+    [Serializable]
+    public class ForegroundAlphaConfig
+    {
+        [Tooltip("建筑前景GameObject（需要包含SpriteRenderer组件）")]
+        public GameObject targetObject;
+
+        [Tooltip("透明度调整的缩放范围最小值（zoom multiplier）")]
+        public float alphaAdjustZoomMin = 0.5f;
+
+        [Tooltip("透明度调整的缩放范围最大值（zoom multiplier）")]
+        public float alphaAdjustZoomMax = 1.2f;
+
+        [Tooltip("在alphaAdjustZoomMin时的透明度（0-1）")]
+        public float alphaAtMinZoom = 1f;
+
+        [Tooltip("在alphaAdjustZoomMax时的透明度（0-1）")]
+        public float alphaAtMaxZoom = 0.3f;
+
+        [HideInInspector]
+        public SpriteRenderer cachedRenderer;
+    }
+
     public class CameraController : MonoBehaviour
     {
         [Header("缩放设置")]
@@ -19,6 +45,10 @@ namespace PopLife.Runtime
         [Header("边界设置")]
         [SerializeField] private Vector2 boundaryMin = new Vector2(-10f, -10f);
         [SerializeField] private Vector2 boundaryMax = new Vector2(10f, 10f);
+
+        [Header("建筑前景透明度设置")]
+        [Tooltip("多个建筑前景的透明度配置列表")]
+        [SerializeField] private ForegroundAlphaConfig[] foregroundConfigs;
 
         private Camera targetCamera;
         private float currentZoom = 1f;
@@ -46,6 +76,22 @@ namespace PopLife.Runtime
             {
                 Debug.LogError("CameraController需要一个正交相机!");
             }
+
+            // 初始化所有建筑前景的SpriteRenderer
+            if (foregroundConfigs != null)
+            {
+                foreach (var config in foregroundConfigs)
+                {
+                    if (config != null && config.targetObject != null)
+                    {
+                        config.cachedRenderer = config.targetObject.GetComponent<SpriteRenderer>();
+                        if (config.cachedRenderer == null)
+                        {
+                            Debug.LogWarning($"建筑前景GameObject '{config.targetObject.name}' 没有SpriteRenderer组件！");
+                        }
+                    }
+                }
+            }
         }
 
         private void Update()
@@ -56,6 +102,7 @@ namespace PopLife.Runtime
             HandleDragInput();
             ApplyZoom();
             ApplyBoundaries();
+            UpdateForegroundAlpha();
         }
 
         private void HandleZoomInput()
@@ -146,6 +193,45 @@ namespace PopLife.Runtime
             pos.y = Mathf.Clamp(pos.y, minY, maxY);
 
             targetCamera.transform.position = pos;
+        }
+
+        /// <summary>
+        /// 根据相机缩放更新所有建筑前景的透明度
+        /// </summary>
+        private void UpdateForegroundAlpha()
+        {
+            if (foregroundConfigs == null) return;
+
+            foreach (var config in foregroundConfigs)
+            {
+                if (config == null || config.cachedRenderer == null) continue;
+
+                float targetAlpha;
+
+                // 如果缩放值在调整范围内，线性插值透明度
+                if (currentZoom >= config.alphaAdjustZoomMin && currentZoom <= config.alphaAdjustZoomMax)
+                {
+                    // 计算在调整范围内的归一化位置（0-1）
+                    float t = (currentZoom - config.alphaAdjustZoomMin) / (config.alphaAdjustZoomMax - config.alphaAdjustZoomMin);
+                    // 线性插值：从alphaAtMinZoom到alphaAtMaxZoom
+                    targetAlpha = Mathf.Lerp(config.alphaAtMinZoom, config.alphaAtMaxZoom, t);
+                }
+                // 如果缩放值小于最小值，使用最小值对应的透明度
+                else if (currentZoom < config.alphaAdjustZoomMin)
+                {
+                    targetAlpha = config.alphaAtMinZoom;
+                }
+                // 如果缩放值大于最大值（但仍在max范围内），保持最低透明度
+                else
+                {
+                    targetAlpha = config.alphaAtMaxZoom;
+                }
+
+                // 应用透明度
+                Color color = config.cachedRenderer.color;
+                color.a = targetAlpha;
+                config.cachedRenderer.color = color;
+            }
         }
 
 

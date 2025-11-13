@@ -10,6 +10,7 @@ namespace PopLife.UI
     /// 滚动播报条 - 从右向左滚动显示消息队列
     /// 自动监听顾客结账事件并播报
     /// 支持随机插入新闻文本
+    /// 新闻系统仅在营业阶段（OpenPhase）播放，建造阶段（BuildPhase）会清空队列
     /// </summary>
     public class ScrollingMessageBar : MonoBehaviour
     {
@@ -114,16 +115,36 @@ namespace PopLife.UI
         {
             // 监听顾客结账事件
             CustomerEventBus.OnCheckedOut += HandleCustomerCheckout;
+
+            // 监听游戏阶段切换事件
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnBuildPhaseStart += HandleBuildPhaseStart;
+                DayLoopManager.Instance.OnStoreOpen += HandleStoreOpen;
+            }
         }
 
         void OnDisable()
         {
             // 取消监听
             CustomerEventBus.OnCheckedOut -= HandleCustomerCheckout;
+
+            // 取消监听游戏阶段切换事件
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnBuildPhaseStart -= HandleBuildPhaseStart;
+                DayLoopManager.Instance.OnStoreOpen -= HandleStoreOpen;
+            }
         }
 
         void Update()
         {
+            // 只在营业阶段播放新闻
+            if (DayLoopManager.Instance != null && DayLoopManager.Instance.currentPhase != GamePhase.OpenPhase)
+            {
+                return;
+            }
+
             // 滚动逻辑
             if (isScrolling && messageContainer != null && messageText != null)
             {
@@ -150,7 +171,7 @@ namespace PopLife.UI
                 }
             }
 
-            // 新闻插入定时器
+            // 新闻插入定时器（仅营业阶段）
             if (enableRandomNews && newsLibrary != null)
             {
                 newsTimer += Time.deltaTime;
@@ -397,6 +418,27 @@ namespace PopLife.UI
         private void TestToggleRandomNews()
         {
             SetRandomNewsEnabled(!enableRandomNews);
+        }
+
+        /// <summary>
+        /// 处理建造阶段开始 - 清空新闻队列
+        /// </summary>
+        private void HandleBuildPhaseStart()
+        {
+            ClearQueue();
+            Debug.Log("[ScrollingMessageBar] 建造阶段开始，新闻队列已清空");
+        }
+
+        /// <summary>
+        /// 处理营业阶段开始 - 重置新闻定时器
+        /// </summary>
+        private void HandleStoreOpen()
+        {
+            if (enableRandomNews && newsLibrary != null)
+            {
+                ResetNewsTimer();
+                Debug.Log("[ScrollingMessageBar] 营业阶段开始，新闻系统已启动");
+            }
         }
     }
 }

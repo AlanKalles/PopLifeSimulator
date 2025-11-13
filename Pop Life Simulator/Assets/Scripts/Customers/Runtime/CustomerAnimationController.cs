@@ -30,6 +30,7 @@ namespace PopLife.Customers.Runtime
         private static readonly int InteractionHash = Animator.StringToHash("customer_interaction");
         private static readonly int PickProductHash = Animator.StringToHash("customer_pickproduct");
         private static readonly int CheckoutHash = Animator.StringToHash("customer_checkout");
+        private static readonly int UpsetHash = Animator.StringToHash("customer_upset");
 
         // 状态跟踪
         private string currentState;
@@ -193,6 +194,14 @@ namespace PopLife.Customers.Runtime
         public void PlayCheckout()
         {
             PlayOneShot("customer_checkout", 0.67f);
+        }
+
+        /// <summary>
+        /// 播放 upset 动画（0.85秒）
+        /// </summary>
+        public void PlayUpset()
+        {
+            PlayOneShot("customer_upset", 0.85f);
         }
 
         /// <summary>

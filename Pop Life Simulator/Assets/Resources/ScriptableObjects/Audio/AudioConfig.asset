@@ -45,6 +45,9 @@ MonoBehaviour:
   - key: BuildingUpgraded
     clips:
     - {fileID: 8300000, guid: 2b0dfcb1a8a1628428781007bba772e9, type: 3}
+  - key: Customer_Checkout
+    clips:
+    - {fileID: 8300000, guid: c0e496adaa8cfd7489ca9e7442963766, type: 3}
   musicClips:
   - key: BGM_Shop
     clips:

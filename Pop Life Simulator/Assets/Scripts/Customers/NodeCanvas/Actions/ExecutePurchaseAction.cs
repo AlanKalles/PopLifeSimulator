@@ -124,6 +124,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     lastPurchaseSuccessful.value = true;
                 }
 
+                // 【Upset 机制】购买成功，重置连续失败计数
+                customerBlackboard.consecutivePurchaseFailures = 0;
+
                 string msg = $"Successfully purchased {successCount}/{targetQty} items, remaining money: ${customerBlackboard.moneyBag}";
                 Debug.Log($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} {msg}");
                 ScreenLogger.LogPurchase(customerBlackboard.customerId, msg);
@@ -135,6 +138,18 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 if (lastPurchaseSuccessful != null)
                 {
                     lastPurchaseSuccessful.value = false;
+                }
+
+                // 【Upset 机制】到达货架但购买失败（库存为0或钱不够），增加连续失败计数
+                customerBlackboard.consecutivePurchaseFailures++;
+                Debug.LogWarning($"[ExecutePurchaseAction] 顾客 {customerBlackboard.customerId} 到达货架但购买失败 " +
+                                $"(连续失败: {customerBlackboard.consecutivePurchaseFailures}/2)");
+
+                // 如果连续失败2次且还是空手，进入 upset 状态
+                if (customerBlackboard.consecutivePurchaseFailures >= 2 && customerBlackboard.pendingPayment == 0)
+                {
+                    customerBlackboard.isUpset = true;
+                    Debug.LogWarning($"[ExecutePurchaseAction] 顾客 {customerBlackboard.customerId} 连续2次到达货架但买不到商品，进入 upset 状态！");
                 }
 
                 string msg = "Purchase failed, no items purchased";

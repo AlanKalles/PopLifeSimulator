@@ -55,7 +55,7 @@ namespace PopLife
             {
                 DayLoopManager.Instance.OnBuildPhaseStart += ApplyBuildPhaseLighting;
                 DayLoopManager.Instance.OnStoreOpen += OnStoreOpenHandler;
-                DayLoopManager.Instance.OnStoreClose += OnStoreCloseHandler;
+                DayLoopManager.Instance.OnDailySettlement += OnDailySettlementHandler;
             }
             else
             {
@@ -70,11 +70,11 @@ namespace PopLife
             {
                 DayLoopManager.Instance.OnBuildPhaseStart -= ApplyBuildPhaseLighting;
                 DayLoopManager.Instance.OnStoreOpen -= OnStoreOpenHandler;
-                DayLoopManager.Instance.OnStoreClose -= OnStoreCloseHandler;
+                DayLoopManager.Instance.OnDailySettlement -= OnDailySettlementHandler;
 
                 DayLoopManager.Instance.OnBuildPhaseStart += ApplyBuildPhaseLighting;
                 DayLoopManager.Instance.OnStoreOpen += OnStoreOpenHandler;
-                DayLoopManager.Instance.OnStoreClose += OnStoreCloseHandler;
+                DayLoopManager.Instance.OnDailySettlement += OnDailySettlementHandler;
             }
 
             // 初始化 Gradient（如果为空）
@@ -119,7 +119,7 @@ namespace PopLife
             {
                 DayLoopManager.Instance.OnBuildPhaseStart -= ApplyBuildPhaseLighting;
                 DayLoopManager.Instance.OnStoreOpen -= OnStoreOpenHandler;
-                DayLoopManager.Instance.OnStoreClose -= OnStoreCloseHandler;
+                DayLoopManager.Instance.OnDailySettlement -= OnDailySettlementHandler;
             }
         }
 
@@ -164,14 +164,14 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 闭店事件处理
+        /// 结算界面显示时关闭灯光
         /// </summary>
-        private void OnStoreCloseHandler()
+        private void OnDailySettlementHandler(DailySettlementData data)
         {
-            // 闭店时关闭所有 Freeform lights
+            // 显示结算界面时关闭所有 Freeform lights
             DisableFreeformLights();
 
-            Debug.Log("[LightingManager] Store closed, freeform lights turned off.");
+            Debug.Log("[LightingManager] Daily settlement shown, freeform lights turned off.");
         }
 
         /// <summary>

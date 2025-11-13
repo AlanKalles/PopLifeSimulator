@@ -49,6 +49,7 @@ namespace PopLife.UI
             {
                 DayLoopManager.Instance.OnBuildPhaseStart += OnBuildPhaseStart;
                 DayLoopManager.Instance.OnStoreOpen += OnStoreOpen;
+                DayLoopManager.Instance.OnStoreClose += OnStoreClose;
             }
 
             // 初始状态：建造阶段时禁用所有按钮
@@ -62,17 +63,20 @@ namespace PopLife.UI
             {
                 DayLoopManager.Instance.OnBuildPhaseStart -= OnBuildPhaseStart;
                 DayLoopManager.Instance.OnStoreOpen -= OnStoreOpen;
+                DayLoopManager.Instance.OnStoreClose -= OnStoreClose;
             }
         }
 
         /// <summary>
         /// 建造阶段开始时禁用时间控制
+        /// 重置内部状态为Normal，确保下一天开店时默认为原速
         /// </summary>
         private void OnBuildPhaseStart()
         {
             SetButtonsInteractable(false);
+            currentState = TimeControlState.Normal; // 重置状态为Normal
             UpdateButtonStates();
-            Debug.Log("[TimeControlUI] Build phase started - time controls disabled");
+            Debug.Log("[TimeControlUI] Build phase started - time controls disabled, state reset to Normal");
         }
 
         /// <summary>
@@ -85,6 +89,18 @@ namespace PopLife.UI
             ApplyTimeControl();
             UpdateButtonStates();
             Debug.Log("[TimeControlUI] Store opened - time controls enabled, set to normal speed");
+        }
+
+        /// <summary>
+        /// 关店时禁用时间控制（结算阶段）
+        /// 重置内部状态为Normal，确保按钮显示与DayLoopManager重置的1x倍速一致
+        /// </summary>
+        private void OnStoreClose()
+        {
+            SetButtonsInteractable(false);
+            currentState = TimeControlState.Normal; // 重置状态为Normal
+            UpdateButtonStates();
+            Debug.Log("[TimeControlUI] Store closed - time controls disabled, state reset to Normal");
         }
 
         private void OnPauseClicked()

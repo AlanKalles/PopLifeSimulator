@@ -68,6 +68,15 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (shelfSnapshots.Count == 0)
             {
                 Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 找不到可用货架");
+
+                // 【Upset 机制】检查是否是首次搜寻失败（刚进店就找不到货架）
+                if (!adapter.hasAttemptedFirstShopping && adapter.pendingPayment == 0)
+                {
+                    adapter.isUpset = true;
+                    Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 刚进店就找不到可用货架（stock=0），进入 upset 状态！");
+                }
+                adapter.hasAttemptedFirstShopping = true;
+
                 EndAction(false);
                 return;
             }
@@ -79,6 +88,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
             {
                 Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 策略返回无效索引 (索引: {selectedIndex}, 货架数量: {shelfSnapshots.Count})。" +
                                  "可能原因: 所有货架已购买/库存不足/兴趣过滤。顾客将跳过购物环节,直接前往收银台。");
+
+                // 【Upset 机制】检查是否是首次搜寻失败（刚进店就对所有货架不感兴趣）
+                if (!adapter.hasAttemptedFirstShopping && adapter.pendingPayment == 0)
+                {
+                    adapter.isUpset = true;
+                    Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 刚进店就对所有货架不感兴趣，进入 upset 状态！");
+                }
+                adapter.hasAttemptedFirstShopping = true;
 
                 // 清空目标货架ID,确保行为树跳过购物环节
                 targetShelfId.value = string.Empty;
@@ -96,6 +113,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 更新 adapter 中的目标信息
             adapter.targetShelfId = selectedShelf.shelfId;
             adapter.goalCell = selectedShelf.gridCell;
+
+            // 标记已尝试过第一次搜寻（成功）
+            adapter.hasAttemptedFirstShopping = true;
 
             Debug.Log($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 选择了货架 {selectedShelf.shelfId}");
 

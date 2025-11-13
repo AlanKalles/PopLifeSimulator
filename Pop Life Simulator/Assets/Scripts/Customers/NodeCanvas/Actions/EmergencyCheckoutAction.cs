@@ -47,6 +47,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 ResourceManager.Instance.AddMoney(blackboard.pendingPayment);
             }
 
+            // 播放结账音效
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySound(PopLife.Data.AudioKeys.CUSTOMER_CHECKOUT);
+            }
+
             // 触发结账事件
             var customerAgent = agent.GetComponent<CustomerAgent>();
             if (customerAgent != null)

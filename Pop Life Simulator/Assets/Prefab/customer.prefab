@@ -254,6 +254,9 @@ MonoBehaviour:
   entranceInsideAnchor: {fileID: 0}
   hasEnteredStore: 0
   isClosingTime: 0
+  isUpset: 0
+  hasAttemptedFirstShopping: 0
+  consecutivePurchaseFailures: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
 --- !u!114 &6812213515813458708
@@ -551,8 +554,8 @@ MonoBehaviour:
       maxOnSpotRotationSpeed: 720
       slowdownTime: 0.2
       slowdownTimeWhenTurningOnSpot: 0
-      desiredWallDistance: 2
-      leadInRadiusWhenApproachingDestination: 2
+      desiredWallDistance: 0.12
+      leadInRadiusWhenApproachingDestination: 0
       allowRotatingOnSpotBacking: 1
     debugFlags: -1
     stopDistance: 0.05

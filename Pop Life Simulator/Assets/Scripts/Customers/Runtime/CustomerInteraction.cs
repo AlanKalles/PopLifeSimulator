@@ -135,6 +135,12 @@ namespace PopLife.Customers.Runtime
             // 清空待结账金额
             blackboard.pendingPayment = 0;
 
+            // 播放结账音效
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySound(AudioKeys.CUSTOMER_CHECKOUT);
+            }
+
             // 触发结账事件
             CustomerEventBus.RaiseCheckedOut(customerAgent);
 

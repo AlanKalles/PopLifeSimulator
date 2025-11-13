@@ -15,7 +15,8 @@ MonoBehaviour:
   _serializedGraph: '{"type":"NodeCanvas.DialogueTrees.DialogueTree","nodes":[{"statement":{"_text":"You
     just received a total of [10] Fame. Let\u2019s use them."},"_actorName":"actor
     parameter name","_actorParameterID":"df9802f6-1721-4c9a-ae2d-861241363f1e","_position":{"x":202.2,"y":333.6},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"0"},{"statement":{"_text":"Open
-    the upgrade panel.\n"},"_actorName":"actor parameter name","_actorParameterID":"df9802f6-1721-4c9a-ae2d-861241363f1e","_position":{"x":301.0,"y":448.0},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"1"}],"connections":[{"_sourceNode":{"$ref":"0"},"_targetNode":{"$ref":"1"},"$type":"NodeCanvas.DialogueTrees.DTConnection"}],"canvasGroups":[],"localBlackboard":{"_variables":{}},"derivedData":{"actorParameters":[{"_keyName":"actor
+    the upgrade panel.\n"},"_actorName":"actor parameter name","_actorParameterID":"df9802f6-1721-4c9a-ae2d-861241363f1e","_position":{"x":301.0,"y":448.0},"$type":"NodeCanvas.DialogueTrees.StatementNode","$id":"1"}],"connections":[{"_sourceNode":{"$ref":"0"},"_targetNode":{"$ref":"1"},"$type":"NodeCanvas.DialogueTrees.DTConnection"}],"canvasGroups":[],"localBlackboard":{"_variables":{"uiType":{"_value":"FanUI_Main","_name":"uiType","_id":"aa600099-c5dd-4c25-992e-c40f928c30b3","$type":"NodeCanvas.Framework.Variable`1[[System.String,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}}},"derivedData":{"actorParameters":[{"_keyName":"actor
     parameter name","_id":"df9802f6-1721-4c9a-ae2d-861241363f1e","_actorObject":1}],"$type":"NodeCanvas.DialogueTrees.DialogueTree+DerivedSerializationData"}}'
   _objectReferences:
   - {fileID: 0}
