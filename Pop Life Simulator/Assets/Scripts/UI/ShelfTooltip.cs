@@ -17,6 +17,9 @@ namespace PopLife.UI
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI costText;
         [SerializeField] private TextMeshProUGUI categoryText;
+        [SerializeField] private TextMeshProUGUI attractivenessText;
+        [SerializeField] private TextMeshProUGUI priceText;
+        [SerializeField] private TextMeshProUGUI maintenanceFeeText;
         [SerializeField] private CanvasGroup canvasGroup; // For fade animation
 
         [Header("Color Settings")]
@@ -66,7 +69,7 @@ namespace PopLife.UI
 
             if (costText != null)
             {
-                costText.text = $"Cost: ${shelf.buildCost}";
+                costText.text = $"${shelf.buildCost}";
 
                 // Color based on affordability
                 if (ResourceManager.Instance != null)
@@ -78,8 +81,31 @@ namespace PopLife.UI
 
             if (categoryText != null)
             {
-                // Only show category name (without "Shelf" prefix)
-                categoryText.text = shelf.category.ToString();
+                // Only show category name (without "Shelf" prefix) in uppercase
+                categoryText.text = shelf.category.ToString().ToUpper();
+            }
+
+            // Get level 1 data for stats display
+            var shelfLevel = shelf.GetShelfLevel(1);
+            if (shelfLevel != null)
+            {
+                // Display attractiveness
+                if (attractivenessText != null)
+                {
+                    attractivenessText.text = $"Attractiveness: {shelfLevel.attractiveness:F1}";
+                }
+
+                // Display price
+                if (priceText != null)
+                {
+                    priceText.text = $"Unit Price: ${shelfLevel.price}";
+                }
+
+                // Display maintenance fee
+                if (maintenanceFeeText != null)
+                {
+                    maintenanceFeeText.text = $"Maintenance: ${shelfLevel.maintenanceFee}/day";
+                }
             }
 
             // Position tooltip
