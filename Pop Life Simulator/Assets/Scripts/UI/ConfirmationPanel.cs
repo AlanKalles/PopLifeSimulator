@@ -17,6 +17,13 @@ namespace PopLife.UI
     ///   - Info text: "This will return <refund amount> money"
     ///   - Confirm button
     ///   - Cancel button
+    ///
+    /// Setup Instructions:
+    /// 1. Create an ACTIVE empty GameObject (ConfirmationPanel_Root)
+    /// 2. Attach this script to the root GameObject
+    /// 3. Create child GameObjects for blockingPanel and contentPanel
+    /// 4. Set blockingPanel and contentPanel to INACTIVE in the Inspector
+    /// 5. This allows the script to always be initialized while UI remains hidden
     /// </summary>
     public class ConfirmationPanel : MonoBehaviour
     {
@@ -174,14 +181,8 @@ namespace PopLife.UI
         /// </summary>
         private void ShowPanel()
         {
-            // Ensure this GameObject is active (critical if it starts inactive)
-            if (!gameObject.activeSelf)
-            {
-                gameObject.SetActive(true);
-            }
-
-            // Setup button listeners (in case Awake/OnEnable wasn't called)
-            SetupButtonListeners();
+            // No longer activates parent GameObject - parent should always be active
+            // Only activate child panels (blockingPanel and contentPanel)
 
             if (blockingPanel != null)
             {
@@ -209,12 +210,8 @@ namespace PopLife.UI
                 contentPanel.SetActive(false);
             }
 
-            // Hide parent GameObject (optional, keeps panel hierarchy clean)
-            // 隐藏父对象（可选，保持面板层级清洁）
-            if (gameObject.activeSelf)
-            {
-                gameObject.SetActive(false);
-            }
+            // No longer deactivates parent GameObject - parent should always be active
+            // This allows the script to remain initialized for instant response
 
             // Clear callbacks
             onConfirm = null;
