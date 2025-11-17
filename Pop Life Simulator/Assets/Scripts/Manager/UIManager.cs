@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using PopLife.UI;
+using PopLife.UI.Stats;
 
 namespace PopLife
 {
@@ -13,6 +14,7 @@ namespace PopLife
         [SerializeField] private AlertPanel alertPanel;
         [SerializeField] private ScrollingMessageBar scrollingMessageBar;
         [SerializeField] private UI.ConfirmationPanel confirmationPanel;
+        [SerializeField] private StatsPanelController statsPanel;
 
         private void Awake()
         {
@@ -169,6 +171,43 @@ namespace PopLife
             if (confirmationPanel != null)
             {
                 confirmationPanel.Hide();
+            }
+        }
+
+        /// <summary>
+        /// 切换 Stats 面板显示/隐藏
+        /// </summary>
+        public void ToggleStatsPanel()
+        {
+            if (statsPanel != null)
+            {
+                statsPanel.Toggle();
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] StatsPanel is not assigned!");
+            }
+        }
+
+        /// <summary>
+        /// 显示 Stats 面板
+        /// </summary>
+        public void ShowStatsPanel()
+        {
+            if (statsPanel != null)
+            {
+                statsPanel.Show();
+            }
+        }
+
+        /// <summary>
+        /// 隐藏 Stats 面板
+        /// </summary>
+        public void HideStatsPanel()
+        {
+            if (statsPanel != null)
+            {
+                statsPanel.Hide();
             }
         }
     }

@@ -2,6 +2,8 @@ using NodeCanvas.Framework;
 using ParadoxNotion.Design;
 using UnityEngine;
 using PopLife.Customers.Runtime;
+using PopLife.Customers.Services;
+using PopLife.Runtime;
 using PopLife.UI;
 
 namespace PopLife.Customers.NodeCanvas.Actions
@@ -38,6 +40,15 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
+            // 触发到达收银台事件（在结账前锁定消费金额）
+            var customerAgent = agent.GetComponent<CustomerAgent>();
+            if (customerAgent != null)
+            {
+                // 查找收银台实例
+                FacilityInstance cashier = FindCashierById(customerBlackboard.targetCashierId);
+                CustomerEventBus.RaiseReachedCashier(customerAgent, cashier);
+            }
+
             // Try to checkout
             bool success = interaction.TryCheckout();
 
@@ -64,6 +75,29 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 ScreenLogger.LogWarning(customerBlackboard.customerId, msg);
                 EndAction(false);
             }
+        }
+
+        /// <summary>
+        /// 根据 ID 查找收银台实例
+        /// </summary>
+        private FacilityInstance FindCashierById(string cashierId)
+        {
+            if (string.IsNullOrEmpty(cashierId))
+                return null;
+
+            var floors = Object.FindObjectsByType<FloorGrid>(FindObjectsSortMode.None);
+            foreach (var floor in floors)
+            {
+                foreach (var building in floor.AllBuildings())
+                {
+                    if (building is FacilityInstance facility && facility.instanceId == cashierId)
+                    {
+                        return facility;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

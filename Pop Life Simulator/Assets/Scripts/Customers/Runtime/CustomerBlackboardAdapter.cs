@@ -11,6 +11,7 @@ namespace PopLife.Customers.Runtime
     {
         [Header("只读基线（注入）")]
         public string customerId;
+        public string customerName;
         public int loyaltyLevel;
         public int trust;
         public float[] interestFinal = Array.Empty<float>();
@@ -58,6 +59,7 @@ namespace PopLife.Customers.Runtime
         public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, float[] finalInterest, int embarrassmentCapVal, float finalMoveSpeed)
         {
             customerId = record.customerId;
+            customerName = record.name;
             loyaltyLevel = record.loyaltyLevel;
             trust = record.trust;
             interestFinal = finalInterest;
