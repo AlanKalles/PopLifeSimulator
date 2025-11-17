@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using PopLife.Runtime;
+using System.Collections.Generic;
 
 namespace PopLife.UI.BuildingInteraction
 {
@@ -25,6 +27,10 @@ namespace PopLife.UI.BuildingInteraction
 
         [Header("Debug")]
         [SerializeField] private bool enableDebugLogs = false;
+
+        [Header("UI Blocking")]
+        [Tooltip("List of UI GameObjects that should block building interaction when mouse is over them")]
+        [SerializeField] private List<GameObject> blockingUIElements = new List<GameObject>();
 
         // State tracking
         private BuildingInstance currentHoveredBuilding;
@@ -182,12 +188,65 @@ namespace PopLife.UI.BuildingInteraction
         }
 
         /// <summary>
+        /// Check if mouse is over any blocking UI element
+        /// 检查鼠标是否悬停在阻挡UI元素上
+        /// </summary>
+        private bool IsPointerOverBlockingUI()
+        {
+            // Check if pointer is over UI
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                return false; // Not over any UI
+            }
+
+            // Get raycast results
+            PointerEventData pointerData = new PointerEventData(EventSystem.current)
+            {
+                position = Input.mousePosition
+            };
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, results);
+
+            // Check if any raycast result is in the blocking UI list
+            foreach (RaycastResult result in results)
+            {
+                foreach (GameObject blockingUI in blockingUIElements)
+                {
+                    if (blockingUI == null) continue;
+
+                    // Check if result is the blocking UI or a child of it
+                    if (result.gameObject == blockingUI || result.gameObject.transform.IsChildOf(blockingUI.transform))
+                    {
+                        if (enableDebugLogs)
+                        {
+                            Debug.Log($"Mouse over blocking UI: {blockingUI.name}");
+                        }
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Get building under mouse cursor using raycast
         /// 使用 Raycast 获取鼠标下的建筑
         /// </summary>
         private BuildingInstance GetBuildingUnderMouse()
         {
             if (mainCamera == null) return null;
+
+            // Check if mouse is over blocking UI first
+            if (IsPointerOverBlockingUI())
+            {
+                if (enableDebugLogs)
+                {
+                    Debug.Log("Mouse over blocking UI - skipping building detection");
+                }
+                return null;
+            }
 
             Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             mouseWorld.z = 0; // Ensure Z is 0 for 2D

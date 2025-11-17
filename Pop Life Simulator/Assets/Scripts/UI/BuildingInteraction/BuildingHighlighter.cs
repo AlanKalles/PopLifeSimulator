@@ -22,6 +22,9 @@ namespace PopLife.UI.BuildingInteraction
         [SerializeField] private float fadeInDuration = 0.1f;
         [SerializeField] private float fadeOutDuration = 0.1f;
 
+        [Header("Debug")]
+        [SerializeField] private bool enableDebugLogs = false;
+
         private LineRenderer lineRenderer;
         private FloorManager floorManager;
         private Material lineMaterial;
@@ -176,6 +179,12 @@ namespace PopLife.UI.BuildingInteraction
             // 1. Get absolute grid positions
             List<Vector2Int> cells = GetAbsoluteCells(building);
 
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[Highlighter] Building '{building.archetype.displayName}' at grid {building.gridPosition}");
+                Debug.Log($"[Highlighter] Occupied cells: {string.Join(", ", cells)}");
+            }
+
             // 2. Build edge set (4 edges per cell)
             HashSet<Edge> edges = new HashSet<Edge>();
             foreach (var cell in cells)
@@ -183,22 +192,52 @@ namespace PopLife.UI.BuildingInteraction
                 AddCellEdges(edges, cell);
             }
 
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[Highlighter] Total edges before filtering: {edges.Count}");
+            }
+
             // 3. Remove internal shared edges (keep only boundary)
             RemoveInternalEdges(edges, cells);
+
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[Highlighter] Boundary edges after filtering: {edges.Count}");
+                foreach (var edge in edges)
+                {
+                    Debug.Log($"  Edge: {edge.start} → {edge.end}");
+                }
+            }
 
             // 4. Sort and connect edges into a loop
             List<Vector2Int> gridLoop = ConnectEdgesIntoLoop(edges);
 
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[Highlighter] Grid loop vertices ({gridLoop.Count}): {string.Join(" → ", gridLoop)}");
+            }
+
             // 5. Convert to world coordinates
             List<Vector3> worldVertices = new List<Vector3>();
-            foreach (var gridPos in gridLoop)
+            for (int i = 0; i < gridLoop.Count; i++)
             {
+                Vector2Int gridPos = gridLoop[i];
                 Vector3 worldPos = floor.GridToWorld(gridPos);
+
+                if (enableDebugLogs)
+                {
+                    Debug.Log($"  [{i}] Grid {gridPos} → World (before offset) {worldPos}");
+                }
 
                 // Apply position offset (left/down adjustment to wrap around buildings)
                 // 应用位置偏移（左/下调整以包裹建筑物）
                 worldPos.x += positionOffset.x;
                 worldPos.y += positionOffset.y;
+
+                if (enableDebugLogs)
+                {
+                    Debug.Log($"      After offset ({positionOffset}): {worldPos}");
+                }
 
                 // Set Z offset to render above buildings
                 worldPos.z = zOffset;
@@ -275,23 +314,52 @@ namespace PopLife.UI.BuildingInteraction
         /// <summary>
         /// Check if an edge is internal (both sides have cells)
         /// 检查边是否是内部边（两侧都有格子）
+        ///
+        /// 坐标系统说明：
+        /// - 格子 (x, y) 的左下角顶点在 (x, y)
+        /// - 格子 (x, y) 的四条边：
+        ///   - 底边：(x, y) → (x+1, y)
+        ///   - 右边：(x+1, y) → (x+1, y+1)
+        ///   - 顶边：(x, y+1) → (x+1, y+1)
+        ///   - 左边：(x, y) → (x, y+1)
+        ///
+        /// 示例：
+        ///     (0,1)────(1,1)  ← 格子 (0,0) 的顶边
+        ///       │        │
+        ///       │ Cell   │
+        ///       │ (0,0)  │
+        ///       │        │
+        ///     (0,0)────(1,0)  ← 格子 (0,0) 的底边
         /// </summary>
         private bool IsEdgeInternal(Edge edge, HashSet<Vector2Int> cells)
         {
-            // Determine edge direction
             Vector2Int diff = edge.end - edge.start;
 
-            if (diff.x == 1 && diff.y == 0) // Horizontal edge (bottom of cells)
+            // Horizontal edge (y 相同，沿 x 方向)
+            if (diff.y == 0 && diff.x > 0)
             {
-                Vector2Int cellAbove = new Vector2Int(edge.start.x, edge.start.y);
-                Vector2Int cellBelow = new Vector2Int(edge.start.x, edge.start.y - 1);
-                return cells.Contains(cellAbove) && cells.Contains(cellBelow);
+                // 水平边 (x, y) → (x+1, y)
+                // 这条边可能是：
+                // - 格子 (x, y) 的底边
+                // - 格子 (x, y-1) 的顶边
+                //
+                // 如果两侧都有格子，则是内部边
+                Vector2Int cellWithBottomEdge = new Vector2Int(edge.start.x, edge.start.y);
+                Vector2Int cellWithTopEdge = new Vector2Int(edge.start.x, edge.start.y - 1);
+                return cells.Contains(cellWithBottomEdge) && cells.Contains(cellWithTopEdge);
             }
-            else if (diff.x == 0 && diff.y == 1) // Vertical edge (left of cells)
+            // Vertical edge (x 相同，沿 y 方向)
+            else if (diff.x == 0 && diff.y > 0)
             {
-                Vector2Int cellRight = new Vector2Int(edge.start.x, edge.start.y);
-                Vector2Int cellLeft = new Vector2Int(edge.start.x - 1, edge.start.y);
-                return cells.Contains(cellRight) && cells.Contains(cellLeft);
+                // 垂直边 (x, y) → (x, y+1)
+                // 这条边可能是：
+                // - 格子 (x, y) 的左边
+                // - 格子 (x-1, y) 的右边
+                //
+                // 如果两侧都有格子，则是内部边
+                Vector2Int cellWithLeftEdge = new Vector2Int(edge.start.x, edge.start.y);
+                Vector2Int cellWithRightEdge = new Vector2Int(edge.start.x - 1, edge.start.y);
+                return cells.Contains(cellWithLeftEdge) && cells.Contains(cellWithRightEdge);
             }
 
             return false;
@@ -328,48 +396,85 @@ namespace PopLife.UI.BuildingInteraction
                 adjacency[edge.end].Add(edge.start);
             }
 
-            // Start from any vertex
-            Vector2Int startVertex = adjacency.Keys.First();
-            List<Vector2Int> loop = new List<Vector2Int>();
-            HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
+            // Start from the bottom-left vertex (smallest y, then smallest x)
+            // 从左下角顶点开始（最小 y，然后最小 x）
+            Vector2Int startVertex = adjacency.Keys.OrderBy(v => v.y).ThenBy(v => v.x).First();
 
+            List<Vector2Int> loop = new List<Vector2Int>();
             Vector2Int current = startVertex;
-            Vector2Int previous = current; // Track previous to avoid backtracking
+            Vector2Int previous = default;
+            bool isFirstIteration = true; // Track first iteration explicitly
 
             loop.Add(current);
-            visited.Add(current);
 
-            // Traverse the loop
-            while (true)
+            // Traverse the loop until we return to start
+            int maxIterations = adjacency.Count + 1; // Safety limit
+            int iterations = 0;
+
+            while (iterations < maxIterations)
             {
+                iterations++;
+
                 var neighbors = adjacency[current];
                 Vector2Int next = default;
 
-                // Find unvisited neighbor (or start vertex to close loop)
+                if (enableDebugLogs)
+                {
+                    Debug.Log($"[Highlighter]   Iteration {iterations}: current={current}, previous={previous}, isFirst={isFirstIteration}, neighbors=[{string.Join(", ", neighbors)}]");
+                }
+
+                // Find next neighbor (not the previous one we came from)
                 foreach (var neighbor in neighbors)
                 {
-                    if (!visited.Contains(neighbor))
+                    // Skip the previous vertex (unless it's the first iteration)
+                    if (!isFirstIteration && neighbor == previous)
                     {
-                        next = neighbor;
-                        break;
+                        if (enableDebugLogs)
+                        {
+                            Debug.Log($"[Highlighter]     Skipping previous: {neighbor}");
+                        }
+                        continue;
                     }
-                    else if (neighbor == startVertex && loop.Count > 2)
+
+                    // Check if we've returned to start (loop closed)
+                    if (neighbor == startVertex && loop.Count > 2)
                     {
-                        // Found start vertex, loop is closed
+                        // Loop complete!
+                        if (enableDebugLogs)
+                        {
+                            Debug.Log($"[Highlighter]     Loop closed! Returned to start: {startVertex}");
+                        }
                         return loop;
                     }
+
+                    // Take this neighbor
+                    next = neighbor;
+                    if (enableDebugLogs)
+                    {
+                        Debug.Log($"[Highlighter]     Selected next: {next}");
+                    }
+                    break;
                 }
 
                 if (next == default)
                 {
-                    // No more unvisited neighbors, loop complete
+                    // No valid next vertex (should not happen in a valid loop)
+                    if (enableDebugLogs)
+                    {
+                        Debug.LogWarning($"[Highlighter] ConnectEdgesIntoLoop: No next vertex found at {current}, loop size: {loop.Count}, neighbors: [{string.Join(", ", neighbors)}]");
+                    }
                     break;
                 }
 
                 loop.Add(next);
-                visited.Add(next);
                 previous = current;
                 current = next;
+                isFirstIteration = false; // No longer the first iteration
+            }
+
+            if (iterations >= maxIterations)
+            {
+                Debug.LogError("[Highlighter] ConnectEdgesIntoLoop: Exceeded max iterations! Possible infinite loop.");
             }
 
             return loop;
