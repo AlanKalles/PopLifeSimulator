@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1e0b60b95dbdeb4a9589105456e7aaf, type: 3}
+  m_Name: D002
+  m_EditorClassIdentifier: 
+  narrativeID: D002
+  narrativeName: D002
+  description: After player enters Build Mode. Midori explains how to place shelves.
+  characterPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
+  characterName: Midori
+  conversationType: 3
+  narrativeSequence:
+    sequenceID: SEQ001
+    sequenceName: 
+    rootSegment:
+      segmentID: SEG01
+      speakerName: 
+      textContent: "Surprised the interior isn\u2019t already filled with dildos?"
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: SEG02
+        speakerName: 
+        textContent: "Of course, silly. You \u2014 as the operator (owner) \u2014
+          decide what goes in the store.\n"
+        speakerPortrait: {fileID: 0}
+        nextSegments: []
+        isEndSegment: 1
+        displayDuration: 0
+      isEndSegment: 0
+      displayDuration: 0
+    currentSegment:
+      segmentID: S1
+      speakerName: 
+      textContent: "Surprised the interior isn\u2019t already filled with dildos?"
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: S2
+        speakerName: 
+        textContent: "Of course, silly. You \u2014 as the operator (owner) \u2014
+          decide what goes in the store.\n"
+        speakerPortrait: {fileID: 0}
+        nextSegments: []
+        isEndSegment: 1
+        displayDuration: 0
+      isEndSegment: 0
+      displayDuration: 0
+    navigationHistory:
+    - segmentID: S1
+      speakerName: 
+      textContent: "Surprised the interior isn\u2019t already filled with dildos?"
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: S2
+        speakerName: 
+        textContent: "Of course, silly. You \u2014 as the operator (owner) \u2014
+          decide what goes in the store.\n"
+        speakerPortrait: {fileID: 0}
+        nextSegments: []
+        isEndSegment: 1
+        displayDuration: 0
+      isEndSegment: 0
+      displayDuration: 0
+  isVIPOnly: 0
+  minimumDayRequired: 0
+  minimumFameRequired: 0
+  completionRewards: []

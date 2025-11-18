@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1e0b60b95dbdeb4a9589105456e7aaf, type: 3}
+  m_Name: D001
+  m_EditorClassIdentifier: 
+  narrativeID: D001
+  narrativeName: D001
+  description: Player arrives, Midori welcomes, explains shop basics.
+  characterPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
+  characterName: Midori
+  conversationType: 3
+  narrativeSequence:
+    sequenceID: SEQ001
+    sequenceName: 
+    rootSegment:
+      segmentID: SEG01
+      speakerName: Midori
+      textContent: "\u2026You are here, sex expert."
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: SEG02
+        speakerName: Midori
+        textContent: "What\u2019s that look? You were confident enough to accept
+          my invite, after all."
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG03
+          speakerName: 
+          textContent: "[narrows eyes] The email. Titled Midori\u2019s Sex Toy Shop.
+            And you wrote back, \u2018Yes, I would be honored to help operate the
+            store.\u2019"
+          speakerPortrait: {fileID: 0}
+          nextSegments:
+          - segmentID: SEG04
+            speakerName: 
+            textContent: "You don\u2019t remember\u2026 tch\u2026"
+            speakerPortrait: {fileID: 0}
+            nextSegments:
+            - segmentID: SEG05
+              speakerName: 
+              textContent: "I don\u2019t have time to find another person before
+                I leave the city."
+              speakerPortrait: {fileID: 0}
+              nextSegments:
+              - segmentID: SEG06
+                speakerName: 
+                textContent: "Come on in. You\u2019re operating this store from now
+                  on!"
+                speakerPortrait: {fileID: 0}
+                nextSegments: []
+                isEndSegment: 1
+                displayDuration: 0
+              isEndSegment: 0
+              displayDuration: 0
+            isEndSegment: 0
+            displayDuration: 0
+          isEndSegment: 0
+          displayDuration: 0
+        isEndSegment: 0
+        displayDuration: 0
+      isEndSegment: 0
+      displayDuration: 0
+    currentSegment:
+      segmentID: 
+      speakerName: 
+      textContent: 
+      speakerPortrait: {fileID: 0}
+      nextSegments: []
+      isEndSegment: 0
+      displayDuration: 0
+    navigationHistory: []
+  isVIPOnly: 0
+  minimumDayRequired: 0
+  minimumFameRequired: 0
+  completionRewards: []
