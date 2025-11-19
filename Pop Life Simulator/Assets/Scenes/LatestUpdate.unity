@@ -164,6 +164,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hasEnteredBuildMode: 0
+  hasEnteredPlaceMode: 0
+  hasEnteredPlaceModeSecondTime: 0
   hasPlacedFirstShelf: 0
   hasOpenedStore: 0
   hasServedFirstCustomer: 0
@@ -940,7 +942,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 38523240}
   m_HandleRect: {fileID: 38523239}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -14371,7 +14373,6 @@ GameObject:
   m_Component:
   - component: {fileID: 948820473}
   - component: {fileID: 948820476}
-  - component: {fileID: 948820475}
   - component: {fileID: 948820474}
   m_Layer: 0
   m_Name: Narrative
@@ -14413,37 +14414,46 @@ MonoBehaviour:
   - Marker: 0
     ContentType: 1
     ContentID: D001
+    GuidancePrefab: {fileID: 0}
     Description: Midori Welcome Player
     Priority: 0
-  - Marker: 14
+  - Marker: 1
     ContentType: 1
     ContentID: D002
-    Description: 
+    GuidancePrefab: {fileID: 0}
+    Description: Midori explains build mode
     Priority: 0
-  - Marker: 15
+  - Marker: 19
     ContentType: 2
-    ContentID: 
-    Description: 
+    ContentID: Guidance_firstbuild1
+    GuidancePrefab: {fileID: 3745593062068500803, guid: ec4815efe7d7f784db5c4476bd8c5009, type: 3}
+    Description: Player choose shelf to build
     Priority: 0
---- !u!114 &948820475
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 948820472}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ab80c3b04beada488def7ce7ce00a53, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableGuidance: 0
-  debugMode: 0
-  defaultTransitionDelay: 0.3
-  guidanceMask: {fileID: 0}
-  instructionBox: {fileID: 0}
-  highlightZone: {fileID: 0}
-  availableSequences: []
+  - Marker: 3
+    ContentType: 2
+    ContentID: Guidance_firstbuild2
+    GuidancePrefab: {fileID: 5220141987131967671, guid: b024c69aa345e3d41bfebf03f923cfbe, type: 3}
+    Description: Before player placed anything
+    Priority: 0
+  - Marker: 5
+    ContentType: 2
+    ContentID: Guidance_firstbuild3
+    GuidancePrefab: {fileID: 5220141987131967671, guid: 5e5983e08b5dc20488be193e2ad5853b, type: 3}
+    Description: introduce money
+    Priority: 0
+  - Marker: 6
+    ContentType: 2
+    ContentID: Guidance_firstbuild4
+    GuidancePrefab: {fileID: 3745593062068500803, guid: 38388a10516c9914cbbf59915eae6296, type: 3}
+    Description: one more shelf
+    Priority: 0
+  - Marker: 8
+    ContentType: 1
+    ContentID: D003
+    GuidancePrefab: {fileID: 0}
+    Description: D003
+    Priority: 0
+  guidanceParent: {fileID: 813591033}
 --- !u!114 &948820476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25655,7 +25665,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1715364292
 RectTransform:
   m_ObjectHideFlags: 0

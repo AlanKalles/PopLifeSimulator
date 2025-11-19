@@ -11,7 +11,13 @@ namespace PopLife.Manager
 
         // Build phase
         FirstBuildPhaseEntered,   // 首次进入建造模式
+        FirstTimeBuild,           // 首次进入建造Place模式
+        BeforeFirstShelfPlaced,
         FirstShelfPlaced,         // 首次放置货架
+
+        WhatIsMoney,
+        OneMoreShelf,
+        BeforeTwoShelvesPlaced,
         TwoShelvesPlaced,         // 放置了2个货架
         FirstBuildingUpgraded,    // 首次升级建筑
 
@@ -31,9 +37,7 @@ namespace PopLife.Manager
         PlacedFacility,           // 放置设施
 
         // Custom markers (可扩展)
-        Custom01,
-        Custom02,
-        Custom03,
-        D002toGBUILDFIRSTSHELF
+        D002toGBUILDFIRSTSHELF,
+        
     }
 }

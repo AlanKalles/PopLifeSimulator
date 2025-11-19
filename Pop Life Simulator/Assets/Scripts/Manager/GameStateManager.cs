@@ -15,6 +15,8 @@ namespace PopLife.Manager
         // Tutorial state tracking
         [Header("Tutorial States")]
         public bool hasEnteredBuildMode = false;
+        public bool hasEnteredPlaceMode = false;
+        public bool hasEnteredPlaceModeSecondTime = false;
         public bool hasPlacedFirstShelf = false;
         public bool hasOpenedStore = false;
         public bool hasServedFirstCustomer = false;
@@ -30,6 +32,7 @@ namespace PopLife.Manager
 
         // Events for tutorial system to subscribe
         public event Action OnBuildModeEntered;
+        public event Action OnPlaceModeEntered;
         public event Action OnFirstShelfPlaced;
         public event Action OnStoreOpened;
         public event Action OnFirstCustomerServed;
@@ -93,6 +96,32 @@ namespace PopLife.Manager
                 TutorialEventBus.RaiseMarker(TutorialMarker.FirstBuildPhaseEntered);
 
                 Debug.Log("[GameState] Build mode (ShelfListPanel) entered for the first time");
+            }
+        }
+
+        /// <summary>
+        /// Call when player enters place mode in ConstructionManager for the first time
+        /// 当玩家首次进入建造Place模式时调用
+        /// </summary>
+        public void NotifyPlaceModeEntered()
+        {
+            if (!hasEnteredPlaceMode)
+            {
+                hasEnteredPlaceMode = true;
+                OnPlaceModeEntered?.Invoke();
+
+                // Raise tutorial marker
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstTimeBuild);
+
+                Debug.Log("[GameState] Place mode entered for the first time");
+            }
+            else if (!hasEnteredPlaceModeSecondTime && hasPlacedFirstShelf)
+            {
+                // 第二次进入place mode（第一个货架已放置后）
+                hasEnteredPlaceModeSecondTime = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.BeforeTwoShelvesPlaced);
+
+                Debug.Log("[GameState] Place mode entered for the second time");
             }
         }
 
@@ -184,6 +213,8 @@ namespace PopLife.Manager
         public void ResetTutorialStates()
         {
             hasEnteredBuildMode = false;
+            hasEnteredPlaceMode = false;
+            hasEnteredPlaceModeSecondTime = false;
             hasPlacedFirstShelf = false;
             hasOpenedStore = false;
             hasServedFirstCustomer = false;

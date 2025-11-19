@@ -1,6 +1,7 @@
 using UnityEngine;
 using PopLife.Data;
 using PopLife.Services;
+using PopLife.Manager;
 
 namespace PopLife.Runtime
 {
@@ -280,6 +281,12 @@ namespace PopLife.Runtime
             previewRot = 0;
             mode = Mode.Place;
             CreatePreview(arch);
+
+            // 通知首次进入建造Place模式
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.NotifyPlaceModeEntered();
+            }
         }
 
         private void CreatePreview(BuildingArchetype arch)
@@ -404,6 +411,13 @@ namespace PopLife.Runtime
                 {
                     // 根据建筑类型播放不同音效
                     PlayBuildSound(selectedArchetype);
+
+                    // 通知货架/建筑放置成功
+                    if (GameStateManager.Instance != null)
+                    {
+                        GameStateManager.Instance.NotifyShelfPlaced();
+                    }
+
                     if (!Input.GetKey(KeyCode.LeftShift)) Cancel();
                 }
                 // 注意：放置失败时预览已经是红色，不需要额外弹窗

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PopLife.Manager;
 using PopLife.NarrativeSystem;
-using PopLife.GuidanceSystem;
+using PopLife.GuidanceSystem.Core;
 
 namespace PopLife.Integration
 {
@@ -21,6 +21,13 @@ namespace PopLife.Integration
 
         [Header("Content Mapping")]
         [SerializeField] private List<TutorialContentMapping> contentMappings;
+
+        [Header("Guidance Parent")]
+        [Tooltip("Parent transform for instantiated guidance prefabs")]
+        [SerializeField] private Transform guidanceParent;
+
+        // Current active guidance
+        private GuidancePrefab currentGuidance;
 
         // Runtime state
         private Dictionary<TutorialMarker, TutorialContentMapping> mappingDictionary;
@@ -67,11 +74,6 @@ namespace PopLife.Integration
             {
                 Debug.LogWarning("[TutorialDispatcher] NarrativeManager.Instance is null in OnEnable, will try again in Start");
             }
-
-            if (GuidanceManager.Instance != null)
-            {
-                GuidanceManager.Instance.OnGuidanceCompleted += HandleGuidanceCompleted;
-            }
         }
 
         private void OnDisable()
@@ -81,11 +83,6 @@ namespace PopLife.Integration
             if (NarrativeManager.Instance != null)
             {
                 NarrativeManager.Instance.OnNarrativeCompleted -= HandleNarrativeCompleted;
-            }
-
-            if (GuidanceManager.Instance != null)
-            {
-                GuidanceManager.Instance.OnGuidanceCompleted -= HandleGuidanceCompleted;
             }
         }
 
@@ -109,12 +106,6 @@ namespace PopLife.Integration
             else
             {
                 Debug.LogError("[TutorialDispatcher] NarrativeManager.Instance is still null in Start!");
-            }
-
-            if (GuidanceManager.Instance != null)
-            {
-                GuidanceManager.Instance.OnGuidanceCompleted -= HandleGuidanceCompleted;
-                GuidanceManager.Instance.OnGuidanceCompleted += HandleGuidanceCompleted;
             }
         }
 
@@ -236,27 +227,70 @@ namespace PopLife.Integration
         }
 
         /// <summary>
-        /// 触发指引
+        /// 触发指引（使用Prefab）
         /// </summary>
         private void TriggerGuidance(string guidanceID)
         {
-            if (GuidanceManager.Instance != null)
+            // 从映射中查找对应的Prefab
+            TutorialContentMapping mapping = null;
+            foreach (var m in contentMappings)
             {
-                // 使用新的 StartGuidanceByID 方法，支持从工厂创建
-                // Use new StartGuidanceByID method that supports factory creation
-                bool started = GuidanceManager.Instance.StartGuidanceByID(guidanceID);
-
-                if (!started)
+                if (m.ContentID == guidanceID && m.GuidancePrefab != null)
                 {
-                    Debug.LogWarning($"[TutorialDispatcher] Failed to start guidance: {guidanceID}");
-                    isProcessingContent = false;
-                    ProcessQueue();
+                    mapping = m;
+                    break;
                 }
             }
-            else
+
+            if (mapping == null || mapping.GuidancePrefab == null)
             {
-                Debug.LogError("[TutorialDispatcher] GuidanceManager not found");
+                Debug.LogWarning($"[TutorialDispatcher] No guidance prefab found for ID: {guidanceID}");
                 isProcessingContent = false;
+                ProcessQueue();
+                return;
+            }
+
+            // 实例化Prefab
+            Transform parent = guidanceParent != null ? guidanceParent : transform;
+            GameObject instance = Instantiate(mapping.GuidancePrefab, parent);
+            currentGuidance = instance.GetComponent<GuidancePrefab>();
+
+            if (currentGuidance == null)
+            {
+                Debug.LogError($"[TutorialDispatcher] Guidance prefab missing GuidancePrefab component: {guidanceID}");
+                Destroy(instance);
+                isProcessingContent = false;
+                ProcessQueue();
+                return;
+            }
+
+            // 订阅结束事件
+            currentGuidance.OnGuidanceEnded += HandleGuidancePrefabCompleted;
+
+            // 启动Guidance
+            currentGuidance.StartGuidance();
+            Debug.Log($"[TutorialDispatcher] Started guidance prefab: {guidanceID}");
+        }
+
+        /// <summary>
+        /// 处理Guidance Prefab完成
+        /// </summary>
+        private void HandleGuidancePrefabCompleted()
+        {
+            if (currentGuidance != null)
+            {
+                currentGuidance.OnGuidanceEnded -= HandleGuidancePrefabCompleted;
+
+                var content = new TutorialContent
+                {
+                    Type = ContentType.Guidance,
+                    ContentID = currentGuidance.guidanceID
+                };
+
+                currentGuidance = null;
+                isProcessingContent = false;
+
+                OnContentCompleted?.Invoke(content);
                 ProcessQueue();
             }
         }
@@ -328,22 +362,6 @@ namespace PopLife.Integration
             ProcessQueue();
         }
 
-        /// <summary>
-        /// 处理指引完成
-        /// </summary>
-        private void HandleGuidanceCompleted(GuidanceSequence sequence)
-        {
-            isProcessingContent = false;
-
-            var content = new TutorialContent
-            {
-                Type = ContentType.Guidance,
-                ContentID = sequence.SequenceID
-            };
-
-            OnContentCompleted?.Invoke(content);
-            ProcessQueue();
-        }
 
         /// <summary>
         /// 获取标记的内容类型
@@ -424,7 +442,15 @@ namespace PopLife.Integration
     {
         public TutorialMarker Marker;
         public ContentType ContentType;
+
+        [Header("Content References")]
+        [Tooltip("Content ID for narrative or as identifier")]
         public string ContentID;
+
+        [Tooltip("Guidance prefab to instantiate (for Guidance type)")]
+        public GameObject GuidancePrefab;
+
+        [Header("Metadata")]
         public string Description;
         public int Priority = 0;  // Higher priority content interrupts lower
     }
