@@ -15,18 +15,18 @@ namespace PopLife.NarrativeSystem.UI
     /// </summary>
     public class FanConversationPanel : MonoBehaviour
     {
+        #region Serialized Fields
+
         [Header("Panel References")]
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private CanvasGroup canvasGroup;
 
-        [Header("Conversation Boxes")]
-        [SerializeField] private ConversationBox topBox;     // 上方对话框
-        [SerializeField] private ConversationBox centerBox;  // 中间对话框
-        [SerializeField] private ConversationBox bottomBox;  // 下方对话框
+        [Header("Conversation Box Prefab")]
+        [SerializeField] private ConversationBox conversationBoxPrefab;  // 通用对话框预制体
 
         [Header("Fan Layout Settings")]
         [SerializeField] private float fanAngle = 25f;       // 扇形角度
-        [SerializeField] private float fanRadius = 350f;     // 扇形半径
+        [SerializeField] private float fanRadius = 350f;     // 扇形半径（现在会正确使用）
         [SerializeField] private Vector2 fanPivot;           // 扇形圆心位置
 
         [Header("Box Sizes")]
@@ -48,8 +48,17 @@ namespace PopLife.NarrativeSystem.UI
         [SerializeField] private float fadeInDuration = 0.3f;
         [SerializeField] private float fadeOutDuration = 0.3f;
 
+        #endregion
+
+        #region Private Fields
+
+        // 动态标记系统
+        private Dictionary<BoxPosition, ConversationBox> boxes = new Dictionary<BoxPosition, ConversationBox>();
+        private Dictionary<BoxPosition, BoxPositionConfig> positionConfigs;
+        private Stack<ConversationBox> boxPool = new Stack<ConversationBox>();
+        private Dictionary<ConversationBox, System.Action> boxEventHandlers = new Dictionary<ConversationBox, System.Action>();
+
         // State
-        private NarrativeSequence currentSequence;
         private NarrativeSO currentNarrative;
         private bool isTransitioning;
         private bool isPanelVisible;
@@ -59,46 +68,48 @@ namespace PopLife.NarrativeSystem.UI
         public event Action<int> OnChoiceSelected;
         public event Action OnFinishClicked;
 
+        #endregion
+
+        #region Structs and Enums
+
+        /// <summary>
+        /// 对话框位置枚举
+        /// </summary>
+        public enum BoxPosition
+        {
+            Top,
+            Center,
+            Bottom
+        }
+
+        private enum TransitionDirection
+        {
+            Up,
+            Down
+        }
+
+        /// <summary>
+        /// 位置配置数据
+        /// </summary>
+        [System.Serializable]
+        private struct BoxPositionConfig
+        {
+            public Vector2 anchoredPosition;
+            public Vector3 rotation;  // Euler angles
+            public Vector3 scale;
+            public Vector2 size;
+        }
+
+        #endregion
+
+        #region Unity Lifecycle
+
         private void Awake()
         {
             InitializeComponents();
-            SetupEventHandlers();
+            InitializePositionConfigs();
+            InitializeBoxes();
             HidePanel(true); // Start hidden
-        }
-
-        private void InitializeComponents()
-        {
-            // Ensure canvas group exists
-            if (canvasGroup == null)
-                canvasGroup = GetComponent<CanvasGroup>();
-
-            if (canvasGroup == null)
-                canvasGroup = gameObject.AddComponent<CanvasGroup>();
-
-            // Setup finish button
-            if (finishButton != null)
-            {
-                finishButton.gameObject.SetActive(false);
-                if (finishButtonText != null)
-                    finishButtonText.text = "Finish";
-            }
-
-            // Initialize box positions
-            PositionBoxes();
-        }
-
-        private void SetupEventHandlers()
-        {
-            // Box click handlers
-            if (topBox != null)
-                topBox.OnBoxClicked += () => NavigateToBox(BoxPosition.Top);
-
-            if (bottomBox != null)
-                bottomBox.OnBoxClicked += () => NavigateToBox(BoxPosition.Bottom);
-
-            // Finish button
-            if (finishButton != null)
-                finishButton.onClick.AddListener(HandleFinishClicked);
         }
 
         private void Update()
@@ -117,6 +128,257 @@ namespace PopLife.NarrativeSystem.UI
                 }
             }
         }
+
+        private void OnDestroy()
+        {
+            // 清理事件处理器
+            foreach (var kvp in boxEventHandlers)
+            {
+                if (kvp.Key != null)
+                {
+                    kvp.Key.OnBoxClicked -= kvp.Value;
+                }
+            }
+            boxEventHandlers.Clear();
+
+            // 清理对象池
+            while (boxPool.Count > 0)
+            {
+                var box = boxPool.Pop();
+                if (box != null)
+                {
+                    Destroy(box.gameObject);
+                }
+            }
+
+            // 清理活跃的框
+            foreach (var kvp in boxes)
+            {
+                if (kvp.Value != null)
+                {
+                    Destroy(kvp.Value.gameObject);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Initialization
+
+        private void InitializeComponents()
+        {
+            // Ensure canvas group exists
+            if (canvasGroup == null)
+                canvasGroup = GetComponent<CanvasGroup>();
+
+            if (canvasGroup == null)
+                canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+            // Setup finish button
+            if (finishButton != null)
+            {
+                finishButton.gameObject.SetActive(false);
+                finishButton.onClick.RemoveAllListeners();
+                finishButton.onClick.AddListener(HandleFinishClicked);
+
+                if (finishButtonText != null)
+                    finishButtonText.text = "Finish";
+            }
+        }
+
+        /// <summary>
+        /// 初始化位置配置（使用 fanRadius）
+        /// </summary>
+        private void InitializePositionConfigs()
+        {
+            positionConfigs = new Dictionary<BoxPosition, BoxPositionConfig>
+            {
+                [BoxPosition.Top] = new BoxPositionConfig
+                {
+                    anchoredPosition = new Vector2(fanPivot.x, fanPivot.y + fanRadius * 0.5f), // 使用fanRadius
+                    rotation = new Vector3(0, 0, -fanAngle),
+                    scale = Vector3.one * edgeBoxScale,
+                    size = edgeBoxSize
+                },
+                [BoxPosition.Center] = new BoxPositionConfig
+                {
+                    anchoredPosition = fanPivot,
+                    rotation = Vector3.zero,
+                    scale = Vector3.one,
+                    size = centerBoxSize
+                },
+                [BoxPosition.Bottom] = new BoxPositionConfig
+                {
+                    anchoredPosition = new Vector2(fanPivot.x, fanPivot.y - fanRadius * 0.5f), // 使用fanRadius
+                    rotation = new Vector3(0, 0, fanAngle),
+                    scale = Vector3.one * edgeBoxScale,
+                    size = edgeBoxSize
+                }
+            };
+        }
+
+        /// <summary>
+        /// 初始化对话框（动态创建）
+        /// </summary>
+        private void InitializeBoxes()
+        {
+            // 确保有预制体
+            if (conversationBoxPrefab == null)
+            {
+                Debug.LogError("[FanConversationPanel] ConversationBox prefab is not assigned!");
+                return;
+            }
+
+            // 为每个位置创建一个框
+            foreach (BoxPosition position in Enum.GetValues(typeof(BoxPosition)))
+            {
+                var box = CreateBox();
+                boxes[position] = box;
+                ApplyPositionConfig(box, position);
+                SetupBoxEventHandlers(box);  // 添加事件处理
+                box.gameObject.SetActive(true);
+            }
+        }
+
+        #endregion
+
+        #region Object Pool Management
+
+        /// <summary>
+        /// 创建或从池中获取一个对话框
+        /// </summary>
+        private ConversationBox CreateBox()
+        {
+            ConversationBox box;
+
+            if (boxPool.Count > 0)
+            {
+                box = boxPool.Pop();
+                box.gameObject.SetActive(true);
+            }
+            else
+            {
+                // 实例化新的对话框
+                var go = Instantiate(conversationBoxPrefab.gameObject, panelRoot.transform);
+                box = go.GetComponent<ConversationBox>();
+
+                // 确保有CanvasGroup
+                if (box.GetComponent<CanvasGroup>() == null)
+                {
+                    box.gameObject.AddComponent<CanvasGroup>();
+                }
+            }
+
+            // 设置事件处理
+            SetupBoxEventHandlers(box);
+
+            return box;
+        }
+
+        /// <summary>
+        /// 将对话框返回池中
+        /// </summary>
+        private void ReturnToPool(ConversationBox box)
+        {
+            if (box == null) return;
+
+            // 清理状态和事件（使用字典记录的处理器来取消订阅）
+            if (boxEventHandlers.TryGetValue(box, out var handler))
+            {
+                box.OnBoxClicked -= handler;
+                boxEventHandlers.Remove(box);
+            }
+
+            box.Clear();
+            box.Hide();
+            box.gameObject.SetActive(false);
+
+            // 添加到池中
+            boxPool.Push(box);
+        }
+
+        /// <summary>
+        /// 设置对话框事件处理
+        /// </summary>
+        private void SetupBoxEventHandlers(ConversationBox box)
+        {
+            // 先清除旧的处理器（如果存在）
+            if (boxEventHandlers.TryGetValue(box, out var oldHandler))
+            {
+                box.OnBoxClicked -= oldHandler;
+                boxEventHandlers.Remove(box);
+            }
+
+            // 创建新的处理器并保存引用
+            System.Action handler = () => HandleBoxClicked(box);
+            box.OnBoxClicked += handler;
+            boxEventHandlers[box] = handler;
+        }
+
+        /// <summary>
+        /// 处理对话框点击
+        /// </summary>
+        private void HandleBoxClicked(ConversationBox clickedBox)
+        {
+            if (isTransitioning) return;
+
+            // 查找点击的框当前的位置
+            var position = GetPositionForBox(clickedBox);
+            if (position.HasValue)
+            {
+                NavigateToBox(position.Value);
+            }
+        }
+
+        /// <summary>
+        /// 获取对话框当前的位置标记
+        /// </summary>
+        private BoxPosition? GetPositionForBox(ConversationBox box)
+        {
+            foreach (var kvp in boxes)
+            {
+                if (kvp.Value == box)
+                    return kvp.Key;
+            }
+            return null;
+        }
+
+        #endregion
+
+        #region Position Management
+
+        /// <summary>
+        /// 应用位置配置到对话框
+        /// </summary>
+        private void ApplyPositionConfig(ConversationBox box, BoxPosition position)
+        {
+            if (box == null) return;
+
+            var config = positionConfigs[position];
+            var rect = box.GetComponent<RectTransform>();
+
+            rect.anchoredPosition = config.anchoredPosition;
+            rect.localRotation = Quaternion.Euler(config.rotation);
+            rect.localScale = config.scale;
+            rect.sizeDelta = config.size;
+
+            // 设置基础缩放
+            box.SetBaseScale(config.scale);
+
+            // 重置透明度
+            var cg = box.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 1f;
+            }
+
+            // 设置高亮状态（中间框高亮）
+            box.SetHighlight(position == BoxPosition.Center);
+        }
+
+        #endregion
+
+        #region Public API
 
         /// <summary>
         /// 显示面板
@@ -153,8 +415,10 @@ namespace PopLife.NarrativeSystem.UI
 
             if (immediate)
             {
-                panelRoot.SetActive(false);
-                canvasGroup.alpha = 0;
+                if (panelRoot != null)
+                    panelRoot.SetActive(false);
+                if (canvasGroup != null)
+                    canvasGroup.alpha = 0;
             }
             else
             {
@@ -170,6 +434,7 @@ namespace PopLife.NarrativeSystem.UI
             if (isTransitioning) return;
 
             // Update top box
+            var topBox = boxes.ContainsKey(BoxPosition.Top) ? boxes[BoxPosition.Top] : null;
             if (topBox != null)
             {
                 if (previous != null)
@@ -184,6 +449,7 @@ namespace PopLife.NarrativeSystem.UI
             }
 
             // Update center box
+            var centerBox = boxes.ContainsKey(BoxPosition.Center) ? boxes[BoxPosition.Center] : null;
             if (centerBox != null && current != null)
             {
                 centerBox.SetContent(current.TextContent, current.SpeakerName);
@@ -192,6 +458,7 @@ namespace PopLife.NarrativeSystem.UI
             }
 
             // Update bottom box
+            var bottomBox = boxes.ContainsKey(BoxPosition.Bottom) ? boxes[BoxPosition.Bottom] : null;
             if (bottomBox != null)
             {
                 if (next != null)
@@ -212,12 +479,15 @@ namespace PopLife.NarrativeSystem.UI
         public void PresentChoices(List<NarrativeSegment> choices)
         {
             // TODO: Implement choice presentation UI
-            // For now, just show the first choice in bottom box
-            if (choices != null && choices.Count > 0 && bottomBox != null)
+            if (choices != null && choices.Count > 0)
             {
-                var firstChoice = choices[0];
-                bottomBox.SetContent($"[Choice] {firstChoice.TextContent}", "");
-                bottomBox.Show();
+                var bottomBox = boxes.ContainsKey(BoxPosition.Bottom) ? boxes[BoxPosition.Bottom] : null;
+                if (bottomBox != null)
+                {
+                    var firstChoice = choices[0];
+                    bottomBox.SetContent($"[Choice] {firstChoice.TextContent}", "");
+                    bottomBox.Show();
+                }
             }
         }
 
@@ -240,6 +510,10 @@ namespace PopLife.NarrativeSystem.UI
             }
         }
 
+        #endregion
+
+        #region Navigation
+
         /// <summary>
         /// 导航到指定位置的对话框
         /// </summary>
@@ -250,17 +524,17 @@ namespace PopLife.NarrativeSystem.UI
             switch (position)
             {
                 case BoxPosition.Top:
+                    var topBox = boxes.ContainsKey(BoxPosition.Top) ? boxes[BoxPosition.Top] : null;
                     if (topBox != null && topBox.IsVisible)
                     {
-                        NarrativeManager.Instance?.NavigateBackward();
                         AnimateTransition(TransitionDirection.Up);
                     }
                     break;
 
                 case BoxPosition.Bottom:
+                    var bottomBox = boxes.ContainsKey(BoxPosition.Bottom) ? boxes[BoxPosition.Bottom] : null;
                     if (bottomBox != null && bottomBox.IsVisible)
                     {
-                        NarrativeManager.Instance?.NavigateForward();
                         AnimateTransition(TransitionDirection.Down);
                     }
                     break;
@@ -282,109 +556,305 @@ namespace PopLife.NarrativeSystem.UI
         {
             isTransitioning = true;
 
-            float elapsed = 0f;
-
-            // Store initial states
-            Vector3 topStartPos = topBox.transform.localPosition;
-            Vector3 centerStartPos = centerBox.transform.localPosition;
-            Vector3 bottomStartPos = bottomBox.transform.localPosition;
-
-            Quaternion topStartRot = topBox.transform.localRotation;
-            Quaternion centerStartRot = centerBox.transform.localRotation;
-            Quaternion bottomStartRot = bottomBox.transform.localRotation;
-
-            Vector3 topStartScale = topBox.transform.localScale;
-            Vector3 centerStartScale = centerBox.transform.localScale;
-            Vector3 bottomStartScale = bottomBox.transform.localScale;
-
-            // Calculate target states based on direction
-            while (elapsed < transitionDuration)
+            if (direction == TransitionDirection.Down)
             {
-                elapsed += Time.deltaTime;
-                float t = transitionCurve.Evaluate(elapsed / transitionDuration);
-
-                if (direction == TransitionDirection.Up)
-                {
-                    // Top → Center, Center → Bottom, Bottom disappears
-                    // New Top appears
-
-                    // TODO: Implement smooth transition
-                }
-                else if (direction == TransitionDirection.Down)
-                {
-                    // Bottom → Center, Center → Top, Top disappears
-                    // New Bottom appears
-
-                    // TODO: Implement smooth transition
-                }
-
-                yield return null;
+                // 向下滑动：Bottom → Center, Center → Top, Top 消失
+                yield return StartCoroutine(AnimateDownTransition());
+            }
+            else if (direction == TransitionDirection.Up)
+            {
+                // 向上滑动：Top → Center, Center → Bottom, Bottom 消失
+                yield return StartCoroutine(AnimateUpTransition());
             }
 
             isTransitioning = false;
         }
 
         /// <summary>
-        /// 定位对话框
+        /// 向下滑动动画
         /// </summary>
-        private void PositionBoxes()
+        private IEnumerator AnimateDownTransition()
         {
-            if (topBox != null)
+            // 先导航
+            NarrativeManager.Instance?.NavigateForward();
+
+            // 获取当前的框
+            var oldTop = boxes[BoxPosition.Top];
+            var oldCenter = boxes[BoxPosition.Center];
+            var oldBottom = boxes[BoxPosition.Bottom];
+
+            // 获取位置配置
+            var topConfig = positionConfigs[BoxPosition.Top];
+            var centerConfig = positionConfigs[BoxPosition.Center];
+
+            // Bottom 滑到 Center 位置
+            AnimateToPosition(oldBottom, centerConfig);
+
+            // Center 滑到 Top 位置
+            AnimateToPosition(oldCenter, topConfig);
+
+            // Top 淡出并移动到上方
+            AnimateFadeOut(oldTop, true);
+
+            // 等待动画完成
+            yield return new WaitForSeconds(transitionDuration);
+
+            // 回收旧的 Top
+            ReturnToPool(oldTop);
+
+            // 重新分配标记
+            boxes[BoxPosition.Top] = oldCenter;
+            boxes[BoxPosition.Center] = oldBottom;
+
+            // 创建新的 Bottom
+            var newBottom = CreateBox();
+            boxes[BoxPosition.Bottom] = newBottom;
+            ApplyPositionConfig(newBottom, BoxPosition.Bottom);
+
+            // 设置事件处理
+            SetupBoxEventHandlers(newBottom);
+
+            // 更新显示内容
+            UpdateDisplay();
+
+            // 确保新框可见（使用 NarrativeManager 获取内容）
+            var narrativeManager = NarrativeManager.Instance;
+            if (narrativeManager != null && narrativeManager.ActiveSequence != null)
             {
-                var topTransform = topBox.GetComponent<RectTransform>();
-                topTransform.anchoredPosition = new Vector2(fanPivot.x, fanPivot.y + 150f);
-                topTransform.localRotation = Quaternion.Euler(0, 0, -fanAngle);
-                topTransform.localScale = Vector3.one * edgeBoxScale;
-                topTransform.sizeDelta = edgeBoxSize;
+                var activeSequence = narrativeManager.ActiveSequence;
+                var nextSegment = GetNextSegment(activeSequence.CurrentSegment);
+                if (nextSegment != null)
+                {
+                    newBottom.SetContent(nextSegment.TextContent, nextSegment.SpeakerName);
+                    newBottom.Show();
+
+                    // 添加淡入动画
+                    var cg = newBottom.GetComponent<CanvasGroup>();
+                    if (cg != null)
+                    {
+                        cg.alpha = 0f;
+                        Tween.Alpha(cg, 1f, fadeInDuration);
+                    }
+                }
+                else
+                {
+                    // 如果没有下一个段落，隐藏新底部框
+                    newBottom.Hide();
+                }
+            }
+            else
+            {
+                // 如果没有活跃序列，隐藏新底部框
+                newBottom.Hide();
+            }
+        }
+
+        /// <summary>
+        /// 向上滑动动画
+        /// </summary>
+        private IEnumerator AnimateUpTransition()
+        {
+            // 先导航
+            NarrativeManager.Instance?.NavigateBackward();
+
+            // 获取当前的框
+            var oldTop = boxes[BoxPosition.Top];
+            var oldCenter = boxes[BoxPosition.Center];
+            var oldBottom = boxes[BoxPosition.Bottom];
+
+            // 获取位置配置
+            var centerConfig = positionConfigs[BoxPosition.Center];
+            var bottomConfig = positionConfigs[BoxPosition.Bottom];
+
+            // Top 滑到 Center 位置
+            AnimateToPosition(oldTop, centerConfig);
+
+            // Center 滑到 Bottom 位置
+            AnimateToPosition(oldCenter, bottomConfig);
+
+            // Bottom 淡出并移动到下方
+            AnimateFadeOut(oldBottom, false);
+
+            // 等待动画完成
+            yield return new WaitForSeconds(transitionDuration);
+
+            // 回收旧的 Bottom
+            ReturnToPool(oldBottom);
+
+            // 重新分配标记
+            boxes[BoxPosition.Bottom] = oldCenter;
+            boxes[BoxPosition.Center] = oldTop;
+
+            // 创建新的 Top
+            var newTop = CreateBox();
+            boxes[BoxPosition.Top] = newTop;
+            ApplyPositionConfig(newTop, BoxPosition.Top);
+
+            // 设置事件处理
+            SetupBoxEventHandlers(newTop);
+
+            // 更新显示内容
+            UpdateDisplay();
+
+            // 确保新框可见（使用 NarrativeManager 获取内容）
+            var narrativeManager = NarrativeManager.Instance;
+            if (narrativeManager != null && narrativeManager.ActiveSequence != null)
+            {
+                var activeSequence = narrativeManager.ActiveSequence;
+                var previousSegment = GetPreviousSegment(activeSequence.CurrentSegment);
+                if (previousSegment != null)
+                {
+                    newTop.SetContent(previousSegment.TextContent, previousSegment.SpeakerName);
+                    newTop.Show();
+
+                    // 添加淡入动画
+                    var cg = newTop.GetComponent<CanvasGroup>();
+                    if (cg != null)
+                    {
+                        cg.alpha = 0f;
+                        Tween.Alpha(cg, 1f, fadeInDuration);
+                    }
+                }
+                else
+                {
+                    // 如果没有上一个段落，隐藏新顶部框
+                    newTop.Hide();
+                }
+            }
+            else
+            {
+                // 如果没有活跃序列，隐藏新顶部框
+                newTop.Hide();
+            }
+        }
+
+        /// <summary>
+        /// 动画移动到指定配置
+        /// </summary>
+        private void AnimateToPosition(ConversationBox box, BoxPositionConfig config)
+        {
+            if (box == null) return;
+
+            var rect = box.GetComponent<RectTransform>();
+
+            // 标记开始动画
+            box.SetScaleAnimating(true);
+
+            // 动画位置、旋转、缩放和尺寸
+            Tween.UIAnchoredPosition(rect, config.anchoredPosition, transitionDuration, transitionCurve);
+            Tween.LocalRotation(rect, config.rotation, transitionDuration, transitionCurve);
+
+            // 缩放动画，完成时更新基础缩放
+            Tween.Scale(rect, config.scale, transitionDuration, transitionCurve)
+                .OnComplete(() => {
+                    box.SetBaseScale(config.scale);
+                    box.SetScaleAnimating(false);
+                });
+
+            // 也要动画尺寸变化！
+            Tween.UISizeDelta(rect, config.size, transitionDuration, transitionCurve);
+
+            // 如果移动到中间位置，设置高亮
+            bool isCenter = config.anchoredPosition == fanPivot;
+            box.SetHighlight(isCenter);
+        }
+
+        /// <summary>
+        /// 淡出动画
+        /// </summary>
+        private void AnimateFadeOut(ConversationBox box, bool moveUp)
+        {
+            if (box == null) return;
+
+            var cg = box.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                Tween.Alpha(cg, 0f, transitionDuration * 0.5f);
             }
 
-            if (centerBox != null)
-            {
-                var centerTransform = centerBox.GetComponent<RectTransform>();
-                centerTransform.anchoredPosition = fanPivot;
-                centerTransform.localRotation = Quaternion.identity;
-                centerTransform.localScale = Vector3.one;
-                centerTransform.sizeDelta = centerBoxSize;
-            }
+            // 移动到屏幕外
+            var rect = box.GetComponent<RectTransform>();
+            var offscreenPos = moveUp
+                ? new Vector2(fanPivot.x, fanPivot.y + fanRadius)  // 使用fanRadius
+                : new Vector2(fanPivot.x, fanPivot.y - fanRadius); // 使用fanRadius
 
-            if (bottomBox != null)
+            Tween.UIAnchoredPosition(rect, offscreenPos, transitionDuration, transitionCurve);
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        /// <summary>
+        /// 获取下一个段落
+        /// </summary>
+        private NarrativeSegment GetNextSegment(NarrativeSegment current)
+        {
+            if (current == null) return null;
+
+            // 返回默认的下一个段落（第一个子段落）
+            return current.GetDefaultNext();
+        }
+
+        /// <summary>
+        /// 获取上一个段落
+        /// </summary>
+        private NarrativeSegment GetPreviousSegment(NarrativeSegment current)
+        {
+            if (current == null) return null;
+            return current.PreviousSegment;
+        }
+
+        /// <summary>
+        /// 更新显示内容（在动画后调用）
+        /// </summary>
+        private void UpdateDisplay()
+        {
+            if (NarrativeManager.Instance != null && NarrativeManager.Instance.ActiveSequence != null)
             {
-                var bottomTransform = bottomBox.GetComponent<RectTransform>();
-                bottomTransform.anchoredPosition = new Vector2(fanPivot.x, fanPivot.y - 150f);
-                bottomTransform.localRotation = Quaternion.Euler(0, 0, fanAngle);
-                bottomTransform.localScale = Vector3.one * edgeBoxScale;
-                bottomTransform.sizeDelta = edgeBoxSize;
+                var segments = NarrativeManager.Instance.ActiveSequence.GetVisibleSegments();
+                DisplaySegments(segments.previous, segments.current, segments.next);
             }
         }
 
         private IEnumerator FadeInPanel()
         {
-            panelRoot.SetActive(true);
-            canvasGroup.alpha = 0;
+            if (panelRoot != null)
+                panelRoot.SetActive(true);
 
-            float elapsed = 0;
-            while (elapsed < fadeInDuration)
+            if (canvasGroup != null)
             {
-                elapsed += Time.deltaTime;
-                canvasGroup.alpha = Mathf.Lerp(0, 1, elapsed / fadeInDuration);
-                yield return null;
-            }
+                canvasGroup.alpha = 0;
 
-            canvasGroup.alpha = 1;
+                float elapsed = 0;
+                while (elapsed < fadeInDuration)
+                {
+                    elapsed += Time.deltaTime;
+                    canvasGroup.alpha = Mathf.Lerp(0, 1, elapsed / fadeInDuration);
+                    yield return null;
+                }
+
+                canvasGroup.alpha = 1;
+            }
         }
 
         private IEnumerator FadeOutPanel()
         {
-            float elapsed = 0;
-            while (elapsed < fadeOutDuration)
+            if (canvasGroup != null)
             {
-                elapsed += Time.deltaTime;
-                canvasGroup.alpha = Mathf.Lerp(1, 0, elapsed / fadeOutDuration);
-                yield return null;
+                float elapsed = 0;
+                while (elapsed < fadeOutDuration)
+                {
+                    elapsed += Time.deltaTime;
+                    canvasGroup.alpha = Mathf.Lerp(1, 0, elapsed / fadeOutDuration);
+                    yield return null;
+                }
+
+                canvasGroup.alpha = 0;
             }
 
-            canvasGroup.alpha = 0;
-            panelRoot.SetActive(false);
+            if (panelRoot != null)
+                panelRoot.SetActive(false);
         }
 
         private void HandleFinishClicked()
@@ -393,17 +863,6 @@ namespace PopLife.NarrativeSystem.UI
             NarrativeManager.Instance?.EndCurrentNarrative();
         }
 
-        private enum BoxPosition
-        {
-            Top,
-            Center,
-            Bottom
-        }
-
-        private enum TransitionDirection
-        {
-            Up,
-            Down
-        }
+        #endregion
     }
 }

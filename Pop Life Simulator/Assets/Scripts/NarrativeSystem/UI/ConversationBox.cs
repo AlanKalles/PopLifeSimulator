@@ -35,7 +35,8 @@ namespace PopLife.NarrativeSystem.UI
         private bool isHighlighted;
         private bool isHovered;
         private bool isClickable = true;
-        private Vector3 originalScale;
+        private Vector3 baseScale;  // 基础缩放（由 FanConversationPanel 设置）
+        private bool isScaleAnimating = false;  // 标记是否正在进行外部缩放动画
 
         // Events
         public event Action OnBoxClicked;
@@ -47,7 +48,7 @@ namespace PopLife.NarrativeSystem.UI
         private void Awake()
         {
             InitializeComponents();
-            originalScale = transform.localScale;
+            baseScale = Vector3.one;  // 默认基础缩放为1
         }
 
         private void InitializeComponents()
@@ -135,15 +136,27 @@ namespace PopLife.NarrativeSystem.UI
                 outlineEffect.enabled = highlighted;
             }
 
-            // Center box is always larger
-            if (highlighted)
+            // 完全由 FanConversationPanel 控制 scale，这里不修改
+        }
+
+        /// <summary>
+        /// 设置基础缩放（由 FanConversationPanel 调用）
+        /// </summary>
+        public void SetBaseScale(Vector3 scale)
+        {
+            baseScale = scale;
+            if (!isHovered)
             {
-                originalScale = Vector3.one * 1.1f;
+                transform.localScale = scale;
             }
-            else
-            {
-                originalScale = Vector3.one;
-            }
+        }
+
+        /// <summary>
+        /// 标记外部缩放动画状态
+        /// </summary>
+        public void SetScaleAnimating(bool animating)
+        {
+            isScaleAnimating = animating;
         }
 
         /// <summary>
@@ -233,14 +246,21 @@ namespace PopLife.NarrativeSystem.UI
         /// </summary>
         private void UpdateScale()
         {
-            Vector3 targetScale = originalScale;
+            // 如果外部正在进行缩放动画，不要干扰
+            if (isScaleAnimating) return;
 
+            // 只处理悬停效果
             if (isHovered && !isHighlighted)
             {
-                targetScale = originalScale * hoverScale;
+                // 悬停时稍微放大（基于基础scale）
+                Vector3 targetScale = baseScale * hoverScale;
+                transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleSpeed * Time.deltaTime);
             }
-
-            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scaleSpeed * Time.deltaTime);
+            else if (!isHovered)
+            {
+                // 不悬停时恢复到基础缩放
+                transform.localScale = Vector3.Lerp(transform.localScale, baseScale, scaleSpeed * Time.deltaTime);
+            }
         }
 
         /// <summary>
@@ -248,9 +268,10 @@ namespace PopLife.NarrativeSystem.UI
         /// </summary>
         private void PlayClickAnimation()
         {
-            // Simple punch scale animation with PrimeTween
-            Tween.Scale(transform, originalScale * 0.95f, 0.1f, Ease.InOutQuad)
-                .OnComplete(() => Tween.Scale(transform, originalScale, 0.1f, Ease.InOutQuad));
+            // 使用当前实际的缩放值，避免与其他动画冲突
+            Vector3 currentScale = transform.localScale;
+            Tween.Scale(transform, currentScale * 0.95f, 0.05f, Ease.InOutQuad)
+                .OnComplete(() => Tween.Scale(transform, currentScale, 0.05f, Ease.InOutQuad));
         }
 
         /// <summary>

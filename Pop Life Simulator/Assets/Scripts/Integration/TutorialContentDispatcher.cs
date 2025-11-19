@@ -61,6 +61,11 @@ namespace PopLife.Integration
             if (NarrativeManager.Instance != null)
             {
                 NarrativeManager.Instance.OnNarrativeCompleted += HandleNarrativeCompleted;
+                Debug.Log("[TutorialDispatcher] Successfully subscribed to NarrativeManager.OnNarrativeCompleted");
+            }
+            else
+            {
+                Debug.LogWarning("[TutorialDispatcher] NarrativeManager.Instance is null in OnEnable, will try again in Start");
             }
 
             if (GuidanceManager.Instance != null)
@@ -86,10 +91,30 @@ namespace PopLife.Integration
 
         private void Start()
         {
-            // Initialize default mappings if not configured
+            
             if (contentMappings == null || contentMappings.Count == 0)
             {
-                CreateDefaultMappings();
+                Debug.LogWarning("[TutorialDispatcher] No content mappings configured in Inspector! Please configure mappings in the TutorialContentDispatcher component.");
+            }
+
+            // 再次尝试订阅事件，以防在OnEnable时管理器还未初始化
+            // Try subscribing again in case managers weren't initialized during OnEnable
+            if (NarrativeManager.Instance != null)
+            {
+                // 先取消订阅以避免重复
+                NarrativeManager.Instance.OnNarrativeCompleted -= HandleNarrativeCompleted;
+                NarrativeManager.Instance.OnNarrativeCompleted += HandleNarrativeCompleted;
+                Debug.Log("[TutorialDispatcher] Resubscribed to NarrativeManager.OnNarrativeCompleted in Start");
+            }
+            else
+            {
+                Debug.LogError("[TutorialDispatcher] NarrativeManager.Instance is still null in Start!");
+            }
+
+            if (GuidanceManager.Instance != null)
+            {
+                GuidanceManager.Instance.OnGuidanceCompleted -= HandleGuidanceCompleted;
+                GuidanceManager.Instance.OnGuidanceCompleted += HandleGuidanceCompleted;
             }
         }
 
@@ -110,88 +135,6 @@ namespace PopLife.Integration
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 创建默认映射
-        /// </summary>
-        private void CreateDefaultMappings()
-        {
-            contentMappings = new List<TutorialContentMapping>();
-
-            // Game start - Narrative (Midori introduction)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.GameStarted,
-                ContentType = ContentType.Narrative,
-                ContentID = "NARR_WELCOME",
-                Description = "Midori welcomes player to the store"
-            });
-
-            // Build mode - Guidance (tutorial steps)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.FirstBuildPhaseEntered,
-                ContentType = ContentType.Guidance,
-                ContentID = "GUIDE_BUILD_MODE",
-                Description = "Build mode tutorial"
-            });
-
-            // First shelf - Guidance (placement tutorial)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.FirstShelfPlaced,
-                ContentType = ContentType.Guidance,
-                ContentID = "GUIDE_SHELF_PLACED",
-                Description = "Shelf placement confirmation"
-            });
-
-            // Two shelves - Narrative (ready to open)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.TwoShelvesPlaced,
-                ContentType = ContentType.Narrative,
-                ContentID = "NARR_READY_TO_OPEN",
-                Description = "Midori suggests opening store"
-            });
-
-            // Store opened - Mixed (guidance + narrative)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.StoreOpened,
-                ContentType = ContentType.Mixed,
-                ContentID = "MIXED_STORE_OPEN",
-                Description = "Store opening celebration and customer guidance"
-            });
-
-            // First customer - Narrative (customer introduction)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.FirstCustomerEntered,
-                ContentType = ContentType.Narrative,
-                ContentID = "NARR_FIRST_CUSTOMER",
-                Description = "First customer arrives"
-            });
-
-            // First purchase - Guidance (checkout process)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.FirstCustomerCheckedOut,
-                ContentType = ContentType.Guidance,
-                ContentID = "GUIDE_CHECKOUT",
-                Description = "Checkout process tutorial"
-            });
-
-            // First fame - Narrative (fame system explanation)
-            contentMappings.Add(new TutorialContentMapping
-            {
-                Marker = TutorialMarker.FirstFameEarned,
-                ContentType = ContentType.Narrative,
-                ContentID = "NARR_FAME_SYSTEM",
-                Description = "Midori explains fame system"
-            });
-
-            BuildMappingDictionary();
         }
 
         /// <summary>
@@ -369,6 +312,8 @@ namespace PopLife.Integration
         /// </summary>
         private void HandleNarrativeCompleted(NarrativeSO narrative)
         {
+            Debug.Log($"[TutorialDispatcher] HandleNarrativeCompleted called for: {narrative.NarrativeID}");
+            Debug.Log($"[TutorialDispatcher] isProcessingContent was: {isProcessingContent}, setting to false");
             isProcessingContent = false;
 
             var content = new TutorialContent
@@ -378,6 +323,8 @@ namespace PopLife.Integration
             };
 
             OnContentCompleted?.Invoke(content);
+
+            Debug.Log($"[TutorialDispatcher] About to process queue. Queue count: {contentQueue.Count}");
             ProcessQueue();
         }
 

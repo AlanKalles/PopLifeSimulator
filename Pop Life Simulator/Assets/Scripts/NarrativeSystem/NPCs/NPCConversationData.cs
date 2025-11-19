@@ -198,7 +198,7 @@ namespace PopLife.NarrativeSystem.NPCs
         private bool CanTriggerConversation()
         {
             // Check if narrative system is available
-            if (NarrativeManager.Instance == null || NarrativeManager.Instance.IsNarrativeActive())
+            if (NarrativeManager.Instance == null || NarrativeManager.Instance.IsNarrativeActive)
             {
                 return false;
             }

@@ -33,6 +33,7 @@ namespace PopLife.Manager
         // Custom markers (可扩展)
         Custom01,
         Custom02,
-        Custom03
+        Custom03,
+        D002toGBUILDFIRSTSHELF
     }
 }

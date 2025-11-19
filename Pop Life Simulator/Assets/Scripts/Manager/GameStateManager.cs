@@ -62,7 +62,8 @@ namespace PopLife.Manager
             // Listen to DayLoopManager events
             if (DayLoopManager.Instance != null)
             {
-                DayLoopManager.Instance.OnBuildPhaseStart += OnBuildPhaseStarted;
+                // OnBuildPhaseStart subscription removed - now triggered by ShelfListPanel
+                // DayLoopManager.Instance.OnBuildPhaseStart += OnBuildPhaseStarted;
                 DayLoopManager.Instance.OnStoreOpen += OnStoreOpenedEvent;
             }
 
@@ -74,13 +75,14 @@ namespace PopLife.Manager
         {
             if (DayLoopManager.Instance != null)
             {
-                DayLoopManager.Instance.OnBuildPhaseStart -= OnBuildPhaseStarted;
+                // DayLoopManager.Instance.OnBuildPhaseStart -= OnBuildPhaseStarted;
                 DayLoopManager.Instance.OnStoreOpen -= OnStoreOpenedEvent;
             }
         }
 
-        // Called when build phase starts
-        private void OnBuildPhaseStarted()
+        // Called when player opens the shelf list panel for the first time
+        // This method is now called by ShelfListPanel instead of DayLoopManager
+        public void NotifyBuildModeFirstEntered()
         {
             if (!hasEnteredBuildMode)
             {
@@ -90,7 +92,7 @@ namespace PopLife.Manager
                 // Raise tutorial marker
                 TutorialEventBus.RaiseMarker(TutorialMarker.FirstBuildPhaseEntered);
 
-                Debug.Log("[GameState] Build mode entered for the first time");
+                Debug.Log("[GameState] Build mode (ShelfListPanel) entered for the first time");
             }
         }
 

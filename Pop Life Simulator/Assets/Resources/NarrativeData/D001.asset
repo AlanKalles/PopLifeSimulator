@@ -23,12 +23,12 @@ MonoBehaviour:
     sequenceName: 
     rootSegment:
       segmentID: SEG01
-      speakerName: Midori
+      speakerName: 
       textContent: "\u2026You are here, sex expert."
       speakerPortrait: {fileID: 0}
       nextSegments:
       - segmentID: SEG02
-        speakerName: Midori
+        speakerName: 
         textContent: "What\u2019s that look? You were confident enough to accept
           my invite, after all."
         speakerPortrait: {fileID: 0}
@@ -70,14 +70,101 @@ MonoBehaviour:
       isEndSegment: 0
       displayDuration: 0
     currentSegment:
-      segmentID: 
+      segmentID: SEG01
       speakerName: 
-      textContent: 
+      textContent: "\u2026You are here, sex expert."
       speakerPortrait: {fileID: 0}
-      nextSegments: []
+      nextSegments:
+      - segmentID: SEG02
+        speakerName: 
+        textContent: "What\u2019s that look? You were confident enough to accept
+          my invite, after all."
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG03
+          speakerName: 
+          textContent: "[narrows eyes] The email. Titled Midori\u2019s Sex Toy Shop.
+            And you wrote back, \u2018Yes, I would be honored to help operate the
+            store.\u2019"
+          speakerPortrait: {fileID: 0}
+          nextSegments:
+          - segmentID: SEG04
+            speakerName: 
+            textContent: "You don\u2019t remember\u2026 tch\u2026"
+            speakerPortrait: {fileID: 0}
+            nextSegments:
+            - segmentID: SEG05
+              speakerName: 
+              textContent: "I don\u2019t have time to find another person before
+                I leave the city."
+              speakerPortrait: {fileID: 0}
+              nextSegments:
+              - segmentID: SEG06
+                speakerName: 
+                textContent: "Come on in. You\u2019re operating this store from now
+                  on!"
+                speakerPortrait: {fileID: 0}
+                nextSegments: []
+                isEndSegment: 1
+                displayDuration: 0
+              isEndSegment: 0
+              displayDuration: 0
+            isEndSegment: 0
+            displayDuration: 0
+          isEndSegment: 0
+          displayDuration: 0
+        isEndSegment: 0
+        displayDuration: 0
       isEndSegment: 0
       displayDuration: 0
-    navigationHistory: []
+    navigationHistory:
+    - segmentID: SEG01
+      speakerName: 
+      textContent: "\u2026You are here, sex expert."
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: SEG02
+        speakerName: 
+        textContent: "What\u2019s that look? You were confident enough to accept
+          my invite, after all."
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG03
+          speakerName: 
+          textContent: "[narrows eyes] The email. Titled Midori\u2019s Sex Toy Shop.
+            And you wrote back, \u2018Yes, I would be honored to help operate the
+            store.\u2019"
+          speakerPortrait: {fileID: 0}
+          nextSegments:
+          - segmentID: SEG04
+            speakerName: 
+            textContent: "You don\u2019t remember\u2026 tch\u2026"
+            speakerPortrait: {fileID: 0}
+            nextSegments:
+            - segmentID: SEG05
+              speakerName: 
+              textContent: "I don\u2019t have time to find another person before
+                I leave the city."
+              speakerPortrait: {fileID: 0}
+              nextSegments:
+              - segmentID: SEG06
+                speakerName: 
+                textContent: "Come on in. You\u2019re operating this store from now
+                  on!"
+                speakerPortrait: {fileID: 0}
+                nextSegments: []
+                isEndSegment: 1
+                displayDuration: 0
+              isEndSegment: 0
+              displayDuration: 0
+            isEndSegment: 0
+            displayDuration: 0
+          isEndSegment: 0
+          displayDuration: 0
+        isEndSegment: 0
+        displayDuration: 0
+      isEndSegment: 0
+      displayDuration: 0
   isVIPOnly: 0
   minimumDayRequired: 0
   minimumFameRequired: 0

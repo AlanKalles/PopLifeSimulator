@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using PopLife.Data;
 using PopLife.Runtime;
+using PopLife.Manager;
 
 namespace PopLife.UI
 {
@@ -347,6 +348,13 @@ namespace PopLife.UI
 
             // Refresh item displays (money may have changed)
             RefreshItemDisplays();
+
+            // Notify GameStateManager on first open
+            // This will trigger the FirstBuildPhaseEntered marker for D002 dialogue
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.NotifyBuildModeFirstEntered();
+            }
         }
 
         public void ClosePanel()

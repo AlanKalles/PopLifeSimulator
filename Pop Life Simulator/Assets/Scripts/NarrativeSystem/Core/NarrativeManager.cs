@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PopLife.Manager;
@@ -28,6 +29,10 @@ namespace PopLife.NarrativeSystem
         private NarrativeSO activeNarrative;
         private bool isNarrativeActive;
         private Queue<NarrativeSO> narrativeQueue;
+
+        // Properties
+        public NarrativeSequence ActiveSequence => activeSequence;
+        public bool IsNarrativeActive => isNarrativeActive;
 
         // Events
         public event Action<NarrativeSO> OnNarrativeStarted;
@@ -326,22 +331,38 @@ namespace PopLife.NarrativeSystem
         /// </summary>
         private void TriggerFollowUpContent(string completedNarrativeID)
         {
+            // 延迟触发后续内容，确保当前叙事完全结束
+            // Delay triggering follow-up content to ensure current narrative is fully ended
+            StartCoroutine(TriggerFollowUpContentDelayed(completedNarrativeID));
+        }
+
+        /// <summary>
+        /// 延迟触发后续内容的协程
+        /// Coroutine to trigger follow-up content with delay
+        /// </summary>
+        private System.Collections.IEnumerator TriggerFollowUpContentDelayed(string completedNarrativeID)
+        {
+            // 等待足够时间，确保面板淡出动画完成且OnNarrativeCompleted事件先被处理
+            // Wait enough time to ensure panel fade out animation completes and OnNarrativeCompleted event is processed first
+            // FanConversationPanel的fadeOutDuration是0.3秒，我们等待0.5秒确保完全结束
+            yield return new WaitForSeconds(0.5f);
+
             // 定义叙事序列链接
             // Define narrative sequence connections
             switch (completedNarrativeID)
             {
                 case "D001":
-                    // D001 完成后，触发 Custom01 标记，该标记映射到 D002
-                    // After D001 completes, trigger Custom01 marker which maps to D002
-                    Debug.Log("[NarrativeManager] D001 completed, triggering Custom01 for D002");
-                    PopLife.Manager.TutorialEventBus.RaiseMarker(PopLife.Manager.TutorialMarker.Custom01);
+                    // D001 完成后，不再自动触发D002，等待玩家点击Build按钮
+                    // After D001 completes, don't auto-trigger D002, wait for player to click Build button
+                    Debug.Log("[NarrativeManager] D001 completed, D002 will trigger when player enters Build Mode");
+                    // PopLife.Manager.TutorialEventBus.RaiseMarker(PopLife.Manager.TutorialMarker.Custom01);
                     break;
 
                 case "D002":
                     // D002 完成后，触发 Custom02 标记，该标记映射到指引
                     // After D002 completes, trigger Custom02 marker which maps to guidance
-                    Debug.Log("[NarrativeManager] D002 completed, triggering Custom02 for guidance");
-                    PopLife.Manager.TutorialEventBus.RaiseMarker(PopLife.Manager.TutorialMarker.Custom02);
+                    Debug.Log("[NarrativeManager] D002 completed, triggering D002toGBUILDFIRSTSHELF for guidance");
+                    PopLife.Manager.TutorialEventBus.RaiseMarker(PopLife.Manager.TutorialMarker.D002toGBUILDFIRSTSHELF);
                     break;
 
                 // 可以在这里添加更多的序列链接
@@ -407,14 +428,6 @@ namespace PopLife.NarrativeSystem
         public NarrativeSO GetActiveNarrative()
         {
             return activeNarrative;
-        }
-
-        /// <summary>
-        /// 检查是否有活跃的叙事
-        /// </summary>
-        public bool IsNarrativeActive()
-        {
-            return isNarrativeActive;
         }
 
         /// <summary>

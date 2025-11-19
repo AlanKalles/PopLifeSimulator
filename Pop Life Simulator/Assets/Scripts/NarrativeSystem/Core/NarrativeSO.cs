@@ -76,10 +76,81 @@ namespace PopLife.NarrativeSystem
 
             if (narrativeSequence.RootSegment != null)
             {
-                instance.Initialize(narrativeSequence.RootSegment);
+                // 创建段落的深拷贝并重建链接
+                var segmentCopies = new System.Collections.Generic.Dictionary<NarrativeSegment, NarrativeSegment>();
+                var rootCopy = DeepCopySegment(narrativeSequence.RootSegment, segmentCopies);
+
+                // 重建段落之间的链接关系
+                RebuildSegmentLinks(narrativeSequence.RootSegment, segmentCopies);
+
+                instance.Initialize(rootCopy);
             }
 
             return instance;
+        }
+
+        /// <summary>
+        /// 深拷贝段落（递归）
+        /// </summary>
+        private NarrativeSegment DeepCopySegment(NarrativeSegment original,
+            System.Collections.Generic.Dictionary<NarrativeSegment, NarrativeSegment> copies)
+        {
+            if (original == null) return null;
+
+            // 如果已经拷贝过，返回已有的拷贝
+            if (copies.ContainsKey(original))
+                return copies[original];
+
+            // 创建新的段落实例
+            var copy = new NarrativeSegment(
+                original.SegmentID,
+                original.SpeakerName,
+                original.TextContent
+            );
+
+            // 复制属性
+            copy.IsEndSegment = original.IsEndSegment;
+            copy.DisplayDuration = original.DisplayDuration;
+            copy.SpeakerPortrait = original.SpeakerPortrait;
+
+            // 记录拷贝
+            copies[original] = copy;
+
+            // 递归拷贝所有子段落
+            foreach (var nextSegment in original.NextSegments)
+            {
+                DeepCopySegment(nextSegment, copies);
+            }
+
+            return copy;
+        }
+
+        /// <summary>
+        /// 重建段落之间的链接关系
+        /// </summary>
+        private void RebuildSegmentLinks(NarrativeSegment original,
+            System.Collections.Generic.Dictionary<NarrativeSegment, NarrativeSegment> copies)
+        {
+            if (original == null || !copies.ContainsKey(original))
+                return;
+
+            var copy = copies[original];
+
+            // 重建与子段落的链接
+            foreach (var originalNext in original.NextSegments)
+            {
+                if (copies.ContainsKey(originalNext))
+                {
+                    var nextCopy = copies[originalNext];
+                    copy.AddNextSegment(nextCopy); // 这会自动设置 previousSegment
+                }
+            }
+
+            // 递归处理所有子段落
+            foreach (var nextSegment in original.NextSegments)
+            {
+                RebuildSegmentLinks(nextSegment, copies);
+            }
         }
 
 #if UNITY_EDITOR
