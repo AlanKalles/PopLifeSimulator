@@ -1,0 +1,248 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1e0b60b95dbdeb4a9589105456e7aaf, type: 3}
+  m_Name: IN003
+  m_EditorClassIdentifier: 
+  narrativeID: IN003
+  narrativeName: IN003
+  description: 
+  characterPortrait: {fileID: 21300000, guid: 2e6a96612abde2d4ea197b7db670dac1, type: 3}
+  characterName: 
+  conversationType: 0
+  narrativeSequence:
+    sequenceID: 
+    sequenceName: 
+    rootSegment:
+      segmentID: SEG01
+      speakerName: 
+      textContent: 'I want to use protection, but I''m allergic to latex. Do you
+        have anything that helps with that? '
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: SEG02
+        speakerName: 
+        textContent: 'We have polyisoprene condoms that don''t trigger a latex allergy,
+          but they''re thicker than usual. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG06
+          speakerName: 
+          textContent: 'That sounds great! Let me go find them. '
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards:
+          - type: 1
+            rewardID: 
+            amount: 3
+            marker: 0
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      - segmentID: SEG03
+        speakerName: 
+        textContent: 'You can try our female condoms for your partner. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG05
+          speakerName: 
+          textContent: 'Hmm....I''m not sure that''s what I''m looking for, but I
+            guess I could try it out. '
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      - segmentID: SEG04
+        speakerName: 
+        textContent: 'We also have several dildos made of silicone and glass that
+          shouldn''t affect that allergy. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG07
+          speakerName: 
+          textContent: 'Hmm....I''m not sure that''s what I''m looking for, but I
+            guess I could try it out. '
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      isEndSegment: 0
+      displayDuration: 0
+      isChoiceNode: 1
+      endRewards: []
+    currentSegment:
+      segmentID: SEG01
+      speakerName: 
+      textContent: 'What''s the difference between oil based and water based lube? '
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: SEG02
+        speakerName: 
+        textContent: 'Oil based lube is more slippery, but it can break down condom
+          material. It''s better used for raw sex, while water based lube is safe
+          for condom use. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG06
+          speakerName: 
+          textContent: That sounds like exactly what I need.
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards:
+          - type: 1
+            rewardID: 
+            amount: 2
+            marker: 0
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      - segmentID: SEG03
+        speakerName: 
+        textContent: 'Water based lube is thicker than oil based lube, and can have
+          a stronger flavor. Oil based lube is generally tasteless. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG05
+          speakerName: 
+          textContent: 'Are you sure? That doen''t sound right. '
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      - segmentID: SEG04
+        speakerName: 
+        textContent: 'Oil based lube is easier to alter with other effects, such
+          as flavor or even making it glow. Water based lube can''t hold these additions. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG07
+          speakerName: 
+          textContent: 'Are you sure? That doen''t sound right. '
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      isEndSegment: 0
+      displayDuration: 0
+      isChoiceNode: 1
+      endRewards: []
+    navigationHistory:
+    - segmentID: SEG01
+      speakerName: 
+      textContent: 'What''s the difference between oil based and water based lube? '
+      speakerPortrait: {fileID: 0}
+      nextSegments:
+      - segmentID: SEG02
+        speakerName: 
+        textContent: 'Oil based lube is more slippery, but it can break down condom
+          material. It''s better used for raw sex, while water based lube is safe
+          for condom use. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG06
+          speakerName: 
+          textContent: That sounds like exactly what I need.
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards:
+          - type: 1
+            rewardID: 
+            amount: 2
+            marker: 0
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      - segmentID: SEG03
+        speakerName: 
+        textContent: 'Water based lube is thicker than oil based lube, and can have
+          a stronger flavor. Oil based lube is generally tasteless. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG05
+          speakerName: 
+          textContent: 'Are you sure? That doen''t sound right. '
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      - segmentID: SEG04
+        speakerName: 
+        textContent: 'Oil based lube is easier to alter with other effects, such
+          as flavor or even making it glow. Water based lube can''t hold these additions. '
+        speakerPortrait: {fileID: 0}
+        nextSegments:
+        - segmentID: SEG07
+          speakerName: 
+          textContent: 'Are you sure? That doen''t sound right. '
+          speakerPortrait: {fileID: 0}
+          nextSegments: []
+          isEndSegment: 1
+          displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
+        isEndSegment: 0
+        displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
+      isEndSegment: 0
+      displayDuration: 0
+      isChoiceNode: 1
+      endRewards: []
+  isVIPOnly: 0
+  minimumDayRequired: 0
+  minimumFameRequired: 0
+  completionRewards:
+  - type: 0
+    rewardID: 
+    amount: 0
+    marker: 0

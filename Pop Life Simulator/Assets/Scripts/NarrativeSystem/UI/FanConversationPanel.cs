@@ -42,6 +42,14 @@ namespace PopLife.NarrativeSystem.UI
         [SerializeField] private Button finishButton;
         [SerializeField] private TextMeshProUGUI finishButtonText;
 
+        [Header("Choice Buttons")]
+        [SerializeField] private Button choiceButton1;
+        [SerializeField] private Button choiceButton2;
+        [SerializeField] private Button choiceButton3;
+        [SerializeField] private TextMeshProUGUI choiceButtonText1;
+        [SerializeField] private TextMeshProUGUI choiceButtonText2;
+        [SerializeField] private TextMeshProUGUI choiceButtonText3;
+
         [Header("Animation")]
         [SerializeField] private float transitionDuration = 0.5f;
         [SerializeField] private AnimationCurve transitionCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
@@ -184,6 +192,9 @@ namespace PopLife.NarrativeSystem.UI
                 if (finishButtonText != null)
                     finishButtonText.text = "Finish";
             }
+
+            // Setup choice buttons (default hidden)
+            HideChoiceButtons();
         }
 
         /// <summary>
@@ -413,6 +424,9 @@ namespace PopLife.NarrativeSystem.UI
         {
             isPanelVisible = false;
 
+            // 隐藏选择按钮
+            HideChoiceButtons();
+
             if (immediate)
             {
                 if (panelRoot != null)
@@ -428,6 +442,7 @@ namespace PopLife.NarrativeSystem.UI
 
         /// <summary>
         /// 显示对话片段
+        /// Display conversation segments
         /// </summary>
         public void DisplaySegments(NarrativeSegment previous, NarrativeSegment current, NarrativeSegment next)
         {
@@ -458,10 +473,12 @@ namespace PopLife.NarrativeSystem.UI
             }
 
             // Update bottom box
+            // 如果当前节点是 choice node，强制隐藏 bottom box（显示选择按钮代替）
+            // If current segment is a choice node, force hide bottom box (choice buttons will be shown instead)
             var bottomBox = boxes.ContainsKey(BoxPosition.Bottom) ? boxes[BoxPosition.Bottom] : null;
             if (bottomBox != null)
             {
-                if (next != null)
+                if (next != null && (current == null || !current.IsChoiceNode))
                 {
                     bottomBox.SetContent(next.TextContent, next.SpeakerName);
                     bottomBox.Show();
@@ -505,7 +522,7 @@ namespace PopLife.NarrativeSystem.UI
                 if (rectTransform != null)
                 {
                     rectTransform.localScale = Vector3.zero;
-                    Tween.Scale(rectTransform, Vector3.one, 0.3f, Ease.OutBack);
+                    Tween.Scale(rectTransform, Vector3.one, 0.3f, Ease.OutBack, useUnscaledTime: true);
                 }
             }
         }
@@ -596,8 +613,8 @@ namespace PopLife.NarrativeSystem.UI
             // Top 淡出并移动到上方
             AnimateFadeOut(oldTop, true);
 
-            // 等待动画完成
-            yield return new WaitForSeconds(transitionDuration);
+            // 等待动画完成 - 使用 WaitForSecondsRealtime 确保暂停时继续
+            yield return new WaitForSecondsRealtime(transitionDuration);
 
             // 回收旧的 Top
             ReturnToPool(oldTop);
@@ -633,7 +650,7 @@ namespace PopLife.NarrativeSystem.UI
                     if (cg != null)
                     {
                         cg.alpha = 0f;
-                        Tween.Alpha(cg, 1f, fadeInDuration);
+                        Tween.Alpha(cg, 1f, fadeInDuration, useUnscaledTime: true);
                     }
                 }
                 else
@@ -675,8 +692,8 @@ namespace PopLife.NarrativeSystem.UI
             // Bottom 淡出并移动到下方
             AnimateFadeOut(oldBottom, false);
 
-            // 等待动画完成
-            yield return new WaitForSeconds(transitionDuration);
+            // 等待动画完成 - 使用 WaitForSecondsRealtime 确保暂停时继续
+            yield return new WaitForSecondsRealtime(transitionDuration);
 
             // 回收旧的 Bottom
             ReturnToPool(oldBottom);
@@ -712,7 +729,7 @@ namespace PopLife.NarrativeSystem.UI
                     if (cg != null)
                     {
                         cg.alpha = 0f;
-                        Tween.Alpha(cg, 1f, fadeInDuration);
+                        Tween.Alpha(cg, 1f, fadeInDuration, useUnscaledTime: true);
                     }
                 }
                 else
@@ -740,19 +757,19 @@ namespace PopLife.NarrativeSystem.UI
             // 标记开始动画
             box.SetScaleAnimating(true);
 
-            // 动画位置、旋转、缩放和尺寸
-            Tween.UIAnchoredPosition(rect, config.anchoredPosition, transitionDuration, transitionCurve);
-            Tween.LocalRotation(rect, config.rotation, transitionDuration, transitionCurve);
+            // 动画位置、旋转、缩放和尺寸 - 使用 useUnscaledTime 确保暂停时动画继续
+            Tween.UIAnchoredPosition(rect, config.anchoredPosition, transitionDuration, transitionCurve, useUnscaledTime: true);
+            Tween.LocalRotation(rect, config.rotation, transitionDuration, transitionCurve, useUnscaledTime: true);
 
             // 缩放动画，完成时更新基础缩放
-            Tween.Scale(rect, config.scale, transitionDuration, transitionCurve)
+            Tween.Scale(rect, config.scale, transitionDuration, transitionCurve, useUnscaledTime: true)
                 .OnComplete(() => {
                     box.SetBaseScale(config.scale);
                     box.SetScaleAnimating(false);
                 });
 
             // 也要动画尺寸变化！
-            Tween.UISizeDelta(rect, config.size, transitionDuration, transitionCurve);
+            Tween.UISizeDelta(rect, config.size, transitionDuration, transitionCurve, useUnscaledTime: true);
 
             // 如果移动到中间位置，设置高亮
             bool isCenter = config.anchoredPosition == fanPivot;
@@ -769,7 +786,7 @@ namespace PopLife.NarrativeSystem.UI
             var cg = box.GetComponent<CanvasGroup>();
             if (cg != null)
             {
-                Tween.Alpha(cg, 0f, transitionDuration * 0.5f);
+                Tween.Alpha(cg, 0f, transitionDuration * 0.5f, useUnscaledTime: true);
             }
 
             // 移动到屏幕外
@@ -778,7 +795,7 @@ namespace PopLife.NarrativeSystem.UI
                 ? new Vector2(fanPivot.x, fanPivot.y + fanRadius)  // 使用fanRadius
                 : new Vector2(fanPivot.x, fanPivot.y - fanRadius); // 使用fanRadius
 
-            Tween.UIAnchoredPosition(rect, offscreenPos, transitionDuration, transitionCurve);
+            Tween.UIAnchoredPosition(rect, offscreenPos, transitionDuration, transitionCurve, useUnscaledTime: true);
         }
 
         #endregion
@@ -829,7 +846,8 @@ namespace PopLife.NarrativeSystem.UI
                 float elapsed = 0;
                 while (elapsed < fadeInDuration)
                 {
-                    elapsed += Time.deltaTime;
+                    // 使用 unscaledDeltaTime 确保暂停时UI动画继续
+                    elapsed += Time.unscaledDeltaTime;
                     canvasGroup.alpha = Mathf.Lerp(0, 1, elapsed / fadeInDuration);
                     yield return null;
                 }
@@ -845,7 +863,8 @@ namespace PopLife.NarrativeSystem.UI
                 float elapsed = 0;
                 while (elapsed < fadeOutDuration)
                 {
-                    elapsed += Time.deltaTime;
+                    // 使用 unscaledDeltaTime 确保暂停时UI动画继续
+                    elapsed += Time.unscaledDeltaTime;
                     canvasGroup.alpha = Mathf.Lerp(1, 0, elapsed / fadeOutDuration);
                     yield return null;
                 }
@@ -861,6 +880,99 @@ namespace PopLife.NarrativeSystem.UI
         {
             OnFinishClicked?.Invoke();
             NarrativeManager.Instance?.EndCurrentNarrative();
+        }
+
+        #endregion
+
+        #region Choice Buttons
+
+        /// <summary>
+        /// 显示选择按钮（类似结束节点，显示3个选择）
+        /// Show choice buttons (similar to end node, display 3 choices)
+        /// </summary>
+        public void ShowChoiceButtons(List<NarrativeSegment> choices)
+        {
+            if (choices == null || choices.Count == 0)
+            {
+                Debug.LogWarning("[FanConversationPanel] No choices to display");
+                return;
+            }
+
+            // 隐藏 Bottom box（不显示下一个节点）
+            if (boxes.ContainsKey(BoxPosition.Bottom))
+                boxes[BoxPosition.Bottom].Hide();
+
+            // 隐藏 Finish button
+            if (finishButton != null)
+                finishButton.gameObject.SetActive(false);
+
+            // 设置3个选择按钮
+            SetupChoiceButton(choiceButton1, choiceButtonText1, choices, 0);
+            SetupChoiceButton(choiceButton2, choiceButtonText2, choices, 1);
+            SetupChoiceButton(choiceButton3, choiceButtonText3, choices, 2);
+
+            Debug.Log($"[FanConversationPanel] Showing {choices.Count} choice buttons");
+        }
+
+        /// <summary>
+        /// 设置单个选择按钮
+        /// Setup a single choice button
+        /// </summary>
+        private void SetupChoiceButton(Button btn, TextMeshProUGUI text, List<NarrativeSegment> choices, int index)
+        {
+            if (btn == null) return;
+
+            if (index < choices.Count)
+            {
+                btn.gameObject.SetActive(true);
+
+                // 使用分支节点的文本作为按钮文字
+                if (text != null)
+                    text.text = choices[index].TextContent;
+
+                // 动画显示（与 Finish Button 一致）
+                var rect = btn.GetComponent<RectTransform>();
+                if (rect != null)
+                {
+                    rect.localScale = Vector3.zero;
+                    Tween.Scale(rect, Vector3.one, 0.3f, Ease.OutBack, useUnscaledTime: true);
+                }
+
+                // 绑定点击事件
+                btn.onClick.RemoveAllListeners();
+                int choiceIndex = index; // 捕获当前索引
+                btn.onClick.AddListener(() => OnChoiceButtonClicked(choiceIndex));
+            }
+            else
+            {
+                btn.gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// 选择按钮点击处理
+        /// Choice button click handler
+        /// </summary>
+        private void OnChoiceButtonClicked(int choiceIndex)
+        {
+            Debug.Log($"[FanConversationPanel] Choice {choiceIndex} selected");
+
+            // 隐藏所有选择按钮
+            HideChoiceButtons();
+
+            // 通知选择
+            OnChoiceSelected?.Invoke(choiceIndex);
+        }
+
+        /// <summary>
+        /// 隐藏所有选择按钮
+        /// Hide all choice buttons
+        /// </summary>
+        private void HideChoiceButtons()
+        {
+            if (choiceButton1 != null) choiceButton1.gameObject.SetActive(false);
+            if (choiceButton2 != null) choiceButton2.gameObject.SetActive(false);
+            if (choiceButton3 != null) choiceButton3.gameObject.SetActive(false);
         }
 
         #endregion

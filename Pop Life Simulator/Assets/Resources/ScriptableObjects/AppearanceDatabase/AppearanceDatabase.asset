@@ -30,12 +30,34 @@ MonoBehaviour:
   - id: CSP008
     sprite: {fileID: 21300000, guid: 04b8bca1621652248a907f624862de3b, type: 3}
   - id: CSP009
-    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+    sprite: {fileID: 21300000, guid: 6f12c677524c89e4e98f8a9312f28b0e, type: 3}
   - id: CSP010
     sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}
   - id: CSP011
     sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
   - id: CSP012
     sprite: {fileID: 21300000, guid: a0503b56dad268e49940f60bc65fafd0, type: 3}
+  - id: CSP013
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP014
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP015
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP016
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP017
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP018
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP019
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
   - id: CSP020
     sprite: {fileID: 21300000, guid: a5db22c060003104f8e10187aed1e0e1, type: 3}
+  - id: CSP021
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP022
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP023
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}
+  - id: CSP024
+    sprite: {fileID: 21300000, guid: c5791bb60fe361a40836273c344b8539, type: 3}

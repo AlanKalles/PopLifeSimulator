@@ -160,10 +160,18 @@ namespace PopLife.NarrativeSystem
             activeNarrative = narrative;
             isNarrativeActive = true;
 
-            // Subscribe to sequence events
+            // Subscribe to sequence events BEFORE initializing (to catch choice events)
+            // 在初始化前订阅事件（以捕获选择事件）
             activeSequence.OnSegmentChanged += HandleSegmentChanged;
             activeSequence.OnSequenceCompleted += HandleSequenceCompleted;
             activeSequence.OnChoicesPresented += HandleChoicesPresented;
+
+            // Now initialize the sequence (this may trigger OnChoicesPresented if root is a choice node)
+            // 现在初始化序列（如果根节点是选择节点，这会触发 OnChoicesPresented）
+            if (activeSequence.RootSegment != null)
+            {
+                activeSequence.Initialize(activeSequence.RootSegment);
+            }
 
             // Show UI
             if (conversationPanel != null)
@@ -171,7 +179,14 @@ namespace PopLife.NarrativeSystem
                 conversationPanel.ShowPanel(narrative);
                 var segments = activeSequence.GetVisibleSegments();
                 conversationPanel.DisplaySegments(segments.previous, segments.current, segments.next);
+
+                // Subscribe to choice selection event
+                conversationPanel.OnChoiceSelected += HandleChoiceSelected;
             }
+
+            // 暂停游戏时间（暂时禁用）
+            // Pause game time during narrative (temporarily disabled)
+            // DayLoopManager.Instance?.PauseTime();
 
             // Notify
             OnNarrativeStarted?.Invoke(narrative);
@@ -191,8 +206,18 @@ namespace PopLife.NarrativeSystem
                 return;
             }
 
-            // Grant rewards
-            GrantRewards(activeNarrative.CompletionRewards);
+            // Grant rewards from the current end segment (if any)
+            // 从当前结束节点发放奖励（如果有）
+            if (activeSequence?.CurrentSegment != null && activeSequence.CurrentSegment.IsEndSegment)
+            {
+                GrantRewards(activeSequence.CurrentSegment.EndRewards);
+            }
+            // Fallback to narrative-level rewards if no segment rewards
+            // 如果结束节点没有奖励，则使用叙事级别的奖励作为后备
+            else if (activeNarrative.CompletionRewards != null && activeNarrative.CompletionRewards.Length > 0)
+            {
+                GrantRewards(activeNarrative.CompletionRewards);
+            }
 
             // Cleanup
             if (activeSequence != null)
@@ -202,11 +227,16 @@ namespace PopLife.NarrativeSystem
                 activeSequence.OnChoicesPresented -= HandleChoicesPresented;
             }
 
-            // Hide UI
+            // Hide UI and unsubscribe from events
             if (conversationPanel != null)
             {
+                conversationPanel.OnChoiceSelected -= HandleChoiceSelected;
                 conversationPanel.HidePanel();
             }
+
+            // 恢复游戏时间（暂时禁用）
+            // Resume game time after narrative ends (temporarily disabled)
+            // DayLoopManager.Instance?.ResumeTime();
 
             // Notify
             var completedNarrative = activeNarrative;
@@ -291,12 +321,33 @@ namespace PopLife.NarrativeSystem
         /// </summary>
         private void HandleChoicesPresented(List<NarrativeSegment> choices)
         {
+            Debug.Log($"[NarrativeManager] HandleChoicesPresented called with {choices?.Count ?? 0} choices");
+
             OnChoicesAvailable?.Invoke(choices);
 
             if (conversationPanel != null)
             {
-                // Panel will handle choice display
-                conversationPanel.PresentChoices(choices);
+                // 显示选择按钮
+                conversationPanel.ShowChoiceButtons(choices);
+            }
+            else
+            {
+                Debug.LogWarning("[NarrativeManager] conversationPanel is null!");
+            }
+        }
+
+        /// <summary>
+        /// 处理选择按钮点击
+        /// </summary>
+        private void HandleChoiceSelected(int choiceIndex)
+        {
+            Debug.Log($"[NarrativeManager] Choice selected: {choiceIndex}");
+
+            // 使用专门的选择方法，会清除导航历史
+            // Use dedicated choice selection method, which clears navigation history
+            if (activeSequence != null && activeSequence.SelectChoice(choiceIndex))
+            {
+                UpdateDisplay();
             }
         }
 
@@ -345,7 +396,8 @@ namespace PopLife.NarrativeSystem
             // 等待足够时间，确保面板淡出动画完成且OnNarrativeCompleted事件先被处理
             // Wait enough time to ensure panel fade out animation completes and OnNarrativeCompleted event is processed first
             // FanConversationPanel的fadeOutDuration是0.3秒，我们等待0.5秒确保完全结束
-            yield return new WaitForSeconds(0.5f);
+            // 使用 WaitForSecondsRealtime 确保即使游戏暂停也能继续
+            yield return new WaitForSecondsRealtime(0.5f);
 
             // 定义叙事序列链接
             // Define narrative sequence connections
@@ -408,6 +460,11 @@ namespace PopLife.NarrativeSystem
                     case RewardData.RewardType.Item:
                         // TODO: Implement item grant
                         Debug.Log($"[NarrativeManager] Item reward: {reward.RewardID}");
+                        break;
+
+                    case RewardData.RewardType.Marker:
+                        TutorialEventBus.RaiseMarker(reward.Marker);
+                        Debug.Log($"[NarrativeManager] Raised marker: {reward.Marker}");
                         break;
                 }
             }

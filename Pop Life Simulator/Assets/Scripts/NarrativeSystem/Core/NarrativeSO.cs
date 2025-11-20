@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PopLife.Manager;
 
 namespace PopLife.NarrativeSystem
 {
@@ -83,7 +84,9 @@ namespace PopLife.NarrativeSystem
                 // 重建段落之间的链接关系
                 RebuildSegmentLinks(narrativeSequence.RootSegment, segmentCopies);
 
-                instance.Initialize(rootCopy);
+                // 不在这里调用 Initialize，让 NarrativeManager 在订阅事件后调用
+                // Don't call Initialize here, let NarrativeManager call it after subscribing to events
+                instance.RootSegment = rootCopy;
             }
 
             return instance;
@@ -112,6 +115,8 @@ namespace PopLife.NarrativeSystem
             copy.IsEndSegment = original.IsEndSegment;
             copy.DisplayDuration = original.DisplayDuration;
             copy.SpeakerPortrait = original.SpeakerPortrait;
+            copy.EndRewards = original.EndRewards;  // 复制结束节点奖励
+            copy.IsChoiceNode = original.IsChoiceNode;  // 复制选择节点标记
 
             // 记录拷贝
             copies[original] = copy;
@@ -209,16 +214,19 @@ namespace PopLife.NarrativeSystem
             Fame,
             Blueprint,
             Customer,
-            Item
+            Item,
+            Marker
         }
 
         [SerializeField] private RewardType type;
         [SerializeField] private string rewardID;    // 奖励ID（如蓝图ID、顾客ID等）
         [SerializeField] private int amount;         // 数量（金钱或声望）
+        [SerializeField] private TutorialMarker marker;  // Marker（仅RewardType.Marker时使用）
 
         public RewardType Type => type;
         public string RewardID => rewardID;
         public int Amount => amount;
+        public TutorialMarker Marker => marker;
 
         public RewardData(RewardType rewardType, string id, int value)
         {

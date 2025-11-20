@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using PopLife.NarrativeSystem;
+using PopLife.Manager;
 using System.Collections.Generic;
 
 namespace PopLife.Editor.NarrativeSystem
@@ -21,9 +22,14 @@ namespace PopLife.Editor.NarrativeSystem
         private Sprite speakerPortrait;
         private bool isEndSegment;
         private float displayDuration;
+        private bool isChoiceNode;
+        private List<RewardData> endRewards = new List<RewardData>();
 
         // Scroll position for text area
         private Vector2 scrollPos;
+
+        // End Rewards foldout state
+        private bool endRewardsFoldout = true;
 
         public static void ShowWindow(object node, NarrativeGraphEditor parent)
         {
@@ -59,6 +65,17 @@ namespace PopLife.Editor.NarrativeSystem
                 speakerPortrait = segment.SpeakerPortrait;
                 isEndSegment = segment.IsEndSegment;
                 displayDuration = segment.DisplayDuration;
+                isChoiceNode = segment.IsChoiceNode;
+
+                // Load end rewards
+                endRewards.Clear();
+                if (segment.EndRewards != null)
+                {
+                    foreach (var reward in segment.EndRewards)
+                    {
+                        endRewards.Add(new RewardData(reward.Type, reward.RewardID, reward.Amount));
+                    }
+                }
             }
         }
 
@@ -130,6 +147,15 @@ namespace PopLife.Editor.NarrativeSystem
 
             EditorGUILayout.Space();
 
+            // End Segment Rewards - 只有当 IsEndSegment 勾选时才显示
+            // Only show when IsEndSegment is checked
+            if (isEndSegment)
+            {
+                DrawEndRewardsSection();
+            }
+
+            EditorGUILayout.Space();
+
             // Help text
             EditorGUILayout.HelpBox(
                 "• Segment ID: Unique identifier for this dialogue segment\n" +
@@ -137,7 +163,8 @@ namespace PopLife.Editor.NarrativeSystem
                 "• Dialogue Text: The actual conversation text\n" +
                 "• Speaker Portrait: Optional portrait override for this segment\n" +
                 "• Is End Segment: Check if this ends the conversation\n" +
-                "• Display Duration: Auto-advance time (0 = player controls)",
+                "• Display Duration: Auto-advance time (0 = player controls)\n" +
+                "• End Rewards: Rewards given when this end segment is reached",
                 MessageType.Info);
 
             EditorGUILayout.EndScrollView();
@@ -174,6 +201,16 @@ namespace PopLife.Editor.NarrativeSystem
                 segment.SpeakerPortrait = speakerPortrait;
                 segment.IsEndSegment = isEndSegment;
                 segment.DisplayDuration = displayDuration;
+
+                // Save end rewards
+                if (isEndSegment && endRewards.Count > 0)
+                {
+                    segment.EndRewards = endRewards.ToArray();
+                }
+                else
+                {
+                    segment.EndRewards = null;
+                }
 
                 // Refresh the parent editor
                 if (parentEditor != null)
@@ -237,6 +274,88 @@ namespace PopLife.Editor.NarrativeSystem
             }
 
             return NarrativeSegment.GenerateSegmentID(nextIndex);
+        }
+
+        /// <summary>
+        /// Draw the End Rewards section
+        /// </summary>
+        private void DrawEndRewardsSection()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("End Segment Rewards", EditorStyles.boldLabel);
+
+            endRewardsFoldout = EditorGUILayout.Foldout(endRewardsFoldout, $"Rewards ({endRewards.Count})", true);
+
+            if (endRewardsFoldout)
+            {
+                EditorGUI.indentLevel++;
+
+                // Draw each reward
+                for (int i = 0; i < endRewards.Count; i++)
+                {
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"Element {i}", EditorStyles.boldLabel);
+
+                    // Remove button
+                    GUI.backgroundColor = new Color(1f, 0.5f, 0.5f);
+                    if (GUILayout.Button("X", GUILayout.Width(25)))
+                    {
+                        endRewards.RemoveAt(i);
+                        GUIUtility.ExitGUI();
+                        return;
+                    }
+                    GUI.backgroundColor = Color.white;
+                    EditorGUILayout.EndHorizontal();
+
+                    // Get current reward values using reflection
+                    var reward = endRewards[i];
+                    var typeField = typeof(RewardData).GetField("type", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    var rewardIDField = typeof(RewardData).GetField("rewardID", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    var amountField = typeof(RewardData).GetField("amount", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    var markerField = typeof(RewardData).GetField("marker", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                    // Type
+                    var currentType = (RewardData.RewardType)typeField.GetValue(reward);
+                    var newType = (RewardData.RewardType)EditorGUILayout.EnumPopup("Type", currentType);
+                    typeField.SetValue(reward, newType);
+
+                    // Reward ID
+                    var currentRewardID = (string)rewardIDField.GetValue(reward) ?? "";
+                    var newRewardID = EditorGUILayout.TextField("Reward ID", currentRewardID);
+                    rewardIDField.SetValue(reward, newRewardID);
+
+                    // Amount
+                    var currentAmount = (int)amountField.GetValue(reward);
+                    var newAmount = EditorGUILayout.IntField("Amount", currentAmount);
+                    amountField.SetValue(reward, newAmount);
+
+                    // Marker (only for Marker type)
+                    if (newType == RewardData.RewardType.Marker)
+                    {
+                        var currentMarker = markerField.GetValue(reward);
+                        var newMarker = EditorGUILayout.EnumPopup("Marker", (TutorialMarker)currentMarker);
+                        markerField.SetValue(reward, newMarker);
+                    }
+
+                    EditorGUILayout.EndVertical();
+                    EditorGUILayout.Space(2);
+                }
+
+                EditorGUI.indentLevel--;
+
+                // Add button
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUI.backgroundColor = new Color(0.5f, 0.8f, 0.5f);
+                if (GUILayout.Button("+ Add Reward", GUILayout.Width(100)))
+                {
+                    endRewards.Add(new RewardData(RewardData.RewardType.Money, "", 0));
+                }
+                GUI.backgroundColor = Color.white;
+                EditorGUILayout.EndHorizontal();
+            }
         }
     }
 }

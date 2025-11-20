@@ -40,10 +40,16 @@ MonoBehaviour:
           nextSegments: []
           isEndSegment: 1
           displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
         isEndSegment: 0
         displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
       isEndSegment: 0
       displayDuration: 0
+      isChoiceNode: 0
+      endRewards: []
     currentSegment:
       segmentID: SEG01
       speakerName: 
@@ -63,10 +69,16 @@ MonoBehaviour:
           nextSegments: []
           isEndSegment: 1
           displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
         isEndSegment: 0
         displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
       isEndSegment: 0
       displayDuration: 0
+      isChoiceNode: 0
+      endRewards: []
     navigationHistory:
     - segmentID: SEG01
       speakerName: 
@@ -86,10 +98,16 @@ MonoBehaviour:
           nextSegments: []
           isEndSegment: 1
           displayDuration: 0
+          isChoiceNode: 0
+          endRewards: []
         isEndSegment: 0
         displayDuration: 0
+        isChoiceNode: 0
+        endRewards: []
       isEndSegment: 0
       displayDuration: 0
+      isChoiceNode: 0
+      endRewards: []
   isVIPOnly: 0
   minimumDayRequired: 0
   minimumFameRequired: 0

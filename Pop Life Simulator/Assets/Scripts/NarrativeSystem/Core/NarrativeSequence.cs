@@ -29,7 +29,11 @@ namespace PopLife.NarrativeSystem
         public string SequenceID => sequenceID;
         public string SequenceName => sequenceName;
         public NarrativeSegment CurrentSegment => currentSegment;
-        public NarrativeSegment RootSegment => rootSegment;
+        public NarrativeSegment RootSegment
+        {
+            get => rootSegment;
+            set => rootSegment = value;  // 允许设置（仅在创建序列时使用）
+        }
         public bool IsCompleted => currentSegment != null && currentSegment.IsEndSegment;
 
         /// <summary>
@@ -44,6 +48,7 @@ namespace PopLife.NarrativeSystem
 
         /// <summary>
         /// 初始化序列，设置根片段
+        /// Initialize sequence and set root segment
         /// </summary>
         public void Initialize(NarrativeSegment root)
         {
@@ -59,6 +64,14 @@ namespace PopLife.NarrativeSystem
             navigationHistory.Add(root);
 
             OnSegmentChanged?.Invoke(currentSegment);
+
+            // 如果根节点是选择节点，立即触发选择事件
+            // If root segment is a choice node, immediately trigger choice presentation
+            if (currentSegment.IsChoiceNode && currentSegment.HasMultipleChoices())
+            {
+                Debug.Log($"[NarrativeSequence] Root is choice node, triggering OnChoicesPresented with {currentSegment.NextSegments.Count} choices");
+                OnChoicesPresented?.Invoke(currentSegment.NextSegments);
+            }
         }
 
         /// <summary>
@@ -76,6 +89,17 @@ namespace PopLife.NarrativeSystem
             {
                 OnSequenceCompleted?.Invoke();
                 return false;
+            }
+
+            // 如果当前节点是选择节点且有多个选择，需要等待玩家选择
+            // 只有当 choiceIndex 由玩家选择按钮触发时才继续
+            // If current segment is a choice node with multiple choices, wait for player selection
+            if (currentSegment.IsChoiceNode && currentSegment.HasMultipleChoices())
+            {
+                // 触发选择展示事件，让UI显示选择按钮
+                Debug.Log($"[NarrativeSequence] Current is choice node, triggering OnChoicesPresented with {currentSegment.NextSegments.Count} choices");
+                OnChoicesPresented?.Invoke(currentSegment.NextSegments);
+                return false; // 阻止自动导航，等待玩家选择
             }
 
             var nextSegments = currentSegment.NextSegments;
@@ -98,11 +122,67 @@ namespace PopLife.NarrativeSystem
 
             OnSegmentChanged?.Invoke(currentSegment);
 
-            // 如果有多个选择，触发选择事件
-            if (currentSegment.HasMultipleChoices())
+            // 检查是否完成
+            if (currentSegment.IsEndSegment)
             {
-                OnChoicesPresented?.Invoke(currentSegment.NextSegments);
+                OnSequenceCompleted?.Invoke();
             }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 处理玩家选择（从选择按钮触发）
+        /// Handle player choice selection (triggered from choice buttons)
+        /// </summary>
+        public bool SelectChoice(int choiceIndex)
+        {
+            if (currentSegment == null)
+            {
+                Debug.LogWarning("[NarrativeSequence] No current segment for choice selection");
+                return false;
+            }
+
+            if (!currentSegment.IsChoiceNode || !currentSegment.HasMultipleChoices())
+            {
+                Debug.LogWarning("[NarrativeSequence] Current segment is not a choice node");
+                return false;
+            }
+
+            var nextSegments = currentSegment.NextSegments;
+            if (choiceIndex >= nextSegments.Count)
+            {
+                Debug.LogError($"[NarrativeSequence] Invalid choice index {choiceIndex}, max is {nextSegments.Count - 1}");
+                return false;
+            }
+
+            // 获取玩家选择的分支节点（玩家回答文本）
+            // Get the player choice branch segment (player response text)
+            var playerResponseSegment = nextSegments[choiceIndex];
+
+            // 跳过玩家回答节点，直接导航到 customer 回应节点
+            // Skip player response segment, navigate directly to customer response segment
+            var customerResponseSegment = playerResponseSegment.GetDefaultNext();
+
+            if (customerResponseSegment == null)
+            {
+                Debug.LogError($"[NarrativeSequence] Choice branch {choiceIndex} has no customer response segment!");
+                return false;
+            }
+
+            // 设置为 customer 回应节点
+            currentSegment = customerResponseSegment;
+
+            // 断开与之前节点的链接（这是新对话的起点）
+            // Break the link to previous segments (this is the start of a new conversation)
+            currentSegment.PreviousSegment = null;
+
+            // 清除导航历史，开始新的对话分支（选择后不能往回翻阅）
+            // Clear navigation history to start a new conversation branch (cannot go back after choice)
+            navigationHistory.Clear();
+            navigationHistory.Add(currentSegment);
+
+            OnSegmentChanged?.Invoke(currentSegment);
 
             // 检查是否完成
             if (currentSegment.IsEndSegment)
@@ -132,8 +212,9 @@ namespace PopLife.NarrativeSystem
 
             OnSegmentChanged?.Invoke(currentSegment);
 
-            // 如果有多个选择，触发选择事件
-            if (currentSegment.HasMultipleChoices())
+            // 如果回退到选择节点且有多个选择，重新触发选择事件显示选择按钮
+            // If navigating back to a choice node with multiple choices, re-trigger choice presentation
+            if (currentSegment.IsChoiceNode && currentSegment.HasMultipleChoices())
             {
                 OnChoicesPresented?.Invoke(currentSegment.NextSegments);
             }
@@ -143,6 +224,7 @@ namespace PopLife.NarrativeSystem
 
         /// <summary>
         /// 获取用于扇形显示的三个片段（上、中、下）
+        /// Get three segments for fan display (top, center, bottom)
         /// </summary>
         public (NarrativeSegment previous, NarrativeSegment current, NarrativeSegment next) GetVisibleSegments()
         {
@@ -150,7 +232,10 @@ namespace PopLife.NarrativeSystem
                 return (null, null, null);
 
             var previous = currentSegment.PreviousSegment;
-            var next = currentSegment.GetDefaultNext();
+
+            // 如果当前节点是选择节点，不显示下一个节点（显示选择按钮代替）
+            // If current segment is a choice node, don't show next segment (choice buttons will be shown instead)
+            var next = currentSegment.IsChoiceNode ? null : currentSegment.GetDefaultNext();
 
             return (previous, currentSegment, next);
         }

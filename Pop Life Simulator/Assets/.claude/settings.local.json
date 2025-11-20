@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Read(//d/github/PopLifeSimulator/**)"
+      "Read(//d/github/PopLifeSimulator/**)",
+      "Bash(del \"d:\\github\\PopLifeSimulator\\Pop Life Simulator\\Assets\\Scripts\\Editor\\NarrativeSystem\\NarrativeSegmentPropertyDrawer.cs\")"
     ],
     "deny": [],
     "ask": []

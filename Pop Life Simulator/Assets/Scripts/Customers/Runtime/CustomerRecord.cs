@@ -40,6 +40,9 @@ namespace PopLife.Customers.Runtime
         public string lastLeaveReason;
         public int lifetimeSpent;
 
+// —— 对话交互 ——
+        public string[] availableNarrativeIds = Array.Empty<string>(); // 该顾客可用的对话ID列表
+
 
 // —— 版本 ——
         public int schemaVersion = 1;

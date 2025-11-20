@@ -24,12 +24,17 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 10,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 7,
+            "availableNarrativeIds": [
+                "IN002",
+                "IN004",
+                "IN005"
+            ],
             "schemaVersion": 1
         },
         {
@@ -56,12 +61,16 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 14,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 27,
+            "availableNarrativeIds": [
+                "IN004",
+                "IN005"
+            ],
             "schemaVersion": 1
         },
         {
@@ -93,6 +102,10 @@
             "lastVisitDay": "",
             "lastLeaveReason": "",
             "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN004",
+                "IN005"
+            ],
             "schemaVersion": 1
         },
         {
@@ -125,6 +138,11 @@
             "lastVisitDay": "",
             "lastLeaveReason": "",
             "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN002",
+                "IN003"
+            ],
             "schemaVersion": 1
         },
         {
@@ -149,12 +167,15 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 12,
+            "xp": 0,
             "walletCapBase": 50,
-            "visitCount": 1,
+            "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 23,
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
             "schemaVersion": 1
         },
         {
@@ -180,12 +201,15 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 12,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 17,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
             "schemaVersion": 1
         },
         {
@@ -212,12 +236,16 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 10,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 7,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003"
+            ],
             "schemaVersion": 1
         },
         {
@@ -238,7 +266,6 @@
                 0.0,
                 0.0,
                 0.0,
-                0.0,
                 0.0
             ],
             "trust": 0,
@@ -249,6 +276,10 @@
             "lastVisitDay": "",
             "lastLeaveReason": "",
             "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN002",
+                "IN004"
+            ],
             "schemaVersion": 1
         },
         {
@@ -280,6 +311,11 @@
             "lastVisitDay": "",
             "lastLeaveReason": "",
             "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003",
+                "IN005"
+            ],
             "schemaVersion": 1
         },
         {
@@ -305,12 +341,15 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 10,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 7,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
             "schemaVersion": 1
         },
         {
@@ -332,16 +371,21 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 10,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 7,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003"
+            ],
             "schemaVersion": 1
         },
         {
@@ -362,16 +406,22 @@
                 0.0,
                 0.0,
                 0.0,
+                0.0,
                 0.0
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 0,
+            "xp": 24,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 2,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 36,
+            "availableNarrativeIds": [
+                "IN002",
+                "IN004",
+                "IN001"
+            ],
             "schemaVersion": 1
         },
         {
@@ -403,6 +453,249 @@
             "lastVisitDay": "",
             "lastLeaveReason": "",
             "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C013",
+            "name": "Minghao",
+            "bio": "A 20-year-old art school dropout. Treats adult products like collectibles, trying to get one from every category.",
+            "appearanceId": "CSP013",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Student",
+                "CisMan",
+                "Gay",
+                "Collector"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003",
+                "IN005"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C014",
+            "name": "Ayaka",
+            "bio": "A 42-year-old banker, married with children. Has a hidden affair and secretly purchases high-end toys.",
+            "appearanceId": "CSP014",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Rich",
+                "Secret Affair",
+                "CisWoman",
+                "Straight",
+                "Married"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C015",
+            "name": "Yuzhen",
+            "bio": "A 60-year-old grandmother from a rural town. Visits right after sunrise, secretly buys small items but avoids looking at anyone.",
+            "appearanceId": "CSP015",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "EarlyBird",
+                "Shy",
+                "CisWoman",
+                "Straight"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C016",
+            "name": "Riku",
+            "bio": "A 21-year-old university theater major. Always eager to explore new experiences, buys across categories without hesitation.",
+            "appearanceId": "CSP016",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Student",
+                "Curious",
+                "PanSexual",
+                "CisMan"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003",
+                "IN005",
+                "IN002"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C017",
+            "name": "Seoyeon",
+            "bio": "A 27-year-old K-pop stylist. Dates multiple partners openly and flaunts luxury purchases on social media.",
+            "appearanceId": "CSP017",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Influencer",
+                "Rich",
+                "Polyamorous",
+                "CisWoman",
+                "Bisexual"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C018",
+            "name": "Daichi",
+            "bio": "A 38-year-old security guard. Works late shifts and drops by the store past midnight, buys practical items in bulk.",
+            "appearanceId": "CSP018",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "BlueCollar",
+                "NightOwl",
+                "CisMan",
+                "Straight"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C019",
+            "name": "Hana",
+            "bio": "A 33-year-old pilates coach. Proudly queer, prefers athletic and sensual products, often shops with her girlfriend.",
+            "appearanceId": "CSP019",
+            "archetypeId": "RegularCustomer",
+            "traitIds": [
+                "Fitness",
+                "Liberal",
+                "Lesbian",
+                "CisWoman"
+            ],
+            "interestPersonalDelta": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
             "schemaVersion": 1
         }
     ]

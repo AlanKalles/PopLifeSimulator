@@ -195,6 +195,7 @@ GameObject:
   - component: {fileID: 7018504740481146283}
   - component: {fileID: 7583473206932270773}
   - component: {fileID: 8287113208773629315}
+  - component: {fileID: 1309996665549762670}
   m_Layer: 7
   m_Name: customer
   m_TagString: Untagged
@@ -233,6 +234,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customerId: 
+  customerName: 
   loyaltyLevel: 0
   trust: 0
   interestFinal: []
@@ -257,6 +259,7 @@ MonoBehaviour:
   isUpset: 0
   hasAttemptedFirstShopping: 0
   consecutivePurchaseFailures: 0
+  hasTriggeredDialogueToday: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
 --- !u!114 &6812213515813458708
@@ -708,6 +711,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 2995252074383847997}
   idleThreshold: 0.1
+--- !u!114 &1309996665549762670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7018696242757326488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37e4473569cf97b4e9305aa085a2f49b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueStateDuration: 10
+  interactionCollider: {fileID: 2711208820574527946}
 --- !u!1 &7525514473913774885
 GameObject:
   m_ObjectHideFlags: 0
@@ -718,8 +735,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8159784335344893370}
   - component: {fileID: 2711208820574527946}
-  m_Layer: 11
-  m_Name: pivot
+  m_Layer: 12
+  m_Name: interactionCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -774,7 +791,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.856237}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -784,7 +801,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 1.7600819}
   m_EdgeRadius: 0
 --- !u!1 &8191261946253030153
 GameObject:

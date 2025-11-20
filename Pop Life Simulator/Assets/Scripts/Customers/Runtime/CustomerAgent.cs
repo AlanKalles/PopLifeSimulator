@@ -10,6 +10,7 @@ namespace PopLife.Customers.Runtime
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(CustomerAnimationController))]
+    [RequireComponent(typeof(CustomerInteractionState))]
     public class CustomerAgent : MonoBehaviour
     {
         public CustomerBlackboardAdapter bb;
@@ -23,9 +24,13 @@ namespace PopLife.Customers.Runtime
         public CustomerArchetype cachedArchetype;
         public Trait[] cachedTraits;
 
+        // 缓存的 CustomerRecord（用于交互系统获取对话ID）
+        private CustomerRecord cachedRecord;
+
         private SpriteRenderer spriteRenderer;
         private TextMeshPro nameText;
         private CustomerAnimationController animationController;
+        private CustomerInteractionState interactionState;
 
         void Awake()
         {
@@ -33,6 +38,7 @@ namespace PopLife.Customers.Runtime
             if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
             if (!nameText) nameText = GetComponentInChildren<TextMeshPro>();
             if (!animationController) animationController = GetComponent<CustomerAnimationController>();
+            if (!interactionState) interactionState = GetComponent<CustomerInteractionState>();
         }
 
 
@@ -41,6 +47,9 @@ namespace PopLife.Customers.Runtime
         {
 // 0) 设置顾客ID
             customerID = record.customerId;
+
+// 0.1) 缓存 CustomerRecord（用于交互系统获取对话ID）
+            cachedRecord = record;
 
 // 1) 设置外貌
             if (!string.IsNullOrEmpty(record.appearanceId) && appearanceDB != null)
@@ -100,6 +109,24 @@ namespace PopLife.Customers.Runtime
             cachedTraits = traits;
 
             CustomerEventBus.RaiseSpawned(this);
+        }
+
+        /// <summary>
+        /// 获取缓存的 CustomerRecord
+        /// Get cached CustomerRecord
+        /// </summary>
+        public CustomerRecord GetCustomerRecord()
+        {
+            return cachedRecord;
+        }
+
+        /// <summary>
+        /// 获取交互状态组件
+        /// Get interaction state component
+        /// </summary>
+        public CustomerInteractionState GetInteractionState()
+        {
+            return interactionState;
         }
     }
 }

@@ -38,6 +38,7 @@ namespace PopLife.Editor.NarrativeSystem
         private GUIStyle nodeStyle;
         private GUIStyle selectedNodeStyle;
         private GUIStyle rootNodeStyle;
+        private GUIStyle choiceNodeStyle;
         private GUIStyle titleStyle;
 
         /// <summary>
@@ -103,9 +104,13 @@ namespace PopLife.Editor.NarrativeSystem
             window.minSize = new Vector2(800, 600);
         }
 
+        private bool stylesInitialized = false;
+
         private void OnEnable()
         {
-            InitializeStyles();
+            // 不在这里初始化样式，因为 GUI 系统可能还没准备好
+            // 样式将在 OnGUI 中延迟初始化
+            stylesInitialized = false;
         }
 
         private void InitializeStyles()
@@ -126,6 +131,11 @@ namespace PopLife.Editor.NarrativeSystem
             rootNodeStyle = new GUIStyle(nodeStyle);
             rootNodeStyle.normal.background = CreateColorTexture(new Color(0.3f, 0.3f, 0.5f, 0.9f));
 
+            // 选择节点样式 - 橙色背景表示多重选择节点
+            // Choice node style - orange background for multiple choice nodes
+            choiceNodeStyle = new GUIStyle(nodeStyle);
+            choiceNodeStyle.normal.background = CreateColorTexture(new Color(0.6f, 0.4f, 0.2f, 0.9f));
+
             titleStyle = new GUIStyle(EditorStyles.label);
             titleStyle.fontStyle = FontStyle.Bold;
             titleStyle.alignment = TextAnchor.MiddleCenter;
@@ -142,6 +152,13 @@ namespace PopLife.Editor.NarrativeSystem
 
         private void OnGUI()
         {
+            // 延迟初始化样式，确保 GUI 系统已准备好
+            if (!stylesInitialized)
+            {
+                InitializeStyles();
+                stylesInitialized = true;
+            }
+
             DrawToolbar();
             DrawGrid();
 
@@ -282,10 +299,13 @@ namespace PopLife.Editor.NarrativeSystem
             if (nodeStyle == null)
                 InitializeStyles();
 
-            // Choose style
+            // Choose style - 优先级：选中 > 选择节点 > 根节点 > 普通
+            // Priority: selected > choice node > root > normal
             GUIStyle style = nodeStyle;
             if (node == selectedNode)
                 style = selectedNodeStyle;
+            else if (node.segment != null && node.segment.IsChoiceNode)
+                style = choiceNodeStyle;
             else if (node.isRoot)
                 style = rootNodeStyle;
 
@@ -298,13 +318,20 @@ namespace PopLife.Editor.NarrativeSystem
                 nodeContent = "[ROOT]\n";
             }
 
+            // 选择节点标记
+            // Choice node indicator
+            if (node.segment != null && node.segment.IsChoiceNode)
+            {
+                nodeContent += "[CHOICE]\n";
+            }
+
             // Main content
             nodeContent += node.displayName ?? "Unnamed";
 
             // Connection indicator at bottom (simplified)
             if (node.segment != null && node.segment.NextSegments != null && node.segment.NextSegments.Count > 1)
             {
-                nodeContent += $"\n[{node.segment.NextSegments.Count}]";
+                nodeContent += $"\n[{node.segment.NextSegments.Count} branches]";
             }
 
             GUI.Box(node.rect, nodeContent, style);
@@ -380,7 +407,30 @@ namespace PopLife.Editor.NarrativeSystem
             Color connectionColor = Color.white;
             float connectionWidth = CONNECTION_WIDTH;
 
-            if (selectedNode != null)
+            // 选择节点的分支使用不同颜色
+            // Use different colors for choice node branches
+            if (connection.from.segment != null && connection.from.segment.IsChoiceNode)
+            {
+                // 为不同选择分支使用不同颜色：红、绿、蓝
+                // Different colors for different choice branches: red, green, blue
+                switch (connection.childIndex)
+                {
+                    case 0:
+                        connectionColor = new Color(1f, 0.4f, 0.4f);  // 红色 - Choice 1
+                        break;
+                    case 1:
+                        connectionColor = new Color(0.4f, 1f, 0.4f);  // 绿色 - Choice 2
+                        break;
+                    case 2:
+                        connectionColor = new Color(0.4f, 0.7f, 1f);  // 蓝色 - Choice 3
+                        break;
+                    default:
+                        connectionColor = new Color(1f, 0.8f, 0.4f);  // 橙色 - 其他
+                        break;
+                }
+                connectionWidth = CONNECTION_WIDTH * 1.5f;
+            }
+            else if (selectedNode != null)
             {
                 if (connection.from == selectedNode)
                 {
@@ -826,7 +876,11 @@ namespace PopLife.Editor.NarrativeSystem
                 "• Cyan dot: Input connection point\n" +
                 "• Click output then input to connect nodes\n" +
                 "• Auto Layout: Automatically arrange nodes\n" +
-                "• Root node (blue) is the starting point",
+                "• Root node (blue) is the starting point\n" +
+                "• Choice node (orange) has multiple branches\n" +
+                "  - Red line: Choice 1\n" +
+                "  - Green line: Choice 2\n" +
+                "  - Blue line: Choice 3",
                 "OK");
         }
 

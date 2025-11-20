@@ -26,7 +26,19 @@ namespace PopLife.NarrativeSystem
         [SerializeField] private bool isEndSegment;          // 是否为结束片段
         [SerializeField] private float displayDuration;      // 显示持续时间（0表示需要点击继续）
 
+        [Header("Choice Node")]
+        [SerializeField] private bool isChoiceNode;          // 是否为选择节点（显示3个选择按钮）
+
+        [Header("End Segment Rewards")]
+        [Tooltip("仅当 Is End Segment 勾选时有效")]
+        [SerializeField] private RewardData[] endRewards;    // 结束节点的奖励
+
         // Properties
+        public RewardData[] EndRewards
+        {
+            get => endRewards;
+            set => endRewards = value;
+        }
         public string SegmentID => segmentID;
         public string SpeakerName => speakerName;
         public string TextContent => textContent;
@@ -45,8 +57,17 @@ namespace PopLife.NarrativeSystem
             get => displayDuration;
             set => displayDuration = value;
         }
-        public NarrativeSegment PreviousSegment => previousSegment;
+        public NarrativeSegment PreviousSegment
+        {
+            get => previousSegment;
+            internal set => previousSegment = value;  // 仅内部设置（用于选择后断开链接）
+        }
         public List<NarrativeSegment> NextSegments => nextSegments ?? new List<NarrativeSegment>();
+        public bool IsChoiceNode
+        {
+            get => isChoiceNode;
+            set => isChoiceNode = value;
+        }
 
         /// <summary>
         /// 构造函数

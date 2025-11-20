@@ -47,6 +47,9 @@ namespace PopLife.Customers.Runtime
         public bool hasAttemptedFirstShopping = false; // 是否已尝试过第一次搜寻货架（用于判断首次搜寻失败）
         public int consecutivePurchaseFailures = 0;    // 连续到达货架但购买失败的次数（到达货架库存为0）
 
+        [Header("对话交互状态")]
+        public bool hasTriggeredDialogueToday = false; // 今日是否已触发过对话交互
+
         [Header("策略集合（只读引用）")]
         public BehaviorPolicySet policies;
 

@@ -48,6 +48,7 @@ namespace PopLife.Customers.Editor
 
         private string[] availableArchetypes = new string[0];
         private string[] availableTraits = new string[0];
+        private string[] availableNarratives = new string[0];  // 可用的对话ID列表
 
         private enum SortBy { None, ID, Name, Trust, Loyalty, Visits }
         private SortBy sortBy = SortBy.None;
@@ -55,6 +56,9 @@ namespace PopLife.Customers.Editor
 
         private bool foldoutStats = true;
         private bool foldoutInterests = true;
+        private bool foldoutNarratives = true;  // 对话ID折叠状态
+
+        private Vector2 detailScrollPos;  // 详情面板滚动位置
 
         [MenuItem("PopLife/Customer Records Editor")]
         public static void ShowWindow()
@@ -92,6 +96,32 @@ namespace PopLife.Customers.Editor
                 if (trait != null)
                     availableTraits[i] = trait.name;
             }
+
+            // 加载可用的 Narrative IDs（从 Resources/NarrativeData）
+            LoadAvailableNarratives();
+        }
+
+        private void LoadAvailableNarratives()
+        {
+            // 从 Resources/NarrativeData 文件夹加载所有 NarrativeSO
+            var narratives = Resources.LoadAll<PopLife.NarrativeSystem.NarrativeSO>("NarrativeData");
+            var narrativeIds = new List<string>();
+
+            foreach (var narrative in narratives)
+            {
+                // 只加载以 "IN" 开头的 Narrative ID（Interaction 对话）
+                if (narrative != null && !string.IsNullOrEmpty(narrative.NarrativeID)
+                    && narrative.NarrativeID.StartsWith("IN"))
+                {
+                    narrativeIds.Add(narrative.NarrativeID);
+                }
+            }
+
+            // 排序
+            narrativeIds.Sort();
+            availableNarratives = narrativeIds.ToArray();
+
+            Debug.Log($"[CustomerRecordsEditor] Loaded {availableNarratives.Length} interaction narratives (IN*) from Resources/NarrativeData");
         }
 
         private void OnGUI()
@@ -346,7 +376,7 @@ namespace PopLife.Customers.Editor
 
             EditorGUILayout.LabelField("Customer Details", EditorStyles.boldLabel);
 
-            var detailScroll = EditorGUILayout.BeginScrollView(Vector2.zero);
+            detailScrollPos = EditorGUILayout.BeginScrollView(detailScrollPos);
 
             EditorGUI.BeginChangeCheck();
 
@@ -437,6 +467,77 @@ namespace PopLife.Customers.Editor
                 editingRecord.lastVisitDay = EditorGUILayout.TextField("Last Visit Day", editingRecord.lastVisitDay);
                 editingRecord.lastLeaveReason = EditorGUILayout.TextField("Last Leave Reason", editingRecord.lastLeaveReason);
                 EditorGUI.indentLevel--;
+            }
+
+            // Available Narrative IDs 编辑区域
+            EditorGUILayout.Space(10);
+            foldoutNarratives = EditorGUILayout.Foldout(foldoutNarratives, "Available Narratives (Interaction Dialogues)", true);
+            if (foldoutNarratives)
+            {
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+                // 确保数组不为空
+                if (editingRecord.availableNarrativeIds == null)
+                    editingRecord.availableNarrativeIds = new string[0];
+
+                // 当前已选择的数量
+                EditorGUILayout.LabelField($"Selected: {editingRecord.availableNarrativeIds.Length} / {availableNarratives.Length}");
+
+                EditorGUILayout.Space(5);
+
+                // 快捷按钮
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("Select All", GUILayout.Width(80)))
+                {
+                    editingRecord.availableNarrativeIds = (string[])availableNarratives.Clone();
+                }
+                if (GUILayout.Button("Clear All", GUILayout.Width(80)))
+                {
+                    editingRecord.availableNarrativeIds = new string[0];
+                }
+                if (GUILayout.Button("Refresh List", GUILayout.Width(90)))
+                {
+                    LoadAvailableNarratives();
+                }
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.Space(5);
+
+                // 显示所有可用的 Narrative IDs（复选框列表）
+                if (availableNarratives.Length == 0)
+                {
+                    EditorGUILayout.HelpBox("No narratives found in Resources/NarrativeData.\nCreate NarrativeSO assets to add interaction dialogues.", MessageType.Info);
+                }
+                else
+                {
+                    var selectedIds = new HashSet<string>(editingRecord.availableNarrativeIds);
+
+                    foreach (var narrativeId in availableNarratives)
+                    {
+                        bool isSelected = selectedIds.Contains(narrativeId);
+                        bool newSelected = EditorGUILayout.ToggleLeft(narrativeId, isSelected);
+
+                        if (newSelected != isSelected)
+                        {
+                            if (newSelected)
+                            {
+                                // 添加到列表
+                                var list = editingRecord.availableNarrativeIds.ToList();
+                                list.Add(narrativeId);
+                                editingRecord.availableNarrativeIds = list.ToArray();
+                            }
+                            else
+                            {
+                                // 从列表移除
+                                var list = editingRecord.availableNarrativeIds.ToList();
+                                list.Remove(narrativeId);
+                                editingRecord.availableNarrativeIds = list.ToArray();
+                            }
+                        }
+                    }
+                }
+
+                EditorGUILayout.EndVertical();
             }
 
             if (EditorGUI.EndChangeCheck())
