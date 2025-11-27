@@ -1087,11 +1087,11 @@ MonoBehaviour:
   - {fileID: 1856956037}
   - {fileID: 631376605}
   spawnIntervalOptions:
-  - 2
   - 4
   - 6
-  - 3
-  maxCustomersOnFloor: 4
+  - 8
+  - 12
+  maxCustomersOnFloor: 6
   preventSameDayRevisit: 1
   initialSpawnDelay: 2
   spawnJitter: {x: -1, y: 1}
