@@ -31,6 +31,10 @@ namespace PopLife.Customers.Data
         [Tooltip("经验获取倍率，1.0为正常，大于1增加经验，小于1减少经验")]
         public float xpMultiplier = 1.0f;
 
+        [Header("声望影响")]
+        [Tooltip("声望贡献倍率，1.0为正常，大于1增加声望，小于1减少声望")]
+        public float fameMultiplier = 1.0f;
+
         [Header("时间倾向")]
         [Tooltip("该特质偏好的时间段（可多个，支持跨日如27.0表示次日03:00）")]
         public TimePreference[] preferredTimeRanges;

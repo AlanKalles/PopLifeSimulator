@@ -128,5 +128,15 @@ namespace PopLife.Customers.Runtime
         {
             return interactionState;
         }
+
+        /// <summary>
+        /// 获取特质声望贡献倍率
+        /// Get trait fame multiplier
+        /// </summary>
+        public float GetTraitFameMul()
+        {
+            if (cachedTraits == null || cachedTraits.Length == 0) return 1f;
+            return TraitResolver.Compute(cachedTraits).fameMul;
+        }
     }
 }

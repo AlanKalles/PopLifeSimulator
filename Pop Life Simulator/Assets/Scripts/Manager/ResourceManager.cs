@@ -14,6 +14,9 @@ namespace PopLife
         [SerializeField] private int totalIncome = 0;      // 总收入（仅来自顾客结账）
         [SerializeField] private int totalExpenses = 0;    // 总开支（SpendMoney的累计）
 
+        // Fame小数累积器（用于累积小数fame直到满1）
+        private float fameAccumulator = 0f;
+
         void Awake()
         {
             Instance = this;
@@ -88,11 +91,25 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 增加声望
+        /// 增加声望（整数版本）
         /// </summary>
         public void AddFame(int amount)
         {
             fame += amount;
+        }
+
+        /// <summary>
+        /// 增加声望（浮点数版本，累积小数直到满1）
+        /// </summary>
+        public void AddFame(float amount)
+        {
+            fameAccumulator += amount;
+            int wholeFame = Mathf.FloorToInt(fameAccumulator);
+            if (wholeFame > 0)
+            {
+                fame += wholeFame;
+                fameAccumulator -= wholeFame;
+            }
         }
         #endregion
     }

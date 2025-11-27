@@ -43,6 +43,7 @@ namespace PopLife
         public float dailyTotalSale = 0f;
         public float dailyTotalExpenses = 0f;
         public int dailyTotalCustomers = 0;
+        public float dailyFameEarned = 0f; // 今日累计获得的Fame
         private int buildPhaseStartMoney = 0; // 建造阶段开始时的金钱快照
 
         [Header("Customer Level Up Tracking")]
@@ -259,8 +260,8 @@ namespace PopLife
                 data.lifetimeExpenses = ResourceManager.Instance.GetTotalExpenses();
             }
 
-            // 计算声誉奖励 (可以根据设计调整公式)
-            data.fameEarned = CalculateFameReward(data.dailyIncome, data.totalCustomers);
+            // 今日累计获得的Fame（通过购买实时累积）
+            data.fameEarned = Mathf.RoundToInt(dailyFameEarned);
 
             // 从玩家资源中扣除维护费用
             if (ResourceManager.Instance != null)
@@ -288,13 +289,6 @@ namespace PopLife
             return total;
         }
 
-        private int CalculateFameReward(float income, int customers)
-        {
-            // 简单公式：基于收入和顾客数量
-            // 可以根据游戏平衡性调整
-            float baseReward = income * 0.01f + customers * 0.5f;
-            return Mathf.Max(0, Mathf.RoundToInt(baseReward));
-        }
 
         /// <summary>
         /// 开店：从建造阶段切换到营业阶段
@@ -364,6 +358,7 @@ namespace PopLife
             dailyTotalSale = 0f;
             dailyTotalExpenses = 0f;
             dailyTotalCustomers = 0;
+            dailyFameEarned = 0f;
             todayLevelUps.Clear();
 
             // 记录新一天建造阶段开始时的金钱
@@ -479,6 +474,14 @@ namespace PopLife
         public void RecordCustomerLevelUp(CustomerLevelUpInfo info)
         {
             todayLevelUps.Add(info);
+        }
+
+        /// <summary>
+        /// 记录Fame获取（由CustomerInteraction.TryPurchase调用）
+        /// </summary>
+        public void RecordFame(float amount)
+        {
+            dailyFameEarned += amount;
         }
 
         // 获取格式化时间字符串（将扩展时间转换为24小时制显示）

@@ -79,6 +79,18 @@ namespace PopLife.Customers.Runtime
                     });
                 }
 
+                // 计算并增加Fame
+                float attractiveness = targetShelf.GetAttractiveness();
+                float traitFameMul = customerAgent.GetTraitFameMul();
+                float fameGained = FameCalculator.CalculateFame(targetShelf.currentPrice, attractiveness, traitFameMul);
+                PopLife.ResourceManager.Instance.AddFame(fameGained);
+
+                // 记录Fame到DayLoopManager
+                if (DayLoopManager.Instance != null)
+                {
+                    DayLoopManager.Instance.RecordFame(fameGained);
+                }
+
                 // 触发购买事件（此时只是拿货，未结账）
                 CustomerEventBus.RaisePurchased(customerAgent, targetShelf, 1, targetShelf.currentPrice);
 

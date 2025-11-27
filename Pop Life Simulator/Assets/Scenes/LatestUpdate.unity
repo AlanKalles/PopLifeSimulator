@@ -12145,6 +12145,7 @@ GameObject:
   - component: {fileID: 798607678}
   - component: {fileID: 798607679}
   - component: {fileID: 798607680}
+  - component: {fileID: 798607681}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -12331,6 +12332,20 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4096
   triggerProbability: 0.15
+--- !u!114 &798607681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 798607667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe14cdfdcdc05cd4ebf74352ee4d9bc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priceWeight: 0.05
+  attractivenessWeight: 0.08
 --- !u!1 &803852433
 GameObject:
   m_ObjectHideFlags: 0
@@ -14410,6 +14425,7 @@ MonoBehaviour:
   dailyTotalSale: 0
   dailyTotalExpenses: 0
   dailyTotalCustomers: 0
+  dailyFameEarned: 0
   buildButton: {fileID: 981148863}
   buildingListPanel: {fileID: 955739845}
   gate: {fileID: 864623893}

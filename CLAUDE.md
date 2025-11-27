@@ -312,6 +312,13 @@ EffectType {
 
 - **`QueueService.cs`**, **`HeatmapService.cs`**, **`NavigationService.cs`** - 工具服务
 
+- **`FameCalculator.cs`** ⭐ **声望计算服务**
+  - MonoBehaviour单例，Inspector可调参数
+  - **计算公式**：`Fame = (price × priceWeight + attractiveness × attractivenessWeight) × traitFameMul`
+  - 默认参数：`priceWeight=0.05`, `attractivenessWeight=0.08`
+  - 顾客每次从货架取货成功时触发计算
+  - 详细设计文档：`Assets/Documents/Fame系统设计.md`
+
 #### 生成器 (`Customers/Spawner/`)
 - **`CustomerSpawner.cs`** (625行) ⭐⭐ **顾客生成核心**
   - **手动生成**：通过ID生成指定顾客（调试）
@@ -375,9 +382,10 @@ EffectType {
   - 自动分配楼层ID（避免冲突）
   - 楼层数据校验与清理
 
-- **`ResourceManager.cs`** (17行)
+- **`ResourceManager.cs`**
   - 金钱和声望管理
-  - `AddMoney()`, `SpendMoney()`, `AddFame()`
+  - `AddMoney()`, `SpendMoney()`, `AddFame(int)`, `AddFame(float)`
+  - 支持小数Fame累积（`fameAccumulator`累积至满1才增加整数Fame）
 
 - **`BlueprintManager.cs`** (14行)
   - 蓝图解锁系统（原型期简化实现）
@@ -463,7 +471,8 @@ EffectType {
 7. ExecutePurchaseAction（购买商品）
    - 调用CustomerInteraction.TryPurchase()
    - 扣减库存、钱包，累加pendingPayment
-   - ⚠️ 玩家金钱不变
+   - ✅ 玩家获得Fame（通过FameCalculator计算）
+   - ⚠️ 玩家金钱不变（延迟到收银台）
 
 8. ReleaseQueueSlotAction（释放队列）
 
@@ -495,6 +504,9 @@ EffectType {
   - 示例：Shy特质会 × 0.8（更容易尴尬）
 - **移动速度**：`原型速度 × Π特质倍率`
 - **排队容忍**：`原型容忍秒数 × Π特质倍率`
+- **Fame贡献**：`(price × 0.05 + attractiveness × 0.08) × Π特质fameMultiplier`
+  - 每次顾客取货成功时即时计算并增加玩家Fame
+  - 详见 `Assets/Documents/Fame系统设计.md`
 
 ### 时间系统
 - **游戏时间**：现实30秒 = 游戏1天（可配置 `dayDurationInSeconds`）
@@ -504,7 +516,7 @@ EffectType {
   - 计算公式：
     ```
     dailyIncome = dailySales - totalMaintenanceFee
-    fameEarned = f(dailyIncome, customerCount)
+    fameEarned = dailyFameEarned（营业期间累计）
     ```
   - 破产检测：`if (money < 0) → OnBankruptcy`
 
@@ -795,8 +807,7 @@ public enum EffectType {
 ### 当前限制
 1. **BlueprintManager/CategoryManager/EffectManager**：原型期简化实现，需补充完整逻辑
 2. **多楼层寻路**：当前仅支持单层A*，跨楼层需手动切换
-3. **声望系统**：计算公式待完善
-4. **顾客升级**：自动升级逻辑未实现
+3. **顾客升级**：自动升级逻辑未实现
 
 ### 未来计划
 1. **完整的商店升级系统**（0-5星）
