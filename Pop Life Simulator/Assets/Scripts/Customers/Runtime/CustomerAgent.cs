@@ -108,6 +108,12 @@ namespace PopLife.Customers.Runtime
             cachedArchetype = archetype;
             cachedTraits = traits;
 
+// 9) 设置动画控制器的顾客ID（用于播放专属动画）
+            if (animationController != null)
+            {
+                animationController.SetCustomerID(customerID);
+            }
+
             CustomerEventBus.RaiseSpawned(this);
         }
 

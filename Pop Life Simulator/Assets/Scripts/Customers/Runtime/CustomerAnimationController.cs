@@ -37,6 +37,10 @@ namespace PopLife.Customers.Runtime
         private bool isPlayingOneShot = false; // 是否正在播放单次动画
         private bool isPlayingLoop = false;    // 是否正在播放手动循环动画
 
+        // 顾客专属动画
+        private string customerID;
+        private bool hasCustomWalkAnimation = false;  // 是否有专属walk动画
+
         void Awake()
         {
             animator = GetComponent<Animator>();
@@ -56,6 +60,24 @@ namespace PopLife.Customers.Runtime
             {
                 Debug.LogWarning($"[CustomerAnimationController] {gameObject.name} 未分配 SpriteRenderer，将尝试自动获取");
                 spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+        }
+
+        /// <summary>
+        /// 设置顾客ID，用于播放专属动画
+        /// </summary>
+        /// <param name="id">顾客ID，如 "C001"</param>
+        public void SetCustomerID(string id)
+        {
+            customerID = id;
+            // 检查是否存在专属walk动画状态
+            if (!string.IsNullOrEmpty(id) && animator != null)
+            {
+                hasCustomWalkAnimation = animator.HasState(0, Animator.StringToHash($"{id}_walk"));
+            }
+            else
+            {
+                hasCustomWalkAnimation = false;
             }
         }
 
@@ -87,8 +109,9 @@ namespace PopLife.Customers.Runtime
 
             if (speed > idleThreshold)
             {
-                // 移动中：播放行走动画
-                PlayState("customer_walk");
+                // 移动中：播放行走动画（有专属动画则播放专属的，否则播放默认）
+                string walkState = hasCustomWalkAnimation ? $"{customerID}_walk" : "customer_walk";
+                PlayState(walkState);
 
                 // 根据 X 方向翻转 Sprite
                 if (spriteRenderer != null && velocity.x != 0)
