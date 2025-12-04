@@ -17,6 +17,10 @@ namespace PopLife.Customers.Runtime
         public string customerID;
         public AppearanceDatabase appearanceDB;
 
+        [Header("动画覆盖")]
+        [Tooltip("基础 Override Controller（在 Inspector 中设置其 Controller 为 customer.controller）")]
+        public AnimatorOverrideController baseOverrideController;
+
         // 当前访问会话
         public CustomerSession currentSession;
 
@@ -31,6 +35,7 @@ namespace PopLife.Customers.Runtime
         private TextMeshPro nameText;
         private CustomerAnimationController animationController;
         private CustomerInteractionState interactionState;
+        private Animator animator;
 
         void Awake()
         {
@@ -39,6 +44,13 @@ namespace PopLife.Customers.Runtime
             if (!nameText) nameText = GetComponentInChildren<TextMeshPro>();
             if (!animationController) animationController = GetComponent<CustomerAnimationController>();
             if (!interactionState) interactionState = GetComponent<CustomerInteractionState>();
+            if (!animator) animator = GetComponent<Animator>();
+
+            // 禁用 Animator 直到 Initialize 完成，防止动画覆盖 sprite
+            if (animator != null)
+            {
+                animator.enabled = false;
+            }
         }
 
 
@@ -55,9 +67,11 @@ namespace PopLife.Customers.Runtime
             if (!string.IsNullOrEmpty(record.appearanceId) && appearanceDB != null)
             {
                 Sprite sprite = appearanceDB.Get(record.appearanceId);
+                Debug.Log($"[CustomerAgent] {customerID}: appearanceId='{record.appearanceId}', sprite={sprite}, spriteRenderer={spriteRenderer}");
                 if (sprite != null && spriteRenderer != null)
                 {
                     spriteRenderer.sprite = sprite;
+                    Debug.Log($"[CustomerAgent] {customerID}: sprite 设置成功, spriteRenderer.sprite={spriteRenderer.sprite}");
                 }
                 else if (sprite == null)
                 {
@@ -108,13 +122,52 @@ namespace PopLife.Customers.Runtime
             cachedArchetype = archetype;
             cachedTraits = traits;
 
-// 9) 设置动画控制器的顾客ID（用于播放专属动画）
+// 9) 设置动画覆盖控制器（如果有专属walk动画）
+            SetupAnimatorOverride(customerID);
+
+// 10) 设置动画控制器的顾客ID（用于播放专属动画）
             if (animationController != null)
             {
                 animationController.SetCustomerID(customerID);
             }
 
+// 11) 启用 Animator（在设置完 sprite 和动画ID之后）
+            if (animator != null)
+            {
+                animator.enabled = true;
+            }
+
             CustomerEventBus.RaiseSpawned(this);
+        }
+
+        /// <summary>
+        /// 设置动画覆盖控制器
+        /// 如果存在 {customerID}_walk 动画，则创建 Override Controller 副本并替换 walk 动画
+        /// </summary>
+        private void SetupAnimatorOverride(string id)
+        {
+            if (animator == null || baseOverrideController == null || string.IsNullOrEmpty(id))
+                return;
+
+            // 尝试加载专属 walk 动画
+            string walkAnimPath = $"Animations/{id}_walk";
+            AnimationClip customWalkClip = Resources.Load<AnimationClip>(walkAnimPath);
+
+            if (customWalkClip == null)
+            {
+                // 没有专属动画，使用原始控制器
+                animator.runtimeAnimatorController = baseOverrideController.runtimeAnimatorController;
+                return;
+            }
+
+            // 创建 Override Controller 副本
+            var overrideController = new AnimatorOverrideController(baseOverrideController.runtimeAnimatorController);
+
+            // 替换 customer_walk 为专属动画
+            overrideController["customer_walk"] = customWalkClip;
+
+            animator.runtimeAnimatorController = overrideController;
+            Debug.Log($"[CustomerAgent] {id}: 已设置专属 walk 动画");
         }
 
         /// <summary>
