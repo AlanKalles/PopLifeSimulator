@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B011
   displayName: Love Bunny Strawberry Lubricant
-  icon: {fileID: 21300000, guid: cd1ae570bd1154e46b8a694138465e41, type: 3}
+  icon: {fileID: 21300000, guid: 6f18ba0f352b649fba41ff7f72f645c9, type: 3}
   prefab: {fileID: 2553700819061216157, guid: fe833171da70c409fb08d65db7113553, type: 3}
   buildCost: 175
   moveCost: 0
-  requiresBlueprint: 0
   destroyRefundRate: 0.75
   footprintPattern:
   - {x: 0, y: 3}

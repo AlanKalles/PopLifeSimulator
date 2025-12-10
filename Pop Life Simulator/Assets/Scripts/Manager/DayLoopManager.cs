@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using PopLife.Customers.Runtime;
+using PopLife.Data;
 using PopLife.UI;
 
 namespace PopLife
@@ -52,6 +53,7 @@ namespace PopLife
 
         [Header("UI References")]
         [SerializeField] private Button buildButton; // 建造按钮，营业时禁用
+        [SerializeField] private Button openStoreButton; // 开店按钮，营业时禁用
         [SerializeField] private ShelfListPanel buildingListPanel; // 建造面板，开店时需要关闭
 
         [Header("Gate Settings")]
@@ -318,6 +320,13 @@ namespace PopLife
                 Debug.Log("[DayLoopManager] 建造按钮已禁用（营业阶段）");
             }
 
+            // 禁用开店按钮
+            if (openStoreButton != null)
+            {
+                openStoreButton.interactable = false;
+                Debug.Log("[DayLoopManager] 开店按钮已禁用（营业阶段）");
+            }
+
             // 关闭建造面板（如果打开的话）
             if (buildingListPanel != null && buildingListPanel.IsOpen())
             {
@@ -332,6 +341,12 @@ namespace PopLife
 
             // 切换gate sprite到营业阶段
             SetGateSprite(GamePhase.OpenPhase);
+
+            // 播放开店音效
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySound(AudioKeys.STORE_OPEN);
+            }
 
             OnStoreOpen?.Invoke();
 
@@ -388,6 +403,13 @@ namespace PopLife
             {
                 buildButton.interactable = true;
                 Debug.Log("[DayLoopManager] 建造按钮已启用（建造阶段）");
+            }
+
+            // 恢复开店按钮可交互状态
+            if (openStoreButton != null)
+            {
+                openStoreButton.interactable = true;
+                Debug.Log("[DayLoopManager] 开店按钮已启用（建造阶段）");
             }
 
             OnDayChanged?.Invoke(currentDay);

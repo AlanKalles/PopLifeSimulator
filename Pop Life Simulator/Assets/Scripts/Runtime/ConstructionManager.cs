@@ -2,6 +2,7 @@ using UnityEngine;
 using PopLife.Data;
 using PopLife.Services;
 using PopLife.Manager;
+using PopLife.UI;
 
 namespace PopLife.Runtime
 {
@@ -411,6 +412,15 @@ namespace PopLife.Runtime
                 {
                     // 根据建筑类型播放不同音效
                     PlayBuildSound(selectedArchetype);
+
+                    // 浮动扣钱文字
+                    if (FloatingTextSpawner.Instance != null)
+                    {
+                        FloatingTextSpawner.Instance.SpawnCostText(
+                            inst.transform.position,
+                            selectedArchetype.buildCost
+                        );
+                    }
 
                     // 通知货架/建筑放置成功
                     if (GameStateManager.Instance != null)

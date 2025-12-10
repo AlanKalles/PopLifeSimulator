@@ -346,6 +346,12 @@ namespace PopLife.UI
                 panelRoot.SetActive(true);
             }
 
+            // Play open sound
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySound(AudioKeys.UI_BUILD_PANEL_OPEN);
+            }
+
             // Refresh item displays (money may have changed)
             RefreshItemDisplays();
 

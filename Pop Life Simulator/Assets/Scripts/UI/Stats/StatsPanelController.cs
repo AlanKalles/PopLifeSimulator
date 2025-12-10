@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using PopLife.Data;
 using PopLife.Manager;
 
 namespace PopLife.UI.Stats
@@ -212,6 +213,12 @@ namespace PopLife.UI.Stats
         /// </summary>
         private void SwitchPanel(PanelType panelType)
         {
+            // 播放切换音效（仅当切换到不同的面板时）
+            if (currentPanel != panelType && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySound(AudioKeys.UI_STATS_SWITCH);
+            }
+
             currentPanel = panelType;
 
             // 隐藏所有面板

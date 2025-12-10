@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using PopLife.Data;
 using PopLife.UI;
 using PopLife.UI.Stats;
 
@@ -181,6 +182,12 @@ namespace PopLife
         {
             if (statsPanel != null)
             {
+                // 播放打开Stats面板音效
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlaySound(AudioKeys.UI_STATS_OPEN);
+                }
+
                 statsPanel.Toggle();
             }
             else

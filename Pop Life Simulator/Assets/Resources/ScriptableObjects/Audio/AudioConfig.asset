@@ -48,6 +48,19 @@ MonoBehaviour:
   - key: Customer_Checkout
     clips:
     - {fileID: 8300000, guid: c0e496adaa8cfd7489ca9e7442963766, type: 3}
+  - key: Store_Open
+    clips:
+    - {fileID: 8300000, guid: 52d6d1511349586479b0e0a4cf16a17f, type: 3}
+  - key: UI_Stats_Open
+    clips:
+    - {fileID: 8300000, guid: 0133fc4fb9bee0a4cbf044e4902479be, type: 3}
+    - {fileID: 8300000, guid: 8240fc9376351fb4ebc464c5df7d0225, type: 3}
+  - key: UI_Stats_Switch
+    clips:
+    - {fileID: 8300000, guid: f43c50e46bb01c641999abe4cb482a59, type: 3}
+  - key: UI_BuildPanel_Open
+    clips:
+    - {fileID: 8300000, guid: 8240fc9376351fb4ebc464c5df7d0225, type: 3}
   musicClips:
   - key: BGM_Shop
     clips:

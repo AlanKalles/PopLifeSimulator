@@ -40,6 +40,9 @@ namespace PopLife.Data
         public const string UI_CONFIRM = "UI_Confirm";
         public const string UI_CANCEL = "UI_Cancel";
         public const string UI_ERROR = "UI_Error";
+        public const string UI_STATS_OPEN = "UI_Stats_Open";
+        public const string UI_STATS_SWITCH = "UI_Stats_Switch";
+        public const string UI_BUILD_PANEL_OPEN = "UI_BuildPanel_Open";
 
         #endregion
 
@@ -49,6 +52,13 @@ namespace PopLife.Data
         public const string CUSTOMER_PURCHASE = "Customer_Purchase";
         public const string CUSTOMER_CHECKOUT = "Customer_Checkout";
         public const string CUSTOMER_LEAVE = "Customer_Leave";
+
+        #endregion
+
+        #region 游戏阶段音效 (Game Phase Sound Effects)
+
+        public const string STORE_OPEN = "Store_Open";
+        public const string STORE_CLOSE = "Store_Close";
 
         #endregion
 

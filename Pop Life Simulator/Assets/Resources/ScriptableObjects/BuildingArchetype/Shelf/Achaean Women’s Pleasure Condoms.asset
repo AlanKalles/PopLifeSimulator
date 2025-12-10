@@ -14,12 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: B013
   displayName: "Achaean Women\u2019s Pleasure Condoms"
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 21300000, guid: c8d177d0ed74643f2be081445c2c27c7, type: 3}
+  prefab: {fileID: 2553700819061216157, guid: d5ce9aa081ce36c4ea71d8ebc661a26d, type: 3}
   buildCost: 225
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 1
