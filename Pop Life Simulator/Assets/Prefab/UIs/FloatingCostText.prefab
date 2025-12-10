@@ -290,6 +290,9 @@ MonoBehaviour:
   duration: 1
   moveEase: 6
   fadeEase: 5
+  costColor: {r: 1, g: 0.3, b: 0.3, a: 1}
+  incomeColor: {r: 0.9333334, g: 0.81568635, b: 0.058823533, a: 1}
+  fameColor: {r: 0.47148454, g: 0.8052745, b: 0.8113208, a: 1}
 --- !u!225 &8754558178382245496
 CanvasGroup:
   m_ObjectHideFlags: 0

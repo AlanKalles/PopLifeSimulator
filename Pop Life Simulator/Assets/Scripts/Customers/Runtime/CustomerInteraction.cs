@@ -85,6 +85,12 @@ namespace PopLife.Customers.Runtime
                 float fameGained = FameCalculator.CalculateFame(targetShelf.currentPrice, attractiveness, traitFameMul);
                 PopLife.ResourceManager.Instance.AddFame(fameGained);
 
+                // 浮动 Fame 文字
+                if (FloatingTextSpawner.Instance != null)
+                {
+                    FloatingTextSpawner.Instance.SpawnFameText(targetShelf.transform.position, fameGained);
+                }
+
                 // 记录Fame到DayLoopManager
                 if (DayLoopManager.Instance != null)
                 {
@@ -133,6 +139,12 @@ namespace PopLife.Customers.Runtime
 
             // 结账 - 增加玩家金钱
             PopLife.ResourceManager.Instance.AddMoney(blackboard.pendingPayment);
+
+            // 浮动收入文字
+            if (FloatingTextSpawner.Instance != null)
+            {
+                FloatingTextSpawner.Instance.SpawnIncomeText(targetCashier.transform.position, blackboard.pendingPayment);
+            }
 
             string logMsg = $"Checkout completed at {targetCashier.instanceId}, paid ${blackboard.pendingPayment}";
             Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {logMsg}");
