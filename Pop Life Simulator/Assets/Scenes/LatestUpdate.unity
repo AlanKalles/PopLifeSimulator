@@ -31552,6 +31552,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4877579406686964943, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 82089c1092aafd64d8c88725774de791, type: 2}
+    - target: {fileID: 4877579406686964943, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -3620531424738490259, guid: 82089c1092aafd64d8c88725774de791, type: 2}
+    - target: {fileID: 4877579406686964943, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6383371540684330133, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
       propertyPath: m_Name
       value: BuildingDetailPanel
@@ -31559,6 +31571,18 @@ PrefabInstance:
     - target: {fileID: 6383371540684330133, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8166116414617196864, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8872888234513643902, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 563
+      objectReference: {fileID: 0}
+    - target: {fileID: 8872888234513643902, guid: 6ddbc577aba632e42b8870dc1c3bcd89, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -62
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
