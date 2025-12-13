@@ -6413,6 +6413,135 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 399620246}
   m_CullTransparentMesh: 1
+--- !u!1 &400339398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 400339399}
+  - component: {fileID: 400339400}
+  m_Layer: 0
+  m_Name: BGMNightSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400339399
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400339398}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1229018586}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &400339400
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 400339398}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &407048915
 GameObject:
   m_ObjectHideFlags: 0
@@ -14136,11 +14265,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb1da8677d9e15342aec8f26026c1912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realSecondsPerDay: 90
+  realSecondsPerDay: 100
   buildPhaseHour: 6
   storeOpenHour: 11
   stopSpawningHour: 26
   storeCloseHour: 27
+  nightBGMStartHour: 18
   timeScale: 1
   currentDay: 1
   currentHour: 6
@@ -18352,6 +18482,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1229018586}
   - component: {fileID: 1229018585}
+  - component: {fileID: 1229018587}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -18374,6 +18505,7 @@ MonoBehaviour:
   audioConfig: {fileID: 11400000, guid: e5620ff3e979de746bdef63d150bc9a1, type: 2}
   sfxSource: {fileID: 431695197}
   musicSource: {fileID: 1403237666}
+  musicSource2: {fileID: 400339400}
   masterVolume: 1
   sfxVolume: 1
   musicVolume: 0.5
@@ -18394,8 +18526,25 @@ Transform:
   m_Children:
   - {fileID: 431695198}
   - {fileID: 1403237667}
+  - {fileID: 400339399}
   m_Father: {fileID: 615349075}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1229018587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1229018584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 349ae1b739d3eff46a42a57367d5bdad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dayBGMKey: BGM_Shop
+  nightBGMKey: BGM_Night
+  normalCrossfadeDuration: 1
+  quickCrossfadeDuration: 0.5
 --- !u!1 &1230379891
 GameObject:
   m_ObjectHideFlags: 0
@@ -21493,7 +21642,7 @@ GameObject:
   - component: {fileID: 1403237667}
   - component: {fileID: 1403237666}
   m_Layer: 0
-  m_Name: BGMSource
+  m_Name: BGMDaySource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

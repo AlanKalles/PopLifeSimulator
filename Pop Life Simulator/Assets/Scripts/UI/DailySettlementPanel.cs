@@ -153,6 +153,9 @@ namespace PopLife
             // 隐藏面板
             gameObject.SetActive(false);
 
+            // 切换到白天BGM（快速过渡）
+            BGMController.Instance?.TransitionToDayBGM();
+
             // 重新加载蓝图配置（用户可能在外部修改了蓝图文件）
             BlueprintManager.Instance?.ReloadProfile();
 

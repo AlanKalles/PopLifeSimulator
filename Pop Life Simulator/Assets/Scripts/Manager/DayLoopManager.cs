@@ -28,6 +28,12 @@ namespace PopLife
         [SerializeField][Range(0f, 36f)] private float storeOpenHour = 12f; // 12:00 开店
         [SerializeField][Range(0f, 36f)] private float stopSpawningHour = 22f; // 22:00 停止生成新顾客
         [SerializeField][Range(0f, 36f)] private float storeCloseHour = 23f; // 23:00 强制清场（支持跨日，如27.0表示次日03:00）
+        [SerializeField][Range(0f, 36f)] private float nightBGMStartHour = 18f; // 18:00 切换到夜晚BGM
+
+        /// <summary>
+        /// 夜晚BGM开始时间（供BGMController读取）
+        /// </summary>
+        public float NightBGMStartHour => nightBGMStartHour;
 
         [Header("Time Flow")]
         [SerializeField] private float timeScale = 1f; // 时间倍速

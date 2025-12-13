@@ -67,3 +67,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 0122b01505303b94791133ad075d8caa, type: 3}
     loop: 1
     volume: 0.5
+  - key: BGM_Night
+    clips:
+    - {fileID: 8300000, guid: 701c2c3c2a8aad248a1ace0adec6c38f, type: 3}
+    loop: 1
+    volume: 0.5
