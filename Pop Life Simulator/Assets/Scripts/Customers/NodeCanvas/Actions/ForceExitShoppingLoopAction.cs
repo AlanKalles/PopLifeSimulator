@@ -30,10 +30,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
             Debug.Log($"[ForceExitShoppingLoop] Customer {blackboard.customerId} 开始清理购物状态");
 
             // 1. 停止移动
-            var follower = agent.GetComponent<FollowerEntity>();
-            if (follower != null)
+            var aiLerp = agent.GetComponent<AILerp>();
+            if (aiLerp != null)
             {
-                follower.isStopped = true;
+                aiLerp.isStopped = true;
                 Debug.Log($"[ForceExitShoppingLoop] 停止移动");
             }
 

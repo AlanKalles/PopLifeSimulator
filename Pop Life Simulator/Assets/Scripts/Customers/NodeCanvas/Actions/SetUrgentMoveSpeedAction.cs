@@ -29,10 +29,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            var follower = agent.GetComponent<FollowerEntity>();
-            if (follower == null)
+            var aiLerp = agent.GetComponent<AILerp>();
+            if (aiLerp == null)
             {
-                Debug.LogError("[SetUrgentMoveSpeed] 找不到 FollowerEntity 组件");
+                Debug.LogError("[SetUrgentMoveSpeed] 找不到 AILerp 组件");
                 EndAction(false);
                 return;
             }
@@ -50,7 +50,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 Debug.Log($"[SetUrgentMoveSpeed] Customer {blackboard.customerId} 正常速度: {finalSpeed}");
             }
 
-            follower.maxSpeed = finalSpeed;
+            aiLerp.speed = finalSpeed;
             EndAction(true);
         }
     }

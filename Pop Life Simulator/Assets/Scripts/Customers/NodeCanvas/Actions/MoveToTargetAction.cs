@@ -8,7 +8,7 @@ using PopLife.Runtime;
 namespace PopLife.Customers.NodeCanvas.Actions
 {
     [Category("PopLife/Customer")]
-    [Description("使用 A* Pathfinding (FollowerEntity) 移动到目标位置")]
+    [Description("使用 A* Pathfinding (AILerp) 移动到目标位置")]
     public class MoveToTargetAction : ActionTask
     {
         [BlackboardOnly]
@@ -24,7 +24,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         [Tooltip("到达距离（兼容 RVO 局部避障）")]
         public float stoppingDistance = 0.8f;
 
-        private FollowerEntity followerEntity;
+        private AILerp aiLerp;
         private AIDestinationSetter destinationSetter;
         private CustomerBlackboardAdapter customerBlackboard;
 
@@ -36,13 +36,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
         protected override void OnExecute()
         {
             // 获取组件
-            followerEntity = agent.GetComponent<FollowerEntity>();
+            aiLerp = agent.GetComponent<AILerp>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
 
-            if (followerEntity == null)
+            if (aiLerp == null)
             {
-                Debug.LogError("[MoveToTargetAction] 找不到 FollowerEntity 组件");
+                Debug.LogError("[MoveToTargetAction] 找不到 AILerp 组件");
                 EndAction(false);
                 return;
             }
@@ -50,11 +50,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 设置移动速度
             if (moveSpeed.value > 0)
             {
-                followerEntity.maxSpeed = moveSpeed.value;
+                aiLerp.speed = moveSpeed.value;
             }
             else if (customerBlackboard != null && customerBlackboard.moveSpeed > 0)
             {
-                followerEntity.maxSpeed = customerBlackboard.moveSpeed;
+                aiLerp.speed = customerBlackboard.moveSpeed;
             }
 
             // 获取目标 Transform（真实坐标法）
@@ -74,11 +74,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
             else
             {
-                followerEntity.destination = targetTransform.position;
+                aiLerp.destination = targetTransform.position;
             }
 
             // 开始移动
-            followerEntity.isStopped = false;
+            aiLerp.isStopped = false;
             hasReachedTarget.value = false;
 
             Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 开始移动到 {targetTransform.position}");
@@ -86,20 +86,20 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnUpdate()
         {
-            if (followerEntity == null)
+            if (aiLerp == null)
             {
                 EndAction(false);
                 return;
             }
 
-            // 首选：FollowerEntity 内置到达判断
-            if (followerEntity.reachedDestination)
+            // 首选：AILerp 内置到达判断
+            if (aiLerp.reachedDestination)
             {
                 hasReachedTarget.value = true;
                 Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 到达目标 (reachedDestination = true)");
 
                 // 停止移动
-                followerEntity.isStopped = true;
+                aiLerp.isStopped = true;
 
                 EndAction(true);
                 return;
@@ -113,7 +113,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 if (dist <= stoppingDistance)
                 {
                     hasReachedTarget.value = true;
-                    followerEntity.isStopped = true;
+                    aiLerp.isStopped = true;
                     Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 到达目标 (distance {dist:F2}m <= {stoppingDistance}m)");
                     EndAction(true);
                     return;
@@ -123,9 +123,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnStop()
         {
-            if (followerEntity != null)
+            if (aiLerp != null)
             {
-                followerEntity.isStopped = true;
+                aiLerp.isStopped = true;
             }
         }
     }

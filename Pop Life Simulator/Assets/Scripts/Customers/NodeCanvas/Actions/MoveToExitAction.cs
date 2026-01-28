@@ -16,7 +16,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
         [Tooltip("超时时间（秒），超时则失败")]
         public float timeoutSeconds = 30f;
 
-        private FollowerEntity followerEntity;
+        private AILerp aiLerp;
+        private Seeker seeker;
         private AIDestinationSetter destinationSetter;
         private CustomerBlackboardAdapter customerBlackboard;
         private Transform targetTransform;
@@ -32,14 +33,15 @@ namespace PopLife.Customers.NodeCanvas.Actions
         protected override void OnExecute()
         {
             // 获取组件
-            followerEntity = agent.GetComponent<FollowerEntity>();
+            aiLerp = agent.GetComponent<AILerp>();
+            seeker = agent.GetComponent<Seeker>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
             spriteRenderer = agent.GetComponent<SpriteRenderer>();
 
-            if (followerEntity == null)
+            if (aiLerp == null)
             {
-                Debug.LogError("[MoveToExitAction] 找不到 FollowerEntity 组件");
+                Debug.LogError("[MoveToExitAction] 找不到 AILerp 组件");
                 EndAction(false);
                 return;
             }
@@ -79,11 +81,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 设置移动速度
             if (customerBlackboard.moveSpeed > 0)
             {
-                followerEntity.maxSpeed = customerBlackboard.moveSpeed;
+                aiLerp.speed = customerBlackboard.moveSpeed;
             }
 
             // 允许使用所有图形，让 A* 通过 NodeLink2 自动选择路径
-            followerEntity.pathfindingSettings.graphMask = GraphMask.everything;
+            if (seeker != null)
+            {
+                seeker.graphMask = GraphMask.everything;
+            }
 
             // 设置 A* 寻路目标
             if (destinationSetter != null)
@@ -92,11 +97,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
             else
             {
-                followerEntity.destination = targetTransform.position;
+                aiLerp.destination = targetTransform.position;
             }
 
             // 开始移动
-            followerEntity.isStopped = false;
+            aiLerp.isStopped = false;
 
             // 记录开始时间
             startTime = Time.time;
@@ -107,7 +112,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnUpdate()
         {
-            if (followerEntity == null || customerBlackboard == null)
+            if (aiLerp == null || customerBlackboard == null)
             {
                 EndAction(false);
                 return;
@@ -117,7 +122,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (Time.time - startTime > timeoutSeconds)
             {
                 Debug.LogWarning($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 移动到出口超时");
-                followerEntity.isStopped = true;
+                aiLerp.isStopped = true;
                 EndAction(false);
                 return;
             }
@@ -125,8 +130,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 第一阶段：到达出口内侧
             if (!reachedInside)
             {
-                // 首选：FollowerEntity 内置到达判断
-                if (followerEntity.reachedDestination)
+                // 首选：AILerp 内置到达判断
+                if (aiLerp.reachedDestination)
                 {
                     OnReachedInsideAnchor();
                     return;
@@ -157,8 +162,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     }
                 }
 
-                // 或者使用 FollowerEntity 的到达判断
-                if (followerEntity.reachedDestination)
+                // 或者使用 AILerp 的到达判断
+                if (aiLerp.reachedDestination)
                 {
                     OnReachedOutsideAnchor();
                     return;
@@ -174,7 +179,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 到达出口内侧，准备离开商店");
 
             // 停止移动
-            followerEntity.isStopped = true;
+            aiLerp.isStopped = true;
 
             // 切换目标到外部锚点（A* 会自动通过 NodeLink2）
             targetTransform = customerBlackboard.entranceOutsideAnchor;
@@ -185,13 +190,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
             else
             {
-                followerEntity.destination = targetTransform.position;
+                aiLerp.destination = targetTransform.position;
             }
 
             // 保持允许所有图形（已经离开商店，graphMask 保持为 -1）
             // graphMask 保持为 -1，无需改变
             // 恢复移动（A* 会自动通过 NodeLink2）
-            followerEntity.isStopped = false;
+            aiLerp.isStopped = false;
 
             // 标记已到达内侧
             reachedInside = true;
@@ -207,7 +212,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 已离开商店到达外部街道");
 
             // 停止移动
-            followerEntity.isStopped = true;
+            aiLerp.isStopped = true;
 
             // 标记已离开商店
             customerBlackboard.hasEnteredStore = false;
@@ -237,9 +242,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnStop()
         {
-            if (followerEntity != null)
+            if (aiLerp != null)
             {
-                followerEntity.isStopped = true;
+                aiLerp.isStopped = true;
             }
         }
     }

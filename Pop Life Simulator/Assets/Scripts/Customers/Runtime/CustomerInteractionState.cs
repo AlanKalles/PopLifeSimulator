@@ -14,7 +14,7 @@ namespace PopLife.Customers.Runtime
         [SerializeField] private Collider2D interactionCollider;     // 交互碰撞器（仅对话状态时激活）
 
         // 组件引用
-        private FollowerEntity followerEntity;
+        private AILerp aiLerp;
         private CustomerAnimationController animationController;
         private CustomerBlackboardAdapter blackboardAdapter;
 
@@ -30,7 +30,7 @@ namespace PopLife.Customers.Runtime
         private void Awake()
         {
             // 获取组件引用
-            followerEntity = GetComponent<FollowerEntity>();
+            aiLerp = GetComponent<AILerp>();
             animationController = GetComponent<CustomerAnimationController>();
             blackboardAdapter = GetComponent<CustomerBlackboardAdapter>();
 
@@ -77,9 +77,9 @@ namespace PopLife.Customers.Runtime
             dialogueStateTimer = dialogueStateDuration;
 
             // 暂停寻路
-            if (followerEntity != null)
+            if (aiLerp != null)
             {
-                followerEntity.isStopped = true;
+                aiLerp.isStopped = true;
             }
 
             // 播放交互循环动画
@@ -111,9 +111,9 @@ namespace PopLife.Customers.Runtime
             dialogueStateTimer = 0f;
 
             // 恢复寻路
-            if (followerEntity != null)
+            if (aiLerp != null)
             {
-                followerEntity.isStopped = false;
+                aiLerp.isStopped = false;
             }
 
             // 停止循环动画（恢复自动控制）

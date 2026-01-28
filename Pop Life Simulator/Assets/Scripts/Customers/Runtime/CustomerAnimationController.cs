@@ -21,7 +21,7 @@ namespace PopLife.Customers.Runtime
 
         // 组件缓存
         private Animator animator;
-        private IAstarAI ai; // FollowerEntity 实现此接口
+        private IAstarAI ai; // AILerp 实现此接口
 
         // 动画状态哈希（性能优化）
         private static readonly int WalkHash = Animator.StringToHash("customer_walk");
@@ -49,7 +49,7 @@ namespace PopLife.Customers.Runtime
 
             if (ai == null)
             {
-                Debug.LogError($"[CustomerAnimationController] {gameObject.name} 缺少 IAstarAI 组件（FollowerEntity）！");
+                Debug.LogError($"[CustomerAnimationController] {gameObject.name} 缺少 IAstarAI 组件（AILerp）！");
             }
 
             if (spriteRenderer == null)

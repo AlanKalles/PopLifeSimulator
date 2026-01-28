@@ -20,7 +20,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         public float stoppingDistance = 0.5f;
 
         // 组件缓存
-        private FollowerEntity followerEntity;
+        private AILerp aiLerp;
         private AIDestinationSetter destinationSetter;
         private CustomerAnimationController animController;
 
@@ -44,13 +44,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
         protected override void OnExecute()
         {
             // 获取组件
-            followerEntity = agent.GetComponent<FollowerEntity>();
+            aiLerp = agent.GetComponent<AILerp>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             animController = agent.GetComponent<CustomerAnimationController>();
 
-            if (followerEntity == null)
+            if (aiLerp == null)
             {
-                Debug.LogError($"[ThinkBeforeNextShoppingAction] {agent.name} 缺少 FollowerEntity 组件！");
+                Debug.LogError($"[ThinkBeforeNextShoppingAction] {agent.name} 缺少 AILerp 组件！");
                 EndAction(false);
                 return;
             }
@@ -78,11 +78,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
             else
             {
-                followerEntity.destination = thinkPosition;
+                aiLerp.destination = thinkPosition;
             }
 
             // 开始移动
-            followerEntity.isStopped = false;
+            aiLerp.isStopped = false;
             currentState = ThinkState.MovingToThinkSpot;
 
             Debug.Log($"[ThinkBeforeNextShoppingAction] {agent.name} 开始移动到思考位置：{thinkPosition}");
@@ -90,7 +90,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnUpdate()
         {
-            if (followerEntity == null || animController == null)
+            if (aiLerp == null || animController == null)
             {
                 EndAction(false);
                 return;
@@ -113,10 +113,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 检查是否到达思考位置
             float distance = Vector3.Distance(agent.transform.position, thinkPosition);
 
-            if (distance <= stoppingDistance || followerEntity.reachedDestination)
+            if (distance <= stoppingDistance || aiLerp.reachedDestination)
             {
                 // 到达，开始思考
-                followerEntity.isStopped = true;
+                aiLerp.isStopped = true;
 
                 // 播放思考动画
                 animController.PlayThink();
@@ -156,9 +156,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 animController.StopLoop();
             }
 
-            if (followerEntity != null)
+            if (aiLerp != null)
             {
-                followerEntity.isStopped = false;
+                aiLerp.isStopped = false;
             }
 
             // 清理临时目标对象
