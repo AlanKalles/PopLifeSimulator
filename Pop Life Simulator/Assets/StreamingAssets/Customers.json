@@ -448,12 +448,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 10,
+            "xp": 22,
             "walletCapBase": 50,
-            "visitCount": 1,
+            "visitCount": 2,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 7,
+            "lifetimeSpent": 31,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003"
