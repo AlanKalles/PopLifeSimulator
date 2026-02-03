@@ -105,6 +105,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 87744
   packageName: A* Pathfinding Project Pro
-  packageVersion: 5.4.4
-  assetPath: Packages/com.arongranberg.astar/ExampleScenes~/Scenes/OldExamples/Example2_Terrain/checkerGround.psd
-  uploadId: 800134
+  packageVersion: 5.4.6
+  assetPath: Assets/Samples/A_ Pathfinding Project/5.4.4/Example scenes/Scenes/OldExamples/Example2_Terrain/checkerGround.psd
+  uploadId: 851410
