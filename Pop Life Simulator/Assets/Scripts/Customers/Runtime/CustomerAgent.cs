@@ -10,7 +10,6 @@ namespace PopLife.Customers.Runtime
     [RequireComponent(typeof(SpriteRenderer))]
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(CustomerAnimationController))]
-    [RequireComponent(typeof(CustomerInteractionState))]
     public class CustomerAgent : MonoBehaviour
     {
         public CustomerBlackboardAdapter bb;
@@ -34,7 +33,6 @@ namespace PopLife.Customers.Runtime
         private SpriteRenderer spriteRenderer;
         private TextMeshPro nameText;
         private CustomerAnimationController animationController;
-        private CustomerInteractionState interactionState;
         private Animator animator;
 
         void Awake()
@@ -43,7 +41,6 @@ namespace PopLife.Customers.Runtime
             if (!spriteRenderer) spriteRenderer = GetComponent<SpriteRenderer>();
             if (!nameText) nameText = GetComponentInChildren<TextMeshPro>();
             if (!animationController) animationController = GetComponent<CustomerAnimationController>();
-            if (!interactionState) interactionState = GetComponent<CustomerInteractionState>();
             if (!animator) animator = GetComponent<Animator>();
 
             // 禁用 Animator 直到 Initialize 完成，防止动画覆盖 sprite
@@ -177,15 +174,6 @@ namespace PopLife.Customers.Runtime
         public CustomerRecord GetCustomerRecord()
         {
             return cachedRecord;
-        }
-
-        /// <summary>
-        /// 获取交互状态组件
-        /// Get interaction state component
-        /// </summary>
-        public CustomerInteractionState GetInteractionState()
-        {
-            return interactionState;
         }
 
         /// <summary>

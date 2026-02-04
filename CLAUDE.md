@@ -23,7 +23,9 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
 - 运行模式：Unity 编辑器 Play 按钮或 Ctrl+P
 - 第三方框架：
   - **NodeCanvas**：行为树AI系统（位于 `Assets/ThirdParty/ParadoxNotion/NodeCanvas/`）
-  - **A* Pathfinding**：自动寻路系统
+  - **A* Pathfinding**：自动寻路系统（顾客使用 `AILerp` + `Seeker` + `AIDestinationSetter` 组件）
+  - **Pixel Crushers Dialogue System**：对话系统（教程、顾客对话）
+  - **DialogueBridge**：Dialogue System 与游戏系统的整合层（位于 `Assets/Scripts/DialogueBridge/`）
 
 ## 项目架构
 
@@ -573,10 +575,58 @@ EffectType {
 
 ### A* Pathfinding 自动寻路
 - **集成方式**：通过 `NavigationService` 封装
-- **关键组件**：
-  - `AIDestinationSetter` - 设置寻路目标
-  - `AIPath` - 执行移动
+- **关键组件**（Customer 预制体）：
+  - `AILerp` - 执行移动（沿路径插值，精确跟随）
+  - `Seeker` - 寻路请求和 GraphMask 设置
+  - `AIDestinationSetter` - 设置寻路目标 Transform
 - **队列集成**：队列位置变化时自动更新目标点
+- **API 说明**：
+  - 速度控制：`aiLerp.speed`
+  - 停止/恢复：`aiLerp.isStopped`
+  - 到达判断：`aiLerp.reachedDestination`
+  - 目标设置：`aiLerp.destination` 或通过 `AIDestinationSetter.target`
+  - 图形遮罩：`seeker.graphMask`（用于多图形切换）
+
+### DialogueBridge 对话桥接系统
+位置：`Assets/Scripts/DialogueBridge/`
+详细文档：`Assets/Documents/DialogueBridge设计文档.md`
+
+- **功能**：
+  - 教程触发机制（TutorialMarker → Quest 同步）
+  - 游戏状态同步到 Lua 变量
+  - Spotlight/Coach Mark 聚焦效果
+  - 顾客对话触发系统
+  - 自定义 Sequencer 命令
+
+- **核心组件**：
+  - `PopLifeLuaFunctions` - 注册自定义 Lua 函数
+  - `TutorialMarkerBridge` - TutorialMarker ↔ Quest 双向同步
+  - `GameStateLuaSync` - 游戏状态同步到 Lua 变量
+  - `SpotlightManager` - Spotlight 聚焦效果管理
+
+- **Spotlight Sequencer 命令**：
+  ```
+  Spotlight(UI名称)                              // 高亮 UI 元素
+  SpotlightWorld(场景物体名称)                    // 高亮场景物体
+  SpotlightRect(x, y, w, h)                      // 按像素坐标高亮
+  SpotlightNormalized(x, y, w, h)                // 按屏幕百分比高亮（推荐）
+  SpotlightOff()                                 // 关闭高亮
+  ```
+
+  **SpotlightNormalized 常用位置**：
+  | 位置 | 参数 |
+  |------|------|
+  | 屏幕中心 | `0.4, 0.4, 0.2, 0.2` |
+  | 左上角 | `0, 0.85, 0.2, 0.1` |
+  | 右上角 | `0.8, 0.85, 0.2, 0.1` |
+
+- **代码调用**：
+  ```csharp
+  DialogueTriggerHelper.StartConversation("Tutorial/Welcome");
+  SpotlightManager.Instance.ShowSpotlightByName("BuildButton");
+  SpotlightManager.Instance.ShowSpotlightRect(100, 200, 300, 150);
+  SpotlightManager.Instance.HideSpotlight();
+  ```
 
 ---
 
@@ -591,6 +641,9 @@ PopLife.Customers.Data            // 顾客数据
 PopLife.Customers.Runtime         // 顾客运行时
 PopLife.Customers.Services        // 顾客服务
 PopLife.Customers.Policies        // 顾客策略
+PopLife.DialogueBridge            // 对话系统桥接
+PopLife.DialogueBridge.UI         // Spotlight UI
+PopLife.DialogueBridge.Sequencer  // 自定义 Sequencer 命令
 PopLife.Editor                    // 编辑器扩展
 ```
 
@@ -836,9 +889,9 @@ public enum EffectType {
 - **编辑器扩展**：4个工具
 
 ### 技术栈
-- **Unity 6000.0.46f1** (Unity 6)
+- **Unity 6000.0.58f2** (Unity 6)
 - **NodeCanvas** 行为树系统
-- **A* Pathfinding** 自动寻路
+- **A* Pathfinding** 自动寻路（使用 AILerp 组件）
 - **ScriptableObject** 数据驱动
 - **C# 9.0+** 特性（switch表达式、record等）
 
