@@ -60,13 +60,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
+            "loyaltyLevel": 1,
+            "xp": 140,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 11,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 294,
             "availableNarrativeIds": [
                 "IN004",
                 "IN005"
@@ -95,13 +95,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
+            "loyaltyLevel": 1,
+            "xp": 180,
             "walletCapBase": 50,
-            "visitCount": 0,
+            "visitCount": 14,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 407,
             "availableNarrativeIds": [
                 "IN004",
                 "IN005"
@@ -131,13 +131,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 48,
+            "loyaltyLevel": 2,
+            "xp": 264,
             "walletCapBase": 50,
-            "visitCount": 4,
+            "visitCount": 20,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 67,
+            "lifetimeSpent": 564,
             "availableNarrativeIds": [
                 "IN001",
                 "IN002",
@@ -166,13 +166,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 40,
+            "loyaltyLevel": 1,
+            "xp": 242,
             "walletCapBase": 50,
-            "visitCount": 4,
+            "visitCount": 19,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 27,
+            "lifetimeSpent": 557,
             "availableNarrativeIds": [
                 "IN004"
             ],
@@ -200,13 +200,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 12,
+            "loyaltyLevel": 2,
+            "xp": 250,
             "walletCapBase": 50,
-            "visitCount": 1,
+            "visitCount": 19,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 17,
+            "lifetimeSpent": 557,
             "availableNarrativeIds": [
                 "IN004"
             ],
@@ -235,13 +235,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 24,
+            "loyaltyLevel": 1,
+            "xp": 190,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 14,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 43,
+            "lifetimeSpent": 437,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003"
@@ -270,13 +270,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 10,
+            "loyaltyLevel": 1,
+            "xp": 204,
             "walletCapBase": 50,
-            "visitCount": 1,
+            "visitCount": 15,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 9,
+            "lifetimeSpent": 499,
             "availableNarrativeIds": [
                 "IN002",
                 "IN004"
@@ -305,13 +305,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 20,
+            "loyaltyLevel": 1,
+            "xp": 170,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 13,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 17,
+            "lifetimeSpent": 407,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003",
@@ -447,13 +447,13 @@
                 0.0
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 22,
+            "loyaltyLevel": 1,
+            "xp": 234,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 18,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 31,
+            "lifetimeSpent": 546,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003"

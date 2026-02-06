@@ -21,13 +21,17 @@ Assets/Scripts/DialogueBridge/
 ├── DialogueTriggerHelper.cs     # 静态工具类
 ├── UI/
 │   ├── SpotlightManager.cs      # Spotlight 管理器
-│   └── SpotlightPanel.cs        # Spotlight 遮罩面板
+│   ├── SpotlightPanel.cs        # Spotlight 遮罩面板
+│   ├── SpotlightTooltip.cs      # Spotlight 提示框组件
+│   └── TooltipPosition.cs       # 提示框位置枚举
 └── Sequencer/
     ├── SequencerCommandSpotlight.cs           # Spotlight(uiName)
     ├── SequencerCommandSpotlightWorld.cs      # SpotlightWorld(objectName)
     ├── SequencerCommandSpotlightRect.cs       # SpotlightRect(x,y,w,h) 像素坐标
     ├── SequencerCommandSpotlightNormalized.cs # SpotlightNormalized(x,y,w,h) 百分比坐标
     ├── SequencerCommandSpotlightOff.cs        # SpotlightOff()
+    ├── SequencerCommandSpotlightTooltip.cs    # SpotlightTooltip(position) 显示提示框
+    ├── SequencerCommandSpotlightTooltipOff.cs # SpotlightTooltipOff() 隐藏提示框
     ├── SequencerCommandGiveReward.cs          # GiveReward(type, value)
     └── SequencerCommandRaiseMarker.cs         # RaiseMarker(markerName)
 ```
@@ -242,6 +246,114 @@ SpotlightManager.Instance.HideSpotlight();
        - HighlightBorder (高亮边框)
 2. 在 `DialogueBridgeManager` 上添加 `SpotlightManager` 组件
 3. 将 SpotlightPanel 引用拖到 Inspector
+
+---
+
+## 4.1 SpotlightTooltip - 提示框系统
+
+### 功能
+在 Spotlight 高亮区域旁边显示提示文字，自动读取当前对话节点的 Dialogue Text。
+
+### 特性
+- **位置控制**：支持 Auto/Left/Right/Top/Bottom/Custom 六种定位方式
+- **自动隐藏原对话框**：显示 Tooltip 时自动隐藏 Dialogue System 的对话框 UI
+- **自动清理**：
+  - 节点切换时自动关闭 Tooltip（需重新调用 SpotlightTooltip 显示）
+  - 对话结束时自动关闭 Tooltip 和 Spotlight
+- **样式自定义**：支持自定义背景图片和箭头图片
+
+### 位置说明
+
+| 位置 | 说明 |
+|------|------|
+| `Auto` | 自动选择空间最大的方向（推荐） |
+| `Left` | Spotlight 左侧，箭头指向右 |
+| `Right` | Spotlight 右侧，箭头指向左 |
+| `Top` | Spotlight 上方，箭头指向下 |
+| `Bottom` | Spotlight 下方，箭头指向上 |
+| `Custom` | 自定义屏幕位置（归一化坐标 0-1），不显示箭头 |
+
+### 在 Dialogue Editor 中使用 Sequencer 命令
+
+```
+// 基本用法：先显示 Spotlight，再显示 Tooltip
+Spotlight(BuildButton); SpotlightTooltip(Right)
+SpotlightNormalized(0.4, 0.4, 0.2, 0.2); SpotlightTooltip(Auto)
+
+// 指定位置
+SpotlightTooltip(Left)     // 左侧
+SpotlightTooltip(Right)    // 右侧
+SpotlightTooltip(Top)      // 上方
+SpotlightTooltip(Bottom)   // 下方
+SpotlightTooltip(Auto)     // 自动选择
+
+// 自定义位置（归一化坐标）
+SpotlightTooltip(Custom, 0.7, 0.5)  // 屏幕 70% 宽度, 50% 高度处
+
+// 手动关闭 Tooltip
+SpotlightTooltipOff()
+
+// 完整示例：显示→等待→关闭
+Spotlight(ShelfButton); SpotlightTooltip(Right); Delay(3); SpotlightTooltipOff(); SpotlightOff()
+```
+
+### 自动清理机制
+
+| 场景 | Tooltip 行为 | 对话框 UI 行为 | Spotlight 行为 |
+|------|-------------|---------------|---------------|
+| 手动 `SpotlightTooltipOff()` | 隐藏 | 恢复显示 | 保持不变 |
+| **节点切换** | **自动隐藏** | **自动恢复** | 保持不变 |
+| 对话结束 (End) | 自动隐藏 | 自然消失 | 自动隐藏 |
+
+**典型使用流程：**
+```
+节点1: Spotlight(A); SpotlightTooltip(Right)  → 显示高亮A + Tooltip
+       [用户点击继续]
+节点2: (Tooltip 自动关闭, 对话框恢复)           → 正常显示对话框
+       Spotlight(B); SpotlightTooltip(Left)   → 显示高亮B + 新Tooltip
+       [用户点击继续]
+节点3: SpotlightOff()                          → 关闭所有效果
+```
+
+### 在代码中使用
+
+```csharp
+// 显示 Tooltip（从当前对话节点读取文本）
+SpotlightManager.Instance.ShowTooltipFromDialogue(TooltipPosition.Right);
+SpotlightManager.Instance.ShowTooltipFromDialogue(TooltipPosition.Custom, new Vector2(0.7f, 0.5f));
+
+// 显示 Tooltip（自定义文本）
+SpotlightManager.Instance.ShowTooltip("This is a hint!", TooltipPosition.Auto);
+
+// 隐藏 Tooltip
+SpotlightManager.Instance.HideTooltip();
+
+// 检查状态
+bool isActive = SpotlightManager.Instance.IsTooltipActive;
+```
+
+### 设置
+
+1. 创建 SpotlightTooltip UI 预制体：
+   ```
+   SpotlightTooltip (RectTransform + CanvasGroup)
+   ├── Background (Image)        ← 自定义 9-slice 背景图
+   ├── Arrow (Image)             ← 箭头图片（可选）
+   └── Content
+       └── Text (TextMeshProUGUI)
+   ```
+
+2. 添加 `SpotlightTooltip` 组件到预制体
+
+3. 在 `SpotlightManager` 的 Inspector 中：
+   - 将 SpotlightTooltip 预制体拖到 `Tooltip` 字段
+   - 配置 `Auto Hide Dialogue UI`（默认开启）
+   - 配置 `Auto Close On Node Change`（默认开启）
+
+4. 配置 SpotlightTooltip 组件：
+   - 设置背景图片（建议 9-slice 格式）
+   - 设置箭头图片
+   - 调整间距（margin）和最大宽度（maxWidth）
 
 ---
 

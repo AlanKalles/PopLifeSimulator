@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using PrimeTween;
 using Sirenix.OdinInspector;
+using PixelCrushers.DialogueSystem;
 
 namespace PopLife.DialogueBridge.UI
 {
@@ -59,6 +60,16 @@ namespace PopLife.DialogueBridge.UI
         [Tooltip("How often to update tracking (seconds)")]
         [SerializeField] private float trackingInterval = 0.1f;
 
+        [Title("Tooltip")]
+        [SerializeField]
+        private SpotlightTooltip tooltip;
+
+        [SerializeField, Tooltip("Automatically hide dialogue UI when showing tooltip")]
+        private bool autoHideDialogueUI = true;
+
+        [SerializeField, Tooltip("Automatically close tooltip when conversation node changes")]
+        private bool autoCloseOnNodeChange = true;
+
         [Title("Debug")]
         [SerializeField] private bool debugMode = false;
 
@@ -73,9 +84,38 @@ namespace PopLife.DialogueBridge.UI
         private Coroutine trackingCoroutine;
         private bool isActive = false;
 
+        // Tooltip state
+        private bool isTooltipActive = false;
+        private GameObject cachedDialogueUI;
+        private Rect currentSpotlightRect;
+
+        // Continue trigger
+        private ContinueTriggerMode currentTriggerMode = ContinueTriggerMode.ClickAnywhere;
+        private UnityEngine.UI.Button targetButton;
+
         #endregion
 
         #region Unity Lifecycle
+
+        private void OnEnable()
+        {
+            // Subscribe to Dialogue System events
+            if (DialogueManager.instance != null)
+            {
+                DialogueManager.instance.conversationEnded += OnConversationEnded;
+                DialogueManager.instance.conversationLinePrepared += OnConversationLinePrepared;
+            }
+        }
+
+        private void OnDisable()
+        {
+            // Unsubscribe from Dialogue System events
+            if (DialogueManager.instance != null)
+            {
+                DialogueManager.instance.conversationEnded -= OnConversationEnded;
+                DialogueManager.instance.conversationLinePrepared -= OnConversationLinePrepared;
+            }
+        }
 
         private void Start()
         {
@@ -85,11 +125,42 @@ namespace PopLife.DialogueBridge.UI
             {
                 spotlightPanel.gameObject.SetActive(false);
             }
+
+            if (tooltip != null)
+            {
+                tooltip.gameObject.SetActive(false);
+            }
         }
 
         private void OnDestroy()
         {
             StopAllCoroutines();
+        }
+
+        private void Update()
+        {
+            if (!isTooltipActive) return;
+
+            switch (currentTriggerMode)
+            {
+                case ContinueTriggerMode.ClickAnywhere:
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        ContinueDialogue();
+                    }
+                    break;
+
+                case ContinueTriggerMode.ClickSpotlight:
+                    if (Input.GetMouseButtonDown(0) && IsClickInsideSpotlight())
+                    {
+                        ContinueDialogue();
+                    }
+                    break;
+
+                case ContinueTriggerMode.ClickButton:
+                    // Button 点击由事件处理，这里不需要额外逻辑
+                    break;
+            }
         }
 
         #endregion
@@ -224,6 +295,9 @@ namespace PopLife.DialogueBridge.UI
             isActive = true;
             spotlightPanel.gameObject.SetActive(true);
 
+            // Save current rect for tooltip positioning
+            currentSpotlightRect = screenRect;
+
             // Set target directly
             spotlightPanel.SetTarget(screenRect, shape);
 
@@ -296,6 +370,345 @@ namespace PopLife.DialogueBridge.UI
         /// </summary>
         public bool IsActive => isActive;
 
+        /// <summary>
+        /// Check if tooltip is currently active
+        /// </summary>
+        public bool IsTooltipActive => isTooltipActive;
+
+        #endregion
+
+        #region Public API - Tooltip
+
+        /// <summary>
+        /// Show tooltip with content from current dialogue node
+        /// </summary>
+        /// <param name="position">Position relative to spotlight</param>
+        /// <param name="customOffset">Custom offset for Custom position mode (normalized 0-1)</param>
+        /// <param name="triggerMode">How to trigger continue dialogue</param>
+        public void ShowTooltipFromDialogue(TooltipPosition position, Vector2? customOffset = null,
+            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere)
+        {
+            if (tooltip == null)
+            {
+                Debug.LogError("[SpotlightManager] SpotlightTooltip is not assigned!");
+                return;
+            }
+
+            // Get current dialogue text
+            var state = DialogueManager.currentConversationState;
+            string text = state?.subtitle?.formattedText?.text ?? "";
+
+            if (string.IsNullOrEmpty(text))
+            {
+                Debug.LogWarning("[SpotlightManager] No dialogue text available for tooltip");
+                return;
+            }
+
+            // Auto-hide dialogue UI if enabled and conversation is active
+            if (autoHideDialogueUI && DialogueManager.isConversationActive)
+            {
+                HideDialogueUI();
+            }
+
+            // Ensure tooltip is under the spotlight canvas
+            EnsureTooltipUnderSpotlightCanvas();
+
+            // Set trigger mode
+            currentTriggerMode = triggerMode;
+
+            // Setup button trigger if needed
+            if (triggerMode == ContinueTriggerMode.ClickButton)
+            {
+                SetupButtonTrigger();
+            }
+
+            // Show tooltip
+            isTooltipActive = true;
+            tooltip.Show(text, currentSpotlightRect, position, customOffset);
+
+            if (debugMode)
+            {
+                Debug.Log($"[SpotlightManager] Showing tooltip: {position}, trigger: {triggerMode}, text: {text.Substring(0, Mathf.Min(50, text.Length))}...");
+            }
+        }
+
+        /// <summary>
+        /// Show tooltip with custom text
+        /// </summary>
+        /// <param name="text">Text content to display</param>
+        /// <param name="position">Position relative to spotlight</param>
+        /// <param name="customOffset">Custom offset for Custom position mode (normalized 0-1)</param>
+        /// <param name="triggerMode">How to trigger continue dialogue</param>
+        public void ShowTooltip(string text, TooltipPosition position, Vector2? customOffset = null,
+            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere)
+        {
+            if (tooltip == null)
+            {
+                Debug.LogError("[SpotlightManager] SpotlightTooltip is not assigned!");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                Debug.LogWarning("[SpotlightManager] ShowTooltip called with empty text");
+                return;
+            }
+
+            // Auto-hide dialogue UI if enabled and conversation is active
+            if (autoHideDialogueUI && DialogueManager.isConversationActive)
+            {
+                HideDialogueUI();
+            }
+
+            // Ensure tooltip is under the spotlight canvas
+            EnsureTooltipUnderSpotlightCanvas();
+
+            // Set trigger mode
+            currentTriggerMode = triggerMode;
+
+            // Setup button trigger if needed
+            if (triggerMode == ContinueTriggerMode.ClickButton)
+            {
+                SetupButtonTrigger();
+            }
+
+            // Show tooltip
+            isTooltipActive = true;
+            tooltip.Show(text, currentSpotlightRect, position, customOffset);
+
+            if (debugMode)
+            {
+                Debug.Log($"[SpotlightManager] Showing tooltip: {position}, trigger: {triggerMode}");
+            }
+        }
+
+        /// <summary>
+        /// Hide the tooltip and restore dialogue UI
+        /// </summary>
+        [Button("Hide Tooltip")]
+        public void HideTooltip()
+        {
+            if (!isTooltipActive) return;
+
+            isTooltipActive = false;
+
+            // Cleanup button trigger
+            CleanupButtonTrigger();
+
+            // Reset trigger mode
+            currentTriggerMode = ContinueTriggerMode.ClickAnywhere;
+
+            if (tooltip != null)
+            {
+                tooltip.Hide();
+            }
+
+            // Restore dialogue UI only if conversation is still active
+            if (autoHideDialogueUI && DialogueManager.isConversationActive)
+            {
+                ShowDialogueUI();
+            }
+
+            if (debugMode)
+            {
+                Debug.Log("[SpotlightManager] Tooltip hidden");
+            }
+        }
+
+        /// <summary>
+        /// Get the current spotlight screen rect (for tooltip positioning)
+        /// </summary>
+        public Rect GetCurrentSpotlightRect()
+        {
+            return currentSpotlightRect;
+        }
+
+        /// <summary>
+        /// Ensure tooltip is parented under the spotlight canvas for correct rendering
+        /// </summary>
+        private void EnsureTooltipUnderSpotlightCanvas()
+        {
+            if (tooltip == null || spotlightCanvas == null) return;
+
+            // Check if tooltip is already under spotlight canvas
+            if (tooltip.transform.parent == spotlightCanvas.transform) return;
+
+            // Reparent tooltip to spotlight canvas
+            tooltip.transform.SetParent(spotlightCanvas.transform, false);
+
+            // Set as last sibling to render on top
+            tooltip.transform.SetAsLastSibling();
+
+            if (debugMode)
+            {
+                Debug.Log("[SpotlightManager] Tooltip reparented to spotlight canvas");
+            }
+        }
+
+        #endregion
+
+        #region Dialogue UI Control
+
+        private void HideDialogueUI()
+        {
+            // Find and cache the Dialogue System UI
+            if (cachedDialogueUI == null)
+            {
+                // displaySettings.dialogueUI is a GameObject reference
+                cachedDialogueUI = DialogueManager.displaySettings?.dialogueUI;
+            }
+
+            if (cachedDialogueUI != null)
+            {
+                cachedDialogueUI.SetActive(false);
+
+                if (debugMode)
+                {
+                    Debug.Log("[SpotlightManager] Dialogue UI hidden");
+                }
+            }
+        }
+
+        private void ShowDialogueUI()
+        {
+            if (cachedDialogueUI != null)
+            {
+                cachedDialogueUI.SetActive(true);
+
+                if (debugMode)
+                {
+                    Debug.Log("[SpotlightManager] Dialogue UI restored");
+                }
+            }
+        }
+
+        #endregion
+
+        #region Dialogue Continue
+
+        /// <summary>
+        /// 继续对话 - 模拟点击 continue button
+        /// </summary>
+        private void ContinueDialogue()
+        {
+            if (!DialogueManager.isConversationActive) return;
+
+            // 必须先恢复 DialogueUI，否则 OnContinue 内部的 Coroutine 无法启动
+            if (autoHideDialogueUI)
+            {
+                ShowDialogueUI();
+            }
+
+            // 调用 Dialogue System 的 OnContinue 来继续对话
+            if (DialogueManager.standardDialogueUI != null)
+            {
+                DialogueManager.standardDialogueUI.OnContinue();
+
+                if (debugMode)
+                {
+                    Debug.Log("[SpotlightManager] Dialogue continued via click");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 检测点击是否在 spotlight 区域内
+        /// </summary>
+        private bool IsClickInsideSpotlight()
+        {
+            Vector2 mousePos = Input.mousePosition;
+            return currentSpotlightRect.Contains(mousePos);
+        }
+
+        /// <summary>
+        /// 设置 Button 触发器
+        /// </summary>
+        private void SetupButtonTrigger()
+        {
+            // 清理旧的订阅
+            CleanupButtonTrigger();
+
+            // 从 currentUITarget 获取 Button 组件
+            if (currentUITarget != null)
+            {
+                targetButton = currentUITarget.GetComponent<UnityEngine.UI.Button>();
+                if (targetButton != null)
+                {
+                    targetButton.onClick.AddListener(OnTargetButtonClicked);
+
+                    if (debugMode)
+                    {
+                        Debug.Log($"[SpotlightManager] Button trigger setup on: {targetButton.name}");
+                    }
+                }
+                else if (debugMode)
+                {
+                    Debug.LogWarning("[SpotlightManager] ClickButton mode but target has no Button component");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 清理 Button 触发器
+        /// </summary>
+        private void CleanupButtonTrigger()
+        {
+            if (targetButton != null)
+            {
+                targetButton.onClick.RemoveListener(OnTargetButtonClicked);
+                targetButton = null;
+            }
+        }
+
+        /// <summary>
+        /// Button 点击事件处理（用于 ClickButton 模式）
+        /// </summary>
+        private void OnTargetButtonClicked()
+        {
+            if (isTooltipActive && currentTriggerMode == ContinueTriggerMode.ClickButton)
+            {
+                ContinueDialogue();
+            }
+        }
+
+        #endregion
+
+        #region Dialogue System Event Handlers
+
+        /// <summary>
+        /// Called when conversation node changes - auto close tooltip and spotlight
+        /// </summary>
+        private void OnConversationLinePrepared(Subtitle subtitle)
+        {
+            if (autoCloseOnNodeChange && (isTooltipActive || isActive))
+            {
+                HideTooltip();
+                HideSpotlight();
+
+                if (debugMode)
+                {
+                    Debug.Log("[SpotlightManager] Tooltip and spotlight auto-closed on node change");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when conversation ends - cleanup spotlight and tooltip
+        /// </summary>
+        private void OnConversationEnded(Transform actor)
+        {
+            if (isTooltipActive || isActive)
+            {
+                HideTooltip();
+                HideSpotlight();
+
+                if (debugMode)
+                {
+                    Debug.Log("[SpotlightManager] Spotlight and tooltip auto-closed on conversation end");
+                }
+            }
+        }
+
         #endregion
 
         #region Internal Methods
@@ -344,6 +757,9 @@ namespace PopLife.DialogueBridge.UI
             {
                 return;
             }
+
+            // Save current rect for tooltip positioning
+            currentSpotlightRect = screenRect;
 
             spotlightPanel.SetTarget(screenRect, shape);
         }
@@ -517,5 +933,15 @@ namespace PopLife.DialogueBridge.UI
         Rectangle,
         Circle,
         RoundedRectangle
+    }
+
+    /// <summary>
+    /// Tooltip 模式下继续对话的触发方式
+    /// </summary>
+    public enum ContinueTriggerMode
+    {
+        ClickAnywhere,    // 点击屏幕任意位置
+        ClickSpotlight,   // 点击 spotlight 高亮区域
+        ClickButton       // 点击目标 Button
     }
 }

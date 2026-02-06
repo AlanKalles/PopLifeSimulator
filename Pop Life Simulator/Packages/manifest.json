@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "com.kyrylokuzyk.primetween": "file:../Assets/Plugins/PrimeTween/internal/com.kyrylokuzyk.primetween.tgz",
+    "com.monitor1394.xcharts": "https://github.com/XCharts-Team/XCharts.git",
+    "com.monitor1394.xcharts.daemon": "https://github.com/XCharts-Team/XCharts-Daemon.git",
     "com.unity.collab-proxy": "2.11.2",
     "com.unity.entities": "1.4.2",
     "com.unity.feature.2d": "2.0.2",
