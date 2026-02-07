@@ -275,8 +275,20 @@ SpotlightManager.Instance.HideSpotlight();
 
 ### 在 Dialogue Editor 中使用 Sequencer 命令
 
+**参数格式：**
 ```
-// 基本用法：先显示 Spotlight，再显示 Tooltip
+SpotlightTooltip(position[, triggerMode][, customX, customY])
+```
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| `position` | `Auto` `Left` `Right` `Top` `Bottom` `Custom` | Tooltip 位置 |
+| `triggerMode` | `ClickAnywhere` `ClickSpotlight` `ClickButton` | 继续对话的触发方式（可选，默认 `ClickAnywhere`） |
+| `customX, customY` | 0-1 浮点数 | 仅 `Custom` 位置时使用 |
+
+**基本用法：**
+```
+// 先显示 Spotlight，再显示 Tooltip（默认点击任意位置继续）
 Spotlight(BuildButton); SpotlightTooltip(Right)
 SpotlightNormalized(0.4, 0.4, 0.2, 0.2); SpotlightTooltip(Auto)
 
@@ -289,7 +301,26 @@ SpotlightTooltip(Auto)     // 自动选择
 
 // 自定义位置（归一化坐标）
 SpotlightTooltip(Custom, 0.7, 0.5)  // 屏幕 70% 宽度, 50% 高度处
+```
 
+**指定继续对话的触发方式（ContinueTriggerMode）：**
+```
+// ClickAnywhere - 点击屏幕任意位置继续（默认）
+Spotlight(BuildButton); SpotlightTooltip(Right)
+Spotlight(BuildButton); SpotlightTooltip(Right, ClickAnywhere)
+
+// ClickSpotlight - 仅点击高亮区域才继续
+Spotlight(MoneyDisplay); SpotlightTooltip(Right, ClickSpotlight)
+
+// ClickButton - 仅点击目标 Button 才继续（目标须为带 Button 组件的 UI）
+Spotlight(BuildButton); SpotlightTooltip(Right, ClickButton)
+
+// Custom 位置 + 触发方式
+SpotlightTooltip(Custom, ClickSpotlight, 0.7, 0.5)
+```
+
+**手动关闭 / 完整示例：**
+```
 // 手动关闭 Tooltip
 SpotlightTooltipOff()
 
@@ -297,13 +328,28 @@ SpotlightTooltipOff()
 Spotlight(ShelfButton); SpotlightTooltip(Right); Delay(3); SpotlightTooltipOff(); SpotlightOff()
 ```
 
+### ContinueTriggerMode 详细说明
+
+Tooltip 显示时会隐藏原 Dialogue UI（含 Continue Button），需要替代方式让玩家继续对话：
+
+| 模式 | 行为 | 适用场景 |
+|------|------|---------|
+| `ClickAnywhere` | 点击屏幕任意位置继续对话 | 通用提示，快速跳过 |
+| `ClickSpotlight` | 仅点击 Spotlight 高亮区域内才继续 | 引导玩家注意特定区域 |
+| `ClickButton` | 仅点击目标 Button 才继续 | 要求玩家点击指定按钮（如"开始建造"按钮） |
+
+**ClickButton 注意事项：**
+- Spotlight 目标必须是通过 `Spotlight(uiName)` 指定的 UI 元素
+- 该 UI 元素必须有 `UnityEngine.UI.Button` 组件
+- 如果目标无 Button 组件，会在 Debug 模式下输出警告
+
 ### 自动清理机制
 
-| 场景 | Tooltip 行为 | 对话框 UI 行为 | Spotlight 行为 |
-|------|-------------|---------------|---------------|
-| 手动 `SpotlightTooltipOff()` | 隐藏 | 恢复显示 | 保持不变 |
-| **节点切换** | **自动隐藏** | **自动恢复** | 保持不变 |
-| 对话结束 (End) | 自动隐藏 | 自然消失 | 自动隐藏 |
+| 场景 | Tooltip 行为 | 对话框 UI 行为 | Spotlight 行为 | Button 订阅 |
+|------|-------------|---------------|---------------|------------|
+| 手动 `SpotlightTooltipOff()` | 隐藏 | 恢复显示 | 保持不变 | 自动清理 |
+| **节点切换** | **自动隐藏** | **自动恢复** | **自动隐藏** | 自动清理 |
+| 对话结束 (End) | 自动隐藏 | 自然消失 | 自动隐藏 | 自动清理 |
 
 **典型使用流程：**
 ```
@@ -318,9 +364,21 @@ Spotlight(ShelfButton); SpotlightTooltip(Right); Delay(3); SpotlightTooltipOff()
 ### 在代码中使用
 
 ```csharp
-// 显示 Tooltip（从当前对话节点读取文本）
+// 显示 Tooltip（从当前对话节点读取文本，默认 ClickAnywhere）
 SpotlightManager.Instance.ShowTooltipFromDialogue(TooltipPosition.Right);
-SpotlightManager.Instance.ShowTooltipFromDialogue(TooltipPosition.Custom, new Vector2(0.7f, 0.5f));
+
+// 指定触发方式
+SpotlightManager.Instance.ShowTooltipFromDialogue(
+    TooltipPosition.Right, null, ContinueTriggerMode.ClickSpotlight);
+
+// ClickButton 模式（需先调用 ShowSpotlight 指定 UI 目标）
+SpotlightManager.Instance.ShowSpotlightByName("BuildButton");
+SpotlightManager.Instance.ShowTooltipFromDialogue(
+    TooltipPosition.Right, null, ContinueTriggerMode.ClickButton);
+
+// 自定义位置 + 触发方式
+SpotlightManager.Instance.ShowTooltipFromDialogue(
+    TooltipPosition.Custom, new Vector2(0.7f, 0.5f), ContinueTriggerMode.ClickAnywhere);
 
 // 显示 Tooltip（自定义文本）
 SpotlightManager.Instance.ShowTooltip("This is a hint!", TooltipPosition.Auto);
