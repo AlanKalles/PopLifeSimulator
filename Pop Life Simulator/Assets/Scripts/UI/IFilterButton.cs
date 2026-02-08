@@ -9,7 +9,7 @@ namespace PopLife.UI
     public interface IFilterButton
     {
         /// <summary>
-        /// 筛选值（SelectPage、ProductCategory 或 null 表示 "All"）
+        /// 筛选值（ProductCategory 或 null 表示 "All"）
         /// </summary>
         object FilterValue { get; }
 

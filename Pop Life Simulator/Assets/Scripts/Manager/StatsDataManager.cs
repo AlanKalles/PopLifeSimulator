@@ -236,6 +236,35 @@ namespace PopLife.Manager
             return total;
         }
 
+        /// <summary>
+        /// 获取今日各品类收入明细
+        /// </summary>
+        public Dictionary<ProductCategory, float> GetCategoryRevenueBreakdown()
+        {
+            var breakdown = new Dictionary<ProductCategory, float>();
+            foreach (ProductCategory cat in Enum.GetValues(typeof(ProductCategory)))
+                breakdown[cat] = 0f;
+
+            var floors = FindObjectsByType<FloorGrid>(FindObjectsSortMode.None);
+            foreach (var floor in floors)
+            {
+                foreach (var building in floor.AllBuildings())
+                {
+                    if (building is ShelfInstance shelf)
+                    {
+                        var archetype = shelf.archetype as ShelfArchetype;
+                        if (archetype == null) continue;
+
+                        int revenue = shelfRevenueTracker.ContainsKey(shelf.instanceId)
+                            ? shelfRevenueTracker[shelf.instanceId] : 0;
+                        breakdown[archetype.category] += revenue;
+                    }
+                }
+            }
+
+            return breakdown;
+        }
+
         #endregion
     }
 

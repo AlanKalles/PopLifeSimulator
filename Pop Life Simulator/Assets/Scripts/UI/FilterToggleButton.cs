@@ -8,7 +8,6 @@ namespace PopLife.UI
     /// <summary>
     /// Reusable toggle button for filter groups
     /// Supports single-selection behavior with visual feedback
-    /// Category 按钮的标准实现（使用传统 Button 组件）
     /// </summary>
     [RequireComponent(typeof(Button))]
     public class FilterToggleButton : MonoBehaviour, IFilterButton
@@ -27,7 +26,7 @@ namespace PopLife.UI
         private System.Action<FilterToggleButton> onToggleCallback;
 
         /// <summary>
-        /// Associated data (can be SelectPage enum, ProductCategory enum, or null for "All")
+        /// Associated data (ProductCategory enum or null for "All")
         /// </summary>
         public object FilterValue { get; private set; }
 
@@ -70,10 +69,10 @@ namespace PopLife.UI
         /// <summary>
         /// Initialize toggle button with filter value and callback (Legacy overload for backward compatibility)
         /// </summary>
-        /// <param name="filterValue">Enum value (SelectPage/ProductCategory) or null for "All"</param>
+        /// <param name="filterValue">ProductCategory enum value or null for "All"</param>
         /// <param name="displayText">Text to display on button</param>
         /// <param name="onToggleCallback">Callback when button is clicked</param>
-        /// <param name="customSprite">Optional custom sprite for background (e.g., SelectPage icons)</param>
+        /// <param name="customSprite">Optional custom sprite for background</param>
         public void Initialize(object filterValue, string displayText, System.Action<FilterToggleButton> onToggleCallback, Sprite customSprite = null)
         {
             this.FilterValue = filterValue;

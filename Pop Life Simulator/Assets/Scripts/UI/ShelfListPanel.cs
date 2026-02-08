@@ -10,9 +10,8 @@ using PopLife.Manager;
 namespace PopLife.UI
 {
     /// <summary>
-    /// Shelf list panel with dual filtering system
-    /// Left sidebar: SelectPage filter buttons
-    /// Top bar: ProductCategory filter buttons
+    /// Shelf list panel with ProductCategory filtering
+    /// Top bar: ProductCategory filter buttons (sorted A-Z)
     /// Center: Scrollable grid of shelf items
     /// </summary>
     public class ShelfListPanel : MonoBehaviour
@@ -28,7 +27,6 @@ namespace PopLife.UI
         [SerializeField] private GameObject shelfItemPrefab; // ShelfListItem prefab
 
         [Header("Filter UI")]
-        [SerializeField] private SelectPageButton[] selectPageButtons; // 手动创建的 SelectPage 按钮数组（在 Inspector 中拖入）
         [SerializeField] private Transform categoryButtonContainer; // Top bar
         [SerializeField] private GameObject categoryButtonPrefab; // FilterToggleButton prefab (traditional Button)
 
@@ -44,9 +42,7 @@ namespace PopLife.UI
         [SerializeField] private ConstructionManager constructionManager;
 
         // Filter state
-        private FilterToggleGroup selectPageToggleGroup;
         private FilterToggleGroup categoryToggleGroup;
-        private SelectPage? selectedSelectPage = null; // null = All
         private ProductCategory? selectedCategory = null; // null = All
 
         // Item instances
@@ -80,8 +76,8 @@ namespace PopLife.UI
                 }
             }
 
-            // Initialize toggle groups
-            InitializeFilterGroups();
+            // Initialize toggle group
+            InitializeFilterGroup();
         }
 
         private void Start()
@@ -104,7 +100,6 @@ namespace PopLife.UI
             }
 
             // Initialize UI
-            InitializeSelectPageButtons();
             InitializeCategoryButtons();
             InitializeShelfItems();
 
@@ -148,49 +143,14 @@ namespace PopLife.UI
 
         #region Filter Group Initialization
 
-        private void InitializeFilterGroups()
+        private void InitializeFilterGroup()
         {
-            // Create SelectPage toggle group (attached to panel root)
-            selectPageToggleGroup = gameObject.AddComponent<FilterToggleGroup>();
-            selectPageToggleGroup.OnSelectionChanged += OnSelectPageChanged;
-
             // Create Category toggle group
             if (categoryButtonContainer != null)
             {
                 categoryToggleGroup = categoryButtonContainer.gameObject.AddComponent<FilterToggleGroup>();
                 categoryToggleGroup.OnSelectionChanged += OnCategoryChanged;
             }
-        }
-
-        private void InitializeSelectPageButtons()
-        {
-            if (selectPageButtons == null || selectPageButtons.Length == 0)
-            {
-                Debug.LogWarning("ShelfListPanel: No SelectPage buttons assigned. Please drag buttons into the selectPageButtons array.");
-                return;
-            }
-
-            // 注册所有手动创建的 SelectPage 按钮
-            foreach (var button in selectPageButtons)
-            {
-                if (button == null)
-                {
-                    Debug.LogWarning("ShelfListPanel: Null SelectPageButton found in array. Skipping.");
-                    continue;
-                }
-
-                // Initialize button with click callback
-                button.Initialize((clickedToggle) =>
-                {
-                    selectPageToggleGroup.OnToggleClicked(clickedToggle);
-                });
-
-                // Register to toggle group
-                selectPageToggleGroup.RegisterToggle(button);
-            }
-
-            // Select "All" button by default (FilterValue == null)
-            selectPageToggleGroup.SelectAll();
         }
 
         private void InitializeCategoryButtons()
@@ -204,8 +164,13 @@ namespace PopLife.UI
             // Create "All" button
             CreateCategoryButton(null, "All");
 
-            // Create button for each ProductCategory enum value
-            foreach (ProductCategory category in System.Enum.GetValues(typeof(ProductCategory)))
+            // Create button for each ProductCategory enum value, sorted alphabetically
+            var sortedCategories = System.Enum.GetValues(typeof(ProductCategory))
+                .Cast<ProductCategory>()
+                .OrderBy(c => c.ToString())
+                .ToList();
+
+            foreach (var category in sortedCategories)
             {
                 CreateCategoryButton(category, category.ToString());
             }
@@ -278,12 +243,6 @@ namespace PopLife.UI
 
         #region Filter Logic
 
-        private void OnSelectPageChanged(object filterValue)
-        {
-            selectedSelectPage = filterValue as SelectPage?;
-            ApplyFilters();
-        }
-
         private void OnCategoryChanged(object filterValue)
         {
             selectedCategory = filterValue as ProductCategory?;
@@ -291,7 +250,7 @@ namespace PopLife.UI
         }
 
         /// <summary>
-        /// Apply dual filtering: SelectPage first, then ProductCategory
+        /// Apply ProductCategory filter
         /// </summary>
         private void ApplyFilters()
         {
@@ -304,23 +263,13 @@ namespace PopLife.UI
         }
 
         /// <summary>
-        /// Determine if a shelf should be shown based on current filters
+        /// Determine if a shelf should be shown based on current category filter
         /// </summary>
         private bool ShouldShowShelf(ShelfArchetype shelf)
         {
             if (shelf == null) return false;
 
-            // First filter: SelectPage
-            if (selectedSelectPage != null) // Not "All"
-            {
-                // Shelf must have the selected SelectPage in its selectPages array
-                if (shelf.selectPages == null || !shelf.selectPages.Contains(selectedSelectPage.Value))
-                {
-                    return false;
-                }
-            }
-
-            // Second filter: ProductCategory
+            // Filter by ProductCategory
             if (selectedCategory != null) // Not "All"
             {
                 if (shelf.category != selectedCategory.Value)

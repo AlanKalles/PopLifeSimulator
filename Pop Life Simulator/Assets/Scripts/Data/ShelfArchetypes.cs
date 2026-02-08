@@ -4,24 +4,12 @@ using UnityEngine;
 
 namespace PopLife.Data
 {
-    // SelectPage分类枚举
-    public enum SelectPage
-    {
-        Body,
-        Head,
-        Front,
-        Back,
-        MedicineBox,
-        Kinky
-    }
-
-// 货架原型
+    // 货架原型
     [CreateAssetMenu(menuName = "PopLife/Buildings/ShelfArchetype")]
     public class ShelfArchetype : BuildingArchetype
     {
         [Header("货架属性")]
         public ProductCategory category;
-        public SelectPage[] selectPages;
 
         [Serializable]
         public class ShelfLevelData : BuildingLevelData

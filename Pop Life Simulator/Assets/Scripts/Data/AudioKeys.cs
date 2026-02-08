@@ -43,6 +43,8 @@ namespace PopLife.Data
         public const string UI_STATS_OPEN = "UI_Stats_Open";
         public const string UI_STATS_SWITCH = "UI_Stats_Switch";
         public const string UI_BUILD_PANEL_OPEN = "UI_BuildPanel_Open";
+        public const string SETTLEMENT_TICK = "Settlement_Tick";           // 结算数字滚动tick
+        public const string SETTLEMENT_GRADE = "Settlement_Grade";         // 结算评级揭晓音效
 
         #endregion
 

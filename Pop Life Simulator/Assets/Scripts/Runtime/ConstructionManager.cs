@@ -585,10 +585,19 @@ namespace PopLife.Runtime
 
         private void HandleMoveInput()
         {
-            // 右键或ESC取消移动模式
+            // 右键或ESC：根据拖动状态决定行为
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
-                Cancel();
+                if (isMoveDragging)
+                {
+                    // 拖动中 → 取消拖动，回到悬停选择状态
+                    CancelMoveDrag();
+                }
+                else
+                {
+                    // 非拖动 → 退出移动模式
+                    Cancel();
+                }
                 return;
             }
 
@@ -679,11 +688,35 @@ namespace PopLife.Runtime
                     if (moveSuccess)
                     {
                         AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
-                        Cancel();
+                        // 移动成功后回到悬停选择状态，继续留在Move模式
+                        CancelMoveDrag();
                     }
                     // 注意：移动失败时预览已经是红色，不需要额外弹窗
                 }
             }
+        }
+
+        /// <summary>
+        /// 取消当前拖动，回到Move模式的悬停选择状态
+        /// </summary>
+        private void CancelMoveDrag()
+        {
+            isMoveDragging = false;
+            selectedInstance = null;
+            if (preview) Destroy(preview);
+            previewRenderers = null;
+
+            // 重置楼层检测状态
+            currentDetectedFloor = null;
+            lastPreviewFloor = null;
+            if (floorDetector != null)
+            {
+                floorDetector.ResetCache();
+            }
+
+            // 重置悬停状态，让UpdateMoveHover重新检测
+            hoveredBuildingInMoveMode = null;
+            lastMousePositionInMoveMode = Vector3.zero;
         }
 
         /// <summary>

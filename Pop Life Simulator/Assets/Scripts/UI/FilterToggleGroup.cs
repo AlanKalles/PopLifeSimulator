@@ -5,7 +5,6 @@ namespace PopLife.UI
 {
     /// <summary>
     /// Manages a group of IFilterButton instances with single-selection behavior
-    /// Supports both SelectPageButton (Alpha Hit Test) and FilterToggleButton (traditional Button)
     /// Ensures only one button is selected at a time
     /// </summary>
     public class FilterToggleGroup : MonoBehaviour
