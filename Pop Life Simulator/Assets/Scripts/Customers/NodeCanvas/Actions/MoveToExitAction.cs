@@ -84,11 +84,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 aiLerp.speed = customerBlackboard.moveSpeed;
             }
 
-            // 允许使用所有图形，让 A* 通过 NodeLink2 自动选择路径
-            if (seeker != null)
-            {
-                seeker.graphMask = GraphMask.everything;
-            }
+            // 第一阶段：保持当前 graphMask（排除外部图），在店内正常寻路到 entrance 内侧
+            // graphMask 由 MoveToEntranceAction 设置为 ~outsideGraph，无需修改
 
             // 设置 A* 寻路目标
             if (destinationSetter != null)
@@ -193,8 +190,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 aiLerp.destination = targetTransform.position;
             }
 
-            // 保持允许所有图形（已经离开商店，graphMask 保持为 -1）
-            // graphMask 保持为 -1，无需改变
+            // 第二阶段：切换到 everything，允许通过 NodeLink2 离开商店
+            if (seeker != null)
+            {
+                seeker.graphMask = GraphMask.everything;
+            }
+
             // 恢复移动（A* 会自动通过 NodeLink2）
             aiLerp.isStopped = false;
 

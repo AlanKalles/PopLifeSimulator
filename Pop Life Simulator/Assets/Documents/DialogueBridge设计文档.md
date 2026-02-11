@@ -23,7 +23,8 @@ Assets/Scripts/DialogueBridge/
 │   ├── SpotlightManager.cs      # Spotlight 管理器
 │   ├── SpotlightPanel.cs        # Spotlight 遮罩面板
 │   ├── SpotlightTooltip.cs      # Spotlight 提示框组件
-│   └── TooltipPosition.cs       # 提示框位置枚举
+│   ├── TooltipPosition.cs       # 提示框位置枚举
+│   └── UIFreezeManager.cs       # UI 面板冻结管理器
 └── Sequencer/
     ├── SequencerCommandSpotlight.cs           # Spotlight(uiName)
     ├── SequencerCommandSpotlightWorld.cs      # SpotlightWorld(objectName)
@@ -32,6 +33,8 @@ Assets/Scripts/DialogueBridge/
     ├── SequencerCommandSpotlightOff.cs        # SpotlightOff()
     ├── SequencerCommandSpotlightTooltip.cs    # SpotlightTooltip(position) 显示提示框
     ├── SequencerCommandSpotlightTooltipOff.cs # SpotlightTooltipOff() 隐藏提示框
+    ├── SequencerCommandFreezeUI.cs            # FreezeUI(panelName) 冻结UI面板
+    ├── SequencerCommandUnfreezeUI.cs          # UnfreezeUI(panelName) 解冻UI面板
     ├── SequencerCommandGiveReward.cs          # GiveReward(type, value)
     └── SequencerCommandRaiseMarker.cs         # RaiseMarker(markerName)
 ```
@@ -415,6 +418,63 @@ bool isActive = SpotlightManager.Instance.IsTooltipActive;
 
 ---
 
+## 4.2 UIFreezeManager - UI 面板冻结
+
+### 功能
+在对话/教程期间临时冻结 UI 面板的可交互性，防止玩家在教程引导时误操作。节点切换或对话结束时自动恢复。
+
+### 机制
+使用 `CanvasGroup` 实现冻结：
+- `interactable = false` → 所有子 Button/Toggle 变灰不可点击
+- `blocksRaycasts = false` → 整个面板穿透点击
+
+恢复时精确还原原始值。如果 CanvasGroup 是由 UIFreezeManager 添加的，恢复后自动移除，不干扰其他系统。
+
+### 自动恢复时机
+
+| 事件 | 行为 |
+|------|------|
+| 对话节点切换 | 自动解冻所有面板（可在 Inspector 关闭 `autoUnfreezeOnNodeChange`） |
+| 对话结束 | 自动解冻所有面板 |
+| 手动调用 `UnfreezeUI()` | 立即解冻 |
+
+### 在 Dialogue Editor 中使用 Sequencer 命令
+
+```
+// 冻结指定面板
+FreezeUI(ShelfListPanelRoot)
+
+// 配合 Spotlight + Tooltip 使用
+Spotlight(ShelfListPanelRoot); SpotlightTooltip(Auto); FreezeUI(ShelfListPanelRoot)
+
+// 手动解冻（通常不需要，节点切换时自动恢复）
+UnfreezeUI(ShelfListPanelRoot)   // 解冻指定面板
+UnfreezeUI()                     // 解冻全部
+```
+
+### 在代码中使用
+
+```csharp
+// 按名称冻结（内部使用 GameObject.Find）
+UIFreezeManager.Instance.Freeze("ShelfListPanelRoot");
+
+// 按引用冻结（适用于多个同名 clone 需要精确指定的情况）
+UIFreezeManager.Instance.Freeze("myKey", someGameObject);
+
+// 解冻
+UIFreezeManager.Instance.Unfreeze("ShelfListPanelRoot");
+UIFreezeManager.Instance.UnfreezeAll();
+
+// 检查状态
+bool hasFrozen = UIFreezeManager.Instance.HasFrozenPanels;
+```
+
+### 设置
+1. 在 `DialogueBridgeManager` 上添加 `UIFreezeManager` 组件
+2. 配置 `Auto Unfreeze On Node Change`（默认开启）
+
+---
+
 ## 5. 顾客对话系统
 
 ### 功能
@@ -498,6 +558,13 @@ Sequence: RaiseMarker(FirstShelfPlaced)
 Sequence: RaiseMarker(StoreOpened)
 ```
 
+### FreezeUI / UnfreezeUI
+```
+Sequence: FreezeUI(ShelfListPanelRoot)           // 冻结面板
+Sequence: UnfreezeUI(ShelfListPanelRoot)          // 解冻指定面板
+Sequence: UnfreezeUI()                            // 解冻全部
+```
+
 ---
 
 ## 快速设置指南
@@ -510,7 +577,8 @@ Hierarchy:
     ├── PopLifeLuaFunctions
     ├── TutorialMarkerBridge
     ├── GameStateLuaSync
-    └── CustomerClickHandler
+    ├── CustomerClickHandler
+    └── UIFreezeManager
 ```
 
 ### 2. 创建 Spotlight UI

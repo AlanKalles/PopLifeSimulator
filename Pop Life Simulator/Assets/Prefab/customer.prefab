@@ -204,6 +204,7 @@ GameObject:
   - component: {fileID: 3387551925748291657}
   - component: {fileID: 4920205901792585052}
   - component: {fileID: 3787002346843346418}
+  - component: {fileID: 2758768933392045805}
   m_Layer: 7
   m_Name: customer
   m_TagString: Untagged
@@ -747,6 +748,19 @@ MonoBehaviour:
   defaultConversation: Customer/Generic
   traitConversationPrefix: Customer/Trait_
   debugMode: 0
+--- !u!114 &2758768933392045805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7018696242757326488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5746a169863b77489b30f49b650d3af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Runtime.LinkTraversalDetector
+  spriteRenderer: {fileID: 2995252074383847997}
 --- !u!1 &8191261946253030153
 GameObject:
   m_ObjectHideFlags: 0

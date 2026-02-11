@@ -87,11 +87,17 @@ namespace PopLife.DialogueBridge.UI
         // Tooltip state
         private bool isTooltipActive = false;
         private GameObject cachedDialogueUI;
+        private CanvasGroup cachedDialogueCanvasGroup;
+        private bool weAddedCanvasGroup = false;
+        private bool dialogueUIHiddenByUs = false;
         private Rect currentSpotlightRect;
 
         // Continue trigger
         private ContinueTriggerMode currentTriggerMode = ContinueTriggerMode.ClickAnywhere;
         private UnityEngine.UI.Button targetButton;
+
+        // 延迟恢复 DialogueUI 的协程引用
+        private Coroutine pendingDialogueRestore;
 
         #endregion
 
@@ -554,30 +560,54 @@ namespace PopLife.DialogueBridge.UI
             // Find and cache the Dialogue System UI
             if (cachedDialogueUI == null)
             {
-                // displaySettings.dialogueUI is a GameObject reference
                 cachedDialogueUI = DialogueManager.displaySettings?.dialogueUI;
             }
 
             if (cachedDialogueUI != null)
             {
-                cachedDialogueUI.SetActive(false);
+                // 使用 CanvasGroup 隐藏而非 SetActive(false)，
+                // 保持 GameObject active 让 Dialogue System 内部状态管理正常运作，
+                // 避免跨 conversation 跳转时 UI 初始化失败
+                cachedDialogueCanvasGroup = cachedDialogueUI.GetComponent<CanvasGroup>();
+                if (cachedDialogueCanvasGroup == null)
+                {
+                    cachedDialogueCanvasGroup = cachedDialogueUI.AddComponent<CanvasGroup>();
+                    weAddedCanvasGroup = true;
+                }
+
+                cachedDialogueCanvasGroup.alpha = 0f;
+                cachedDialogueCanvasGroup.blocksRaycasts = false;
+                cachedDialogueCanvasGroup.interactable = false;
+                dialogueUIHiddenByUs = true;
 
                 if (debugMode)
                 {
-                    Debug.Log("[SpotlightManager] Dialogue UI hidden");
+                    Debug.Log("[SpotlightManager] Dialogue UI hidden (via CanvasGroup)");
                 }
             }
         }
 
         private void ShowDialogueUI()
         {
-            if (cachedDialogueUI != null)
+            if (dialogueUIHiddenByUs && cachedDialogueCanvasGroup != null)
             {
-                cachedDialogueUI.SetActive(true);
+                cachedDialogueCanvasGroup.alpha = 1f;
+                cachedDialogueCanvasGroup.blocksRaycasts = true;
+                cachedDialogueCanvasGroup.interactable = true;
+                dialogueUIHiddenByUs = false;
+
+                // 如果 CanvasGroup 是我们添加的，恢复后移除，
+                // 避免干扰 Dialogue System 的原有隐藏机制（SetActive）
+                if (weAddedCanvasGroup)
+                {
+                    Destroy(cachedDialogueCanvasGroup);
+                    cachedDialogueCanvasGroup = null;
+                    weAddedCanvasGroup = false;
+                }
 
                 if (debugMode)
                 {
-                    Debug.Log("[SpotlightManager] Dialogue UI restored");
+                    Debug.Log("[SpotlightManager] Dialogue UI restored (via CanvasGroup)");
                 }
             }
         }
@@ -593,11 +623,12 @@ namespace PopLife.DialogueBridge.UI
         {
             if (!DialogueManager.isConversationActive) return;
 
-            // 必须先恢复 DialogueUI，否则 OnContinue 内部的 Coroutine 无法启动
-            if (autoHideDialogueUI)
-            {
-                ShowDialogueUI();
-            }
+            // 不在此处恢复 DialogueUI：
+            // HideDialogueUI 使用 CanvasGroup（alpha=0）而非 SetActive(false)，
+            // GameObject 仍然 active，OnContinue 内部的 Coroutine 不受影响。
+            // 若在此处立即 ShowDialogueUI()，当 conversation 即将结束或下一节点
+            // 也使用 tooltip 时，dialogue panel 会短暂闪现后消失。
+            // DialogueUI 的恢复交由 HideTooltip() 或 OnConversationEnded() 处理。
 
             // 调用 Dialogue System 的 OnContinue 来继续对话
             if (DialogueManager.standardDialogueUI != null)
@@ -707,6 +738,34 @@ namespace PopLife.DialogueBridge.UI
                     Debug.Log("[SpotlightManager] Spotlight and tooltip auto-closed on conversation end");
                 }
             }
+
+            // 对话结束时 isConversationActive 已经是 false，
+            // HideTooltip 内部的条件守卫会跳过 ShowDialogueUI()，
+            // 必须在这里恢复被我们隐藏的 Dialogue UI（CanvasGroup 状态）。
+            // 延迟一帧，确保 Dialogue System 自身的 UI 关闭逻辑已完成，
+            // 避免恢复 alpha=1 时 subtitle panel 尚未完全隐藏导致闪现。
+            if (dialogueUIHiddenByUs && autoHideDialogueUI)
+            {
+                if (pendingDialogueRestore != null) StopCoroutine(pendingDialogueRestore);
+                pendingDialogueRestore = StartCoroutine(DelayedRestoreDialogueUI());
+            }
+        }
+
+        /// <summary>
+        /// 延迟一帧恢复 DialogueUI 的 CanvasGroup 状态，
+        /// 避免在 Dialogue System 自身 UI 关闭动画期间恢复 alpha 导致闪现。
+        /// </summary>
+        private IEnumerator DelayedRestoreDialogueUI()
+        {
+            yield return null;
+
+            // 确认仍然需要恢复（tooltip 没有被重新激活）
+            if (!isTooltipActive && dialogueUIHiddenByUs)
+            {
+                ShowDialogueUI();
+            }
+
+            pendingDialogueRestore = null;
         }
 
         #endregion
