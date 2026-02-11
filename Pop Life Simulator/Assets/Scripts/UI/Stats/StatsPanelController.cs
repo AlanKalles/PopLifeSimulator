@@ -28,6 +28,9 @@ namespace PopLife.UI.Stats
         [SerializeField] private Button productsButton;
         [SerializeField] private Button currentCustomersButton;
 
+        [Header("Close Button")]
+        [SerializeField] private Button closeButton;
+
         [Header("Animation Settings")]
         [SerializeField] private float slideDuration = 0.3f;
         [SerializeField] private float panelWidth = 400f; // 面板宽度
@@ -69,6 +72,9 @@ namespace PopLife.UI.Stats
             if (currentCustomersButton != null)
                 currentCustomersButton.onClick.AddListener(() => SwitchPanel(PanelType.CurrentCustomers));
 
+            if (closeButton != null)
+                closeButton.onClick.AddListener(Hide);
+
             // 监听结算事件自动关闭
             if (DayLoopManager.Instance != null)
             {
@@ -87,6 +93,9 @@ namespace PopLife.UI.Stats
 
             if (currentCustomersButton != null)
                 currentCustomersButton.onClick.RemoveAllListeners();
+
+            if (closeButton != null)
+                closeButton.onClick.RemoveAllListeners();
 
             // 取消结算事件
             if (DayLoopManager.Instance != null)

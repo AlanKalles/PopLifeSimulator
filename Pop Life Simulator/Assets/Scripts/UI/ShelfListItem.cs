@@ -10,7 +10,7 @@ namespace PopLife.UI
     /// Shelf list item - Square button with icon and cost
     /// Shows tooltip on hover with detailed information
     /// </summary>
-    public class ShelfListItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class ShelfListItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
     {
         [Header("UI References")]
         [SerializeField] private Image iconImage;
@@ -22,6 +22,10 @@ namespace PopLife.UI
         [SerializeField] private Color normalOutlineColor = new Color(0.5f, 0.5f, 0.5f, 1f);
         [SerializeField] private Color hoverOutlineColor = new Color(1f, 1f, 0f, 1f); // Yellow highlight
         [SerializeField] private float outlineWidth = 3f;
+
+        [Header("Disabled Settings")]
+        [SerializeField] private Color disabledIconColor = new Color(0.4f, 0.4f, 0.4f, 0.5f);
+        [SerializeField] private Color disabledCostColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
         private ShelfArchetype shelf;
         private System.Action<ShelfArchetype> onSelectCallback;
@@ -90,6 +94,9 @@ namespace PopLife.UI
         /// </summary>
         public void OnPointerEnter(PointerEventData eventData)
         {
+            // 已放置的货架按钮不显示高亮和tooltip
+            if (button != null && !button.interactable) return;
+
             // Enable outline highlight
             if (outline != null)
             {
@@ -97,20 +104,23 @@ namespace PopLife.UI
                 outline.effectColor = hoverOutlineColor;
             }
 
-            // Show tooltip
+            // Show tooltip at mouse position
             if (tooltip != null && shelf != null)
             {
-                // Get button's world position for tooltip positioning
-                RectTransform rectTransform = GetComponent<RectTransform>();
-                if (rectTransform != null)
-                {
-                    // Use the right edge of the button as tooltip anchor
-                    Vector3[] corners = new Vector3[4];
-                    rectTransform.GetWorldCorners(corners);
-                    Vector3 rightCenter = (corners[1] + corners[2]) / 2f; // Right edge center
+                tooltip.Show(shelf, eventData.position);
+            }
+        }
 
-                    tooltip.Show(shelf, rightCenter);
-                }
+        /// <summary>
+        /// Pointer move event - Update tooltip position to follow cursor
+        /// </summary>
+        public void OnPointerMove(PointerEventData eventData)
+        {
+            if (button != null && !button.interactable) return;
+
+            if (tooltip != null && shelf != null)
+            {
+                tooltip.UpdatePosition(eventData.position);
             }
         }
 
@@ -119,6 +129,8 @@ namespace PopLife.UI
         /// </summary>
         public void OnPointerExit(PointerEventData eventData)
         {
+            if (button != null && !button.interactable) return;
+
             // Disable outline highlight
             if (outline != null)
             {
@@ -146,6 +158,22 @@ namespace PopLife.UI
         public ShelfArchetype GetShelf()
         {
             return shelf;
+        }
+
+        /// <summary>
+        /// 根据是否已放置设置按钮禁用状态，同时调整图标和价格文字颜色
+        /// </summary>
+        public void SetPlacementDisabled(bool alreadyPlaced)
+        {
+            if (button != null)
+                button.interactable = !alreadyPlaced;
+
+            if (iconImage != null)
+                iconImage.color = alreadyPlaced ? disabledIconColor : Color.white;
+
+            // 禁用时覆盖价格颜色；启用时由 UpdateCostDisplay 控制
+            if (alreadyPlaced && costText != null)
+                costText.color = disabledCostColor;
         }
 
         /// <summary>

@@ -1,0 +1,359 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using PixelCrushers.DialogueSystem;
+using PopLife.Data;
+
+namespace PopLife.UI.Quest
+{
+    /// <summary>
+    /// ViewModel：追踪面板用的轻量数据
+    /// </summary>
+    public struct QuestViewModel
+    {
+        public string questName;
+        public string displayTitle;
+        public QuestType questType;
+        public int remainingDays;   // -1 = 永不过期
+        public int completedEntries;
+        public int totalEntries;
+        public int sortPriority;
+    }
+
+    /// <summary>
+    /// ViewModel：详情面板用的完整数据
+    /// </summary>
+    public struct QuestDetailViewModel
+    {
+        public string questName;
+        public string displayTitle;
+        public string description;
+        public QuestType questType;
+        public int remainingDays;
+        public string giverName;
+        public Sprite giverPortrait;
+        public Sprite questIcon;
+        public QuestReward[] rewards;
+        public QuestEntryInfo[] entries;
+    }
+
+    /// <summary>
+    /// 任务条目信息
+    /// </summary>
+    public struct QuestEntryInfo
+    {
+        public int entryNumber;
+        public string text;
+        public bool isCompleted;
+    }
+
+    /// <summary>
+    /// 任务数据桥接服务
+    /// 合并 QuestLog（状态/进度）和 QuestDefinition SO（元数据）的数据，供 UI 消费
+    ///
+    /// 挂载位置：DialogueManager 的子物体上（接收 OnQuestStateChange BroadcastMessage）
+    /// </summary>
+    public class QuestDataService : MonoBehaviour
+    {
+        public static QuestDataService Instance { get; private set; }
+
+        [Header("任务定义")]
+        [Tooltip("拖入所有 QuestDefinition SO 资产")]
+        [SerializeField] private QuestDefinition[] questDefinitions;
+
+        [Header("调试")]
+        [SerializeField] private bool debugMode = false;
+
+        // questName → QuestDefinition 的快速查找
+        private Dictionary<string, QuestDefinition> definitionMap = new();
+        // questName → 激活时的 currentDay（用于 DDL 计算）
+        private Dictionary<string, int> activationDayMap = new();
+
+        /// <summary>
+        /// UI 订阅此事件以刷新追踪面板
+        /// </summary>
+        public event Action OnTrackedQuestsChanged;
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            BuildDefinitionMap();
+        }
+
+        private void OnEnable()
+        {
+            // 订阅 DayLoopManager 天数变化（DDL 需要随天数刷新）
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnDayChanged -= OnDayChanged;
+                DayLoopManager.Instance.OnDayChanged += OnDayChanged;
+            }
+        }
+
+        private void Start()
+        {
+            // 延迟订阅，确保 DayLoopManager 已初始化
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnDayChanged -= OnDayChanged;
+                DayLoopManager.Instance.OnDayChanged += OnDayChanged;
+            }
+
+            // 初始化时扫描已有的 active 任务，补全缺失的激活日
+            ScanActiveQuests();
+        }
+
+        private void OnDisable()
+        {
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnDayChanged -= OnDayChanged;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
+        #region 初始化
+
+        private void BuildDefinitionMap()
+        {
+            definitionMap.Clear();
+            if (questDefinitions == null) return;
+
+            foreach (var def in questDefinitions)
+            {
+                if (def == null || string.IsNullOrEmpty(def.QuestName)) continue;
+
+                if (definitionMap.ContainsKey(def.QuestName))
+                {
+                    Debug.LogWarning($"[QuestDataService] 重复的 questName: {def.QuestName}");
+                    continue;
+                }
+
+                definitionMap[def.QuestName] = def;
+            }
+
+            if (debugMode)
+            {
+                Debug.Log($"[QuestDataService] 已加载 {definitionMap.Count} 个 QuestDefinition");
+            }
+        }
+
+        /// <summary>
+        /// 扫描当前所有 active 的任务，补全缺失的激活日记录
+        /// </summary>
+        private void ScanActiveQuests()
+        {
+            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
+            if (activeQuests == null) return;
+
+            int currentDay = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
+
+            foreach (string qName in activeQuests)
+            {
+                if (!activationDayMap.ContainsKey(qName))
+                {
+                    // 未知激活日，以当前天数为默认值
+                    activationDayMap[qName] = currentDay;
+
+                    if (debugMode)
+                    {
+                        Debug.Log($"[QuestDataService] 补全激活日: {qName} → Day {currentDay}");
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region 事件处理
+
+        /// <summary>
+        /// Dialogue System BroadcastMessage 回调
+        /// 当任务状态变化时由 DialogueManager 广播
+        /// </summary>
+        private void OnQuestStateChange(string questName)
+        {
+            // 如果任务刚变为 active，记录激活日
+            var state = QuestLog.GetQuestState(questName);
+            if (state == QuestState.Active && !activationDayMap.ContainsKey(questName))
+            {
+                int currentDay = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
+                activationDayMap[questName] = currentDay;
+
+                if (debugMode)
+                {
+                    Debug.Log($"[QuestDataService] 任务激活: {questName} → Day {currentDay}");
+                }
+            }
+
+            OnTrackedQuestsChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// 天数变化回调（DDL 需要刷新）
+        /// </summary>
+        private void OnDayChanged(int newDay)
+        {
+            OnTrackedQuestsChanged?.Invoke();
+        }
+
+        #endregion
+
+        #region 公共 API
+
+        /// <summary>
+        /// 获取所有正在追踪的任务列表
+        /// 排序规则：主线优先 > sortPriority 降序 > DDL 升序
+        /// </summary>
+        public List<QuestViewModel> GetTrackedQuests()
+        {
+            var result = new List<QuestViewModel>();
+            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
+            if (activeQuests == null) return result;
+
+            foreach (string qName in activeQuests)
+            {
+                if (!QuestLog.IsQuestTrackingEnabled(qName)) continue;
+
+                var vm = new QuestViewModel
+                {
+                    questName = qName,
+                    displayTitle = QuestLog.GetQuestTitle(qName),
+                    questType = GetQuestType(qName),
+                    remainingDays = GetRemainingDays(qName),
+                    sortPriority = GetSortPriority(qName)
+                };
+                (vm.completedEntries, vm.totalEntries) = GetProgress(qName);
+                result.Add(vm);
+            }
+
+            // 排序：主线优先 > sortPriority 降序 > DDL 升序（永不过期排最后）
+            result.Sort((a, b) =>
+            {
+                int typeCompare = a.questType.CompareTo(b.questType); // Main=0 < Side=1
+                if (typeCompare != 0) return typeCompare;
+
+                int prioCompare = b.sortPriority.CompareTo(a.sortPriority);
+                if (prioCompare != 0) return prioCompare;
+
+                int aDeadline = a.remainingDays < 0 ? int.MaxValue : a.remainingDays;
+                int bDeadline = b.remainingDays < 0 ? int.MaxValue : b.remainingDays;
+                return aDeadline.CompareTo(bDeadline);
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取任务详情（供详情面板使用）
+        /// </summary>
+        public QuestDetailViewModel? GetQuestDetail(string questName)
+        {
+            if (string.IsNullOrEmpty(questName)) return null;
+
+            var state = QuestLog.GetQuestState(questName);
+            if (state == QuestState.Unassigned) return null;
+
+            definitionMap.TryGetValue(questName, out var def);
+
+            // 构建条目列表
+            int entryCount = QuestLog.GetQuestEntryCount(questName);
+            var entries = new QuestEntryInfo[entryCount];
+            for (int i = 0; i < entryCount; i++)
+            {
+                int entryNum = i + 1; // QuestLog entry 从 1 开始
+                entries[i] = new QuestEntryInfo
+                {
+                    entryNumber = entryNum,
+                    text = QuestLog.GetQuestEntry(questName, entryNum),
+                    isCompleted = QuestLog.GetQuestEntryState(questName, entryNum) == QuestState.Success
+                };
+            }
+
+            return new QuestDetailViewModel
+            {
+                questName = questName,
+                displayTitle = QuestLog.GetQuestTitle(questName),
+                description = QuestLog.GetQuestDescription(questName),
+                questType = def != null ? def.QuestType : QuestType.Side,
+                remainingDays = GetRemainingDays(questName),
+                giverName = def != null ? def.GiverName : "",
+                giverPortrait = def?.GiverPortrait,
+                questIcon = def?.QuestIcon,
+                rewards = def?.Rewards,
+                entries = entries
+            };
+        }
+
+        /// <summary>
+        /// 获取任务剩余天数
+        /// 返回 -1 表示永不过期
+        /// </summary>
+        public int GetRemainingDays(string questName)
+        {
+            if (!definitionMap.TryGetValue(questName, out var def) || def.DeadlineDays <= 0)
+                return -1;
+
+            if (!activationDayMap.TryGetValue(questName, out int activateDay))
+                return -1;
+
+            int deadlineDay = activateDay + def.DeadlineDays;
+            int currentDay = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
+            return deadlineDay - currentDay;
+        }
+
+        /// <summary>
+        /// 获取任务进度（已完成/总数）
+        /// </summary>
+        public (int completed, int total) GetProgress(string questName)
+        {
+            int total = QuestLog.GetQuestEntryCount(questName);
+            int completed = 0;
+            for (int i = 1; i <= total; i++)
+            {
+                if (QuestLog.GetQuestEntryState(questName, i) == QuestState.Success)
+                    completed++;
+            }
+            return (completed, total);
+        }
+
+        #endregion
+
+        #region 内部辅助
+
+        private QuestType GetQuestType(string questName)
+        {
+            if (definitionMap.TryGetValue(questName, out var def))
+                return def.QuestType;
+
+            // 尝试从 QuestLog 的 Group 字段推断
+            string group = QuestLog.GetQuestGroup(questName);
+            if (!string.IsNullOrEmpty(group) && group.Equals("Main", StringComparison.OrdinalIgnoreCase))
+                return QuestType.Main;
+
+            return QuestType.Side;
+        }
+
+        private int GetSortPriority(string questName)
+        {
+            if (definitionMap.TryGetValue(questName, out var def))
+                return def.SortPriority;
+            return 50; // 默认优先级
+        }
+
+        #endregion
+    }
+}

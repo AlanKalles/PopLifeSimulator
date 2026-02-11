@@ -26,14 +26,20 @@ namespace PopLife.UI
         [SerializeField] private Color affordableColor = Color.white;
         [SerializeField] private Color unaffordableColor = Color.red;
 
+        [Header("Position Settings")]
+        [SerializeField] private Vector3 positionOffset = new Vector3(10f, 50f, 0f);
+
         [Header("Animation Settings")]
         [SerializeField] private float fadeInDuration = 0.05f;
         [SerializeField] private float fadeOutDuration = 0.05f;
 
         private Coroutine fadeCoroutine;
+        private RectTransform cachedRectTransform;
 
         private void Awake()
         {
+            cachedRectTransform = GetComponent<RectTransform>();
+
             // Ensure canvas group exists
             if (canvasGroup == null)
             {
@@ -108,25 +114,36 @@ namespace PopLife.UI
                 }
             }
 
-            // Position tooltip
-            RectTransform rectTransform = GetComponent<RectTransform>();
-            if (rectTransform != null)
-            {
-                // Offset tooltip to the right and above the button
-                Vector3 offset = new Vector3(10f, 50f, 0f);
-                rectTransform.position = position + offset;
-
-                // Ensure tooltip stays within screen bounds
-                ClampToScreen(rectTransform);
-            }
+            // 更新位置
+            UpdatePosition(position);
 
             // Fade in
             gameObject.SetActive(true);
+
+            // panelRoot.SetActive(true) 同步触发 OnPointerEnter 时，
+            // 子物体的 activeInHierarchy 可能尚未生效，无法启动协程
+            if (!gameObject.activeInHierarchy)
+            {
+                canvasGroup.alpha = 1f;
+                return;
+            }
+
             if (fadeCoroutine != null)
             {
                 StopCoroutine(fadeCoroutine);
             }
             fadeCoroutine = StartCoroutine(FadeIn());
+        }
+
+        /// <summary>
+        /// 仅更新 tooltip 位置，不改变内容和动画状态（用于鼠标跟随）
+        /// </summary>
+        public void UpdatePosition(Vector3 position)
+        {
+            if (cachedRectTransform == null) return;
+
+            cachedRectTransform.position = position + positionOffset;
+            ClampToScreen(cachedRectTransform);
         }
 
         /// <summary>
@@ -237,6 +254,13 @@ namespace PopLife.UI
             }
 
             canvasGroup.alpha = 0f;
+
+            // 将位置移至屏幕外，防止重开面板时闪现旧位置
+            if (cachedRectTransform != null)
+            {
+                cachedRectTransform.position = new Vector3(-10000f, -10000f, 0f);
+            }
+
             gameObject.SetActive(false);
         }
     }

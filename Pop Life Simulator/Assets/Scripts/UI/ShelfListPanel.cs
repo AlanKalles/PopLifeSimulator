@@ -290,6 +290,12 @@ namespace PopLife.UI
             // Initialize on first open
             InitializePanel();
 
+            // 确保 tooltip 从干净状态开始，防止闪现旧位置
+            if (tooltip != null)
+            {
+                tooltip.HideImmediate();
+            }
+
             if (panelRoot != null)
             {
                 panelRoot.SetActive(true);
@@ -304,6 +310,9 @@ namespace PopLife.UI
             // Refresh item displays (money may have changed)
             RefreshItemDisplays();
 
+            // 订阅金钱变化事件，实时刷新价格颜色
+            SubscribeMoneyChanged();
+
             // Notify GameStateManager on first open
             // This will trigger the FirstBuildPhaseEntered marker for D002 dialogue
             if (GameStateManager.Instance != null)
@@ -314,6 +323,9 @@ namespace PopLife.UI
 
         public void ClosePanel()
         {
+            // 取消订阅金钱变化事件
+            UnsubscribeMoneyChanged();
+
             if (panelRoot != null)
             {
                 panelRoot.SetActive(false);
@@ -362,14 +374,63 @@ namespace PopLife.UI
 
         #endregion
 
+        private void OnDestroy()
+        {
+            UnsubscribeMoneyChanged();
+        }
+
+        private void SubscribeMoneyChanged()
+        {
+            if (ResourceManager.Instance != null)
+                ResourceManager.Instance.OnMoneyChanged += OnMoneyChanged;
+            ConstructionManager.OnBuildingPlacedOrDestroyed += OnBuildingChanged;
+        }
+
+        private void UnsubscribeMoneyChanged()
+        {
+            if (ResourceManager.Instance != null)
+                ResourceManager.Instance.OnMoneyChanged -= OnMoneyChanged;
+            ConstructionManager.OnBuildingPlacedOrDestroyed -= OnBuildingChanged;
+        }
+
+        private void OnMoneyChanged(int currentMoney)
+        {
+            // 面板打开时才刷新
+            if (IsOpen())
+                RefreshItemDisplays();
+        }
+
+        private void OnBuildingChanged()
+        {
+            if (IsOpen())
+                RefreshItemDisplays();
+        }
+
         #region Utility
 
         public void RefreshItemDisplays()
         {
+            var placedIds = GetPlacedShelfArchetypeIds();
             foreach (var item in itemInstances)
             {
                 item.UpdateCostDisplay();
+                item.SetPlacementDisabled(placedIds.Contains(item.GetShelf().archetypeId));
             }
+        }
+
+        /// <summary>
+        /// 查询所有楼层中已放置的货架archetypeId
+        /// </summary>
+        private HashSet<string> GetPlacedShelfArchetypeIds()
+        {
+            var placed = new HashSet<string>();
+            if (constructionManager == null || constructionManager.floorManager == null)
+                return placed;
+            foreach (var floor in constructionManager.floorManager.GetAllActiveFloors())
+                foreach (var shelf in floor.AllShelves())
+                    if (shelf.archetype != null)
+                        placed.Add(shelf.archetype.archetypeId);
+            return placed;
         }
 
         public void AddShelf(ShelfArchetype shelf)
@@ -391,6 +452,10 @@ namespace PopLife.UI
                 // Apply filter to new item
                 bool shouldShow = ShouldShowShelf(shelf);
                 item.gameObject.SetActive(shouldShow);
+
+                // 检查是否已放置
+                var placedIds = GetPlacedShelfArchetypeIds();
+                item.SetPlacementDisabled(placedIds.Contains(shelf.archetypeId));
             }
         }
 

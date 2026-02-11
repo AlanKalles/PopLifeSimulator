@@ -64,6 +64,15 @@ namespace PopLife.Data
 
         #endregion
 
+        #region 任务系统音效 (Quest Sound Effects)
+
+        public const string QUEST_TRACKER_OPEN = "Quest_Tracker_Open";
+        public const string QUEST_TRACKER_CLOSE = "Quest_Tracker_Close";
+        public const string QUEST_ENTRY_COMPLETE = "Quest_Entry_Complete";
+        public const string QUEST_COMPLETE = "Quest_Complete";
+
+        #endregion
+
         #region 背景音乐 (Background Music)
 
         public const string BGM_MENU = "BGM_Menu";

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace PopLife
@@ -9,6 +10,11 @@ namespace PopLife
         [Header("Current Resources")]
         public int money;
         public int fame;
+
+        /// <summary>
+        /// 金钱变化时触发，参数为当前金钱值
+        /// </summary>
+        public event Action<int> OnMoneyChanged;
 
         [Header("Lifetime Statistics")]
         [SerializeField] private int totalIncome = 0;      // 总收入（仅来自顾客结账）
@@ -48,6 +54,7 @@ namespace PopLife
             money -= moneyCost;
             fame -= fameCost;
             totalExpenses += moneyCost; // 记录金钱开支
+            if (moneyCost != 0) OnMoneyChanged?.Invoke(money);
         }
 
         /// <summary>
@@ -58,6 +65,7 @@ namespace PopLife
         {
             money -= amount;
             totalExpenses += amount;
+            OnMoneyChanged?.Invoke(money);
         }
 
         /// <summary>
@@ -78,6 +86,7 @@ namespace PopLife
         {
             money += amount;
             totalIncome += amount;
+            OnMoneyChanged?.Invoke(money);
         }
 
         /// <summary>
@@ -88,6 +97,7 @@ namespace PopLife
         {
             money += amount;
             // 不计入 totalIncome
+            OnMoneyChanged?.Invoke(money);
         }
 
         /// <summary>

@@ -10,6 +10,9 @@ namespace PopLife.Runtime
     {
         public enum Mode { None, Place, Move, Destroy }
 
+        // 建筑放置或销毁后触发，用于UI刷新
+        public static event System.Action OnBuildingPlacedOrDestroyed;
+
         [Header("状态")]
         public Mode mode = Mode.None;
         public BuildingArchetype selectedArchetype;
@@ -428,7 +431,12 @@ namespace PopLife.Runtime
                         GameStateManager.Instance.NotifyShelfPlaced();
                     }
 
-                    if (!Input.GetKey(KeyCode.LeftShift)) Cancel();
+                    // 通知UI刷新已放置货架状态
+                    OnBuildingPlacedOrDestroyed?.Invoke();
+
+                    // 货架唯一性：放置成功后强制退出（不允许Shift连续放置同archetype）
+                    if (selectedArchetype is ShelfArchetype || !Input.GetKey(KeyCode.LeftShift))
+                        Cancel();
                 }
                 // 注意：放置失败时预览已经是红色，不需要额外弹窗
             }
@@ -906,6 +914,9 @@ namespace PopLife.Runtime
 
             Destroy(bi.gameObject);
             AudioManager.Instance.PlaySound(AudioKeys.BUILDING_DESTROYED);
+
+            // 通知UI刷新已放置货架状态
+            OnBuildingPlacedOrDestroyed?.Invoke();
 
             Debug.Log($"Destroyed {bi.archetype.displayName}, refunded ${Mathf.RoundToInt(bi.archetype.buildCost * bi.archetype.destroyRefundRate)}");
         }

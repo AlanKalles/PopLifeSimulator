@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using PopLife.Data;
 using PopLife.UI;
+using PopLife.UI.Quest;
 using PopLife.UI.Stats;
 using NewSettlementPanel = PopLife.UI.NewDailySettlementPanel;
 
@@ -17,6 +18,10 @@ namespace PopLife
         [SerializeField] private ScrollingMessageBar scrollingMessageBar;
         [SerializeField] private UI.ConfirmationPanel confirmationPanel;
         [SerializeField] private StatsPanelController statsPanel;
+
+        [Header("Quest UI")]
+        [SerializeField] private QuestTrackerPanel questTrackerPanel;
+        [SerializeField] private QuestDetailPanel questDetailPanel;
 
         private void Awake()
         {
@@ -209,6 +214,28 @@ namespace PopLife
             if (statsPanel != null)
             {
                 statsPanel.Hide();
+            }
+        }
+
+        /// <summary>
+        /// 显示任务详情面板
+        /// </summary>
+        public void ShowQuestDetail(string questName)
+        {
+            if (questDetailPanel != null)
+            {
+                questDetailPanel.Show(questName);
+            }
+        }
+
+        /// <summary>
+        /// 刷新任务追踪面板
+        /// </summary>
+        public void RefreshQuestTracker()
+        {
+            if (questTrackerPanel != null)
+            {
+                questTrackerPanel.RefreshQuests();
             }
         }
     }
