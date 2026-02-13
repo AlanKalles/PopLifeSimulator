@@ -21,7 +21,7 @@ namespace PopLife
 
         [Header("Quest UI")]
         [SerializeField] private QuestTrackerPanel questTrackerPanel;
-        [SerializeField] private QuestDetailPanel questDetailPanel;
+        [SerializeField] private QuestLogPanel questLogPanel;
 
         private void Awake()
         {
@@ -218,13 +218,32 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 显示任务详情面板
+        /// 显示任务详情（兼容旧接口，内部调用 ShowQuestLog）
         /// </summary>
         public void ShowQuestDetail(string questName)
         {
-            if (questDetailPanel != null)
+            ShowQuestLog(questName);
+        }
+
+        /// <summary>
+        /// 打开任务日志面板，并聚焦到指定任务
+        /// </summary>
+        public void ShowQuestLog(string questName = null)
+        {
+            if (questLogPanel != null)
             {
-                questDetailPanel.Show(questName);
+                questLogPanel.Show(questName);
+            }
+        }
+
+        /// <summary>
+        /// 关闭任务日志面板
+        /// </summary>
+        public void HideQuestLog()
+        {
+            if (questLogPanel != null)
+            {
+                questLogPanel.Hide();
             }
         }
 

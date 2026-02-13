@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using PopLife.Data;
 
 namespace PopLife.UI.Quest
 {
@@ -18,6 +20,19 @@ namespace PopLife.UI.Quest
         [SerializeField] private GameObject entryItemPrefab;
         [SerializeField] private TextMeshProUGUI deadlineText;
         [SerializeField] private CanvasGroup canvasGroup;
+
+        [Header("扩展 UI - 任务图标和类型")]
+        [SerializeField] private Image questIcon;
+        [SerializeField] private TextMeshProUGUI questTypeLabel;
+        [SerializeField] private Image questTypeIcon;
+
+        [Header("Type Icon Sprites")]
+        [SerializeField] private Sprite mainQuestSprite;
+        [SerializeField] private Sprite sideQuestSprite;
+
+        [Header("Type Label Colors")]
+        [SerializeField] private Color mainQuestLabelColor = new Color(1f, 0.84f, 0f);
+        [SerializeField] private Color sideQuestLabelColor = Color.white;
 
         [Header("Animation Settings")]
         [SerializeField] private float fadeInDuration = 0.05f;
@@ -66,6 +81,44 @@ namespace PopLife.UI.Quest
             if (detail == null) return;
 
             var data = detail.Value;
+
+            // 填充任务图标
+            if (questIcon != null)
+            {
+                if (data.questIcon != null)
+                {
+                    questIcon.sprite = data.questIcon;
+                    questIcon.gameObject.SetActive(true);
+                }
+                else
+                {
+                    questIcon.gameObject.SetActive(false);
+                }
+            }
+
+            // 填充任务类型标签
+            if (questTypeLabel != null)
+            {
+                questTypeLabel.text = data.questType == QuestType.Main ? "MAIN QUEST" : "SIDE QUEST";
+                questTypeLabel.color = data.questType == QuestType.Main
+                    ? mainQuestLabelColor
+                    : sideQuestLabelColor;
+            }
+
+            // 填充任务类型图标（仅切换 Sprite，不变色）
+            if (questTypeIcon != null)
+            {
+                Sprite targetSprite = data.questType == QuestType.Main ? mainQuestSprite : sideQuestSprite;
+                if (targetSprite != null)
+                {
+                    questTypeIcon.sprite = targetSprite;
+                    questTypeIcon.enabled = true;
+                }
+                else
+                {
+                    questTypeIcon.enabled = false;
+                }
+            }
 
             // 填充标题
             if (titleText != null)

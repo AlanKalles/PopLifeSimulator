@@ -35,6 +35,16 @@ namespace PopLife.UI.Quest
         public Sprite questIcon;
         public QuestReward[] rewards;
         public QuestEntryInfo[] entries;
+        public QuestState questState;
+    }
+
+    /// <summary>
+    /// 任务日志分组ViewModel - 按状态分组的任务列表
+    /// </summary>
+    public struct QuestLogGroupViewModel
+    {
+        public string groupLabel;
+        public List<QuestViewModel> quests;
     }
 
     /// <summary>
@@ -73,6 +83,11 @@ namespace PopLife.UI.Quest
         /// UI 订阅此事件以刷新追踪面板
         /// </summary>
         public event Action OnTrackedQuestsChanged;
+
+        /// <summary>
+        /// 任何任务状态变化时触发（QuestLogPanel 订阅）
+        /// </summary>
+        public event Action OnQuestStateChanged;
 
         private void Awake()
         {
@@ -200,6 +215,7 @@ namespace PopLife.UI.Quest
             }
 
             OnTrackedQuestsChanged?.Invoke();
+            OnQuestStateChanged?.Invoke();
         }
 
         /// <summary>
@@ -208,6 +224,7 @@ namespace PopLife.UI.Quest
         private void OnDayChanged(int newDay)
         {
             OnTrackedQuestsChanged?.Invoke();
+            OnQuestStateChanged?.Invoke();
         }
 
         #endregion
@@ -294,7 +311,8 @@ namespace PopLife.UI.Quest
                 giverPortrait = def?.GiverPortrait,
                 questIcon = def?.QuestIcon,
                 rewards = def?.Rewards,
-                entries = entries
+                entries = entries,
+                questState = state
             };
         }
 
@@ -328,6 +346,69 @@ namespace PopLife.UI.Quest
                     completed++;
             }
             return (completed, total);
+        }
+
+        /// <summary>
+        /// 获取所有非 Unassigned 的任务，按状态分组
+        /// 顺序：Active → Completed → Failed，空组不返回
+        /// </summary>
+        public List<QuestLogGroupViewModel> GetAllQuestsGrouped()
+        {
+            var result = new List<QuestLogGroupViewModel>();
+
+            var activeGroup = BuildGroup("Active", QuestState.Active);
+            if (activeGroup.quests.Count > 0) result.Add(activeGroup);
+
+            var successGroup = BuildGroup("Completed", QuestState.Success);
+            if (successGroup.quests.Count > 0) result.Add(successGroup);
+
+            var failedGroup = BuildGroup("Failed", QuestState.Failure);
+            if (failedGroup.quests.Count > 0) result.Add(failedGroup);
+
+            return result;
+        }
+
+        private QuestLogGroupViewModel BuildGroup(string label, QuestState state)
+        {
+            var group = new QuestLogGroupViewModel
+            {
+                groupLabel = label,
+                quests = new List<QuestViewModel>()
+            };
+
+            string[] questNames = QuestLog.GetAllQuests(state);
+            if (questNames == null) return group;
+
+            foreach (string qName in questNames)
+            {
+                var vm = new QuestViewModel
+                {
+                    questName = qName,
+                    displayTitle = QuestLog.GetQuestTitle(qName),
+                    questType = GetQuestType(qName),
+                    remainingDays = GetRemainingDays(qName),
+                    sortPriority = GetSortPriority(qName)
+                };
+                (vm.completedEntries, vm.totalEntries) = GetProgress(qName);
+                group.quests.Add(vm);
+            }
+
+            // Active 组使用完整排序（主线优先 > 优先级 > DDL）
+            if (state == QuestState.Active)
+            {
+                group.quests.Sort((a, b) =>
+                {
+                    int typeCompare = a.questType.CompareTo(b.questType);
+                    if (typeCompare != 0) return typeCompare;
+                    int prioCompare = b.sortPriority.CompareTo(a.sortPriority);
+                    if (prioCompare != 0) return prioCompare;
+                    int aDeadline = a.remainingDays < 0 ? int.MaxValue : a.remainingDays;
+                    int bDeadline = b.remainingDays < 0 ? int.MaxValue : b.remainingDays;
+                    return aDeadline.CompareTo(bDeadline);
+                });
+            }
+
+            return group;
         }
 
         #endregion

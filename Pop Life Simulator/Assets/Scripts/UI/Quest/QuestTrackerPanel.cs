@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,22 +18,17 @@ namespace PopLife.UI.Quest
         [SerializeField] private Button collapseButton;
         [SerializeField] private GameObject collapseIcon;   // ▼ 展开状态显示
         [SerializeField] private GameObject expandIcon;     // ► 折叠状态显示
-        [SerializeField] private CanvasGroup contentCanvasGroup;
         [SerializeField] private TextMeshProUGUI headerText;
 
         [Header("引用")]
         [SerializeField] private QuestTooltip questTooltip;
-        [SerializeField] private QuestDetailPanel questDetailPanel;
-
-        [Header("Animation")]
-        [SerializeField] private float collapseDuration = 0.25f;
+        [SerializeField] private QuestLogPanel questLogPanel;
 
         [Header("Settings")]
         [SerializeField] private int maxDisplayCount = 5;
 
-        private bool isCollapsed = false;
+        private bool isCollapsed = true; // 默认折叠
         private readonly List<QuestTrackerEntry> activeEntries = new();
-        private Coroutine collapseCoroutine;
 
         private void OnEnable()
         {
@@ -54,9 +48,9 @@ namespace PopLife.UI.Quest
                 QuestDataService.Instance.OnTrackedQuestsChanged += RefreshQuests;
             }
 
-            // 初始化折叠图标
-            if (collapseIcon != null) collapseIcon.SetActive(true);
-            if (expandIcon != null) expandIcon.SetActive(false);
+            // 默认折叠状态：显示 expandIcon，隐藏 collapseIcon
+            if (collapseIcon != null) collapseIcon.SetActive(false);
+            if (expandIcon != null) expandIcon.SetActive(true);
 
             // 初始刷新
             RefreshQuests();
@@ -91,8 +85,8 @@ namespace PopLife.UI.Quest
                 return;
             }
 
-            // 创建条目（最多 maxDisplayCount 条）
-            int count = Mathf.Min(quests.Count, maxDisplayCount);
+            // 折叠时只显示第一条，展开时显示全部（最多 maxDisplayCount 条）
+            int count = isCollapsed ? 1 : Mathf.Min(quests.Count, maxDisplayCount);
             for (int i = 0; i < count; i++)
             {
                 if (questEntryPrefab == null || contentContainer == null) break;
@@ -101,7 +95,7 @@ namespace PopLife.UI.Quest
                 var entry = obj.GetComponent<QuestTrackerEntry>();
                 if (entry != null)
                 {
-                    entry.Initialize(quests[i], questTooltip, questDetailPanel);
+                    entry.Initialize(quests[i], questTooltip, questLogPanel);
                     activeEntries.Add(entry);
                 }
             }
@@ -119,8 +113,8 @@ namespace PopLife.UI.Quest
             if (collapseIcon != null) collapseIcon.SetActive(!isCollapsed);
             if (expandIcon != null) expandIcon.SetActive(isCollapsed);
 
-            if (collapseCoroutine != null) StopCoroutine(collapseCoroutine);
-            collapseCoroutine = StartCoroutine(AnimateCollapse(isCollapsed));
+            // 刷新列表（折叠时只显示1条，展开时显示全部）
+            RefreshQuests();
 
             // 播放音效
             if (AudioManager.Instance != null)
@@ -133,38 +127,6 @@ namespace PopLife.UI.Quest
         {
             if (headerText != null)
                 headerText.text = totalCount > 0 ? $"QUESTS ({totalCount})" : "QUESTS";
-        }
-
-        /// <summary>
-        /// 折叠/展开动画
-        /// 使用 EaseOutCubic 缓动，Time.unscaledDeltaTime 不受游戏时间倍速影响
-        /// </summary>
-        private IEnumerator AnimateCollapse(bool collapse)
-        {
-            if (contentCanvasGroup == null) yield break;
-
-            float elapsed = 0f;
-            float startAlpha = contentCanvasGroup.alpha;
-            float targetAlpha = collapse ? 0f : 1f;
-
-            while (elapsed < collapseDuration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                // EaseOutCubic 缓动
-                float t = 1f - Mathf.Pow(1f - Mathf.Clamp01(elapsed / collapseDuration), 3f);
-                contentCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
-                yield return null;
-            }
-
-            contentCanvasGroup.alpha = targetAlpha;
-            contentCanvasGroup.interactable = !collapse;
-            contentCanvasGroup.blocksRaycasts = !collapse;
-
-            // 折叠时隐藏内容容器（节省性能）
-            if (contentContainer != null)
-                contentContainer.gameObject.SetActive(!collapse);
-
-            collapseCoroutine = null;
         }
 
         #endregion

@@ -1,7 +1,7 @@
 # Quest 追踪 UI 系统构建指南
 
 ## 概述
-Quest 追踪 UI 系统为玩家提供任务进度的可视化追踪。包含三个核心 UI 组件：右上角追踪面板、鼠标悬停 Tooltip、点击打开的详情面板。
+Quest 追踪 UI 系统为玩家提供任务进度的可视化追踪。包含三个核心 UI 组件：右上角追踪面板、鼠标悬停 Tooltip（含图标和类型标签）、点击打开的任务日志面板（左侧列表 + 右侧详情）。
 
 系统仅负责 **UI 展示层**，任务数据来自两个数据源：
 - **Dialogue System QuestLog**：任务状态（active/success/failure）、Entry 进度、标题、描述
@@ -18,12 +18,12 @@ QuestLog (状态/进度/文本)  +  QuestDefinition SO (DDL/颁布者/奖励)
                     ↓
    ┌────────────────┼────────────────┐
    ▼                ▼                ▼
-QuestTrackerPanel  QuestTooltip   QuestDetailPanel
-(右上角,可折叠)    (鼠标跟随)     (点击打开弹窗)
-   │
+QuestTrackerPanel  QuestTooltip   QuestLogPanel
+(右上角,可折叠)    (鼠标跟随,      (左右分栏:
+   │                含icon+type)     列表+详情)
    └── QuestTrackerEntry × N
          hover → QuestTooltip
-         click → QuestDetailPanel
+         click → QuestLogPanel(focusQuest)
 ```
 
 ---
@@ -36,9 +36,10 @@ QuestTrackerPanel  QuestTooltip   QuestDetailPanel
 | `Scripts/UI/Quest/QuestDataService.cs` | QuestDataService | 数据桥接服务（单例） |
 | `Scripts/UI/Quest/QuestTrackerPanel.cs` | QuestTrackerPanel | 右上角追踪面板 |
 | `Scripts/UI/Quest/QuestTrackerEntry.cs` | QuestTrackerEntry | 追踪面板中的单条任务 |
-| `Scripts/UI/Quest/QuestTooltip.cs` | QuestTooltip | 鼠标悬停提示 |
+| `Scripts/UI/Quest/QuestTooltip.cs` | QuestTooltip | 鼠标悬停提示（含icon+type） |
 | `Scripts/UI/Quest/QuestTooltipEntryItem.cs` | QuestTooltipEntryItem | Tooltip 中的条目行 |
-| `Scripts/UI/Quest/QuestDetailPanel.cs` | QuestDetailPanel | 任务详情弹窗 |
+| `Scripts/UI/Quest/QuestLogPanel.cs` | QuestLogPanel | 任务日志面板（左列表+右详情） |
+| `Scripts/UI/Quest/QuestLogListEntry.cs` | QuestLogListEntry | 日志面板左侧列表条目 |
 | `Scripts/UI/Quest/QuestRewardItem.cs` | QuestRewardItem | 详情面板中的奖励条目 |
 
 修改的现有文件：
@@ -133,7 +134,7 @@ QuestTrackerPanel                          ← 挂载 QuestTrackerPanel.cs
 | Content Canvas Group | ContentContainer 上的 CanvasGroup |
 | Header Text | HeaderText (TMP) |
 | Quest Tooltip | QuestTooltip 实例（见步骤 5） |
-| Quest Detail Panel | QuestDetailPanel 实例（见步骤 7） |
+| Quest Log Panel | QuestLogPanel 实例（见步骤 7） |
 
 ### 步骤 5：创建 QuestTrackerEntry 预制体
 
@@ -163,7 +164,10 @@ QuestTrackerEntry                          ← 挂载 QuestTrackerEntry.cs
 ```
 QuestTooltip                               ← 挂载 QuestTooltip.cs + CanvasGroup
 ├── Background (Image, 深色半透明)
-├── TitleText (TMP, 粗体)                  ← 任务名称
+├── HeaderRow (HorizontalLayoutGroup)
+│   ├── QuestIcon (Image, 24x24)           ← 任务图标（无图标时隐藏）
+│   ├── TitleText (TMP, 粗体)              ← 任务名称
+│   └── QuestTypeLabel (TMP, 右对齐)       ← "MAIN QUEST" / "SIDE QUEST"
 ├── DescriptionText (TMP)                  ← 任务描述
 ├── DeadlineText (TMP)                     ← "Deadline: 3 days left"
 ├── Separator (Image, 1px 高分隔线)
@@ -184,35 +188,67 @@ QuestTooltipEntryItem                      ← 挂载 QuestTooltipEntryItem.cs
 └── EntryText (TMP)                        ← 条目文本
 ```
 
-### 步骤 7：搭建 QuestDetailPanel
+### 步骤 7：搭建 QuestLogPanel
 
-在主 UI Canvas 下创建（居中弹窗）：
+在主 UI Canvas 下创建（居中大面板，左右分栏）：
 
 ```
-QuestDetailPanel                           ← 挂载 QuestDetailPanel.cs + CanvasGroup
+QuestLogPanel                              ← 挂载 QuestLogPanel.cs + CanvasGroup
 ├── PanelRoot                              ← 控制显隐的根物体
-│   ├── Overlay (Image, 全屏半透明黑底)    ← 可选，点击关闭
-│   ├── Panel (Image, 面板背景)
-│   │   ├── CloseButton (Button)           ← 右上角 X 按钮
+│   ├── Overlay (Image, 全屏半透明黑底)    ← 可选
+│   ├── PanelFrame (Image, 面板背景, ~800x500)
 │   │   ├── Header
-│   │   │   ├── QuestIcon (Image)          ← 任务图标
-│   │   │   ├── TitleText (TMP, 大号粗体)  ← 任务名称
-│   │   │   └── QuestTypeLabel (TMP)       ← "MAIN QUEST" / "SIDE QUEST"
-│   │   ├── DescriptionText (TMP)          ← 任务描述
-│   │   ├── Separator
-│   │   ├── EntriesSection
-│   │   │   ├── SectionTitle (TMP, "Requirements")
-│   │   │   └── EntriesContainer (VLG)     ← 条目列表
-│   │   ├── DeadlineSection                ← 按数据有无自动显隐
-│   │   │   ├── SectionTitle (TMP, "Deadline")
-│   │   │   └── DeadlineText (TMP)
-│   │   ├── GiverSection                   ← 按数据有无自动显隐
-│   │   │   ├── SectionTitle (TMP, "Given by")
-│   │   │   ├── GiverPortrait (Image)
-│   │   │   └── GiverNameText (TMP)
-│   │   └── RewardsSection
-│   │       ├── SectionTitle (TMP, "Rewards")
-│   │       └── RewardsContainer (HLG/VLG) ← 奖励列表
+│   │   │   ├── HeaderTitle (TMP, "QUEST LOG")
+│   │   │   └── CloseButton (Button)       ← 右上角 X 按钮
+│   │   └── Content (HorizontalLayoutGroup)
+│   │       ├── LeftPanel (宽35%)
+│   │       │   ├── ListScrollView (ScrollRect)
+│   │       │   │   └── ListContent (VLG + ContentSizeFitter) ← listContainer
+│   │       │   │       ├── [GroupHeader 动态] "ACTIVE (3)"
+│   │       │   │       ├── [QuestLogListEntry 动态] × N
+│   │       │   │       ├── [GroupHeader 动态] "COMPLETED (2)"
+│   │       │   │       └── [QuestLogListEntry 动态] × N
+│   │       │   └── EmptyState (TMP, "No quests available")
+│   │       ├── Divider (Image, 2px 竖线)
+│   │       └── RightPanel (宽65%)
+│   │           ├── DetailContent          ← detailContent 根物体
+│   │           │   ├── DetailHeader
+│   │           │   │   ├── QuestIcon (Image)
+│   │           │   │   ├── TitleText (TMP, 大号粗体)
+│   │           │   │   ├── QuestTypeLabel (TMP)
+│   │           │   │   └── QuestStateLabel (TMP) ← "IN PROGRESS"/"COMPLETED"/"FAILED"
+│   │           │   ├── DescriptionText (TMP)
+│   │           │   ├── EntriesSection
+│   │           │   │   ├── SectionTitle (TMP, "Requirements")
+│   │           │   │   └── EntriesContainer (VLG)
+│   │           │   ├── DeadlineSection
+│   │           │   │   ├── SectionTitle (TMP, "Deadline")
+│   │           │   │   └── DeadlineText (TMP)
+│   │           │   ├── GiverSection
+│   │           │   │   ├── SectionTitle (TMP, "Given by")
+│   │           │   │   ├── GiverPortrait (Image)
+│   │           │   │   └── GiverNameText (TMP)
+│   │           │   └── RewardsSection
+│   │           │       ├── SectionTitle (TMP, "Rewards")
+│   │           │       └── RewardsContainer (HLG/VLG)
+│   │           └── DetailEmptyState (TMP, "Select a quest to view details")
+```
+
+**QuestLogListEntry 预制体：**
+
+```
+QuestLogListEntry                          ← 挂载 QuestLogListEntry.cs
+├── BackgroundImage (Image, Raycast=true)  ← 选中高亮用
+├── TypeIndicator (Image, 4px 宽色条)      ← 金色=主线
+├── TitleText (TMP)                        ← 任务名称
+└── ProgressText (TMP, 右对齐)             ← "2/5"
+```
+
+**GroupHeader 预制体：**
+
+```
+GroupHeader (LayoutElement, MinHeight=30)
+└── GroupLabel (TMP, bold, uppercase)      ← "ACTIVE (3)"
 ```
 
 **QuestRewardItem 预制体：**
@@ -223,16 +259,20 @@ QuestRewardItem                            ← 挂载 QuestRewardItem.cs
 └── RewardText (TMP)                       ← "$500" / "50 Fame"
 ```
 
-**QuestDetailPanel Inspector 配置：**
+**QuestLogPanel Inspector 配置：**
 
 | 字段 | 拖入 |
 |------|------|
 | Panel Root | PanelRoot GameObject |
+| Canvas Group | QuestLogPanel 上的 CanvasGroup |
 | Close Button | CloseButton |
-| Canvas Group | QuestDetailPanel 上的 CanvasGroup |
+| List Container | ListContent Transform |
+| List Entry Prefab | QuestLogListEntry 预制体 |
+| Group Header Prefab | GroupHeader 预制体 |
 | Title Text | TitleText |
 | Quest Icon | QuestIcon Image |
 | Quest Type Label | QuestTypeLabel |
+| Quest State Label | QuestStateLabel |
 | Description Text | DescriptionText |
 | Entries Container | EntriesContainer Transform |
 | Entry Item Prefab | QuestTooltipEntryItem 预制体（复用） |
@@ -243,6 +283,9 @@ QuestRewardItem                            ← 挂载 QuestRewardItem.cs
 | Giver Name Text | GiverNameText |
 | Rewards Container | RewardsContainer Transform |
 | Reward Item Prefab | QuestRewardItem 预制体 |
+| Empty State Object | LeftPanel/EmptyState GameObject |
+| Detail Empty State | DetailEmptyState GameObject |
+| Detail Content | DetailContent GameObject |
 
 ### 步骤 8：配置 UIManager
 
@@ -250,7 +293,7 @@ QuestRewardItem                            ← 挂载 QuestRewardItem.cs
 2. 在 Inspector 中找到 **Quest UI** 分组
 3. 拖入引用：
    - Quest Tracker Panel → QuestTrackerPanel 实例
-   - Quest Detail Panel → QuestDetailPanel 实例
+   - Quest Log Panel → QuestLogPanel 实例
 
 ---
 
@@ -265,9 +308,11 @@ QuestRewardItem                            ← 挂载 QuestRewardItem.cs
    ↓
 3. QuestDataService.OnQuestStateChange(string) 被触发
    - 如果是新激活的任务 → 记录 activationDayMap[questName] = currentDay
-   - 触发 OnTrackedQuestsChanged 事件
+   - 触发 OnTrackedQuestsChanged 事件（QuestTrackerPanel 订阅）
+   - 触发 OnQuestStateChanged 事件（QuestLogPanel 订阅）
    ↓
 4. QuestTrackerPanel.RefreshQuests() 被调用
+   QuestLogPanel（如果正在显示）也会自动刷新列表并保持选中
    - 调用 QuestDataService.GetTrackedQuests() 获取 ViewModel 列表
    - 清空旧条目，实例化新的 QuestTrackerEntry
    ↓
@@ -321,6 +366,7 @@ QuestRewardItem                            ← 挂载 QuestRewardItem.cs
 | questIcon | Sprite | QuestDefinition SO |
 | rewards | QuestReward[] | QuestDefinition SO |
 | entries | QuestEntryInfo[] | QuestLog Entry 文本 + 状态 |
+| questState | QuestState | QuestLog.GetQuestState() |
 
 ---
 
@@ -332,9 +378,10 @@ QuestRewardItem                            ← 挂载 QuestRewardItem.cs
 | 点击折叠按钮 | EaseOutCubic 动画折叠/展开内容区域 |
 | 鼠标悬停条目 | 条目背景变亮 + 显示 QuestTooltip（跟随鼠标） |
 | 鼠标移出条目 | 背景恢复 + Tooltip 淡出 |
-| 点击条目 | 隐藏 Tooltip + 打开 QuestDetailPanel |
-| 按 ESC | 关闭 QuestDetailPanel |
-| 点击详情面板 X 按钮 | 关闭 QuestDetailPanel |
+| 点击条目 | 隐藏 Tooltip + 打开 QuestLogPanel（聚焦到点击的任务） |
+| 点击左侧列表条目 | 右侧详情切换到选中任务，左侧高亮更新 |
+| 按 ESC | 关闭 QuestLogPanel |
+| 点击日志面板 X 按钮 | 关闭 QuestLogPanel |
 
 ---
 
@@ -390,8 +437,11 @@ QuestLog.SetQuestEntryState("TestQuest", 1, QuestState.Success);
 // 手动刷新追踪面板
 UIManager.Instance.RefreshQuestTracker();
 
-// 打开详情面板
-UIManager.Instance.ShowQuestDetail("TestQuest");
+// 打开任务日志面板并聚焦到指定任务
+UIManager.Instance.ShowQuestLog("TestQuest");
+
+// 打开任务日志面板（默认选中第一个Active任务）
+UIManager.Instance.ShowQuestLog();
 ```
 
 ### 验证清单
@@ -403,8 +453,10 @@ UIManager.Instance.ShowQuestDetail("TestQuest");
 - [ ] UIManager 的 Quest UI 引用已配置
 - [ ] 激活任务后追踪面板正确显示条目
 - [ ] 悬停条目时 Tooltip 跟随鼠标并显示详情
-- [ ] 点击条目时详情面板正确弹出
-- [ ] 按 ESC 可关闭详情面板
+- [ ] 点击条目时 QuestLogPanel 正确打开，左侧列表按 Active/Completed/Failed 分组
+- [ ] 点击的任务在左侧高亮并在右侧显示详情
+- [ ] 点击左侧不同条目可切换右侧详情
+- [ ] 按 ESC 可关闭 QuestLogPanel
 - [ ] 折叠/展开动画正常
 - [ ] DDL 随天数递减（测试跨天）
 - [ ] 主线任务排在支线前面
@@ -424,4 +476,3 @@ UIManager.Instance.ShowQuestDetail("TestQuest");
 | 失败惩罚执行 | 任务失败时扣除资源 |
 | 数据持久化 | activationDayMap 通过 ES3 存档/读档 |
 | 任务通知动画 | 新任务激活/完成时的 toast 通知 |
-| 任务日志面板 | 查看所有已完成/失败任务的历史记录 |

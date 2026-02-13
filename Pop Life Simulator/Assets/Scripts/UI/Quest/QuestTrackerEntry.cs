@@ -19,6 +19,11 @@ namespace PopLife.UI.Quest
         [SerializeField] private Slider progressBar;
         [SerializeField] private TextMeshProUGUI progressText;
         [SerializeField] private Image backgroundImage;
+        [SerializeField] private Image typeIcon;
+
+        [Header("Type Icon Sprites")]
+        [SerializeField] private Sprite mainQuestSprite;
+        [SerializeField] private Sprite sideQuestSprite;
 
         [Header("Colors")]
         [SerializeField] private Color mainQuestColor = new Color(1f, 0.84f, 0f);   // 金色
@@ -30,16 +35,16 @@ namespace PopLife.UI.Quest
 
         private QuestViewModel data;
         private QuestTooltip tooltip;
-        private QuestDetailPanel detailPanel;
+        private QuestLogPanel logPanel;
 
         /// <summary>
         /// 初始化条目数据和引用
         /// </summary>
-        public void Initialize(QuestViewModel viewModel, QuestTooltip tooltip, QuestDetailPanel detailPanel)
+        public void Initialize(QuestViewModel viewModel, QuestTooltip tooltip, QuestLogPanel logPanel)
         {
             this.data = viewModel;
             this.tooltip = tooltip;
-            this.detailPanel = detailPanel;
+            this.logPanel = logPanel;
 
             // 标题
             if (titleText != null)
@@ -94,6 +99,21 @@ namespace PopLife.UI.Quest
                 }
             }
 
+            // 任务类型图标
+            if (typeIcon != null)
+            {
+                Sprite targetSprite = viewModel.questType == QuestType.Main ? mainQuestSprite : sideQuestSprite;
+                if (targetSprite != null)
+                {
+                    typeIcon.sprite = targetSprite;
+                    typeIcon.enabled = true;
+                }
+                else
+                {
+                    typeIcon.enabled = false;
+                }
+            }
+
             // 背景默认状态
             if (backgroundImage != null)
                 backgroundImage.color = normalBgColor;
@@ -118,7 +138,7 @@ namespace PopLife.UI.Quest
         public void OnPointerClick(PointerEventData eventData)
         {
             tooltip?.HideImmediate();
-            detailPanel?.Show(data.questName);
+            logPanel?.Show(data.questName);
 
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlaySound(AudioKeys.UI_CLICK);

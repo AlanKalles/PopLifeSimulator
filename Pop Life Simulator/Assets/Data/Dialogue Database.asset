@@ -117,7 +117,7 @@ MonoBehaviour:
       type: 3
       typeString: CustomFieldType_Files
     - title: Description
-      value: a
+      value: This is your first mission you should always finish it
       type: 0
       typeString: CustomFieldType_Text
     - title: Success Description
@@ -137,7 +137,7 @@ MonoBehaviour:
       type: 2
       typeString: CustomFieldType_Boolean
     - title: Display Name
-      value: This is a test Quest
+      value: Main mission 1
       type: 0
       typeString: 
     - title: Group
@@ -153,9 +153,64 @@ MonoBehaviour:
       type: 2
       typeString: CustomFieldType_Boolean
     - title: Entry Count
-      value: 0
+      value: 1
       type: 1
       typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: 
+    - title: Entry 1
+      value: Do this
+      type: 0
+      typeString: 
+  - id: 2
+    fields:
+    - title: Name
+      value: Side/1
+      type: 0
+      typeString: 
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: This is the side mission you can ignore it but I will curse you forever
+        if you do so
+      type: 0
+      typeString: 
+    - title: Success Description
+      value: 
+      type: 0
+      typeString: 
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: 
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: 
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Display Name
+      value: side quest 1
+      type: 0
+      typeString: 
+    - title: Group
+      value: Side
+      type: 0
+      typeString: CustomFieldType_Text
   locations: []
   variables:
   - id: 1
@@ -861,7 +916,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 
+      userScript: SetQuestState("Main/1", "active"); SetQuestState("Side/1","active")
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -872,8 +927,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 0}
-    canvasZoom: 0.7000003
+    canvasScrollPosition: {x: 1.8823853, y: 7.0251465}
+    canvasZoom: 0.85000014
   - id: 4
     fields:
     - title: Title
