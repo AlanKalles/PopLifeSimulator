@@ -14,8 +14,6 @@ namespace PopLife.Customers.Spawner
     {
         [Header("基础配置")]
         public GameObject customerPrefab; // 带 CustomerAgent + CustomerBlackboardAdapter
-        [Tooltip("与 ProductCategory 对齐的品类数量")]
-        public int categoriesCount = 6;
 
         [Header("生成点配置")]
         [Tooltip("多个生成点，随机选择")]
@@ -40,7 +38,6 @@ namespace PopLife.Customers.Spawner
 
         [Header("默认配置 (当找不到顾客记录时使用)")]
         public CustomerArchetype defaultArchetype;
-        public Trait[] defaultTraits;
 
         [Header("手动生成指定顾客")]
         [Tooltip("要生成的顾客ID")]
@@ -232,32 +229,6 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            // 尝试从记录中获取特质
-            List<Trait> traitsList = new List<Trait>();
-
-            if (record.traitIds != null && record.traitIds.Length > 0)
-            {
-                foreach (string traitId in record.traitIds)
-                {
-                    if (string.IsNullOrEmpty(traitId)) continue;
-
-                    // 从 Resources 文件夹加载特质
-                    Trait trait = Resources.Load<Trait>($"ScriptableObjects/Traits/{traitId}");
-
-                    if (trait != null)
-                    {
-                        traitsList.Add(trait);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"CustomerSpawner: 找不到特质 '{traitId}'");
-                    }
-                }
-            }
-
-            // 如果没有找到任何特质，使用默认特质
-            Trait[] traits = traitsList.Count > 0 ? traitsList.ToArray() : (defaultTraits ?? new Trait[0]);
-
             int daySeed = UnityEngine.Random.Range(0, int.MaxValue);
 
             // 获取生成点位置
@@ -273,7 +244,7 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            agent.Initialize(record, archetype, traits, categoriesCount, daySeed);
+            agent.Initialize(record, archetype, daySeed);
 
             // 设置生成点（用于离开）
             if (agent.bb != null)
@@ -536,9 +507,6 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            // 加载Traits
-            Trait[] traits = LoadTraits(record.traitIds);
-
             // 实例化
             int daySeed = UnityEngine.Random.Range(0, int.MaxValue);
             GameObject go = Instantiate(customerPrefab, spawnPosition, Quaternion.identity);
@@ -551,7 +519,7 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            agent.Initialize(record, archetype, traits, categoriesCount, daySeed);
+            agent.Initialize(record, archetype, daySeed);
 
             // 设置生成点（用于最终撤离）
             if (agent.bb != null)
@@ -682,45 +650,6 @@ namespace PopLife.Customers.Spawner
             }
 
             return archetype;
-        }
-
-        /// <summary>
-        /// 加载Traits（支持数组）
-        /// </summary>
-        private Trait[] LoadTraits(string[] traitIds)
-        {
-            var traitsList = new List<Trait>();
-
-            if (traitIds == null || traitIds.Length == 0)
-                return defaultTraits ?? new Trait[0];
-
-            var allTraits = Resources.LoadAll<Trait>("ScriptableObjects/Traits");
-
-            foreach (string traitId in traitIds)
-            {
-                if (string.IsNullOrEmpty(traitId)) continue;
-
-                Trait trait = Resources.Load<Trait>($"ScriptableObjects/Traits/{traitId}");
-
-                if (trait == null)
-                {
-                    foreach (var t in allTraits)
-                    {
-                        if (t.traitId == traitId || t.name == traitId)
-                        {
-                            trait = t;
-                            break;
-                        }
-                    }
-                }
-
-                if (trait != null)
-                {
-                    traitsList.Add(trait);
-                }
-            }
-
-            return traitsList.Count > 0 ? traitsList.ToArray() : (defaultTraits ?? new Trait[0]);
         }
 
         /// <summary>

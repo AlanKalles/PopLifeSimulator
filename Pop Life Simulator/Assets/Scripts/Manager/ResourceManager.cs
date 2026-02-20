@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PopLife.Runtime;
 
 namespace PopLife
 {
@@ -16,6 +17,14 @@ namespace PopLife
         /// </summary>
         public event Action<int> OnMoneyChanged;
 
+        [Header("Store Appeal")]
+        [SerializeField] private int storeAppeal;
+
+        /// <summary>
+        /// Store Appeal 变化时触发，参数为当前 storeAppeal 值
+        /// </summary>
+        public event Action<int> OnStoreAppealChanged;
+
         [Header("Lifetime Statistics")]
         [SerializeField] private int totalIncome = 0;      // 总收入（仅来自顾客结账）
         [SerializeField] private int totalExpenses = 0;    // 总开支（SpendMoney的累计）
@@ -23,9 +32,23 @@ namespace PopLife
         // Fame小数累积器（用于累积小数fame直到满1）
         private float fameAccumulator = 0f;
 
+        // FloorManager 缓存引用（用于 Store Appeal 计算）
+        private FloorManager floorManagerCache;
+
         void Awake()
         {
             Instance = this;
+        }
+
+        void Start()
+        {
+            // 订阅建筑变化事件以更新 Store Appeal
+            ConstructionManager.OnBuildingPlacedOrDestroyed += RecalculateStoreAppeal;
+        }
+
+        void OnDestroy()
+        {
+            ConstructionManager.OnBuildingPlacedOrDestroyed -= RecalculateStoreAppeal;
         }
 
         #region Getters
@@ -33,6 +56,7 @@ namespace PopLife
         public int GetMoney() => money;
         public int GetTotalIncome() => totalIncome;
         public int GetTotalExpenses() => totalExpenses;
+        public int GetStoreAppeal() => storeAppeal;
         #endregion
 
         #region Resource Checks
@@ -120,6 +144,31 @@ namespace PopLife
                 fame += wholeFame;
                 fameAccumulator -= wholeFame;
             }
+        }
+        #endregion
+
+        #region Store Appeal
+        /// <summary>
+        /// 遍历所有楼层的所有货架，累加 appeal 值
+        /// 触发时机：建造/拆除/移动/升级货架
+        /// </summary>
+        public void RecalculateStoreAppeal()
+        {
+            if (floorManagerCache == null)
+                floorManagerCache = FindFirstObjectByType<FloorManager>();
+
+            if (floorManagerCache == null) return;
+
+            int total = 0;
+            foreach (var floor in floorManagerCache.GetAllActiveFloors())
+            {
+                foreach (var shelf in floor.AllShelves())
+                {
+                    total += Mathf.RoundToInt(shelf.GetAppeal());
+                }
+            }
+            storeAppeal = total;
+            OnStoreAppealChanged?.Invoke(storeAppeal);
         }
         #endregion
     }

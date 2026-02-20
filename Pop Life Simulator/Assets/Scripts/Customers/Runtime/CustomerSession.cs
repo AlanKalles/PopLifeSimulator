@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PopLife.Customers.Data;
 
 
 namespace PopLife.Customers.Runtime
@@ -14,7 +15,7 @@ namespace PopLife.Customers.Runtime
         public int boughtQty;
         public float waitSeconds;
     }
-    
+
     [Serializable]
     public class CustomerSession
     {
@@ -30,5 +31,7 @@ namespace PopLife.Customers.Runtime
         public float pathLength;
         public float cashierQueueTime;
         public List<ShelfVisit> visitedShelves = new();
+        // 每次购买时记录命中的漏斗层级（用于 XP 计算）
+        public List<FunnelPhase> purchaseFunnelTiers = new();
     }
 }

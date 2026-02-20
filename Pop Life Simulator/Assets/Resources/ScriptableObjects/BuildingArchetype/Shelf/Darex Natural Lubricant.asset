@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Darex Natural Lubricant
   m_EditorClassIdentifier: 
-  archetypeId: B005
+  archetypeId: Darex Natural Lubricant
   displayName: Darex Natural Lubricant
   icon: {fileID: 21300000, guid: bc1551e799c214a63841f2819645facd, type: 3}
   prefab: {fileID: 2553700819061216157, guid: 941a9a7e4c7cc43c89830867624dc93f, type: 3}
-  buildCost: 50
+  buildCost: 55
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern:
@@ -26,30 +26,6 @@ MonoBehaviour:
   - {x: 1, y: 0}
   canRotate: 0
   levels: []
-  category: 4
-  selectPages: 04000000
-  shelfLevels:
-  - level: 1
-    upgradeFameCost: 15
-    maintenanceFee: 2
-    price: 4
-    maxStock: 10
-    attractiveness: 4
-  - level: 2
-    upgradeFameCost: 30
-    maintenanceFee: 3
-    price: 10
-    maxStock: 5
-    attractiveness: 6
-  - level: 3
-    upgradeFameCost: 50
-    maintenanceFee: 6
-    price: 20
-    maxStock: 8
-    attractiveness: 8.5
-  - level: 4
-    upgradeFameCost: 60
-    maintenanceFee: 8
-    price: 40
-    maxStock: 11
-    attractiveness: 10
+  category: 10
+  brand: {fileID: 11400000, guid: d71b015dbe7761a418c4b7d7a420731f, type: 2}
+  description: 

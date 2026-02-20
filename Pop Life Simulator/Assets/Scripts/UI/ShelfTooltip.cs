@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using TMPro;
 using PopLife.Data;
@@ -17,7 +18,8 @@ namespace PopLife.UI
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI costText;
         [SerializeField] private TextMeshProUGUI categoryText;
-        [SerializeField] private TextMeshProUGUI attractivenessText;
+        [FormerlySerializedAs("attractivenessText")]
+        [SerializeField] private TextMeshProUGUI appealText;
         [SerializeField] private TextMeshProUGUI priceText;
         [SerializeField] private TextMeshProUGUI maintenanceFeeText;
         [SerializeField] private CanvasGroup canvasGroup; // For fade animation
@@ -95,10 +97,10 @@ namespace PopLife.UI
             var shelfLevel = shelf.GetShelfLevel(1);
             if (shelfLevel != null)
             {
-                // Display attractiveness
-                if (attractivenessText != null)
+                // Display appeal
+                if (appealText != null)
                 {
-                    attractivenessText.text = $"Attractiveness: {shelfLevel.attractiveness:F1}";
+                    appealText.text = $"Appeal: {shelfLevel.appeal:F1}";
                 }
 
                 // Display price

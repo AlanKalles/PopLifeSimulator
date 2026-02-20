@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Data;
+using PopLife.Data;
 using PopLife.Utility;
 
 namespace PopLife.Customers.Editor
@@ -47,14 +48,15 @@ namespace PopLife.Customers.Editor
         private SerializedObject serializedRecord;
 
         private string[] availableArchetypes = new string[0];
-        private string[] availableTraits = new string[0];
+
+        // 偏好货架编辑用缓存
+        private ShelfArchetype[] favoriteShelvesSO = new ShelfArchetype[4];
 
         private enum SortBy { None, ID, Name, Trust, Loyalty, Visits }
         private SortBy sortBy = SortBy.None;
         private bool sortAscending = true;
 
         private bool foldoutStats = true;
-        private bool foldoutInterests = true;
 
         private Vector2 detailScrollPos;  // 详情面板滚动位置
 
@@ -83,16 +85,6 @@ namespace PopLife.Customers.Editor
                 var archetype = AssetDatabase.LoadAssetAtPath<CustomerArchetype>(path);
                 if (archetype != null)
                     availableArchetypes[i + 1] = archetype.name;
-            }
-
-            var traitGuids = AssetDatabase.FindAssets("t:Trait");
-            availableTraits = new string[traitGuids.Length];
-            for (int i = 0; i < traitGuids.Length; i++)
-            {
-                var path = AssetDatabase.GUIDToAssetPath(traitGuids[i]);
-                var trait = AssetDatabase.LoadAssetAtPath<Trait>(path);
-                if (trait != null)
-                    availableTraits[i] = trait.name;
             }
         }
 
@@ -371,57 +363,46 @@ namespace PopLife.Customers.Editor
             archetypeIndex = EditorGUILayout.Popup("Archetype", archetypeIndex, availableArchetypes);
             editingRecord.archetypeId = archetypeIndex > 0 ? availableArchetypes[archetypeIndex] : "";
 
-            EditorGUILayout.LabelField("Traits");
+            EditorGUILayout.LabelField("Favorite Shelves", EditorStyles.boldLabel);
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            if (editingRecord.traitIds == null) editingRecord.traitIds = new string[0];
+            // 确保 favoriteShelfIds 数组大小为 4
+            if (editingRecord.favoriteShelfIds == null || editingRecord.favoriteShelfIds.Length != 4)
+                editingRecord.favoriteShelfIds = new string[4];
 
-            for (int i = 0; i < editingRecord.traitIds.Length; i++)
+            // 同步 SO 缓存（从 archetypeId 反查）
+            SyncFavoriteShelfSOs();
+
+            string[] slotLabels = { "Slot 1 (Highest Priority)", "Slot 2", "Slot 3", "Slot 4" };
+            for (int i = 0; i < 4; i++)
             {
                 EditorGUILayout.BeginHorizontal();
-                var traitIndex = Array.IndexOf(availableTraits, editingRecord.traitIds[i]);
-                if (traitIndex < 0) traitIndex = 0;
-                traitIndex = EditorGUILayout.Popup(traitIndex, availableTraits);
-                if (traitIndex >= 0 && traitIndex < availableTraits.Length)
-                    editingRecord.traitIds[i] = availableTraits[traitIndex];
+                EditorGUILayout.LabelField(slotLabels[i], GUILayout.Width(160));
 
+                var newShelf = (ShelfArchetype)EditorGUILayout.ObjectField(
+                    favoriteShelvesSO[i],
+                    typeof(ShelfArchetype),
+                    false
+                );
+
+                // 更新缓存和 record
+                if (newShelf != favoriteShelvesSO[i])
+                {
+                    favoriteShelvesSO[i] = newShelf;
+                    editingRecord.favoriteShelfIds[i] = newShelf != null ? newShelf.archetypeId : "";
+                }
+
+                // 清除按钮
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    var list = editingRecord.traitIds.ToList();
-                    list.RemoveAt(i);
-                    editingRecord.traitIds = list.ToArray();
+                    favoriteShelvesSO[i] = null;
+                    editingRecord.favoriteShelfIds[i] = "";
                 }
+
                 EditorGUILayout.EndHorizontal();
             }
 
-            if (GUILayout.Button("Add Trait"))
-            {
-                var list = editingRecord.traitIds.ToList();
-                list.Add("");
-                editingRecord.traitIds = list.ToArray();
-            }
-
             EditorGUILayout.EndVertical();
-
-            EditorGUILayout.Space(10);
-            foldoutInterests = EditorGUILayout.Foldout(foldoutInterests, "Interest Deltas", true);
-            if (foldoutInterests)
-            {
-                EditorGUI.indentLevel++;
-
-                if (editingRecord.interestPersonalDelta == null || editingRecord.interestPersonalDelta.Length != 6)
-                    editingRecord.EnsureInterestSize(6);
-
-                string[] categories = { "Lingerie", "Condom", "Vibrator", "Fleshlight", "Lubricant", "BDSM" };
-                for (int i = 0; i < 6; i++)
-                {
-                    editingRecord.interestPersonalDelta[i] = EditorGUILayout.FloatField(
-                        categories[i],
-                        editingRecord.interestPersonalDelta[i]
-                    );
-                }
-                EditorGUI.indentLevel--;
-            }
 
             EditorGUILayout.Space(10);
             foldoutStats = EditorGUILayout.Foldout(foldoutStats, "Stats & Progress", true);
@@ -453,6 +434,34 @@ namespace PopLife.Customers.Editor
 
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// 从 editingRecord.favoriteShelfIds 反查 SO 引用，同步到 favoriteShelvesSO 缓存
+        /// </summary>
+        private void SyncFavoriteShelfSOs()
+        {
+            if (editingRecord == null) return;
+            if (editingRecord.favoriteShelfIds == null)
+                editingRecord.favoriteShelfIds = new string[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                string id = i < editingRecord.favoriteShelfIds.Length ? editingRecord.favoriteShelfIds[i] : "";
+                if (string.IsNullOrEmpty(id))
+                {
+                    favoriteShelvesSO[i] = null;
+                    continue;
+                }
+
+                // 如果缓存已经匹配，跳过加载
+                if (favoriteShelvesSO[i] != null && favoriteShelvesSO[i].archetypeId == id)
+                    continue;
+
+                // 从 Resources 路径加载
+                var so = Resources.Load<ShelfArchetype>($"ScriptableObjects/BuildingArchetype/Shelf/{id}");
+                favoriteShelvesSO[i] = so;
+            }
         }
 
         private List<CustomerRecord> GetFilteredRecords()
@@ -518,8 +527,7 @@ namespace PopLife.Customers.Editor
                 bio = "",
                 appearanceId = "",
                 archetypeId = "",
-                traitIds = new string[0],
-                interestPersonalDelta = new float[6],
+                favoriteShelfIds = new string[4],
                 trust = 0,
                 loyaltyLevel = 0,
                 xp = 0,
@@ -730,14 +738,22 @@ namespace PopLife.Customers.Editor
                         var fields = ParseCsvLine(lines[i]);
                         if (fields.Length < 10) continue;
 
+                        // 解析偏好货架（分号分隔，最多4个）
+                        var favIds = new string[4];
+                        if (!string.IsNullOrEmpty(fields[4]))
+                        {
+                            var parts = fields[4].Split(';');
+                            for (int j = 0; j < Math.Min(parts.Length, 4); j++)
+                                favIds[j] = parts[j].Trim();
+                        }
+
                         var record = new CustomerRecord
                         {
                             customerId = fields[0],
                             name = fields[1],
                             bio = fields[2],
                             archetypeId = fields[3],
-                            traitIds = string.IsNullOrEmpty(fields[4]) ?
-                                new string[0] : fields[4].Split(';'),
+                            favoriteShelfIds = favIds,
                             trust = int.TryParse(fields[5], out int trust) ? trust : 0,
                             loyaltyLevel = int.TryParse(fields[6], out int loyalty) ? loyalty : 0,
                             xp = int.TryParse(fields[7], out int xp) ? xp : 0,
@@ -745,7 +761,6 @@ namespace PopLife.Customers.Editor
                             lifetimeSpent = int.TryParse(fields[9], out int spent) ? spent : 0,
                             walletCapBase = 100,
                             appearanceId = "",
-                            interestPersonalDelta = new float[6],
                             schemaVersion = 1
                         };
 
@@ -756,17 +771,6 @@ namespace PopLife.Customers.Editor
                             int walletCap;
                             if (int.TryParse(fields[12], out walletCap))
                                 record.walletCapBase = walletCap;
-                        }
-
-                        if (fields.Length > 17)
-                        {
-                            // 兼容旧版本的5个类别和新版本的6个类别
-                            int maxCategories = Math.Min(6, fields.Length - 13);
-                            for (int j = 0; j < maxCategories; j++)
-                            {
-                                if (float.TryParse(fields[13 + j], out float delta))
-                                    record.interestPersonalDelta[j] = delta;
-                            }
                         }
 
                         records.Add(record);
@@ -797,19 +801,20 @@ namespace PopLife.Customers.Editor
                 {
                     var sb = new StringBuilder();
 
-                    sb.AppendLine("CustomerID,Name,Bio,ArchetypeID,TraitIDs,Trust,LoyaltyLevel,XP,VisitCount,LifetimeSpent,LastVisitDay,LastLeaveReason,WalletCapBase,InterestDelta_Lingerie,InterestDelta_Condom,InterestDelta_Vibrator,InterestDelta_Fleshlight,InterestDelta_Lubricant,InterestDelta_BDSM");
+                    sb.AppendLine("CustomerID,Name,Bio,ArchetypeID,FavoriteShelfIds,Trust,LoyaltyLevel,XP,VisitCount,LifetimeSpent,LastVisitDay,LastLeaveReason,WalletCapBase");
 
                     foreach (var record in records)
                     {
-                        record.EnsureInterestSize(6);
+                        // 确保 favoriteShelfIds 不为空
+                        var favIds = record.favoriteShelfIds ?? new string[4];
 
                         sb.AppendLine(string.Format(
-                            "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",{5},{6},{7},{8},{9},\"{10}\",\"{11}\",{12},{13},{14},{15},{16},{17},{18}",
+                            "\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",{5},{6},{7},{8},{9},\"{10}\",\"{11}\",{12}",
                             EscapeCsvField(record.customerId),
                             EscapeCsvField(record.name),
                             EscapeCsvField(record.bio ?? ""),
                             EscapeCsvField(record.archetypeId ?? ""),
-                            EscapeCsvField(string.Join(";", record.traitIds ?? new string[0])),
+                            EscapeCsvField(string.Join(";", favIds.Where(id => !string.IsNullOrEmpty(id)))),
                             record.trust,
                             record.loyaltyLevel,
                             record.xp,
@@ -817,13 +822,7 @@ namespace PopLife.Customers.Editor
                             record.lifetimeSpent,
                             EscapeCsvField(record.lastVisitDay ?? ""),
                             EscapeCsvField(record.lastLeaveReason ?? ""),
-                            record.walletCapBase,
-                            record.interestPersonalDelta[0],
-                            record.interestPersonalDelta[1],
-                            record.interestPersonalDelta[2],
-                            record.interestPersonalDelta[3],
-                            record.interestPersonalDelta[4],
-                            record.interestPersonalDelta[5]
+                            record.walletCapBase
                         ));
                     }
 

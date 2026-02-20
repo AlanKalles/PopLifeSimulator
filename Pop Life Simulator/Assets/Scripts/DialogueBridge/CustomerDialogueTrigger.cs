@@ -173,13 +173,8 @@ namespace PopLife.DialogueBridge
             DialogueLua.SetVariable("CurrentCustomer_VisitCount", customerRecord.visitCount);
             DialogueLua.SetVariable("CurrentCustomer_LifetimeSpent", customerRecord.lifetimeSpent);
 
-            // Sync traits as comma-separated string
-            string traitsStr = "";
-            if (customerRecord.traitIds != null && customerRecord.traitIds.Length > 0)
-            {
-                traitsStr = string.Join(",", customerRecord.traitIds);
-            }
-            DialogueLua.SetVariable("CurrentCustomer_Traits", traitsStr);
+            // Traits 已移除，清空 Lua 变量
+            DialogueLua.SetVariable("CurrentCustomer_Traits", "");
 
             if (debugMode)
             {
@@ -204,18 +199,7 @@ namespace PopLife.DialogueBridge
                 return customerConversation;
             }
 
-            // Priority 2: Trait-based conversations
-            if (customerRecord.traitIds != null)
-            {
-                foreach (var traitId in customerRecord.traitIds)
-                {
-                    string traitConversation = $"{traitConversationPrefix}{traitId}";
-                    if (DialogueManager.ConversationHasValidEntry(traitConversation))
-                    {
-                        return traitConversation;
-                    }
-                }
-            }
+            // Priority 2: Trait-based conversations（Trait 已移除，跳过此优先级）
 
             // Priority 3: Loyalty level based conversations
             if (customerRecord.loyaltyLevel > 0)

@@ -34,12 +34,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     var record = repository.GetRecord(customerAgent.customerID);
                     if (record != null)
                     {
-                        // 使用缓存的 Archetype 和 Traits
-                        CustomerProgressService.ApplySessionRewards(
+                        // 使用静态便捷方法应用会话奖励
+                        CustomerProgressService.ApplySessionRewardsStatic(
                             record,
                             customerAgent.currentSession,
-                            customerAgent.cachedArchetype,
-                            customerAgent.cachedTraits
+                            customerAgent.cachedArchetype
                         );
 
                         // 线程安全保存单个记录

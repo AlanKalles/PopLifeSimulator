@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PopLife.Customers.Services
 {
@@ -14,8 +15,9 @@ namespace PopLife.Customers.Services
         [Tooltip("商品价格权重")]
         [SerializeField] private float priceWeight = 0.05f;
 
+        [FormerlySerializedAs("attractivenessWeight")]
         [Tooltip("货架吸引力权重")]
-        [SerializeField] private float attractivenessWeight = 0.08f;
+        [SerializeField] private float appealWeight = 0.08f;
 
         void Awake()
         {
@@ -33,27 +35,25 @@ namespace PopLife.Customers.Services
         /// 计算单次购买获得的Fame
         /// </summary>
         /// <param name="price">商品价格</param>
-        /// <param name="attractiveness">货架吸引力</param>
-        /// <param name="traitFameMul">特质声望倍率</param>
+        /// <param name="appeal">货架吸引力</param>
         /// <returns>获得的Fame值</returns>
-        public float Calculate(int price, float attractiveness, float traitFameMul = 1f)
+        public float Calculate(int price, float appeal)
         {
-            float baseFame = price * priceWeight + attractiveness * attractivenessWeight;
-            return baseFame * traitFameMul;
+            return price * priceWeight + appeal * appealWeight;
         }
 
         /// <summary>
         /// 静态便捷方法（使用Instance调用）
         /// </summary>
-        public static float CalculateFame(int price, float attractiveness, float traitFameMul = 1f)
+        public static float CalculateFame(int price, float appeal)
         {
             if (Instance == null)
             {
                 // 降级：使用默认参数
                 Debug.LogWarning("[FameCalculator] Instance not found, using default values");
-                return (price * 0.05f + attractiveness * 0.08f) * traitFameMul;
+                return price * 0.05f + appeal * 0.08f;
             }
-            return Instance.Calculate(price, attractiveness, traitFameMul);
+            return Instance.Calculate(price, appeal);
         }
     }
 }

@@ -118,6 +118,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 // 记录已购买的货架archetype
                 RecordPurchasedArchetype();
 
+                // 记录漏斗层级到会话（用于 XP 计算）
+                var customerAgent = agent.GetComponent<CustomerAgent>();
+                if (customerAgent?.currentSession != null)
+                {
+                    customerAgent.currentSession.purchaseFunnelTiers.Add(customerBlackboard.lastSelectionTier);
+                }
+
                 // 设置购买成功标志（用于触发拾取动画）
                 if (lastPurchaseSuccessful != null)
                 {
@@ -189,13 +196,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 添加到已购买列表
             if (customerBlackboard.purchasedArchetypes == null)
             {
-                customerBlackboard.purchasedArchetypes = new System.Collections.Generic.HashSet<string>();
+                customerBlackboard.purchasedArchetypes = new System.Collections.Generic.HashSet<ShelfArchetype>();
             }
 
-            bool added = customerBlackboard.purchasedArchetypes.Add(shelfArchetype.archetypeId);
+            bool added = customerBlackboard.purchasedArchetypes.Add(shelfArchetype);
             if (added)
             {
-                Debug.Log($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} marked archetype {shelfArchetype.archetypeId} as purchased");
+                Debug.Log($"[ExecutePurchaseAction] Customer {customerBlackboard.customerId} marked archetype {shelfArchetype.name} as purchased");
             }
         }
 

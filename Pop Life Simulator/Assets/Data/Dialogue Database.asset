@@ -922,13 +922,13 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 155.65714
+        x: 156.63275
         y: 238.1714
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 1.8823853, y: 7.0251465}
-    canvasZoom: 0.85000014
+    canvasScrollPosition: {x: 0, y: 0.34509468}
+    canvasZoom: 0.8200002
   - id: 4
     fields:
     - title: Title

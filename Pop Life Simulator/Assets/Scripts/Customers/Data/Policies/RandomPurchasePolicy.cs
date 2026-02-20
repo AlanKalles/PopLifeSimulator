@@ -1,11 +1,11 @@
 using UnityEngine;
-using System.Linq;
+using Sirenix.OdinInspector;
 
 namespace PopLife.Customers.Data
 {
     /// <summary>
     /// 随机购买数量策略
-    /// 在配置的范围内随机决定购买数量，并考虑预算、库存、忠诚度等因素
+    /// 在配置的范围内随机决定购买数量，并考虑预算、库存、忠诚度、漏斗层级等因素
     /// </summary>
     [CreateAssetMenu(menuName = "PopLife/Policies/Purchase/RandomPurchase", fileName = "RandomPurchasePolicy")]
     public class RandomPurchasePolicy : PurchasePolicy
@@ -25,12 +25,15 @@ namespace PopLife.Customers.Data
         [Tooltip("X轴=忠诚度(1-10), Y轴=购买量倍率(建议1-2)")]
         public AnimationCurve loyaltyMultiplierCurve = AnimationCurve.Linear(1, 1f, 10, 1.5f);
 
-        [Header("兴趣影响")]
-        [Tooltip("是否根据兴趣调整购买量")]
-        public bool useInterestModifier = true;
-
-        [Tooltip("兴趣对购买量的影响曲线, X=兴趣(0-10), Y=倍率(0.5-2)")]
-        public AnimationCurve interestMultiplierCurve = AnimationCurve.Linear(0, 0.5f, 10, 1.5f);
+        [Title("漏斗层级购买数量倍率")]
+        [BoxGroup("Funnel Qty")]
+        [LabelText("Favorite"), SerializeField] private float favoriteQtyMultiplier = 2.0f;
+        [BoxGroup("Funnel Qty")]
+        [LabelText("Category"), SerializeField] private float categoryQtyMultiplier = 1.2f;
+        [BoxGroup("Funnel Qty")]
+        [LabelText("Brand"), SerializeField] private float brandQtyMultiplier = 0.8f;
+        [BoxGroup("Funnel Qty")]
+        [LabelText("PriceBased"), SerializeField] private float priceQtyMultiplier = 0.6f;
 
         [Header("预算策略")]
         [Tooltip("预留资金比例，为后续购买保留部分预算")]
@@ -51,6 +54,21 @@ namespace PopLife.Customers.Data
 
         [Header("调试选项")]
         public bool enableDebugLog = false;
+
+        /// <summary>
+        /// 获取漏斗层级对应的购买数量倍率
+        /// </summary>
+        private float GetFunnelQtyMultiplier(FunnelPhase phase)
+        {
+            return phase switch
+            {
+                FunnelPhase.Favorite => favoriteQtyMultiplier,
+                FunnelPhase.Category => categoryQtyMultiplier,
+                FunnelPhase.Brand => brandQtyMultiplier,
+                FunnelPhase.PriceBased => priceQtyMultiplier,
+                _ => 1f
+            };
+        }
 
         /// <summary>
         /// 决定购买数量
@@ -82,19 +100,13 @@ namespace PopLife.Customers.Data
             float loyaltyMult = loyaltyMultiplierCurve.Evaluate(ctx.loyaltyLevel);
             float adjustedQty = baseQty * loyaltyMult;
 
-            // 4. 应用兴趣倍率（如果启用）
-            if (useInterestModifier && ctx.interest != null)
-            {
-                float interest = GetInterestForCategory(ctx.interest, shelf.categoryIndex);
-                float interestMult = interestMultiplierCurve.Evaluate(interest);
-                adjustedQty *= interestMult;
-            }
+            // 4. 应用漏斗层级倍率
+            float funnelMult = GetFunnelQtyMultiplier(ctx.currentFunnelTier);
+            adjustedQty *= funnelMult;
 
             // 5. 首次购买限制（如果启用）
             if (conservativeFirstPurchase)
             {
-                // TODO: 需要追踪是否首次购买该类别
-                // 暂时用低信任值模拟首次购买
                 if (ctx.trust < 30)
                 {
                     adjustedQty = Mathf.Min(adjustedQty, firstPurchaseMaxQty);
@@ -120,7 +132,7 @@ namespace PopLife.Customers.Data
             if (enableDebugLog && finalQty > 0)
             {
                 Debug.Log($"[RandomPurchase] 顾客 {ctx.customerId} 决定购买 {finalQty} 个 " +
-                         $"(基础:{baseQty}, 忠诚倍率:{loyaltyMult:F2}, 预算限制:{budgetLimit}, 库存:{shelf.stock})");
+                         $"(基础:{baseQty}, 忠诚倍率:{loyaltyMult:F2}, 漏斗倍率:{funnelMult:F2}, 预算限制:{budgetLimit}, 库存:{shelf.stock})");
             }
 
             return finalQty;
@@ -134,10 +146,10 @@ namespace PopLife.Customers.Data
             // 查找类别特殊配置
             if (categoryOverrides != null)
             {
-                var overrideRange = categoryOverrides.FirstOrDefault(c => c.categoryIndex == categoryIndex);
-                if (overrideRange != null)
+                foreach (var c in categoryOverrides)
                 {
-                    return overrideRange;
+                    if (c != null && c.categoryIndex == categoryIndex)
+                        return c;
                 }
             }
 
@@ -182,18 +194,6 @@ namespace PopLife.Customers.Data
             }
 
             return maxAffordable;
-        }
-
-        /// <summary>
-        /// 获取对应类别的兴趣值
-        /// </summary>
-        private float GetInterestForCategory(float[] interests, int categoryIndex)
-        {
-            if (interests == null || categoryIndex < 0 || categoryIndex >= interests.Length)
-            {
-                return 2f; // 默认中等兴趣
-            }
-            return interests[categoryIndex];
         }
     }
 

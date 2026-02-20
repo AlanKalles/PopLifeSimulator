@@ -78,6 +78,9 @@ namespace PopLife.Runtime
                 AudioManager.Instance.PlaySound(AudioKeys.BUILDING_UPGRADED);
             }
 
+            // 通知建筑变化（触发 Store Appeal 重算等）
+            ConstructionManager.NotifyBuildingChanged();
+
             return true;
         }
 

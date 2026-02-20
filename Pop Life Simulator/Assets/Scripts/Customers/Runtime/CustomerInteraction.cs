@@ -80,9 +80,8 @@ namespace PopLife.Customers.Runtime
                 }
 
                 // 计算并增加Fame
-                float attractiveness = targetShelf.GetAttractiveness();
-                float traitFameMul = customerAgent.GetTraitFameMul();
-                float fameGained = FameCalculator.CalculateFame(targetShelf.currentPrice, attractiveness, traitFameMul);
+                float appeal = targetShelf.GetAppeal();
+                float fameGained = FameCalculator.CalculateFame(targetShelf.currentPrice, appeal);
                 PopLife.ResourceManager.Instance.AddFame(fameGained);
 
                 // 浮动 Fame 文字

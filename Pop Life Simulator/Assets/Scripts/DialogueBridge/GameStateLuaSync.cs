@@ -246,14 +246,14 @@ namespace PopLife.DialogueBridge
         /// Sync customer data for a specific customer (call before customer dialogue)
         /// </summary>
         public void SyncCustomerData(string customerId, string customerName,
-            int loyaltyLevel, int visitCount, float lifetimeSpent, string traitIds)
+            int loyaltyLevel, int visitCount, float lifetimeSpent)
         {
             DialogueLua.SetVariable("CurrentCustomer_ID", customerId);
             DialogueLua.SetVariable("CurrentCustomer_Name", customerName);
             DialogueLua.SetVariable("CurrentCustomer_LoyaltyLevel", loyaltyLevel);
             DialogueLua.SetVariable("CurrentCustomer_VisitCount", visitCount);
             DialogueLua.SetVariable("CurrentCustomer_LifetimeSpent", lifetimeSpent);
-            DialogueLua.SetVariable("CurrentCustomer_Traits", traitIds);
+            DialogueLua.SetVariable("CurrentCustomer_Traits", ""); // Traits 已移除
 
             if (debugMode)
             {

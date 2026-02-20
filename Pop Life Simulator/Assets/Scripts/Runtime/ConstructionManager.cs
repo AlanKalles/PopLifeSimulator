@@ -10,8 +10,13 @@ namespace PopLife.Runtime
     {
         public enum Mode { None, Place, Move, Destroy }
 
-        // 建筑放置或销毁后触发，用于UI刷新
+        // 建筑放置、销毁、移动或升级后触发，用于UI刷新和 Store Appeal 重算
         public static event System.Action OnBuildingPlacedOrDestroyed;
+
+        /// <summary>
+        /// 外部触发建筑变化通知（如升级时调用）
+        /// </summary>
+        public static void NotifyBuildingChanged() => OnBuildingPlacedOrDestroyed?.Invoke();
 
         [Header("状态")]
         public Mode mode = Mode.None;
@@ -696,6 +701,7 @@ namespace PopLife.Runtime
                     if (moveSuccess)
                     {
                         AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
+                        OnBuildingPlacedOrDestroyed?.Invoke();
                         // 移动成功后回到悬停选择状态，继续留在Move模式
                         CancelMoveDrag();
                     }

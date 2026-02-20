@@ -60,30 +60,47 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
 **职责**：定义所有ScriptableObject数据模板，驱动游戏逻辑
 
 #### 建筑系统
-- **`BuildingArchetypes.cs`** (81行)
+- **`BuildingArchetypes.cs`**
   - 建筑基类 `BuildingArchetype`（抽象ScriptableObject）
-  - 多级升级系统（`BuildingLevelData[]`）
+  - `archetypeId` 由 `OnValidate` 自动同步为资产文件名（`[HideInInspector]`）
+  - 多级升级系统（`BuildingLevelData[]`，货架已改用公式计算）
   - 占地模板（`footprintPattern`：支持不规则形状）
   - 旋转逻辑（4方向：0/90/180/270度）
-  - 关键属性：buildCost, maintenanceFee, blueprintCost
+  - 关键属性：buildCost, maintenanceFee
 
-- **`ShelfArchetypes.cs`** (27行)
+- **`ShelfArchetypes.cs`**
   - 继承自 `BuildingArchetype`
-  - 商品货架数据：价格、库存上限、吸引力
-  - 按 `ProductCategory` 区分（6种类别）
+  - **公式驱动数值系统**：所有属性基于 `buildCost` 和 `level` 计算，无需手动配置 `ShelfLevelData[]`
+  - 公式（B=buildCost, L=level, 等级1-5）：
+    - 升级声望 = Floor(B×0.5 + L²×5)
+    - 商品单价 = Floor(B×0.1 + L³×0.2)
+    - 维护费 = Floor(B×0.1 + L²×0.5 - 5)
+    - 库存 = Floor(B×0.01 + L×0.9 + 5)
+    - Appeal = Floor(B×0.36 + 4×L^1.5 + 5)
+  - 按 `ProductCategory` 区分（11种类别）
+  - `BrandData brand` - 品牌引用（ScriptableObject）
+  - `string description` - 货架描述文本
+
+- **`BrandData.cs`** - 品牌 ScriptableObject
+  - `displayName` - 品牌显示名称（支持特殊字符）
+  - `icon` - 品牌图标（可选）
+  - 11个品牌：C¥B3R5EX, SoloFans, A R T D S A J I, PopLife, Rough Angel, Good Unicorn, BLUBURRY, Dildo & Chbana, Cucci, Lewis Spitton, LOVXNS
 
 - **`FacilityArchetype.cs`** (34行)
   - 设施原型（收银台、空调、ATM等）
   - 效果系统 `FacilityEffect[]`：
     - 类型：`EffectType` 枚举
     - 范围：全楼层/指定半径
-    - 数值：减少尴尬值、增加吸引力等
+    - 数值：减少尴尬值、增加Appeal等
   - 自定义放置验证（如收银台需要靠墙）
 
 #### 核心枚举定义
 ```csharp
-// 6种商品类别
-ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant, BDSM }
+// 11种商品类别（按字母排序）
+ProductCategory {
+    Accessories, Anal, DigitalMedia, Dildo, Enhancements,
+    Fleshlight, Furniture, Instruments, Lingerie, Vibrator, Wellness
+}
 
 // 设施类型
 FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
@@ -91,7 +108,7 @@ FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
 // 效果类型
 EffectType {
     ReduceEmbarrassment,      // 减少尴尬值
-    IncreaseAttractiveness,   // 增加吸引力
+    IncreaseAppeal,           // 增加Appeal
     IncreaseCustomerSpeed,    // 加快顾客速度
     RestoreMoney              // 恢复金钱（ATM）
 }
@@ -120,6 +137,8 @@ EffectType {
   - 实时预览系统（绿色=可建造，红色=不可）
   - 楼层切换（Tab键循环/数字键直达）
   - 跨楼层移动支持（成本×2）
+  - `OnBuildingPlacedOrDestroyed` 静态事件：建造/拆除/移动/升级时触发
+  - `NotifyBuildingChanged()` 公共静态方法：供外部类（如 BuildingInstance）触发事件
   - 流程：
     ```
     Place模式：选择建筑 → 预览 → 验证资源 → 放置 → 扣费
@@ -130,14 +149,14 @@ EffectType {
 - **`BuildingInstances.cs`** (104行)
   - 建筑实例基类
   - 序列化系统（`BuildingSaveData`）
-  - 升级逻辑（消耗声望解锁下一等级）
+  - 升级逻辑（消耗声望解锁下一等级，升级成功后调用 `ConstructionManager.NotifyBuildingChanged()`）
   - 维护费用计算
 
 - **`ShelfInstance.cs`** (128行)
   - 货架运行时状态：库存、销量、价格
   - `TryTakeOne()` - 取货（仅扣库存，不增加金钱）
   - 集成排队系统（`ShelfQueueController`）
-  - 吸引力计算：`等级 × 品类系数`
+  - `GetAppeal()` - 返回当前等级的 appeal 值（公式驱动）
 
 - **`FacilityInstance.cs`** (55行)
   - 设施实例（收银台、空调等）
@@ -184,8 +203,8 @@ EffectType {
     CheckoutPolicy          // 选择收银台
     ```
   - 快照数据结构：
-    - `CustomerContext` - 顾客当前状态
-    - `ShelfSnapshot` - 货架快照（含队列长度）
+    - `CustomerContext` - 顾客当前状态（`purchasedArchetypes` 使用 `HashSet<ShelfArchetype>` SO引用）
+    - `ShelfSnapshot` - 货架快照（`archetype` 为 `ShelfArchetype` SO引用，`appeal` 字段，含队列长度）
     - `CashierSnapshot` - 收银台快照
 
 - **`Policies/WeightedRandomSelector.cs`** (198行) ⭐
@@ -193,11 +212,11 @@ EffectType {
   - 得分计算公式：
     ```
     货架得分 = 兴趣匹配 × interestWeight
-             + 吸引力 × attractivenessWeight
+             + appeal × appealWeight
              - 队列惩罚(曲线) × queuePenaltyWeight
              - 距离惩罚 × distanceWeight
     ```
-  - 筛选条件：库存>0、队列<上限、兴趣>阈值、**未购买过该archetype**
+  - 筛选条件：库存>0、队列<上限、兴趣>阈值、**未购买过该archetype**（使用 SO 引用比较）
   - 队列惩罚曲线：AnimationCurve（可自定义衰减）
 
 - **`SpawnerProfile.cs`** (138行)
@@ -316,8 +335,8 @@ EffectType {
 
 - **`FameCalculator.cs`** ⭐ **声望计算服务**
   - MonoBehaviour单例，Inspector可调参数
-  - **计算公式**：`Fame = (price × priceWeight + attractiveness × attractivenessWeight) × traitFameMul`
-  - 默认参数：`priceWeight=0.05`, `attractivenessWeight=0.08`
+  - **计算公式**：`Fame = (price × priceWeight + appeal × appealWeight) × traitFameMul`
+  - 默认参数：`priceWeight=0.05`, `appealWeight=0.08`
   - 顾客每次从货架取货成功时触发计算
   - 详细设计文档：`Assets/Documents/Fame系统设计.md`
 
@@ -388,6 +407,12 @@ EffectType {
   - 金钱和声望管理
   - `AddMoney()`, `SpendMoney()`, `AddFame(int)`, `AddFame(float)`
   - 支持小数Fame累积（`fameAccumulator`累积至满1才增加整数Fame）
+  - **Store Appeal 系统**：
+    - `storeAppeal` - 全店铺 appeal 总和
+    - `OnStoreAppealChanged` 事件 - appeal 变化时广播
+    - `RecalculateStoreAppeal()` - 遍历所有楼层货架累加 appeal
+    - 订阅 `ConstructionManager.OnBuildingPlacedOrDestroyed`（建造/拆除/移动/升级时触发重算）
+    - 使用 `FindFirstObjectByType<FloorManager>()` 缓存引用（FloorManager 无静态 Instance）
 
 - **`BlueprintManager.cs`** (14行)
   - 蓝图解锁系统（原型期简化实现）
@@ -426,7 +451,7 @@ EffectType {
     - 动画：淡入0.2s → 显示1.3s → 淡出0.5s → 2s消失
     - 对象池复用，避免GC
   - **`BuildingDetailPanel.cs`** - 详情面板（Screen Space Canvas）
-    - 显示完整信息：名称、图标、类别、价格、库存、吸引力
+    - 显示完整信息：名称、图标、类别、价格、库存、Appeal
     - 升级按钮：仅BuildPhase可用，OpenPhase变灰
     - 升级逻辑：调用`BuildingInstance.TryUpgrade()`
   - **交互条件**：
@@ -506,7 +531,7 @@ EffectType {
   - 示例：Shy特质会 × 0.8（更容易尴尬）
 - **移动速度**：`原型速度 × Π特质倍率`
 - **排队容忍**：`原型容忍秒数 × Π特质倍率`
-- **Fame贡献**：`(price × 0.05 + attractiveness × 0.08) × Π特质fameMultiplier`
+- **Fame贡献**：`(price × 0.05 + appeal × 0.08) × Π特质fameMultiplier`
   - 每次顾客取货成功时即时计算并增加玩家Fame
   - 详见 `Assets/Documents/Fame系统设计.md`
 
@@ -653,6 +678,7 @@ Assets/
 ├── Resources/
 │   └── ScriptableObjects/        # SO资产
 │       ├── BuildingArchetype/
+│       ├── Brands/               # 品牌SO资产（11个）
 │       ├── CustomerArchetypes/
 │       ├── Traits/
 │       └── BehaviorPolicies/
@@ -745,15 +771,17 @@ Assets/
 
 ### 1. 新增商品类别
 ```csharp
-// 1. 扩展枚举
+// 1. 扩展 ProductCategory 枚举（当前11种，按字母排序）
 public enum ProductCategory {
-    Lingerie, Condom, Vibrator, Fleshlight, Lubricant, BDSM,
+    Accessories, Anal, DigitalMedia, Dildo, Enhancements,
+    Fleshlight, Furniture, Instruments, Lingerie, Vibrator, Wellness,
     NewCategory  // 新类别
 }
 
-// 2. 创建ShelfArchetype ScriptableObject
-// 3. 调整所有InterestArray大小（确保与枚举长度一致）
-// 4. 更新CategoryManager解锁逻辑
+// 2. 创建ShelfArchetype ScriptableObject（公式驱动，只需设置 buildCost）
+// 3. 关联 BrandData SO
+// 4. 更新 CustomerSpawner.categoriesCount
+// 5. 更新 AudioKeys.cs 中的建造音效映射（可选）
 ```
 
 ### 2. 新增特质
@@ -792,7 +820,9 @@ public class MyTargetSelector : TargetSelectorPolicy {
 // 1. 扩展 EffectType 枚举
 public enum EffectType {
     ReduceEmbarrassment,
-    // ... existing
+    IncreaseAppeal,
+    IncreaseCustomerSpeed,
+    RestoreMoney,
     NewEffect  // 新效果
 }
 
@@ -867,7 +897,7 @@ public enum EffectType {
 2. **请求系统**（Request）- 完成任务获取奖励
 3. **动态定价**：根据供需调整价格
 4. **员工系统**：雇佣收银员、理货员
-5. **装饰系统**：影响尴尬值和吸引力
+5. **装饰系统**：影响尴尬值和Appeal
 6. **多楼层电梯**：跨楼层顾客流动
 
 ---
@@ -908,6 +938,7 @@ public enum EffectType {
 
 ScriptableObject：
 - 建筑原型：Resources/ScriptableObjects/BuildingArchetype/
+- 品牌：Resources/ScriptableObjects/Brands/
 - 顾客原型：Resources/ScriptableObjects/CustomerArchetypes/
 - 特质：Resources/ScriptableObjects/Traits/
 - 策略：Resources/ScriptableObjects/BehaviorPolicies/

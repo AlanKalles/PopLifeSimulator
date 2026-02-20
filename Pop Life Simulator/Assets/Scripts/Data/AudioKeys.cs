@@ -9,13 +9,17 @@ namespace PopLife.Data
         #region 建造音效 (Building Sound Effects)
 
         // 货架建造音效 - 按商品类别分类
-        public const string BUILD_LINGERIE = "Build_Lingerie";
-        public const string BUILD_CONDOM = "Build_Condom";
-        public const string BUILD_VIBRATOR = "Build_Vibrator";
-        public const string BUILD_FLESHLIGHT = "Build_Fleshlight";
-        public const string BUILD_LUBRICANT = "Build_Lubricant";
-        public const string BUILD_BDSM = "Build_BDSM";
+        public const string BUILD_ACCESSORIES = "Build_Accessories";
+        public const string BUILD_ANAL = "Build_Anal";
+        public const string BUILD_DIGITAL_MEDIA = "Build_DigitalMedia";
         public const string BUILD_DILDO = "Build_Dildo";
+        public const string BUILD_ENHANCEMENTS = "Build_Enhancements";
+        public const string BUILD_FLESHLIGHT = "Build_Fleshlight";
+        public const string BUILD_FURNITURE = "Build_Furniture";
+        public const string BUILD_INSTRUMENTS = "Build_Instruments";
+        public const string BUILD_LINGERIE = "Build_Lingerie";
+        public const string BUILD_VIBRATOR = "Build_Vibrator";
+        public const string BUILD_WELLNESS = "Build_Wellness";
 
         // 设施建造音效
         public const string BUILD_FACILITY = "Build_Facility";
@@ -91,13 +95,17 @@ namespace PopLife.Data
         {
             return category switch
             {
-                ProductCategory.Lingerie => BUILD_LINGERIE,
-                ProductCategory.Condom => BUILD_CONDOM,
-                ProductCategory.Vibrator => BUILD_VIBRATOR,
-                ProductCategory.Fleshlight => BUILD_FLESHLIGHT,
-                ProductCategory.Lubricant => BUILD_LUBRICANT,
-                ProductCategory.BDSM => BUILD_BDSM,
+                ProductCategory.Accessories => BUILD_ACCESSORIES,
+                ProductCategory.Anal => BUILD_ANAL,
+                ProductCategory.DigitalMedia => BUILD_DIGITAL_MEDIA,
                 ProductCategory.Dildo => BUILD_DILDO,
+                ProductCategory.Enhancements => BUILD_ENHANCEMENTS,
+                ProductCategory.Fleshlight => BUILD_FLESHLIGHT,
+                ProductCategory.Furniture => BUILD_FURNITURE,
+                ProductCategory.Instruments => BUILD_INSTRUMENTS,
+                ProductCategory.Lingerie => BUILD_LINGERIE,
+                ProductCategory.Vibrator => BUILD_VIBRATOR,
+                ProductCategory.Wellness => BUILD_WELLNESS,
                 _ => BUILDING_PLACED // 兜底
             };
         }

@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 using PopLife.Customers.Data;
 using PopLife.Customers.Services;
+using PopLife.Data;
 using TMPro;
 
 
@@ -23,9 +25,8 @@ namespace PopLife.Customers.Runtime
         // 当前访问会话
         public CustomerSession currentSession;
 
-        // 缓存的原型和特质（用于经验计算）
+        // 缓存的原型（用于经验计算）
         public CustomerArchetype cachedArchetype;
-        public Trait[] cachedTraits;
 
         // 缓存的 CustomerRecord（用于交互系统获取对话ID）
         private CustomerRecord cachedRecord;
@@ -52,7 +53,7 @@ namespace PopLife.Customers.Runtime
 
 
 // 原型期的最小初始化：由 Spawner 调用
-        public void Initialize(CustomerRecord record, CustomerArchetype archetype, Trait[] traits, int categories, int daySeed)
+        public void Initialize(CustomerRecord record, CustomerArchetype archetype, int daySeed)
         {
 // 0) 设置顾客ID
             customerID = record.customerId;
@@ -76,34 +77,49 @@ namespace PopLife.Customers.Runtime
                 }
             }
 
-// 2) 最终兴趣（含 Trait interest 修正，已在 Record 组合）
-            var finalInterest = record.ComposeFinalInterest(archetype, categories, traits);
+// 2) 从 record 加载偏好货架，预解析品类和品牌
+            string[] favoriteIds = record.favoriteShelfIds ?? new string[4];
+            var categories = new HashSet<int>();
+            var brands = new HashSet<BrandData>();
+            foreach (var id in favoriteIds)
+            {
+                if (string.IsNullOrEmpty(id)) continue;
+                var so = Resources.Load<ShelfArchetype>($"ScriptableObjects/BuildingArchetype/Shelf/{id}");
+                if (so == null)
+                {
+                    Debug.LogWarning($"[CustomerAgent] {customerID}: 偏好货架 '{id}' 未找到");
+                    continue;
+                }
+                categories.Add((int)so.category);
+                if (so.brand != null) brands.Add(so.brand);
+            }
 
+// 3) 采样本次钱袋与尴尬上限（无 trait 乘数）
+            int walletCap = Mathf.RoundToInt(record.walletCapBase * archetype.walletCapCurve.Eval(record.loyaltyLevel));
+            int embarrassmentCap = Mathf.RoundToInt(archetype.embarrassmentCapCurve.Eval(record.loyaltyLevel));
+            int queueTolerance = archetype.queueToleranceSeconds;
+            float finalMoveSpeed = archetype.moveSpeed;
 
-// 3) Trait 乘子
-            var eff = TraitResolver.Compute(traits);
-
-
-// 4) 采样本次钱袋与尴尬上限（曲线 × Trait 乘子）
-            int walletCap = Mathf.RoundToInt(record.walletCapBase * archetype.walletCapCurve.Eval(record.loyaltyLevel) * eff.walletCapMul);
-            int embarrassmentCap = Mathf.RoundToInt(archetype.embarrassmentCapCurve.Eval(record.loyaltyLevel) * eff.embarrassmentCapMul);
-            int queueTolerance = Mathf.RoundToInt(archetype.queueToleranceSeconds * eff.patienceMul);
-            float finalMoveSpeed = archetype.moveSpeed * eff.moveSpeedMul;
-
-
-// 5) 注入黑板
-            bb.InjectFromRecord(record, archetype, finalInterest, embarrassmentCap, finalMoveSpeed);
+// 4) 注入黑板
+            bb.InjectFromRecord(record, archetype, embarrassmentCap, finalMoveSpeed);
             bb.moneyBag = Random.Range(Mathf.Max(10, walletCap/2), walletCap + 1);
             bb.embarrassment = 0;
             bb.queueToleranceSec = queueTolerance;
 
-// 6) 设置头顶名字显示
+            // 注入偏好数据
+            bb.favoriteShelfIds = favoriteIds;
+            bb.favoriteCategoryIndices = new int[categories.Count];
+            categories.CopyTo(bb.favoriteCategoryIndices);
+            bb.favoriteBrands = new BrandData[brands.Count];
+            brands.CopyTo(bb.favoriteBrands);
+
+// 5) 设置头顶名字显示
             if (nameText != null)
             {
                 nameText.text = record.name;
             }
 
-// 7) 创建当前会话
+// 6) 创建当前会话
             currentSession = new CustomerSession
             {
                 customerId = record.customerId,
@@ -115,20 +131,19 @@ namespace PopLife.Customers.Runtime
                 visitedShelves = new System.Collections.Generic.List<ShelfVisit>()
             };
 
-// 8) 缓存原型和特质（用于销毁时计算经验）
+// 7) 缓存原型（用于销毁时计算经验）
             cachedArchetype = archetype;
-            cachedTraits = traits;
 
-// 9) 设置动画覆盖控制器（如果有专属walk动画）
+// 8) 设置动画覆盖控制器（如果有专属walk动画）
             SetupAnimatorOverride(customerID);
 
-// 10) 设置动画控制器的顾客ID（用于播放专属动画）
+// 9) 设置动画控制器的顾客ID（用于播放专属动画）
             if (animationController != null)
             {
                 animationController.SetCustomerID(customerID);
             }
 
-// 11) 启用 Animator（在设置完 sprite 和动画ID之后）
+// 10) 启用 Animator（在设置完 sprite 和动画ID之后）
             if (animator != null)
             {
                 animator.enabled = true;
@@ -174,16 +189,6 @@ namespace PopLife.Customers.Runtime
         public CustomerRecord GetCustomerRecord()
         {
             return cachedRecord;
-        }
-
-        /// <summary>
-        /// 获取特质声望贡献倍率
-        /// Get trait fame multiplier
-        /// </summary>
-        public float GetTraitFameMul()
-        {
-            if (cachedTraits == null || cachedTraits.Length == 0) return 1f;
-            return TraitResolver.Compute(cachedTraits).fameMul;
         }
     }
 }

@@ -13,16 +13,27 @@ namespace PopLife.Data
         public int maintenanceFee;
     }
 
-    public enum ProductCategory { Lingerie, Condom, Vibrator, Fleshlight, Lubricant, BDSM, Dildo }
+    public enum ProductCategory
+    {
+        Accessories, Anal, DigitalMedia, Dildo, Enhancements,
+        Fleshlight, Furniture, Instruments, Lingerie, Vibrator, Wellness
+    }
     public enum FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
-    public enum EffectType { ReduceEmbarrassment, IncreaseAttractiveness, IncreaseCustomerSpeed, RestoreMoney }
+    public enum EffectType { ReduceEmbarrassment, IncreaseAppeal, IncreaseCustomerSpeed, RestoreMoney }
 
     // 原型基类
     public abstract class BuildingArchetype : ScriptableObject
     {
         [Header("基础信息")]
-        public string archetypeId;
+        [HideInInspector] public string archetypeId; // 由 OnValidate 自动同步为资产文件名
         public string displayName;
+
+#if UNITY_EDITOR
+        protected virtual void OnValidate()
+        {
+            archetypeId = name;
+        }
+#endif
         public Sprite icon;
         public GameObject prefab;
 

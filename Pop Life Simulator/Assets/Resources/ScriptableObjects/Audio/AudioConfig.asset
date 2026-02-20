@@ -61,6 +61,12 @@ MonoBehaviour:
   - key: UI_BuildPanel_Open
     clips:
     - {fileID: 8300000, guid: 8240fc9376351fb4ebc464c5df7d0225, type: 3}
+  - key: Quest_Tracker_Open
+    clips:
+    - {fileID: 8300000, guid: 5d69d91c6c705cc4f9251d935665d673, type: 3}
+  - key: Quest_Tracker_Close
+    clips:
+    - {fileID: 8300000, guid: f23b3605d1b961041ae1766ced4a0647, type: 3}
   musicClips:
   - key: BGM_Shop
     clips:

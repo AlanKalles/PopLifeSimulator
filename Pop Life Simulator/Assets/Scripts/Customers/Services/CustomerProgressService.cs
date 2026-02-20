@@ -1,22 +1,62 @@
 using UnityEngine;
 using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
+using Sirenix.OdinInspector;
 
 namespace PopLife.Customers.Services
 {
     /// <summary>
     /// 顾客经验和升级服务
+    /// MonoBehaviour 单例，Inspector 可配置漏斗层级 XP 倍率
     /// </summary>
-    public static class CustomerProgressService
+    public class CustomerProgressService : MonoBehaviour
     {
+        public static CustomerProgressService Instance { get; private set; }
+
+        [Title("漏斗层级 XP 倍率")]
+        [BoxGroup("Funnel XP")]
+        [LabelText("Favorite"), SerializeField] private float favoriteXpMul = 1.5f;
+        [BoxGroup("Funnel XP")]
+        [LabelText("Category"), SerializeField] private float categoryXpMul = 1.2f;
+        [BoxGroup("Funnel XP")]
+        [LabelText("Brand"), SerializeField] private float brandXpMul = 1.0f;
+        [BoxGroup("Funnel XP")]
+        [LabelText("PriceBased"), SerializeField] private float priceXpMul = 0.8f;
+
+        void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// 获取漏斗层级对应的 XP 倍率
+        /// </summary>
+        public float GetFunnelXpMultiplier(FunnelPhase phase)
+        {
+            return phase switch
+            {
+                FunnelPhase.Favorite => favoriteXpMul,
+                FunnelPhase.Category => categoryXpMul,
+                FunnelPhase.Brand => brandXpMul,
+                FunnelPhase.PriceBased => priceXpMul,
+                _ => 1f
+            };
+        }
+
         /// <summary>
         /// 计算经验增量
-        /// 公式：基础XP × 特质乘数 × 消费乘数
+        /// 公式：基础XP × 漏斗层级加权平均倍率 × 消费乘数
         /// </summary>
-        public static int CalculateXpGain(
+        public int CalculateXpGain(
             CustomerSession session,
-            CustomerArchetype archetype,
-            Trait[] traits)
+            CustomerArchetype archetype)
         {
             if (session == null || archetype == null)
                 return 0;
@@ -24,19 +64,23 @@ namespace PopLife.Customers.Services
             // 1. 基础经验值
             float baseXp = archetype.baseXpGain;
 
-            // 2. 特质乘数（累乘所有特质的xpMultiplier）
-            float traitMultiplier = 1f;
-            if (traits != null)
+            // 2. 漏斗层级 XP 加成（所有购买的层级倍率的加权平均）
+            float funnelXpBonus = 1f;
+            if (session.purchaseFunnelTiers != null && session.purchaseFunnelTiers.Count > 0)
             {
-                var stats = TraitResolver.Compute(traits);
-                traitMultiplier = stats.xpMul;
+                float sum = 0f;
+                foreach (var tier in session.purchaseFunnelTiers)
+                {
+                    sum += GetFunnelXpMultiplier(tier);
+                }
+                funnelXpBonus = sum / session.purchaseFunnelTiers.Count;
             }
 
             // 3. 消费乘数（根据消费金额）
             float spendingMultiplier = archetype.GetSpendingMultiplier(session.moneySpent);
 
-            // 4. 最终经验 = 基础 × 特质 × 消费
-            float finalXp = baseXp * traitMultiplier * spendingMultiplier;
+            // 4. 最终经验 = 基础 × 漏斗加成 × 消费
+            float finalXp = baseXp * funnelXpBonus * spendingMultiplier;
 
             return Mathf.RoundToInt(finalXp);
         }
@@ -69,11 +113,10 @@ namespace PopLife.Customers.Services
         /// <summary>
         /// 应用会话奖励（经验、升级、记录）
         /// </summary>
-        public static void ApplySessionRewards(
+        public void ApplySessionRewards(
             CustomerRecord record,
             CustomerSession session,
-            CustomerArchetype archetype,
-            Trait[] traits)
+            CustomerArchetype archetype)
         {
             if (record == null || session == null || archetype == null)
             {
@@ -82,7 +125,7 @@ namespace PopLife.Customers.Services
             }
 
             // 1. 计算经验增量
-            int xpGained = CalculateXpGain(session, archetype, traits);
+            int xpGained = CalculateXpGain(session, archetype);
 
             // 2. 记录升级前等级
             int oldLevel = record.loyaltyLevel;
@@ -118,6 +161,24 @@ namespace PopLife.Customers.Services
             {
                 record.lifetimeSpent += session.moneySpent;
                 record.visitCount++;
+            }
+        }
+
+        /// <summary>
+        /// 静态便捷方法（使用Instance调用，兼容旧代码过渡）
+        /// </summary>
+        public static void ApplySessionRewardsStatic(
+            CustomerRecord record,
+            CustomerSession session,
+            CustomerArchetype archetype)
+        {
+            if (Instance != null)
+            {
+                Instance.ApplySessionRewards(record, session, archetype);
+            }
+            else
+            {
+                Debug.LogWarning("[CustomerProgressService] Instance not found, skipping session rewards");
             }
         }
     }

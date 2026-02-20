@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
@@ -21,13 +22,15 @@ namespace PopLife.UI.BuildingInteraction
         [SerializeField] private TextMeshProUGUI levelText;
         [SerializeField] private TextMeshProUGUI priceText;
         [SerializeField] private TextMeshProUGUI stockText;
-        [SerializeField] private TextMeshProUGUI attractivenessText;
+        [FormerlySerializedAs("attractivenessText")]
+        [SerializeField] private TextMeshProUGUI appealText;
         [SerializeField] private TextMeshProUGUI maintenanceText;
 
         [Header("Next Level Stats")]
         [SerializeField] private TextMeshProUGUI nextLevelPriceText;
         [SerializeField] private TextMeshProUGUI nextLevelStockText;
-        [SerializeField] private TextMeshProUGUI nextLevelAttractivenessText;
+        [FormerlySerializedAs("nextLevelAttractivenessText")]
+        [SerializeField] private TextMeshProUGUI nextLevelAppealText;
         [SerializeField] private TextMeshProUGUI nextLevelMaintenanceText;
         [SerializeField] private TextMeshProUGUI nextLevelUpgradeCostText; // 升级所需Fame
         [SerializeField] private Button upgradeButton;
@@ -220,18 +223,18 @@ namespace PopLife.UI.BuildingInteraction
                 }
             }
 
-            // Attractiveness (for shelves)
-            if (attractivenessText != null)
+            // Appeal (for shelves)
+            if (appealText != null)
             {
                 if (building is ShelfInstance shelf)
                 {
-                    float attractiveness = shelf.GetAttractiveness();
-                    attractivenessText.text = $"Attractiveness: {attractiveness:F1}";
-                    attractivenessText.gameObject.SetActive(true);
+                    float appeal = shelf.GetAppeal();
+                    appealText.text = $"Appeal: {appeal:F1}";
+                    appealText.gameObject.SetActive(true);
                 }
                 else
                 {
-                    attractivenessText.gameObject.SetActive(false);
+                    appealText.gameObject.SetActive(false);
                 }
             }
 
@@ -326,14 +329,14 @@ namespace PopLife.UI.BuildingInteraction
                 }
             }
 
-            // Attractiveness (货架专属)
-            if (nextLevelAttractivenessText != null)
+            // Appeal (货架专属)
+            if (nextLevelAppealText != null)
             {
                 if (building is ShelfInstance shelf && building.archetype is ShelfArchetype shelfArch)
                 {
                     if (isMaxLevel)
                     {
-                        nextLevelAttractivenessText.text = "MAX";
+                        nextLevelAppealText.text = "MAX";
                     }
                     else
                     {
@@ -341,14 +344,14 @@ namespace PopLife.UI.BuildingInteraction
                         var nextShelfData = shelfArch.GetShelfLevel(building.currentLevel + 1);
                         if (currentShelfData != null && nextShelfData != null)
                         {
-                            nextLevelAttractivenessText.text = $"{currentShelfData.attractiveness:F1} → {nextShelfData.attractiveness:F1}";
+                            nextLevelAppealText.text = $"{currentShelfData.appeal:F1} → {nextShelfData.appeal:F1}";
                         }
                     }
-                    nextLevelAttractivenessText.gameObject.SetActive(true);
+                    nextLevelAppealText.gameObject.SetActive(true);
                 }
                 else
                 {
-                    nextLevelAttractivenessText.gameObject.SetActive(false);
+                    nextLevelAppealText.gameObject.SetActive(false);
                 }
             }
 

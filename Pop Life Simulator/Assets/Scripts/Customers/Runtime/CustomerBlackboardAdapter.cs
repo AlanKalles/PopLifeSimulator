@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PopLife.Customers.Data;
+using PopLife.Data;
 
 
 namespace PopLife.Customers.Runtime
@@ -14,11 +15,18 @@ namespace PopLife.Customers.Runtime
         public string customerName;
         public int loyaltyLevel;
         public int trust;
-        public float[] interestFinal = Array.Empty<float>();
         public int embarrassmentCap;
         public float moveSpeed;
         public int queueToleranceSec;
 
+        [Header("偏好数据（Initialize 时预计算）")]
+        public string[] favoriteShelfIds;           // 从 CustomerRecord 加载
+        public int[] favoriteCategoryIndices;       // 偏好货架的去重品类索引
+        public BrandData[] favoriteBrands;          // 偏好货架的去重品牌
+
+        [Header("漏斗状态（行为树读写）")]
+        public FunnelPhase currentFunnelPhase;      // 由行为树设置
+        public FunnelPhase lastSelectionTier;       // 最近一次选择命中的层级（策略写入）
 
         [Header("本次会话状态（行为树读写）")]
         public int moneyBag;
@@ -32,7 +40,7 @@ namespace PopLife.Customers.Runtime
         public Transform assignedQueueSlot; // 分配的队列位置（由 QueueController 分配）
         public Transform targetExitPoint; // 目标离店点的 Transform
         public Transform spawnPoint; // 顾客生成点（也是最终撤离点）
-        public HashSet<string> purchasedArchetypes = new HashSet<string>(); // 本次访问已购买的货架archetype ID
+        public HashSet<ShelfArchetype> purchasedArchetypes = new HashSet<ShelfArchetype>(); // 本次访问已购买的货架archetype（SO引用）
 
         [Header("入口/出口状态")]
         public Transform entranceOutsideAnchor; // 商店入口外部锚点（街道侧）
@@ -56,13 +64,12 @@ namespace PopLife.Customers.Runtime
         public global::NodeCanvas.Framework.Blackboard ncBlackboard;
         void Reset(){ ncBlackboard = GetComponent<global::NodeCanvas.Framework.Blackboard>(); }
 #endif
-        public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, float[] finalInterest, int embarrassmentCapVal, float finalMoveSpeed)
+        public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, int embarrassmentCapVal, float finalMoveSpeed)
         {
             customerId = record.customerId;
             customerName = record.name;
             loyaltyLevel = record.loyaltyLevel;
             trust = record.trust;
-            interestFinal = finalInterest;
             embarrassmentCap = embarrassmentCapVal;
             moveSpeed = finalMoveSpeed;
             queueToleranceSec = archetype.queueToleranceSeconds;
@@ -75,7 +82,6 @@ namespace PopLife.Customers.Runtime
                 ncBlackboard.SetVariableValue("customerId", customerId);
                 ncBlackboard.SetVariableValue("loyaltyLevel", loyaltyLevel);
                 ncBlackboard.SetVariableValue("trust", trust);
-                ncBlackboard.SetVariableValue("interestFinal", interestFinal);
                 ncBlackboard.SetVariableValue("embarrassmentCap", embarrassmentCap);
                 ncBlackboard.SetVariableValue("moveSpeed", moveSpeed);
                 ncBlackboard.SetVariableValue("queueToleranceSec", queueToleranceSec);

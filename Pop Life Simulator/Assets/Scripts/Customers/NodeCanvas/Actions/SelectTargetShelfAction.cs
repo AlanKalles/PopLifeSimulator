@@ -87,7 +87,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (selectedIndex < 0 || selectedIndex >= shelfSnapshots.Count)
             {
                 Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 策略返回无效索引 (索引: {selectedIndex}, 货架数量: {shelfSnapshots.Count})。" +
-                                 "可能原因: 所有货架已购买/库存不足/兴趣过滤。顾客将跳过购物环节,直接前往收银台。");
+                                 $"阶段: {adapter.currentFunnelPhase}。顾客将跳过当前阶段。");
 
                 // 【Upset 机制】检查是否是首次搜寻失败（刚进店就对所有货架不感兴趣）
                 if (!adapter.hasAttemptedFirstShopping && adapter.pendingPayment == 0)
@@ -114,10 +114,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
             adapter.targetShelfId = selectedShelf.shelfId;
             adapter.goalCell = selectedShelf.gridCell;
 
+            // 记录命中的漏斗层级
+            adapter.lastSelectionTier = adapter.currentFunnelPhase;
+
             // 标记已尝试过第一次搜寻（成功）
             adapter.hasAttemptedFirstShopping = true;
 
-            Debug.Log($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 选择了货架 {selectedShelf.shelfId}");
+            Debug.Log($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 选择了货架 {selectedShelf.shelfId} (阶段: {adapter.currentFunnelPhase})");
 
             EndAction(true);
         }

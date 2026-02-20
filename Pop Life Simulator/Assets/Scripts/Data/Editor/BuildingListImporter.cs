@@ -255,7 +255,7 @@ namespace PopLife.Data.Editor
             int buildCost,
             List<ShelfArchetype.ShelfLevelData> levels)
         {
-            target.archetypeId = archetypeId;
+            // archetypeId 由 OnValidate 自动从 asset.name 同步，无需手动设置
             target.displayName = string.IsNullOrWhiteSpace(displayName) ? archetypeId : displayName;
             target.category = category;
             target.buildCost = buildCost;
@@ -287,18 +287,18 @@ namespace PopLife.Data.Editor
             int priceIdx,
             int maintenanceIdx,
             int stockIdx,
-            int attractivenessIdx,
+            int appealIdx,
             int fameIdx)
         {
             int price = ParseInt(GetCell(row, priceIdx));
             int maintenance = ParseInt(GetCell(row, maintenanceIdx));
             int stock = ParseInt(GetCell(row, stockIdx));
-            float attractiveness = ParseFloat(GetCell(row, attractivenessIdx));
+            float appeal = ParseFloat(GetCell(row, appealIdx));
             int fameCost = ParseInt(GetCell(row, fameIdx));
 
             // 如果所有数据都是0，则不添加这个等级
             if (price == 0 && maintenance == 0 && stock == 0 &&
-                Mathf.Approximately(attractiveness, 0f) && fameCost == 0)
+                Mathf.Approximately(appeal, 0f) && fameCost == 0)
             {
                 return;
             }
@@ -309,7 +309,7 @@ namespace PopLife.Data.Editor
                 price = price,
                 maintenanceFee = maintenance,
                 maxStock = stock,
-                attractiveness = attractiveness,
+                appeal = appeal,
                 upgradeFameCost = fameCost
             };
 
@@ -501,43 +501,28 @@ namespace PopLife.Data.Editor
             // 模糊匹配
             categoryStr = categoryStr.ToLowerInvariant().Trim();
 
-            if (categoryStr.Contains("ling"))
-            {
-                category = ProductCategory.Lingerie;
-                return true;
-            }
-            if (categoryStr.Contains("cond"))
-            {
-                category = ProductCategory.Condom;
-                return true;
-            }
-            if (categoryStr.Contains("vib"))
-            {
-                category = ProductCategory.Vibrator;
-                return true;
-            }
-            if (categoryStr.Contains("flesh"))
-            {
-                category = ProductCategory.Fleshlight;
-                return true;
-            }
-            if (categoryStr.Contains("lub"))
-            {
-                category = ProductCategory.Lubricant;
-                return true;
-            }
-            if (categoryStr.Contains("bdsm"))
-            {
-                category = ProductCategory.BDSM;
-                return true;
-            }
-
-            // 特殊处理：Dildo可能属于BDSM或其他
+            if (categoryStr.Contains("accessor"))
+            { category = ProductCategory.Accessories; return true; }
+            if (categoryStr.Contains("anal"))
+            { category = ProductCategory.Anal; return true; }
+            if (categoryStr.Contains("digital"))
+            { category = ProductCategory.DigitalMedia; return true; }
             if (categoryStr.Contains("dildo"))
-            {
-                category = ProductCategory.BDSM;
-                return true;
-            }
+            { category = ProductCategory.Dildo; return true; }
+            if (categoryStr.Contains("enhance"))
+            { category = ProductCategory.Enhancements; return true; }
+            if (categoryStr.Contains("flesh"))
+            { category = ProductCategory.Fleshlight; return true; }
+            if (categoryStr.Contains("furniture") || categoryStr.Contains("furni"))
+            { category = ProductCategory.Furniture; return true; }
+            if (categoryStr.Contains("instru"))
+            { category = ProductCategory.Instruments; return true; }
+            if (categoryStr.Contains("ling"))
+            { category = ProductCategory.Lingerie; return true; }
+            if (categoryStr.Contains("vib"))
+            { category = ProductCategory.Vibrator; return true; }
+            if (categoryStr.Contains("well"))
+            { category = ProductCategory.Wellness; return true; }
 
             category = default;
             return false;

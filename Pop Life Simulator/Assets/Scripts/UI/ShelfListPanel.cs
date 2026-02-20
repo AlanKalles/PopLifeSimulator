@@ -410,26 +410,26 @@ namespace PopLife.UI
 
         public void RefreshItemDisplays()
         {
-            var placedIds = GetPlacedShelfArchetypeIds();
+            var placedArchetypes = GetPlacedShelfArchetypes();
             foreach (var item in itemInstances)
             {
                 item.UpdateCostDisplay();
-                item.SetPlacementDisabled(placedIds.Contains(item.GetShelf().archetypeId));
+                item.SetPlacementDisabled(placedArchetypes.Contains(item.GetShelf()));
             }
         }
 
         /// <summary>
-        /// 查询所有楼层中已放置的货架archetypeId
+        /// 查询所有楼层中已放置的货架archetype（SO引用）
         /// </summary>
-        private HashSet<string> GetPlacedShelfArchetypeIds()
+        private HashSet<ShelfArchetype> GetPlacedShelfArchetypes()
         {
-            var placed = new HashSet<string>();
+            var placed = new HashSet<ShelfArchetype>();
             if (constructionManager == null || constructionManager.floorManager == null)
                 return placed;
             foreach (var floor in constructionManager.floorManager.GetAllActiveFloors())
                 foreach (var shelf in floor.AllShelves())
-                    if (shelf.archetype != null)
-                        placed.Add(shelf.archetype.archetypeId);
+                    if (shelf.archetype is ShelfArchetype sa)
+                        placed.Add(sa);
             return placed;
         }
 
@@ -454,8 +454,8 @@ namespace PopLife.UI
                 item.gameObject.SetActive(shouldShow);
 
                 // 检查是否已放置
-                var placedIds = GetPlacedShelfArchetypeIds();
-                item.SetPlacementDisabled(placedIds.Contains(shelf.archetypeId));
+                var placedArchetypes = GetPlacedShelfArchetypes();
+                item.SetPlacementDisabled(placedArchetypes.Contains(shelf));
             }
         }
 

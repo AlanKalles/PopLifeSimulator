@@ -19,6 +19,9 @@ namespace PopLife.UI.Quest
         [SerializeField] private GameObject collapseIcon;   // ▼ 展开状态显示
         [SerializeField] private GameObject expandIcon;     // ► 折叠状态显示
         [SerializeField] private TextMeshProUGUI headerText;
+        [SerializeField] private TextMeshProUGUI toggleLabel; // 折叠/展开文字
+        [SerializeField] private string expandedText = "Collapse";
+        [SerializeField] private string collapsedText = "Expand";
 
         [Header("引用")]
         [SerializeField] private QuestTooltip questTooltip;
@@ -51,6 +54,7 @@ namespace PopLife.UI.Quest
             // 默认折叠状态：显示 expandIcon，隐藏 collapseIcon
             if (collapseIcon != null) collapseIcon.SetActive(false);
             if (expandIcon != null) expandIcon.SetActive(true);
+            UpdateToggleLabel();
 
             // 初始刷新
             RefreshQuests();
@@ -113,6 +117,8 @@ namespace PopLife.UI.Quest
             if (collapseIcon != null) collapseIcon.SetActive(!isCollapsed);
             if (expandIcon != null) expandIcon.SetActive(isCollapsed);
 
+            UpdateToggleLabel();
+
             // 刷新列表（折叠时只显示1条，展开时显示全部）
             RefreshQuests();
 
@@ -122,6 +128,12 @@ namespace PopLife.UI.Quest
         }
 
         #region 内部方法
+
+        private void UpdateToggleLabel()
+        {
+            if (toggleLabel != null)
+                toggleLabel.text = isCollapsed ? collapsedText : expandedText;
+        }
 
         private void UpdateHeader(int totalCount)
         {

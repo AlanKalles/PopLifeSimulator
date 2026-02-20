@@ -40,11 +40,11 @@ namespace PopLife.Runtime
             Restock();
         }
 
-        public float GetAttractiveness()
+        public float GetAppeal()
         {
             var lv = SA.GetShelfLevel(currentLevel);
             float catMul = CategoryManager.Instance.GetCategoryMultiplier(SA.category);
-            return lv.attractiveness * catMul;
+            return lv.appeal * catMul;
         }
 
         /// <summary>
