@@ -1220,7 +1220,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customerPrefab: {fileID: 7018696242757326488, guid: 76e4afbb1ee85d340beb84d82c3df480, type: 3}
-  categoriesCount: 11
   spawnPoints:
   - {fileID: 1856956037}
   - {fileID: 631376605}
@@ -1234,7 +1233,6 @@ MonoBehaviour:
   initialSpawnDelay: 2
   spawnJitter: {x: -1, y: 1}
   defaultArchetype: {fileID: 0}
-  defaultTraits: []
   targetCustomerId: 
   spawnTargetCustomer: 0
   loadedCustomerCount: 0
@@ -7344,6 +7342,7 @@ GameObject:
   - component: {fileID: 376491506}
   - component: {fileID: 376491505}
   - component: {fileID: 376491504}
+  - component: {fileID: 376491508}
   m_Layer: 0
   m_Name: Service
   m_TagString: Untagged
@@ -7408,6 +7407,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 798607675}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &376491508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376491503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9155afdc68547ed4284c1c902b2560c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Customers.Services.CustomerProgressService
+  favoriteXpMul: 1.5
+  categoryXpMul: 1.2
+  brandXpMul: 1
+  priceXpMul: 0.8
 --- !u!1 &377779880
 GameObject:
   m_ObjectHideFlags: 0
@@ -16799,7 +16814,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 393941957}
   m_HandleRect: {fileID: 393941956}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
