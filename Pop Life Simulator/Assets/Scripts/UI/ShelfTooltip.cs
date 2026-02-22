@@ -22,6 +22,8 @@ namespace PopLife.UI
         [SerializeField] private TextMeshProUGUI appealText;
         [SerializeField] private TextMeshProUGUI priceText;
         [SerializeField] private TextMeshProUGUI maintenanceFeeText;
+        [SerializeField] private Image brandIconImage;
+        [SerializeField] private TextMeshProUGUI brandNameText;
         [SerializeField] private CanvasGroup canvasGroup; // For fade animation
 
         [Header("Color Settings")]
@@ -91,6 +93,24 @@ namespace PopLife.UI
             {
                 // Only show category name (without "Shelf" prefix) in uppercase
                 categoryText.text = shelf.category.ToString().ToUpper();
+            }
+
+            // 品牌信息
+            if (brandNameText != null)
+            {
+                brandNameText.text = shelf.brand != null ? shelf.brand.displayName : "";
+            }
+            if (brandIconImage != null)
+            {
+                if (shelf.brand != null && shelf.brand.icon != null)
+                {
+                    brandIconImage.sprite = shelf.brand.icon;
+                    brandIconImage.enabled = true;
+                }
+                else
+                {
+                    brandIconImage.enabled = false;
+                }
             }
 
             // Get level 1 data for stats display

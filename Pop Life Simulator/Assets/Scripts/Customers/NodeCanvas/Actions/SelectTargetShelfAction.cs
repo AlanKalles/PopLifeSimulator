@@ -67,15 +67,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (shelfSnapshots.Count == 0)
             {
-                Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 找不到可用货架");
-
-                // 【Upset 机制】检查是否是首次搜寻失败（刚进店就找不到货架）
-                if (!adapter.hasAttemptedFirstShopping && adapter.pendingPayment == 0)
-                {
-                    adapter.isUpset = true;
-                    Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 刚进店就找不到可用货架（stock=0），进入 upset 状态！");
-                }
-                adapter.hasAttemptedFirstShopping = true;
+                // 商店里完全没有货架，直接标记 upset
+                adapter.isUpset = true;
+                Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 找不到任何货架，进入 upset 状态！");
 
                 EndAction(false);
                 return;
@@ -86,18 +80,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (selectedIndex < 0 || selectedIndex >= shelfSnapshots.Count)
             {
-                Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 策略返回无效索引 (索引: {selectedIndex}, 货架数量: {shelfSnapshots.Count})。" +
-                                 $"阶段: {adapter.currentFunnelPhase}。顾客将跳过当前阶段。");
+                // 当前漏斗阶段未找到匹配货架，返回 Failure 让行为树推进到下一阶段
+                // 不设置 isUpset —— 漏斗系统中单个阶段失败是正常的
+                Debug.Log($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 阶段 {adapter.currentFunnelPhase} 未找到匹配货架，跳过当前阶段。");
 
-                // 【Upset 机制】检查是否是首次搜寻失败（刚进店就对所有货架不感兴趣）
-                if (!adapter.hasAttemptedFirstShopping && adapter.pendingPayment == 0)
-                {
-                    adapter.isUpset = true;
-                    Debug.LogWarning($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 刚进店就对所有货架不感兴趣，进入 upset 状态！");
-                }
-                adapter.hasAttemptedFirstShopping = true;
-
-                // 清空目标货架ID,确保行为树跳过购物环节
+                // 清空目标货架ID
                 targetShelfId.value = string.Empty;
                 adapter.targetShelfId = string.Empty;
 
@@ -116,9 +103,6 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             // 记录命中的漏斗层级
             adapter.lastSelectionTier = adapter.currentFunnelPhase;
-
-            // 标记已尝试过第一次搜寻（成功）
-            adapter.hasAttemptedFirstShopping = true;
 
             Debug.Log($"[SelectTargetShelfAction] 顾客 {adapter.customerId} 选择了货架 {selectedShelf.shelfId} (阶段: {adapter.currentFunnelPhase})");
 

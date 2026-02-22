@@ -27,6 +27,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         private AILerp aiLerp;
         private AIDestinationSetter destinationSetter;
         private CustomerBlackboardAdapter customerBlackboard;
+        private bool waitingForNewPath; // 等待新路径计算完成，防止 reachedDestination 误判
 
         protected override string info
         {
@@ -81,6 +82,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             aiLerp.isStopped = false;
             hasReachedTarget.value = false;
 
+            // 强制请求新路径，并标记等待状态
+            // 防止 OnUpdate 第一帧读到上一次寻路的 reachedDestination=true 而瞬间完成
+            aiLerp.SearchPath();
+            waitingForNewPath = true;
+
             Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 开始移动到 {targetTransform.position}");
         }
 
@@ -92,20 +98,15 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // 首选：AILerp 内置到达判断
-            if (aiLerp.reachedDestination)
+            // 等待新路径计算完成，防止 reachedDestination 误判
+            if (waitingForNewPath)
             {
-                hasReachedTarget.value = true;
-                Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 到达目标 (reachedDestination = true)");
-
-                // 停止移动
-                aiLerp.isStopped = true;
-
-                EndAction(true);
-                return;
+                if (aiLerp.pathPending)
+                    return; // 路径仍在计算中，继续等待
+                waitingForNewPath = false;
             }
 
-            // 兼容 RVO 的距离容忍度检查
+            // 兼容 RVO 的距离容忍度检查（优先于 reachedDestination，更可靠）
             var target = assignedQueueSlot.value;
             if (target != null)
             {
@@ -118,6 +119,19 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     EndAction(true);
                     return;
                 }
+            }
+
+            // AILerp 内置到达判断
+            if (aiLerp.reachedDestination)
+            {
+                hasReachedTarget.value = true;
+                Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 到达目标 (reachedDestination = true)");
+
+                // 停止移动
+                aiLerp.isStopped = true;
+
+                EndAction(true);
+                return;
             }
         }
 

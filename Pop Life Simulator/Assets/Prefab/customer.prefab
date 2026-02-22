@@ -221,7 +221,7 @@ Transform:
   m_GameObject: {fileID: 7018696242757326488}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.4515, y: 5.2164, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -245,10 +245,14 @@ MonoBehaviour:
   customerName: 
   loyaltyLevel: 0
   trust: 0
-  interestFinal: []
   embarrassmentCap: 0
   moveSpeed: 0
   queueToleranceSec: 0
+  favoriteShelfIds: []
+  favoriteCategoryIndices: 
+  favoriteBrands: []
+  currentFunnelPhase: 0
+  lastSelectionTier: 0
   moneyBag: 0
   embarrassment: 0
   goalCell: {x: 0, y: 0}
@@ -265,7 +269,6 @@ MonoBehaviour:
   hasEnteredStore: 0
   isClosingTime: 0
   isUpset: 0
-  hasAttemptedFirstShopping: 0
   consecutivePurchaseFailures: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
@@ -298,8 +301,8 @@ MonoBehaviour:
     pathLength: 0
     cashierQueueTime: 0
     visitedShelves: []
+    purchaseFunnelTiers: 
   cachedArchetype: {fileID: 0}
-  cachedTraits: []
 --- !u!114 &3176050706865594096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,7 +333,6 @@ MonoBehaviour:
     UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"targetExitId":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.targetExitId","_name":"targetExitId","_id":"c64dba86-1da4-4f74-8fac-61621c8de35e","$type":"NodeCanvas.Framework.Variable`1[[System.String,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"pendingPayment":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.pendingPayment","_name":"pendingPayment","_id":"38df81b5-8fbe-40c5-9a15-62bc9b7c983a","$type":"NodeCanvas.Framework.Variable`1[[System.Int32,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"moveSpeed":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.moveSpeed","_name":"moveSpeed","_id":"1b2df322-8fb5-4d1a-bdb5-0f9b38342b18","$type":"NodeCanvas.Framework.Variable`1[[System.Single,
-    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"interestFinal":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.interestFinal","_name":"interestFinal","_id":"1e9277b4-8940-4559-9261-171a77ca13d4","$type":"NodeCanvas.Framework.Variable`1[[System.Single[],
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"Has
     Reached Target":{"_name":"Has Reached Target","_id":"3d578d9a-c7f4-438c-956d-cf1d08eb6b78","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"urgent
@@ -340,6 +342,7 @@ MonoBehaviour:
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"entranceOutsideAnchor":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceOutsideAnchor","_name":"entranceOutsideAnchor","_id":"d62925ac-2e35-4c32-b4ab-17eb8e6a3659","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
     UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"entranceInsideAnchor":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceInsideAnchor","_name":"entranceInsideAnchor","_id":"4e110af2-9d53-4237-b559-c85e4cc9bbb7","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
     UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"lastPurchaseSuccessful":{"_name":"lastPurchaseSuccessful","_id":"3bc003df-9063-4195-b307-9006910dea9f","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"currentPhaseMaxLoops":{"_name":"currentPhaseMaxLoops","_id":"cd40edd6-ef9e-4dc0-8238-62be137a8e67","$type":"NodeCanvas.Framework.Variable`1[[System.Int32,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}}}'
   _objectReferences: []
   _serializedVariables:
@@ -394,9 +397,6 @@ MonoBehaviour:
   - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.moveSpeed","_name":"moveSpeed","_id":"1b2df322-8fb5-4d1a-bdb5-0f9b38342b18","$type":"NodeCanvas.Framework.Variable`1[[System.Single,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
     _references: []
-  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.interestFinal","_name":"interestFinal","_id":"1e9277b4-8940-4559-9261-171a77ca13d4","$type":"NodeCanvas.Framework.Variable`1[[System.Single[],
-      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
-    _references: []
   - _json: '{"_name":"Has Reached Target","_id":"3d578d9a-c7f4-438c-956d-cf1d08eb6b78","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
     _references: []
@@ -416,6 +416,9 @@ MonoBehaviour:
       UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}'
     _references: []
   - _json: '{"_name":"lastPurchaseSuccessful","_id":"3bc003df-9063-4195-b307-9006910dea9f","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_name":"currentPhaseMaxLoops","_id":"cd40edd6-ef9e-4dc0-8238-62be137a8e67","$type":"NodeCanvas.Framework.Variable`1[[System.Int32,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
     _references: []
 --- !u!114 &5441276965745480517

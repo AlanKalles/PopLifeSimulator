@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
+  m_Name: Prostate Messager
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
+  archetypeId: Prostate Messager
+  displayName: Prostate Messager
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  buildCost: 110
+  moveCost: 0
+  destroyRefundRate: 0.75
+  footprintPattern: []
+  canRotate: 0
+  levels: []
+  category: 1
+  brand: {fileID: 11400000, guid: c5bf8ead07bd4084f929149102212fdd, type: 2}
+  description: 

@@ -458,8 +458,9 @@ namespace PopLife.Customers.Editor
                 if (favoriteShelvesSO[i] != null && favoriteShelvesSO[i].archetypeId == id)
                     continue;
 
-                // 从 Resources 路径加载
-                var so = Resources.Load<ShelfArchetype>($"ScriptableObjects/BuildingArchetype/Shelf/{id}");
+                // 从 Resources 路径递归加载（支持子文件夹）
+                var all = Resources.LoadAll<ShelfArchetype>("ScriptableObjects/BuildingArchetype/Shelf");
+                var so = Array.Find(all, a => a.archetypeId == id);
                 favoriteShelvesSO[i] = so;
             }
         }

@@ -3,24 +3,196 @@
         {
             "customerId": "C001",
             "name": "Lucy",
-            "bio": "College girl growing up in a conservative family. No sex experience before but wants to explore. Just started dating",
+            "bio": "New to sex, exploring with boyfriend. Average College girl",
             "appearanceId": "CSP001",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "CisWoman",
-                "Curious",
-                "Shy",
-                "Student",
-                "Straight"
+            "favoriteShelfIds": [
+                "Darex Natural Lubricant",
+                "Latex Condoms",
+                "Women’s Pleasure Condoms",
+                "Triple Stimulation Vibrator"
             ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 34,
+            "walletCapBase": 50,
+            "visitCount": 2,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 182,
+            "availableNarrativeIds": [
+                "IN002",
+                "IN004",
+                "IN005"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C002",
+            "name": "Mei",
+            "bio": "Successful businesswoman, single. \"My friends say I need to relax...\"",
+            "appearanceId": "CSP002",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "Wand Vibrator",
+                "Silicone Dildo",
+                "",
+                ""
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 13,
+            "walletCapBase": 50,
+            "visitCount": 1,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 84,
+            "availableNarrativeIds": [
+                "IN004",
+                "IN005"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C003",
+            "name": "Guliana",
+            "bio": "Art student, single. Listen to the most niche music.",
+            "appearanceId": "CSP003",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "Finger Vibrator",
+                "",
+                "",
+                ""
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 24,
+            "walletCapBase": 50,
+            "visitCount": 2,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 128,
+            "availableNarrativeIds": [
+                "IN004",
+                "IN005"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C004",
+            "name": "Yuta",
+            "bio": "Programmer, Otaku. Who needs a relationship when we have VR porn?",
+            "appearanceId": "CSP004",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "",
+                "Darex Natural Lubricant",
+                "Textured Fantasy Fleshlight",
+                ""
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 32,
+            "walletCapBase": 50,
+            "visitCount": 2,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 72,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN002",
+                "IN003"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C005",
+            "name": "Celine",
+            "bio": "Player, tattoo artist. Pansexual. Her mom says she's just greedy",
+            "appearanceId": "CSP005",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "Strawberry Lubricant",
+                "Strap on Dildo",
+                "Wireless Vibrator",
+                "Mouth Wash"
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 17,
+            "walletCapBase": 50,
+            "visitCount": 1,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 42,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C006",
+            "name": "Paxton",
+            "bio": "Divorced, Exploring. \"My ex wife didn't like sex, but also didn't like me masterbate... confusing woman\"",
+            "appearanceId": "CSP006",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "Egg Fleshlight",
+                "",
+                "Anal Vibrator",
+                "1-Step PlanB"
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN004"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C007",
+            "name": "Devi",
+            "bio": "Gap year, live with mom. \"I can't let my mom see this!\"",
+            "appearanceId": "CSP007",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "Lipstick Vibrator",
+                "Pen Vibrator",
+                "Flower Vibrator",
+                "Silicone Toy Cleaner"
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 50,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [
+                "IN001",
+                "IN003"
+            ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C008",
+            "name": "Axel",
+            "bio": "Construction Worker. \"Yo man, need help fixing that chair?\"",
+            "appearanceId": "CSP008",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "Intense Polyisoprene Condoms",
+                "",
+                "Egg Fleshlight",
+                "G-spot vibrator"
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -32,286 +204,30 @@
             "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN002",
-                "IN004",
-                "IN005"
-            ],
-            "schemaVersion": 1
-        },
-        {
-            "customerId": "C002",
-            "name": "Mei",
-            "bio": "Recently graduated and started working. Appears well-behaved but is secretly curious. Often watches dating shows and has been in a relationship for six months.",
-            "appearanceId": "CSP002",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Shy",
-                "Dating",
-                "CisWoman",
-                "Student",
-                "Straight"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 230,
-            "walletCapBase": 50,
-            "visitCount": 19,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 436,
-            "availableNarrativeIds": [
-                "IN004",
-                "IN005"
-            ],
-            "schemaVersion": 1
-        },
-        {
-            "customerId": "C003",
-            "name": "Xiao Yu",
-            "bio": "First-year art student. Lively personality and enjoys exploring her body. Often draws and is open to new experiences.",
-            "appearanceId": "CSP003",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "CisWoman",
-                "Straight",
-                "Student",
-                "Liberal"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 238,
-            "walletCapBase": 50,
-            "visitCount": 19,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 507,
-            "availableNarrativeIds": [
-                "IN004",
-                "IN005"
-            ],
-            "schemaVersion": 1
-        },
-        {
-            "customerId": "C004",
-            "name": "Yuta",
-            "bio": "Game developer, introverted otaku, single for a long time. Likes 2D anime characters and has mild social anxiety.",
-            "appearanceId": "CSP004",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Rich",
-                "CisMan",
-                "Kinky",
-                "Straight",
-                "Single"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 2,
-            "xp": 380,
-            "walletCapBase": 50,
-            "visitCount": 31,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 696,
-            "availableNarrativeIds": [
-                "IN001",
-                "IN002",
-                "IN003"
-            ],
-            "schemaVersion": 1
-        },
-        {
-            "customerId": "C005",
-            "name": "Haruka",
-            "bio": "Feminist photographer. Cool on the outside but gentle inside. Likes trying different toys with her partner.",
-            "appearanceId": "CSP005",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Liberal",
-                "CisWoman",
-                "PanSexual"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 2,
-            "xp": 298,
-            "walletCapBase": 50,
-            "visitCount": 24,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 624,
-            "availableNarrativeIds": [
-                "IN004"
-            ],
-            "schemaVersion": 1
-        },
-        {
-            "customerId": "C006",
-            "name": "Meilan",
-            "bio": "A retired schoolteacher in her 70s. Comes early in the morning when no one is around. She buys simple, sensory items without sexual intent.",
-            "appearanceId": "CSP006",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "EarlyBird",
-                "Vanilla",
-                "Asexual",
-                "CisWoman"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 2,
-            "xp": 346,
-            "walletCapBase": 50,
-            "visitCount": 28,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 661,
-            "availableNarrativeIds": [
-                "IN004"
-            ],
-            "schemaVersion": 1
-        },
-        {
-            "customerId": "C007",
-            "name": "Daeho",
-            "bio": "A 45-year-old construction worker. Struggles financially, buys only the cheapest practical items for his wife.",
-            "appearanceId": "CSP007",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "BlueCollar",
-                "Married",
-                "Poor",
-                "CisMan",
-                "Straight"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 2,
-            "xp": 290,
-            "walletCapBase": 50,
-            "visitCount": 22,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 610,
-            "availableNarrativeIds": [
-                "IN001",
-                "IN003"
-            ],
-            "schemaVersion": 1
-        },
-        {
-            "customerId": "C008",
-            "name": "Tsuki",
-            "bio": "A 24-year-old lifestyle vlogger. She is open about her bisexuality online and tries out trendy products to boost her channel content.",
-            "appearanceId": "CSP008",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Curious",
-                "Bisexual",
-                "Influencer",
-                "CisWoman"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 2,
-            "xp": 292,
-            "walletCapBase": 50,
-            "visitCount": 23,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 618,
-            "availableNarrativeIds": [
-                "IN002",
                 "IN004"
             ],
             "schemaVersion": 1
         },
         {
             "customerId": "C009",
-            "name": "Takumi",
-            "bio": "A 19-year-old law student. Still closeted, nervous when browsing the store, usually buys small things quickly.",
+            "name": "Jie",
+            "bio": "Robot engineer. Yes his partner is a robot.",
             "appearanceId": "CSP009",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Student",
-                "Shy",
-                "Gay",
-                "CisMan"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Silicone Toy Cleaner",
+                "",
+                "Fleshlight",
+                ""
             ],
             "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 238,
+            "loyaltyLevel": 0,
+            "xp": 0,
             "walletCapBase": 50,
-            "visitCount": 19,
+            "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 512,
+            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003",
@@ -321,24 +237,15 @@
         },
         {
             "customerId": "C010",
-            "name": "Ayako",
-            "bio": "A 30-year-old yoga instructor. Confident and body-positive, enjoys exploring intimacy with partners of any gender.",
+            "name": "Hyunwoo",
+            "bio": "Fashion designer. \"How dare you call my piece of art lingere! It's ART!\"",
             "appearanceId": "CSP010",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Fitness",
-                "Liberal",
-                "PanSexual",
-                "CisWoman"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Rabbit Vibrator",
+                "Bullet Vibrator",
+                "Textured Fantasy Fleshlight",
+                ""
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -355,25 +262,15 @@
         },
         {
             "customerId": "C011",
-            "name": "Jinhwan",
-            "bio": "A 33-year-old graphic designer. Works at night, shops after midnight, and prefers BDSM gear.",
+            "name": "Naoko",
+            "bio": "Traditional Orthodox Engineer. \"Whatever Jie is doing, sacrilegious\"",
             "appearanceId": "CSP011",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "NightOwl",
-                "BDSM",
-                "CisMan",
-                "Straight",
-                "Freelancing"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "90's Lingerie",
+                "Bullet Vibrator",
+                "Latex Condoms",
+                ""
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -391,24 +288,15 @@
         },
         {
             "customerId": "C012",
-            "name": "Baozhen",
-            "bio": "A 52-year-old woman recently divorced. Lives alone, rediscovering her sexuality with women after leaving a long marriage.",
+            "name": "Aiko",
+            "bio": "The not-so-popular idol. She has a secret boyfriend. \"Who doesn't? We all do\"",
             "appearanceId": "CSP012",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Lesbian",
-                "CisWoman",
-                "Single",
-                "Unemployed"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Latex Condoms",
+                "Silicone Toy Cleaner",
+                "Lovi Couples Vibrator",
+                "Maid Outfit"
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -426,60 +314,16 @@
             "schemaVersion": 1
         },
         {
-            "customerId": "C020",
-            "name": "Shintaro",
-            "bio": "A 48-year-old accountant with a hidden BDSM interest. Buys high-end gear discreetly, never during the day.",
-            "appearanceId": "CSP020",
-            "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "BDSM",
-                "Married",
-                "CisMan",
-                "Straight"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "trust": 0,
-            "loyaltyLevel": 2,
-            "xp": 310,
-            "walletCapBase": 50,
-            "visitCount": 25,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 649,
-            "availableNarrativeIds": [
-                "IN001",
-                "IN003"
-            ],
-            "schemaVersion": 1
-        },
-        {
             "customerId": "C013",
-            "name": "Minghao",
-            "bio": "A 20-year-old art school dropout. Treats adult products like collectibles, trying to get one from every category.",
+            "name": "Zarah",
+            "bio": "Writer, freelance and working on her second book.",
             "appearanceId": "CSP013",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Student",
-                "CisMan",
-                "Gay",
-                "Collector"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Women’s Pleasure Condoms",
+                "",
+                "Portable Vibrator",
+                ""
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -498,25 +342,15 @@
         },
         {
             "customerId": "C014",
-            "name": "Ayaka",
-            "bio": "A 42-year-old banker, married with children. Has a hidden affair and secretly purchases high-end toys.",
+            "name": "Oscar",
+            "bio": "Investigate journalist. Don't get along with the Auditor for some obvious reason...",
             "appearanceId": "CSP014",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Rich",
-                "Secret Affair",
-                "CisWoman",
-                "Straight",
-                "Married"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Darex Natural Lubricant",
+                "",
+                "",
+                "Anal Plug"
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -533,24 +367,15 @@
         },
         {
             "customerId": "C015",
-            "name": "Yuzhen",
-            "bio": "A 60-year-old grandmother from a rural town. Visits right after sunrise, secretly buys small items but avoids looking at anyone.",
+            "name": "Johane",
+            "bio": "Political Activist, Hanae's friend. Hate the auditor.",
             "appearanceId": "CSP015",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "EarlyBird",
-                "Shy",
-                "CisWoman",
-                "Straight"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Anal Plug",
+                "",
+                "",
+                "Prostate Messager"
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -567,24 +392,15 @@
         },
         {
             "customerId": "C016",
-            "name": "Riku",
-            "bio": "A 21-year-old university theater major. Always eager to explore new experiences, buys across categories without hesitation.",
+            "name": "Alex",
+            "bio": "Dropped out of college and works in his parents' corner store. \"I'm broke, don't try to sell me shit\"",
             "appearanceId": "CSP016",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Student",
-                "Curious",
-                "PanSexual",
-                "CisMan"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Latex Condoms",
+                "Mouth Wash",
+                "",
+                "90's Lingerie"
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -604,25 +420,15 @@
         },
         {
             "customerId": "C017",
-            "name": "Seoyeon",
-            "bio": "A 27-year-old K-pop stylist. Dates multiple partners openly and flaunts luxury purchases on social media.",
+            "name": "Bonnie",
+            "bio": "Doctor of Medicine. Specialize in urine system. ",
             "appearanceId": "CSP017",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Influencer",
-                "Rich",
-                "Polyamorous",
-                "CisWoman",
-                "Bisexual"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "",
+                "Silicone Toy Cleaner",
+                "Thrusting Vibrator",
+                "Grinder Vibrator"
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -639,24 +445,15 @@
         },
         {
             "customerId": "C018",
-            "name": "Daichi",
-            "bio": "A 38-year-old security guard. Works late shifts and drops by the store past midnight, buys practical items in bulk.",
+            "name": "Susan",
+            "bio": "Salesperson at a cosmetic store.",
             "appearanceId": "CSP018",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "BlueCollar",
-                "NightOwl",
-                "CisMan",
-                "Straight"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "",
+                "",
+                "",
+                ""
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -674,24 +471,15 @@
         },
         {
             "customerId": "C019",
-            "name": "Hana",
-            "bio": "A 33-year-old pilates coach. Proudly queer, prefers athletic and sensual products, often shops with her girlfriend.",
+            "name": "Ash",
+            "bio": "Cosplayer. Love new tech.",
             "appearanceId": "CSP019",
             "archetypeId": "RegularCustomer",
-            "traitIds": [
-                "Fitness",
-                "Liberal",
-                "Lesbian",
-                "CisWoman"
-            ],
-            "interestPersonalDelta": [
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+            "favoriteShelfIds": [
+                "Leather Queen Lingerie",
+                "",
+                "",
+                "Textured Stroker"
             ],
             "trust": 0,
             "loyaltyLevel": 0,
@@ -704,6 +492,52 @@
             "availableNarrativeIds": [
                 "IN004"
             ],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C026",
+            "name": "Eason",
+            "bio": "Full-time draw comics. \"I'm too old to fuck or be fucked, kid. I'm just here for the vintage comics.\"",
+            "appearanceId": "",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "",
+                "",
+                "",
+                ""
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 100,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [],
+            "schemaVersion": 1
+        },
+        {
+            "customerId": "C031",
+            "name": "Alix",
+            "bio": "Government worker. ",
+            "appearanceId": "",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "",
+                "",
+                "",
+                ""
+            ],
+            "trust": 0,
+            "loyaltyLevel": 0,
+            "xp": 0,
+            "walletCapBase": 100,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [],
             "schemaVersion": 1
         }
     ]

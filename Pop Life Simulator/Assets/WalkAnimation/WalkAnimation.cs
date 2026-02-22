@@ -88,7 +88,7 @@ public class WalkAnimation : MonoBehaviour
     public void StartWalk()
     {
         isWalking = true;
-    }
+}
 
     public void StopWalk()
     {

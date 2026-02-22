@@ -52,7 +52,6 @@ namespace PopLife.Customers.Runtime
 
         [Header("情绪状态 - Upset 机制")]
         public bool isUpset = false;       // 是否处于 upset 状态（找不到商品/购买失败）
-        public bool hasAttemptedFirstShopping = false; // 是否已尝试过第一次搜寻货架（用于判断首次搜寻失败）
         public int consecutivePurchaseFailures = 0;    // 连续到达货架但购买失败的次数（到达货架库存为0）
 
         [Header("策略集合（只读引用）")]
