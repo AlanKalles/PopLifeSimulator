@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using PopLife.Customers.Data;
-
-
 namespace PopLife.Customers.Runtime
 {
     [Serializable]
@@ -13,7 +10,6 @@ namespace PopLife.Customers.Runtime
         public string customerId; // 自定义ID格式: C001(普通) 或 V001(VIP)
         public string name;
         [TextArea] public string bio;
-        public string appearanceId; // 外貌预设ID，对应 AppearanceDatabase 中的条目
 
 
 // —— 行为基线来源 ——

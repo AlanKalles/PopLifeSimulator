@@ -12,17 +12,15 @@ namespace PopLife.Runtime
     [RequireComponent(typeof(Seeker))]
     public class LinkTraversalDetector : MonoBehaviour
     {
-        [Tooltip("用于隐藏/显示的 SpriteRenderer，留空则自动查找子级")]
-        [SerializeField] private SpriteRenderer spriteRenderer;
-
         private Seeker seeker;
+        private SpriteRenderer[] allRenderers;
         private readonly List<AILerpLinkTeleporter> registeredTeleporters = new();
 
         void Awake()
         {
             seeker = GetComponent<Seeker>();
-            if (spriteRenderer == null)
-                spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            // 收集所有子级 SpriteRenderer（6个部件 + emoji）
+            allRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         }
 
         void OnEnable() => seeker.postProcessPath += OnPathComplete;
@@ -52,7 +50,7 @@ namespace PopLife.Runtime
                         {
                             teleporter.RegisterAgent(
                                 transform,
-                                spriteRenderer,
+                                allRenderers,
                                 (Vector3)startNode.position,
                                 (Vector3)endNode.position
                             );

@@ -11,6 +11,7 @@ namespace PopLife
         [Header("UI References")]
         [SerializeField] private TextMeshProUGUI moneyText;
         [SerializeField] private TextMeshProUGUI fameText;
+        [SerializeField] private TextMeshProUGUI storeAppealText;
 
         [Header("Display Format")]
         [SerializeField] private string moneyPrefix = "$";
@@ -22,6 +23,7 @@ namespace PopLife
             {
                 UpdateMoneyDisplay(ResourceManager.Instance.money);
                 UpdateFameDisplay(ResourceManager.Instance.fame);
+                UpdateStoreAppealDisplay(ResourceManager.Instance.GetStoreAppeal());
             }
         }
 
@@ -38,6 +40,14 @@ namespace PopLife
             if (fameText != null)
             {
                 fameText.text = famePrefix + fame.ToString();
+            }
+        }
+
+        private void UpdateStoreAppealDisplay(int appeal)
+        {
+            if (storeAppealText != null)
+            {
+                storeAppealText.text = appeal.ToString("N0");
             }
         }
     }

@@ -4,7 +4,6 @@
             "customerId": "C001",
             "name": "Lucy",
             "bio": "New to sex, exploring with boyfriend. Average College girl",
-            "appearanceId": "CSP001",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Darex Natural Lubricant",
@@ -14,12 +13,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 34,
+            "xp": 88,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 5,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 182,
+            "lifetimeSpent": 552,
             "availableNarrativeIds": [
                 "IN002",
                 "IN004",
@@ -31,7 +30,6 @@
             "customerId": "C002",
             "name": "Mei",
             "bio": "Successful businesswoman, single. \"My friends say I need to relax...\"",
-            "appearanceId": "CSP002",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Wand Vibrator",
@@ -41,12 +39,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 13,
+            "xp": 48,
             "walletCapBase": 50,
-            "visitCount": 1,
+            "visitCount": 4,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 84,
+            "lifetimeSpent": 254,
             "availableNarrativeIds": [
                 "IN004",
                 "IN005"
@@ -57,7 +55,6 @@
             "customerId": "C003",
             "name": "Guliana",
             "bio": "Art student, single. Listen to the most niche music.",
-            "appearanceId": "CSP003",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Finger Vibrator",
@@ -67,12 +64,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 24,
+            "xp": 48,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 4,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 128,
+            "lifetimeSpent": 254,
             "availableNarrativeIds": [
                 "IN004",
                 "IN005"
@@ -83,7 +80,6 @@
             "customerId": "C004",
             "name": "Yuta",
             "bio": "Programmer, Otaku. Who needs a relationship when we have VR porn?",
-            "appearanceId": "CSP004",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "",
@@ -93,12 +89,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 32,
+            "xp": 79,
             "walletCapBase": 50,
-            "visitCount": 2,
+            "visitCount": 5,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 72,
+            "lifetimeSpent": 250,
             "availableNarrativeIds": [
                 "IN001",
                 "IN002",
@@ -110,7 +106,6 @@
             "customerId": "C005",
             "name": "Celine",
             "bio": "Player, tattoo artist. Pansexual. Her mom says she's just greedy",
-            "appearanceId": "CSP005",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Strawberry Lubricant",
@@ -120,12 +115,12 @@
             ],
             "trust": 0,
             "loyaltyLevel": 0,
-            "xp": 17,
+            "xp": 65,
             "walletCapBase": 50,
-            "visitCount": 1,
+            "visitCount": 4,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 42,
+            "lifetimeSpent": 478,
             "availableNarrativeIds": [
                 "IN004"
             ],
@@ -135,7 +130,6 @@
             "customerId": "C006",
             "name": "Paxton",
             "bio": "Divorced, Exploring. \"My ex wife didn't like sex, but also didn't like me masterbate... confusing woman\"",
-            "appearanceId": "CSP006",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Egg Fleshlight",
@@ -160,7 +154,6 @@
             "customerId": "C007",
             "name": "Devi",
             "bio": "Gap year, live with mom. \"I can't let my mom see this!\"",
-            "appearanceId": "CSP007",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Lipstick Vibrator",
@@ -186,7 +179,6 @@
             "customerId": "C008",
             "name": "Axel",
             "bio": "Construction Worker. \"Yo man, need help fixing that chair?\"",
-            "appearanceId": "CSP008",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Intense Polyisoprene Condoms",
@@ -212,7 +204,6 @@
             "customerId": "C009",
             "name": "Jie",
             "bio": "Robot engineer. Yes his partner is a robot.",
-            "appearanceId": "CSP009",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Silicone Toy Cleaner",
@@ -239,7 +230,6 @@
             "customerId": "C010",
             "name": "Hyunwoo",
             "bio": "Fashion designer. \"How dare you call my piece of art lingere! It's ART!\"",
-            "appearanceId": "CSP010",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Rabbit Vibrator",
@@ -264,7 +254,6 @@
             "customerId": "C011",
             "name": "Naoko",
             "bio": "Traditional Orthodox Engineer. \"Whatever Jie is doing, sacrilegious\"",
-            "appearanceId": "CSP011",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "90's Lingerie",
@@ -290,7 +279,6 @@
             "customerId": "C012",
             "name": "Aiko",
             "bio": "The not-so-popular idol. She has a secret boyfriend. \"Who doesn't? We all do\"",
-            "appearanceId": "CSP012",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Latex Condoms",
@@ -317,7 +305,6 @@
             "customerId": "C013",
             "name": "Zarah",
             "bio": "Writer, freelance and working on her second book.",
-            "appearanceId": "CSP013",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Women’s Pleasure Condoms",
@@ -344,7 +331,6 @@
             "customerId": "C014",
             "name": "Oscar",
             "bio": "Investigate journalist. Don't get along with the Auditor for some obvious reason...",
-            "appearanceId": "CSP014",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Darex Natural Lubricant",
@@ -369,7 +355,6 @@
             "customerId": "C015",
             "name": "Johane",
             "bio": "Political Activist, Hanae's friend. Hate the auditor.",
-            "appearanceId": "CSP015",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Anal Plug",
@@ -394,7 +379,6 @@
             "customerId": "C016",
             "name": "Alex",
             "bio": "Dropped out of college and works in his parents' corner store. \"I'm broke, don't try to sell me shit\"",
-            "appearanceId": "CSP016",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Latex Condoms",
@@ -422,7 +406,6 @@
             "customerId": "C017",
             "name": "Bonnie",
             "bio": "Doctor of Medicine. Specialize in urine system. ",
-            "appearanceId": "CSP017",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "",
@@ -447,7 +430,6 @@
             "customerId": "C018",
             "name": "Susan",
             "bio": "Salesperson at a cosmetic store.",
-            "appearanceId": "CSP018",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "",
@@ -473,7 +455,6 @@
             "customerId": "C019",
             "name": "Ash",
             "bio": "Cosplayer. Love new tech.",
-            "appearanceId": "CSP019",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "Leather Queen Lingerie",
@@ -498,7 +479,6 @@
             "customerId": "C026",
             "name": "Eason",
             "bio": "Full-time draw comics. \"I'm too old to fuck or be fucked, kid. I'm just here for the vintage comics.\"",
-            "appearanceId": "",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "",
@@ -521,7 +501,6 @@
             "customerId": "C031",
             "name": "Alix",
             "bio": "Government worker. ",
-            "appearanceId": "",
             "archetypeId": "RegularCustomer",
             "favoriteShelfIds": [
                 "",

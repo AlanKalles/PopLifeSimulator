@@ -1,187 +1,366 @@
-using System.Collections;
 using UnityEngine;
 using Pathfinding;
+using PrimeTween;
 
 namespace PopLife.Customers.Runtime
 {
     /// <summary>
-    /// 顾客动画控制器
-    /// 自动管理移动动画、朝向翻转，并提供手动触发特殊动画的接口
+    /// 顾客程序化动画控制器
+    /// 使用 Sin 波数学计算实现行走/待机动画，PrimeTween 实现特殊动画
+    /// 管理6部件 SpriteRenderer + BodyParts 容器翻转
     /// </summary>
-    [RequireComponent(typeof(Animator))]
     public class CustomerAnimationController : MonoBehaviour
     {
-        [Header("组件引用")]
-        [Tooltip("顾客的 SpriteRenderer，用于翻转朝向")]
-        public SpriteRenderer spriteRenderer;
+        /// <summary>
+        /// 动画状态枚举
+        /// </summary>
+        private enum AnimState
+        {
+            Idle,
+            Walk,
+            Think,
+            PickProduct,
+            Checkout,
+            Upset,
+            Interaction
+        }
+
+        [Header("部件引用")]
+        [SerializeField] private SpriteRenderer headRenderer;
+        [SerializeField] private SpriteRenderer bodyRenderer;
+        [SerializeField] private SpriteRenderer leftArmRenderer;
+        [SerializeField] private SpriteRenderer rightArmRenderer;
+        [SerializeField] private SpriteRenderer leftFootRenderer;
+        [SerializeField] private SpriteRenderer rightFootRenderer;
+
+        [Header("容器引用")]
+        [SerializeField] private Transform bodyPartsContainer;
+
+        [Header("Emoji 控制器")]
+        [SerializeField] private CustomerEmojiController emojiController;
+
+        [Header("行走参数")]
+        [SerializeField] private float footMoveRange = 0.031f;
+        [SerializeField] private float footMoveSpeed = 8f;
+        [SerializeField] private float bodyBobAmount = 0.008f;
+        [SerializeField] private float armSwingAngle = 10f;
+
+        [Header("待机参数")]
+        [SerializeField] private float breatheSpeed = 2f;
+        [SerializeField] private float breatheAmount = 0.006f;
+        [SerializeField] private float returnToIdleSpeed = 5f;
+
+        [Header("特殊动画参数")]
+        [SerializeField] private float pickProductSquatDistance = 0.02f;
+        [SerializeField] private float upsetShakeAmplitude = 0.012f;
 
         [Header("移动检测参数")]
-        [Tooltip("低于此速度视为静止")]
-        public float idleThreshold = 0.1f;
+        [SerializeField] private float idleThreshold = 0.1f;
 
         // 组件缓存
-        private Animator animator;
-        private IAstarAI ai; // AILerp 实现此接口
+        private IAstarAI ai;
 
-        // 动画状态哈希（性能优化）
-        private static readonly int WalkHash = Animator.StringToHash("customer_walk");
-        private static readonly int IdleHash = Animator.StringToHash("customer_idle");
-        private static readonly int ThinkHash = Animator.StringToHash("customer_think");
-        private static readonly int InteractionHash = Animator.StringToHash("customer_interaction");
-        private static readonly int PickProductHash = Animator.StringToHash("customer_pickproduct");
-        private static readonly int CheckoutHash = Animator.StringToHash("customer_checkout");
-        private static readonly int UpsetHash = Animator.StringToHash("customer_upset");
+        // 原始位置缓存（Awake 时记录）
+        private Vector3 headOriginPos;
+        private Vector3 bodyOriginPos;
+        private Vector3 leftArmOriginPos;
+        private Vector3 rightArmOriginPos;
+        private Vector3 leftFootOriginPos;
+        private Vector3 rightFootOriginPos;
 
         // 状态跟踪
-        private string currentState;
-        private bool isPlayingOneShot = false; // 是否正在播放单次动画
-        private bool isPlayingLoop = false;    // 是否正在播放手动循环动画
+        private AnimState currentState = AnimState.Idle;
+        private bool isPlayingOneShot;
+        private bool isPlayingLoop;
+        private Sequence currentOneShotSequence;
+
+        // 所有部件渲染器数组（用于批量操作）
+        private SpriteRenderer[] allPartRenderers;
+
+        /// <summary>
+        /// 测试用速度覆盖（设置后绕过 AI 速度检测，用于无寻路组件的测试场景）
+        /// </summary>
+        [HideInInspector] public Vector3? debugVelocityOverride;
 
         void Awake()
         {
-            animator = GetComponent<Animator>();
             ai = GetComponent<IAstarAI>();
-
-            if (animator == null)
-            {
-                Debug.LogError($"[CustomerAnimationController] {gameObject.name} 缺少 Animator 组件！");
-            }
-
             if (ai == null)
-            {
-                Debug.LogError($"[CustomerAnimationController] {gameObject.name} 缺少 IAstarAI 组件（AILerp）！");
-            }
+                Debug.LogWarning($"[CustomerAnimationController] {gameObject.name} 缺少 IAstarAI 组件，将依赖 debugVelocityOverride 驱动行走");
 
-            if (spriteRenderer == null)
+            CacheOriginPositions();
+
+            allPartRenderers = new SpriteRenderer[]
             {
-                Debug.LogWarning($"[CustomerAnimationController] {gameObject.name} 未分配 SpriteRenderer，将尝试自动获取");
-                spriteRenderer = GetComponent<SpriteRenderer>();
-            }
+                headRenderer, bodyRenderer, leftArmRenderer,
+                rightArmRenderer, leftFootRenderer, rightFootRenderer
+            };
+        }
+
+        private void CacheOriginPositions()
+        {
+            if (headRenderer) headOriginPos = headRenderer.transform.localPosition;
+            if (bodyRenderer) bodyOriginPos = bodyRenderer.transform.localPosition;
+            if (leftArmRenderer) leftArmOriginPos = leftArmRenderer.transform.localPosition;
+            if (rightArmRenderer) rightArmOriginPos = rightArmRenderer.transform.localPosition;
+            if (leftFootRenderer) leftFootOriginPos = leftFootRenderer.transform.localPosition;
+            if (rightFootRenderer) rightFootOriginPos = rightFootRenderer.transform.localPosition;
         }
 
         /// <summary>
-        /// 设置顾客ID（保留接口以便未来扩展）
-        /// 专属动画现在通过 AnimatorOverrideController 在 CustomerAgent 中处理
+        /// 获取当前速度（优先使用调试覆盖值）
         /// </summary>
-        /// <param name="id">顾客ID，如 "C001"</param>
-        public void SetCustomerID(string id)
+        private bool TryGetVelocity(out Vector3 velocity)
         {
-            // 专属动画现在由 CustomerAgent.SetupAnimatorOverride() 处理
-            // 此方法保留以便未来扩展其他顾客专属行为
+            if (debugVelocityOverride.HasValue)
+            {
+                velocity = debugVelocityOverride.Value;
+                return true;
+            }
+            if (ai != null)
+            {
+                velocity = ai.velocity;
+                return true;
+            }
+            velocity = Vector3.zero;
+            return false;
         }
+
+        // ──────────────────── Update ────────────────────
 
         void Update()
         {
-            // 如果正在播放单次或手动循环动画，不自动切换
+            // 单次或循环动画播放中，跳过自动状态切换
             if (isPlayingOneShot || isPlayingLoop)
-            {
                 return;
+
+            UpdateMovementState();
+
+            switch (currentState)
+            {
+                case AnimState.Walk:
+                    AnimateWalk();
+                    break;
+                case AnimState.Idle:
+                    AnimateIdle();
+                    break;
             }
 
-            // 自动根据速度切换移动/待机动画
-            UpdateMovementAnimation();
+            UpdateFacing();
         }
 
-        /// <summary>
-        /// 根据速度自动更新移动动画和朝向
-        /// </summary>
-        private void UpdateMovementAnimation()
+        private void UpdateMovementState()
         {
-            if (ai == null || animator == null)
-            {
-                return;
-            }
-
-            // 获取速度
-            Vector3 velocity = ai.velocity;
+            if (!TryGetVelocity(out var velocity)) return;
             float speed = velocity.magnitude;
+            currentState = speed > idleThreshold ? AnimState.Walk : AnimState.Idle;
+        }
 
-            if (speed > idleThreshold)
+        // ──────────────────── Walk 程序化动画 ────────────────────
+
+        private void AnimateWalk()
+        {
+            float sin = Mathf.Sin(Time.time * footMoveSpeed);
+
+            // 脚步：正半波/负半波交替抬起
+            if (rightFootRenderer)
+                rightFootRenderer.transform.localPosition =
+                    rightFootOriginPos + Vector3.up * (Mathf.Max(0f, sin) * footMoveRange);
+            if (leftFootRenderer)
+                leftFootRenderer.transform.localPosition =
+                    leftFootOriginPos + Vector3.up * (Mathf.Max(0f, -sin) * footMoveRange);
+
+            // 身体和头部微晃（取绝对值使其双倍频率上下晃动）
+            float bodyBob = Mathf.Abs(sin) * bodyBobAmount;
+            if (bodyRenderer)
+                bodyRenderer.transform.localPosition = bodyOriginPos + Vector3.up * bodyBob;
+            if (headRenderer)
+                headRenderer.transform.localPosition = headOriginPos + Vector3.up * bodyBob;
+
+            // 手臂摆动（Z轴旋转）
+            if (leftArmRenderer)
+                leftArmRenderer.transform.localRotation = Quaternion.Euler(0, 0, sin * armSwingAngle);
+            if (rightArmRenderer)
+                rightArmRenderer.transform.localRotation = Quaternion.Euler(0, 0, -sin * armSwingAngle);
+        }
+
+        // ──────────────────── Idle 程序化动画 ────────────────────
+
+        private void AnimateIdle()
+        {
+            float breathe = Mathf.Sin(Time.time * breatheSpeed) * breatheAmount;
+
+            // 身体和头部呼吸起伏
+            if (bodyRenderer)
+                bodyRenderer.transform.localPosition = bodyOriginPos + Vector3.up * breathe;
+            if (headRenderer)
+                headRenderer.transform.localPosition = headOriginPos + Vector3.up * breathe;
+
+            // 脚和手臂平滑回到原位
+            float lerpT = Time.deltaTime * returnToIdleSpeed;
+
+            if (leftFootRenderer)
+                leftFootRenderer.transform.localPosition =
+                    Vector3.Lerp(leftFootRenderer.transform.localPosition, leftFootOriginPos, lerpT);
+            if (rightFootRenderer)
+                rightFootRenderer.transform.localPosition =
+                    Vector3.Lerp(rightFootRenderer.transform.localPosition, rightFootOriginPos, lerpT);
+            if (leftArmRenderer)
+                leftArmRenderer.transform.localRotation =
+                    Quaternion.Lerp(leftArmRenderer.transform.localRotation, Quaternion.identity, lerpT);
+            if (rightArmRenderer)
+                rightArmRenderer.transform.localRotation =
+                    Quaternion.Lerp(rightArmRenderer.transform.localRotation, Quaternion.identity, lerpT);
+        }
+
+        // ──────────────────── 方向翻转 ────────────────────
+
+        private void UpdateFacing()
+        {
+            if (bodyPartsContainer == null) return;
+            if (!TryGetVelocity(out var velocity)) return;
+
+            if (Mathf.Abs(velocity.x) > 0.01f)
             {
-                // 移动中：播放行走动画
-                // 专属动画通过 AnimatorOverrideController 自动替换 customer_walk
-                PlayState("customer_walk");
+                Vector3 scale = bodyPartsContainer.localScale;
+                scale.x = velocity.x > 0 ? 1f : -1f;
+                bodyPartsContainer.localScale = scale;
+            }
+        }
 
-                // 根据 X 方向翻转 Sprite
-                if (spriteRenderer != null && velocity.x != 0)
-                {
-                    if (velocity.x > 0)
+        // ──────────────────── 特殊动画（PrimeTween） ────────────────────
+
+        /// <summary>
+        /// 播放拾取商品动画（~2秒）
+        /// 身体+头部下蹲 → 回位 + emoji 上升淡出
+        /// </summary>
+        public void PlayPickProduct()
+        {
+            StopCurrentAnimation();
+            isPlayingOneShot = true;
+            currentState = AnimState.PickProduct;
+
+            // 身体+头部下蹲效果
+            if (bodyRenderer && headRenderer)
+            {
+                currentOneShotSequence = Sequence.Create()
+                    .Group(Tween.LocalPositionY(bodyRenderer.transform,
+                        bodyOriginPos.y - pickProductSquatDistance, 0.4f, Ease.OutQuad))
+                    .Group(Tween.LocalPositionY(headRenderer.transform,
+                        headOriginPos.y - pickProductSquatDistance, 0.4f, Ease.OutQuad))
+                    .Chain(Tween.LocalPositionY(bodyRenderer.transform,
+                        bodyOriginPos.y, 0.3f, Ease.InOutQuad))
+                    .Group(Tween.LocalPositionY(headRenderer.transform,
+                        headOriginPos.y, 0.3f, Ease.InOutQuad))
+                    .ChainDelay(1.3f)
+                    .ChainCallback(this, target =>
                     {
-                        spriteRenderer.flipX = false; // 朝右（默认方向）
-                    }
-                    else
-                    {
-                        spriteRenderer.flipX = true; // 朝左（镜像翻转）
-                    }
-                }
+                        target.isPlayingOneShot = false;
+                        target.emojiController?.StopEmoji();
+                    });
             }
             else
             {
-                // 静止：播放待机动画
-                PlayState("customer_idle");
+                // 没有渲染器时只做延迟恢复
+                currentOneShotSequence = Sequence.Create()
+                    .ChainDelay(2f)
+                    .ChainCallback(this, target =>
+                    {
+                        target.isPlayingOneShot = false;
+                        target.emojiController?.StopEmoji();
+                    });
             }
+
+            emojiController?.PlayPickProduct();
         }
 
         /// <summary>
-        /// 播放动画状态（避免重复切换）
+        /// 播放结账动画（0.67秒）
+        /// emoji 淡入上升
         /// </summary>
-        /// <param name="stateName">动画状态名称</param>
-        private void PlayState(string stateName)
+        public void PlayCheckout()
         {
-            if (animator == null)
-            {
-                return;
-            }
-
-            if (currentState != stateName)
-            {
-                animator.Play(stateName);
-                currentState = stateName;
-            }
-        }
-
-        /// <summary>
-        /// 播放单次动画（如 pickproduct, checkout）
-        /// </summary>
-        /// <param name="stateName">动画状态名称</param>
-        /// <param name="duration">动画持续时间（秒）</param>
-        public void PlayOneShot(string stateName, float duration)
-        {
-            if (animator == null)
-            {
-                return;
-            }
-
-            animator.Play(stateName);
-            currentState = stateName;
+            StopCurrentAnimation();
             isPlayingOneShot = true;
+            currentState = AnimState.Checkout;
 
-            // 延迟后恢复自动控制
-            StartCoroutine(ResetOneShotAfterDelay(duration));
+            currentOneShotSequence = Sequence.Create()
+                .ChainDelay(0.67f)
+                .ChainCallback(this, target =>
+                {
+                    target.isPlayingOneShot = false;
+                    target.emojiController?.StopEmoji();
+                });
+
+            emojiController?.PlayCheckout();
         }
 
         /// <summary>
-        /// 延迟后重置单次动画标志
+        /// 播放 upset 动画（0.85秒）
+        /// 身体水平抖动 + emoji 不满表情循环
         /// </summary>
-        private IEnumerator ResetOneShotAfterDelay(float delay)
+        public void PlayUpset()
         {
-            yield return new WaitForSeconds(delay);
-            isPlayingOneShot = false;
-        }
+            StopCurrentAnimation();
+            isPlayingOneShot = true;
+            currentState = AnimState.Upset;
 
-        /// <summary>
-        /// 播放循环动画（如 think, interaction）
-        /// </summary>
-        /// <param name="stateName">动画状态名称</param>
-        public void PlayLoop(string stateName)
-        {
-            if (animator == null)
+            // 衰减水平抖动
+            if (bodyPartsContainer)
             {
-                return;
+                Vector3 containerOrigin = bodyPartsContainer.localPosition;
+                currentOneShotSequence = Sequence.Create()
+                    .Group(Tween.Custom(this, 0f, 1f, 0.85f, (target, t) =>
+                    {
+                        float shake = Mathf.Sin(t * Mathf.PI * 8) * (1f - t) * target.upsetShakeAmplitude;
+                        var pos = containerOrigin;
+                        pos.x += shake;
+                        target.bodyPartsContainer.localPosition = pos;
+                    }, Ease.Linear))
+                    .ChainCallback(this, target =>
+                    {
+                        // 确保容器位置归零
+                        target.bodyPartsContainer.localPosition = Vector3.zero;
+                        target.isPlayingOneShot = false;
+                        target.emojiController?.StopEmoji();
+                    });
+            }
+            else
+            {
+                currentOneShotSequence = Sequence.Create()
+                    .ChainDelay(0.85f)
+                    .ChainCallback(this, target =>
+                    {
+                        target.isPlayingOneShot = false;
+                        target.emojiController?.StopEmoji();
+                    });
             }
 
-            PlayState(stateName);
+            emojiController?.PlayUpset();
+        }
+
+        // ──────────────────── 循环动画 ────────────────────
+
+        /// <summary>
+        /// 播放思考动画（循环）
+        /// </summary>
+        public void PlayThink()
+        {
+            StopCurrentAnimation();
             isPlayingLoop = true;
+            currentState = AnimState.Think;
+            emojiController?.PlayThink();
+        }
+
+        /// <summary>
+        /// 播放交互动画（循环）
+        /// </summary>
+        public void PlayInteraction()
+        {
+            StopCurrentAnimation();
+            isPlayingLoop = true;
+            currentState = AnimState.Interaction;
+            emojiController?.PlayInteraction();
         }
 
         /// <summary>
@@ -190,46 +369,7 @@ namespace PopLife.Customers.Runtime
         public void StopLoop()
         {
             isPlayingLoop = false;
-        }
-
-        /// <summary>
-        /// 播放拾取商品动画（0.25秒）
-        /// </summary>
-        public void PlayPickProduct()
-        {
-            PlayOneShot("customer_pickproduct", 2f);
-        }
-
-        /// <summary>
-        /// 播放结账动画（0.67秒）
-        /// </summary>
-        public void PlayCheckout()
-        {
-            PlayOneShot("customer_checkout", 0.67f);
-        }
-
-        /// <summary>
-        /// 播放 upset 动画（0.85秒）
-        /// </summary>
-        public void PlayUpset()
-        {
-            PlayOneShot("customer_upset", 0.85f);
-        }
-
-        /// <summary>
-        /// 播放思考动画（循环）
-        /// </summary>
-        public void PlayThink()
-        {
-            PlayLoop("customer_think");
-        }
-
-        /// <summary>
-        /// 播放交互动画（循环）
-        /// </summary>
-        public void PlayInteraction()
-        {
-            PlayLoop("customer_interaction");
+            emojiController?.StopEmoji();
         }
 
         /// <summary>
@@ -239,6 +379,85 @@ namespace PopLife.Customers.Runtime
         {
             isPlayingOneShot = false;
             isPlayingLoop = false;
+
+            // 停止 PrimeTween 序列
+            if (currentOneShotSequence.isAlive)
+            {
+                currentOneShotSequence.Stop();
+            }
+
+            emojiController?.StopEmoji();
+            ResetAllParts();
+        }
+
+        /// <summary>
+        /// 保留接口以便未来扩展（当前空实现）
+        /// </summary>
+        public void SetCustomerID(string id)
+        {
+        }
+
+        // ──────────────────── 新增 API ────────────────────
+
+        /// <summary>
+        /// 赋值6个部件精灵（由 CustomerAgent 调用）
+        /// parts 索引: [0]=Head, [1]=LeftFoot, [2]=RightFoot, [3]=Body, [4]=LeftArm, [5]=RightArm
+        /// </summary>
+        public void SetupParts(Sprite[] parts)
+        {
+            if (parts == null || parts.Length < 6)
+            {
+                Debug.LogWarning($"[CustomerAnimationController] {gameObject.name} parts 数据无效（需要6个）");
+                return;
+            }
+
+            if (headRenderer) headRenderer.sprite = parts[(int)PartIndex.Head];
+            if (leftFootRenderer) leftFootRenderer.sprite = parts[(int)PartIndex.LeftFoot];
+            if (rightFootRenderer) rightFootRenderer.sprite = parts[(int)PartIndex.RightFoot];
+            if (bodyRenderer) bodyRenderer.sprite = parts[(int)PartIndex.Body];
+            if (leftArmRenderer) leftArmRenderer.sprite = parts[(int)PartIndex.LeftArm];
+            if (rightArmRenderer) rightArmRenderer.sprite = parts[(int)PartIndex.RightArm];
+        }
+
+        /// <summary>
+        /// 设置所有部件 + emoji 的 sorting layer（进店/出店切换）
+        /// 不改变各部件的相对 sortingOrder
+        /// </summary>
+        public void SetAllSortingLayer(string layerName)
+        {
+            foreach (var renderer in allPartRenderers)
+            {
+                if (renderer != null)
+                    renderer.sortingLayerName = layerName;
+            }
+
+            emojiController?.SetSortingLayer(layerName);
+        }
+
+        // ──────────────────── 内部工具 ────────────────────
+
+        /// <summary>
+        /// 重置所有部件到原始位置/旋转
+        /// </summary>
+        private void ResetAllParts()
+        {
+            if (headRenderer) headRenderer.transform.localPosition = headOriginPos;
+            if (bodyRenderer) bodyRenderer.transform.localPosition = bodyOriginPos;
+            if (leftArmRenderer)
+            {
+                leftArmRenderer.transform.localPosition = leftArmOriginPos;
+                leftArmRenderer.transform.localRotation = Quaternion.identity;
+            }
+            if (rightArmRenderer)
+            {
+                rightArmRenderer.transform.localPosition = rightArmOriginPos;
+                rightArmRenderer.transform.localRotation = Quaternion.identity;
+            }
+            if (leftFootRenderer) leftFootRenderer.transform.localPosition = leftFootOriginPos;
+            if (rightFootRenderer) rightFootRenderer.transform.localPosition = rightFootOriginPos;
+
+            // 重置 BodyParts 容器位置（Upset 抖动可能改变了它）
+            if (bodyPartsContainer) bodyPartsContainer.localPosition = Vector3.zero;
         }
     }
 }

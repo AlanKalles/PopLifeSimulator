@@ -23,7 +23,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         private Transform targetTransform;
         private float startTime;
         private bool reachedInside = false;
-        private SpriteRenderer spriteRenderer;
+        private CustomerAnimationController animController;
 
         protected override string info
         {
@@ -37,7 +37,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             seeker = agent.GetComponent<Seeker>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
-            spriteRenderer = agent.GetComponent<SpriteRenderer>();
+            animController = agent.GetComponent<CustomerAnimationController>();
 
             if (aiLerp == null)
             {
@@ -53,9 +53,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            if (spriteRenderer == null)
+            if (animController == null)
             {
-                Debug.LogError("[MoveToExitAction] 找不到 SpriteRenderer 组件");
+                Debug.LogError("[MoveToExitAction] 找不到 CustomerAnimationController 组件");
                 EndAction(false);
                 return;
             }
@@ -221,18 +221,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 更新黑板的队列位置（用于后续的 MoveToTargetAction）
             customerBlackboard.assignedQueueSlot = targetTransform;
 
-            // 离开商店：切换到 OutsideStoreLayer（sorting order 不变）
-            if (spriteRenderer != null)
+            // 离开商店：切换所有部件 + emoji 到 OutsideStoreLayer
+            if (animController != null)
             {
-                spriteRenderer.sortingLayerName = "OutsideStoreLayer";
-
-                // 同步emoji子对象的sorting layer
-                SpriteRenderer emojiRenderer = agent.transform.Find("emoji")?.GetComponent<SpriteRenderer>();
-                if (emojiRenderer != null)
-                {
-                    emojiRenderer.sortingLayerName = "OutsideStoreLayer";
-                }
-
+                animController.SetAllSortingLayer("OutsideStoreLayer");
                 Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 离开商店，sortingLayer 切换到 OutsideStoreLayer");
             }
 

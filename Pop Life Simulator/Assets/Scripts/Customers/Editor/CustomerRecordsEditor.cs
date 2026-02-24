@@ -352,10 +352,6 @@ namespace PopLife.Customers.Editor
             editingRecord.bio = EditorGUILayout.TextArea(editingRecord.bio, GUILayout.Height(60));
 
             EditorGUILayout.Space(10);
-            EditorGUILayout.LabelField("Appearance", EditorStyles.boldLabel);
-            editingRecord.appearanceId = EditorGUILayout.TextField("Appearance ID", editingRecord.appearanceId ?? "");
-
-            EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Behavior", EditorStyles.boldLabel);
 
             var archetypeIndex = Array.IndexOf(availableArchetypes, editingRecord.archetypeId);
@@ -526,7 +522,6 @@ namespace PopLife.Customers.Editor
                 customerId = GenerateNewId(),
                 name = "New Customer",
                 bio = "",
-                appearanceId = "",
                 archetypeId = "",
                 favoriteShelfIds = new string[4],
                 trust = 0,
@@ -761,7 +756,6 @@ namespace PopLife.Customers.Editor
                             visitCount = int.TryParse(fields[8], out int visits) ? visits : 0,
                             lifetimeSpent = int.TryParse(fields[9], out int spent) ? spent : 0,
                             walletCapBase = 100,
-                            appearanceId = "",
                             schemaVersion = 1
                         };
 

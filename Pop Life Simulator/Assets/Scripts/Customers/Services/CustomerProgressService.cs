@@ -147,8 +147,7 @@ namespace PopLife.Customers.Services
                     oldLevel = oldLevel,
                     newLevel = newLevel,
                     totalXp = record.xp,
-                    xpGained = xpGained,
-                    appearanceId = record.appearanceId
+                    xpGained = xpGained
                 };
 
                 PopLife.DayLoopManager.Instance.RecordCustomerLevelUp(levelUpInfo);

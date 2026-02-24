@@ -101,7 +101,7 @@ namespace PopLife.Manager
                 name = adapter?.customerName ?? "Unknown",
                 loyaltyLevel = adapter?.loyaltyLevel ?? 0,
                 totalSpent = 0,
-                sprite = agent.GetComponent<SpriteRenderer>()?.sprite,
+                sprite = CustomerPartLoader.GetPart(agent.customerID, PartIndex.Head),
                 hasLeft = false
             };
 

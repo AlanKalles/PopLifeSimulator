@@ -23,11 +23,21 @@ namespace PopLife.Customers.Spawner
         [Tooltip("随机生成间隔选项 (秒)")]
         public float[] spawnIntervalOptions = { 3f, 5f, 8f, 10f };
 
-        [Tooltip("场上顾客数量上限")]
-        public int maxCustomersOnFloor = 10;
+        [Tooltip("场上顾客基础数量上限（appeal 额外加成在此基础上叠加）")]
+        public int baseCustomersOnFloor = 10;
 
         [Tooltip("防止顾客在同一天内离店后再次访问")]
         public bool preventSameDayRevisit = false;
+
+        [Header("Store Appeal 影响")]
+        [Tooltip("每增加多少 appeal 多允许1个顾客同时在场")]
+        [SerializeField] private float appealPerExtraCustomer = 200f;
+
+        [Tooltip("appeal 达到此值时生成间隔降到最短")]
+        [SerializeField] private float appealForMaxSpeed = 3000f;
+
+        [Tooltip("最短间隔倍率（0.3 = 间隔最短缩到原来的30%）")]
+        [SerializeField] private float minIntervalMultiplier = 0.3f;
 
         [Header("节奏控制")]
         [Tooltip("开店后延迟多久开始生成第一个顾客 (秒)")]
@@ -53,6 +63,7 @@ namespace PopLife.Customers.Spawner
         [SerializeField] private float nextSpawnTime = 0f;
         [SerializeField] private bool isSpawning = false;
         [SerializeField] private int visitedTodayCount = 0;
+        [SerializeField] private int effectiveMaxCustomers = 0;
 
         private CustomerRepository repository;
         private bool repositoryLoaded = false;
@@ -61,6 +72,7 @@ namespace PopLife.Customers.Spawner
         private HashSet<string> activeCustomerIds = new HashSet<string>();
         private HashSet<string> visitedTodayCustomerIds = new HashSet<string>(); // 今天已访问过的顾客ID
         private SpawnerProfile spawnerProfile; // 运行时缓存的解锁配置
+        private int cachedStoreAppeal = 0;
 
         void Awake()
         {
@@ -134,6 +146,7 @@ namespace PopLife.Customers.Spawner
             // 更新当前场上人数和今日访问统计
             currentCustomerCount = GetCurrentCustomerCount();
             visitedTodayCount = visitedTodayCustomerIds.Count;
+            effectiveMaxCustomers = GetEffectiveMaxCustomers();
         }
 
         void LoadCustomerData()
@@ -318,7 +331,12 @@ namespace PopLife.Customers.Spawner
             // 3. 清空今日访问记录（新的一天开始）
             visitedTodayCustomerIds.Clear();
 
-            // 4. 重置生成计时器（加上初始延迟）
+            // 4. 缓存当天的 Store Appeal（建造阶段决定当天客流）
+            cachedStoreAppeal = ResourceManager.Instance != null
+                ? ResourceManager.Instance.GetStoreAppeal() : 0;
+            Debug.Log($"[CustomerSpawner] 当日 Store Appeal: {cachedStoreAppeal}");
+
+            // 5. 重置生成计时器（加上初始延迟）
             nextSpawnTime = Time.time + initialSpawnDelay;
             isSpawning = true;
         }
@@ -362,8 +380,9 @@ namespace PopLife.Customers.Spawner
         /// </summary>
         private void TrySpawnCustomer()
         {
-            // 1. 检查是否超过场上人数上限
-            if (currentCustomerCount >= maxCustomersOnFloor)
+            // 1. 检查是否超过场上人数上限（基础值 + appeal 加成）
+            int effectiveMax = GetEffectiveMaxCustomers();
+            if (currentCustomerCount >= effectiveMax)
             {
                 ScheduleNextSpawn();
                 return;
@@ -431,6 +450,17 @@ namespace PopLife.Customers.Spawner
         }
 
         /// <summary>
+        /// 根据 Store Appeal 计算实际顾客上限
+        /// </summary>
+        private int GetEffectiveMaxCustomers()
+        {
+            int bonus = appealPerExtraCustomer > 0
+                ? Mathf.FloorToInt(cachedStoreAppeal / appealPerExtraCustomer)
+                : 0;
+            return baseCustomersOnFloor + bonus;
+        }
+
+        /// <summary>
         /// 安排下次生成时间
         /// </summary>
         private void ScheduleNextSpawn()
@@ -440,8 +470,14 @@ namespace PopLife.Customers.Spawner
 
             // 加上随机抖动
             float jitter = UnityEngine.Random.Range(spawnJitter.x, spawnJitter.y);
-            float finalInterval = Mathf.Max(0.1f, baseInterval + jitter);
 
+            // Store Appeal 影响：appeal 越高，间隔越短
+            float appealRatio = appealForMaxSpeed > 0
+                ? Mathf.Clamp01(cachedStoreAppeal / appealForMaxSpeed)
+                : 0f;
+            float intervalMul = Mathf.Lerp(1f, minIntervalMultiplier, appealRatio);
+
+            float finalInterval = Mathf.Max(0.1f, (baseInterval + jitter) * intervalMul);
             nextSpawnTime = Time.time + finalInterval;
         }
 

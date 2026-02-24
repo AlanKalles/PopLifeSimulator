@@ -32,7 +32,7 @@ namespace PopLife.Runtime
 
         private struct AgentState
         {
-            public SpriteRenderer sprite;
+            public SpriteRenderer[] sprites;
             public Vector3 startPosition;
             public Vector3 endPosition;
             public Phase phase;
@@ -50,8 +50,7 @@ namespace PopLife.Runtime
         {
             // 恢复所有被隐藏的 agent
             foreach (var kvp in trackedAgents)
-                if (kvp.Value.sprite != null)
-                    SetAlpha(kvp.Value.sprite, 1f);
+                SetAlphaAll(kvp.Value.sprites, 1f);
 
             trackedAgents.Clear();
             registry.Remove(nodeLink);
@@ -72,13 +71,13 @@ namespace PopLife.Runtime
         /// agent 的路径经过此链接，注册为"正在接近"状态。
         /// 只有当 agent 物理到达起点时才会隐藏。
         /// </summary>
-        public void RegisterAgent(Transform agent, SpriteRenderer sprite, Vector3 startPos, Vector3 endPos)
+        public void RegisterAgent(Transform agent, SpriteRenderer[] sprites, Vector3 startPos, Vector3 endPos)
         {
-            if (!hideOnTraversal || sprite == null) return;
+            if (!hideOnTraversal || sprites == null || sprites.Length == 0) return;
 
             trackedAgents[agent] = new AgentState
             {
-                sprite = sprite,
+                sprites = sprites,
                 startPosition = startPos,
                 endPosition = endPos,
                 phase = Phase.Approaching
@@ -96,8 +95,8 @@ namespace PopLife.Runtime
         {
             if (!trackedAgents.TryGetValue(agent, out var state)) return;
 
-            if (state.phase == Phase.Hidden && state.sprite != null)
-                SetAlpha(state.sprite, 1f);
+            if (state.phase == Phase.Hidden)
+                SetAlphaAll(state.sprites, 1f);
 
             trackedAgents.Remove(agent);
 
@@ -133,7 +132,7 @@ namespace PopLife.Runtime
                     // 等待 agent 物理到达链接起点才隐藏
                     if ((pos - state.startPosition).sqrMagnitude <= thresholdSqr)
                     {
-                        SetAlpha(state.sprite, 0f);
+                        SetAlphaAll(state.sprites, 0f);
                         state.phase = Phase.Hidden;
                         trackedAgents[agent] = state;
 
@@ -146,7 +145,7 @@ namespace PopLife.Runtime
                     // 等待 agent 物理到达链接终点才恢复
                     if ((pos - state.endPosition).sqrMagnitude <= thresholdSqr)
                     {
-                        SetAlpha(state.sprite, 1f);
+                        SetAlphaAll(state.sprites, 1f);
                         toRemove.Add(agent);
 
                         if (debugMode)
@@ -159,12 +158,16 @@ namespace PopLife.Runtime
                 trackedAgents.Remove(key);
         }
 
-        private static void SetAlpha(SpriteRenderer sr, float alpha)
+        private static void SetAlphaAll(SpriteRenderer[] renderers, float alpha)
         {
-            if (sr == null) return;
-            var c = sr.color;
-            c.a = alpha;
-            sr.color = c;
+            if (renderers == null) return;
+            foreach (var sr in renderers)
+            {
+                if (sr == null) continue;
+                var c = sr.color;
+                c.a = alpha;
+                sr.color = c;
+            }
         }
     }
 }

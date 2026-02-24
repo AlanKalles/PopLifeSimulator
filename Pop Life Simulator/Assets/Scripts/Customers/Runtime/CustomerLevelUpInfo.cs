@@ -14,6 +14,5 @@ namespace PopLife.Customers.Runtime
         public int newLevel;         // 升级后等级
         public int totalXp;          // 当前总经验
         public int xpGained;         // 本次获得的经验
-        public string appearanceId;  // 外貌ID（用于UI显示头像）
     }
 }

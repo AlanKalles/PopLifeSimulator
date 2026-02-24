@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using PopLife.Data;
 using PopLife.UI;
+using PopLife.UI.Guide;
 using PopLife.UI.Quest;
 using PopLife.UI.Stats;
 using NewSettlementPanel = PopLife.UI.NewDailySettlementPanel;
@@ -22,6 +23,10 @@ namespace PopLife
         [Header("Quest UI")]
         [SerializeField] private QuestTrackerPanel questTrackerPanel;
         [SerializeField] private QuestLogPanel questLogPanel;
+
+        [Header("Guide UI")]
+        [SerializeField] private OperationGuidePanel operationGuidePanel;
+        [SerializeField] private GuideCollectionPanel guideCollectionPanel;
 
         private void Awake()
         {
@@ -257,5 +262,57 @@ namespace PopLife
                 questTrackerPanel.RefreshQuests();
             }
         }
+
+        #region Guide UI
+
+        /// <summary>
+        /// 显示操作指南面板
+        /// </summary>
+        public void ShowOperationGuide(OperationGuideData data, Action onClose = null)
+        {
+            if (operationGuidePanel != null)
+            {
+                operationGuidePanel.Show(data, onClose);
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] OperationGuidePanel is not assigned!");
+            }
+        }
+
+        /// <summary>
+        /// 显示指南集合面板
+        /// </summary>
+        public void ShowGuideCollection()
+        {
+            if (guideCollectionPanel != null)
+            {
+                guideCollectionPanel.Show();
+            }
+        }
+
+        /// <summary>
+        /// 隐藏指南集合面板
+        /// </summary>
+        public void HideGuideCollection()
+        {
+            if (guideCollectionPanel != null)
+            {
+                guideCollectionPanel.Hide();
+            }
+        }
+
+        /// <summary>
+        /// 切换指南集合面板显示/隐藏
+        /// </summary>
+        public void ToggleGuideCollection()
+        {
+            if (guideCollectionPanel != null)
+            {
+                guideCollectionPanel.Toggle();
+            }
+        }
+
+        #endregion
     }
 }

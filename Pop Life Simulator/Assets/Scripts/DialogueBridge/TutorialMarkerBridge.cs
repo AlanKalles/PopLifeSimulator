@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
+using PopLife.Data;
 using PopLife.Manager;
 using Sirenix.OdinInspector;
 
@@ -95,6 +96,10 @@ namespace PopLife.DialogueBridge
             [TextArea(2, 4)]
             public string luaScript;
 
+            [Title("Operation Guide")]
+            [Tooltip("触发此标记时显示的操作指南（可选）")]
+            public OperationGuideData operationGuide;
+
             [Title("Metadata")]
             [TextArea(1, 2)]
             public string description;
@@ -184,6 +189,7 @@ namespace PopLife.DialogueBridge
             ExecuteQuestAction(mapping);
             ExecuteLuaAction(mapping);
             ExecuteConversationAction(mapping);
+            ExecuteGuideAction(mapping);
         }
 
         /// <summary>
@@ -270,6 +276,24 @@ namespace PopLife.DialogueBridge
             else
             {
                 StartConversation(mapping.conversationToStart);
+            }
+        }
+
+        /// <summary>
+        /// 显示操作指南（如果配置了的话）
+        /// </summary>
+        private void ExecuteGuideAction(MarkerQuestMapping mapping)
+        {
+            if (mapping.operationGuide == null) return;
+
+            if (OperationGuideManager.Instance != null)
+            {
+                OperationGuideManager.Instance.ShowGuide(mapping.operationGuide);
+
+                if (debugMode)
+                {
+                    Debug.Log($"[TutorialMarkerBridge] Showing operation guide: {mapping.operationGuide.guideId}");
+                }
             }
         }
 

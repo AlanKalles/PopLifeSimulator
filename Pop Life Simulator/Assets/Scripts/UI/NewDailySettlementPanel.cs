@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 using PopLife.Data;
 using PopLife.Manager;
@@ -52,7 +51,6 @@ namespace PopLife.UI
         [SerializeField] private GameObject levelUpContainer;
         [SerializeField] private GameObject levelUpItemPrefab;
         [SerializeField] private TextMeshProUGUI noLevelUpText;
-        [SerializeField] private AppearanceDatabase appearanceDB;
 
         [Header("Lifetime Stats")]
         [SerializeField] private TextMeshProUGUI lifetimeIncomeText;
@@ -582,10 +580,8 @@ namespace PopLife.UI
                 var itemComponent = item.GetComponent<LevelUpItem>();
                 if (itemComponent != null)
                 {
-                    // 通过 appearanceDB 获取头像Sprite
-                    Sprite portraitSprite = null;
-                    if (appearanceDB != null && !string.IsNullOrEmpty(levelUp.appearanceId))
-                        portraitSprite = appearanceDB.Get(levelUp.appearanceId);
+                    // 通过 CustomerPartLoader 获取头部精灵作为头像
+                    Sprite portraitSprite = CustomerPartLoader.GetPart(levelUp.customerId, PartIndex.Head);
 
                     itemComponent.SetData(portraitSprite, levelUp.customerName,
                         levelUp.oldLevel, levelUp.newLevel, levelUp.xpGained);
