@@ -117,9 +117,26 @@ namespace PopLife.Customers.Runtime
             if (animationController != null)
             {
                 animationController.SetCustomerID(customerID);
+                animationController.SetHolding(CustomerAnimationController.CustomerHolding.None);
             }
 
             CustomerEventBus.RaiseSpawned(this);
+        }
+
+        /// <summary>
+        /// 顾客进入商店时调用
+        /// </summary>
+        public void OnEnterStore()
+        {
+            animationController?.SetHolding(CustomerAnimationController.CustomerHolding.Cart);
+        }
+
+        /// <summary>
+        /// 顾客完成结账时调用
+        /// </summary>
+        public void OnPaid()
+        {
+            animationController?.SetHolding(CustomerAnimationController.CustomerHolding.Bag);
         }
 
         /// <summary>

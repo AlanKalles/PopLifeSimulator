@@ -25,6 +25,19 @@ namespace PopLife.Customers.Runtime
             Interaction
         }
 
+        /// <summary>
+        /// 顾客手持状态（决定道具显示）
+        /// None → 隐藏全部道具
+        /// Cart → 显示购物车，隐藏购物袋
+        /// Bag  → 隐藏购物车，显示购物袋
+        /// </summary>
+        public enum CustomerHolding
+        {
+            None,
+            Cart,
+            Bag
+        }
+
         [Header("部件引用")]
         [SerializeField] private SpriteRenderer headRenderer;
         [SerializeField] private SpriteRenderer bodyRenderer;
@@ -38,6 +51,10 @@ namespace PopLife.Customers.Runtime
 
         [Header("Emoji 控制器")]
         [SerializeField] private CustomerEmojiController emojiController;
+
+        [Header("购物道具")]
+        [SerializeField] private GameObject shoppingCart;
+        [SerializeField] private GameObject shoppingBag;
 
         [Header("行走参数")]
         [SerializeField] private float footMoveRange = 0.031f;
@@ -432,6 +449,28 @@ namespace PopLife.Customers.Runtime
             }
 
             emojiController?.SetSortingLayer(layerName);
+        }
+
+        /// <summary>
+        /// 根据顾客手持状态切换购物道具显示
+        /// </summary>
+        public void SetHolding(CustomerHolding holding)
+        {
+            switch (holding)
+            {
+                case CustomerHolding.None:
+                    if (shoppingCart) shoppingCart.SetActive(false);
+                    if (shoppingBag)  shoppingBag.SetActive(false);
+                    break;
+                case CustomerHolding.Cart:
+                    if (shoppingCart) shoppingCart.SetActive(true);
+                    if (shoppingBag)  shoppingBag.SetActive(false);
+                    break;
+                case CustomerHolding.Bag:
+                    if (shoppingCart) shoppingCart.SetActive(false);
+                    if (shoppingBag)  shoppingBag.SetActive(true);
+                    break;
+            }
         }
 
         // ──────────────────── 内部工具 ────────────────────

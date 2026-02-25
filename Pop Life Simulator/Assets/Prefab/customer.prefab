@@ -1022,12 +1022,12 @@ MonoBehaviour:
   rightFootRenderer: {fileID: 7858580342780999936}
   bodyPartsContainer: {fileID: 7300243784453130247}
   emojiController: {fileID: 5753813208627228388}
-  footMoveRange: 0.051
-  footMoveSpeed: 8
-  bodyBobAmount: 0.0013
-  armSwingAngle: 10
-  breatheSpeed: 2
-  breatheAmount: 0.006
+  footMoveRange: 0.15
+  footMoveSpeed: 15
+  bodyBobAmount: 0.01
+  armSwingAngle: 5
+  breatheSpeed: 5
+  breatheAmount: 0.01
   returnToIdleSpeed: 5
   pickProductSquatDistance: 0.02
   upsetShakeAmplitude: 0.012
