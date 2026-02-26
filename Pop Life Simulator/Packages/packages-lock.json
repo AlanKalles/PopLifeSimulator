@@ -30,11 +30,10 @@
       "dependencies": {}
     },
     "com.monitor1394.xcharts": {
-      "version": "https://github.com/XCharts-Team/XCharts.git",
+      "version": "file:com.monitor1394.xcharts",
       "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "90e9187808c3f32462c65fb9394e79bc6026ad84"
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.monitor1394.xcharts.daemon": {
       "version": "https://github.com/XCharts-Team/XCharts-Daemon.git",
