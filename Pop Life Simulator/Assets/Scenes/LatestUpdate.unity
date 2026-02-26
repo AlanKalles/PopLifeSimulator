@@ -269,6 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db1cbfdc9ca46f94bad861450b02a434, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clearSaveOnStart: 1
   hasEnteredBuildMode: 0
   hasEnteredPlaceMode: 0
   hasEnteredPlaceModeSecondTime: 0

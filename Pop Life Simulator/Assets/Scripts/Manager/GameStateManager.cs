@@ -1,6 +1,9 @@
 using UnityEngine;
 using PopLife;
+using PopLife.Utility;
 using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace PopLife.Manager
 {
@@ -11,6 +14,10 @@ namespace PopLife.Manager
     public class GameStateManager : MonoBehaviour
     {
         public static GameStateManager Instance { get; private set; }
+
+        [Header("Debug")]
+        [Tooltip("勾选后每次Play时自动清除所有存档，适合Playtest")]
+        [SerializeField] bool clearSaveOnStart = false;
 
         // Tutorial state tracking
         [Header("Tutorial States")]
@@ -47,6 +54,11 @@ namespace PopLife.Manager
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
+
+                if (clearSaveOnStart)
+                {
+                    ClearAllSaves();
+                }
             }
             else
             {
@@ -274,6 +286,132 @@ namespace PopLife.Manager
             totalFameEarned = 0;
 
             Debug.Log("[GameState] Tutorial states reset");
+        }
+
+        /// <summary>
+        /// 清除所有存档数据，恢复到初始状态
+        /// 包括：ES3存档、JSON运行时数据、教程状态
+        /// </summary>
+        [ContextMenu("Clear All Saves")]
+        public void ClearAllSaves()
+        {
+            Debug.Log("[GameState] ========== 清除所有存档 ==========");
+
+            // 1. 清除 ES3 存档文件
+            string[] es3Files = {
+                "SettlementHistory.es3",
+                "AlanBot.es3",
+                "OperationGuides.es3",
+                "QuestProgress.es3"
+            };
+            foreach (var file in es3Files)
+            {
+                try
+                {
+                    if (ES3.FileExists(file))
+                    {
+                        ES3.DeleteFile(file);
+                        Debug.Log($"[GameState] 已删除 ES3 文件: {file}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[GameState] 删除 {file} 失败: {e.Message}");
+                }
+            }
+
+            // 2. 重置 Customers.json（清除运行时统计数据，保留身份信息）
+            ResetCustomersJson();
+
+            // 3. 重置 Dialogue System 数据（Lua变量和Quest状态）
+            try
+            {
+                PixelCrushers.DialogueSystem.PersistentDataManager.Reset();
+                Debug.Log("[GameState] 已重置 Dialogue System 数据");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[GameState] 重置 Dialogue System 失败: {e.Message}");
+            }
+
+            // 4. 重置教程状态
+            ResetTutorialStates();
+
+            Debug.Log("[GameState] ========== 存档清除完成 ==========");
+        }
+
+        /// <summary>
+        /// 重置 Customers.json 中的运行时数据（访问次数、忠诚度、经验等），保留身份信息
+        /// </summary>
+        void ResetCustomersJson()
+        {
+            try
+            {
+                string path = SavePathManager.GetWritePath("Customers.json");
+                if (!File.Exists(path))
+                {
+                    Debug.LogWarning("[GameState] Customers.json 不存在，跳过重置");
+                    return;
+                }
+
+                string json = File.ReadAllText(path);
+                var wrapper = JsonUtility.FromJson<CustomerListWrapper>(json);
+                if (wrapper?.items == null) return;
+
+                foreach (var record in wrapper.items)
+                {
+                    record.trust = 0;
+                    record.loyaltyLevel = 1;
+                    record.xp = 0;
+                    record.visitCount = 0;
+                    record.lastVisitDay = "";
+                    record.lastLeaveReason = "";
+                    record.lifetimeSpent = 0;
+                }
+
+                string resetJson = JsonUtility.ToJson(wrapper, true);
+                File.WriteAllText(path, resetJson);
+                Debug.Log($"[GameState] 已重置 Customers.json（{wrapper.items.Length} 条记录）");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[GameState] 重置 Customers.json 失败: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Customers.json 反序列化包装类（与 CustomerRepository 格式一致）
+        /// </summary>
+        [Serializable]
+        class CustomerListWrapper
+        {
+            public CustomerItem[] items;
+        }
+
+        /// <summary>
+        /// 仅包含需要重置的字段，其余字段自动保留
+        /// </summary>
+        [Serializable]
+        class CustomerItem
+        {
+            // 身份字段（保留不动）
+            public string customerId;
+            public string name;
+            public string bio;
+            public string archetypeId;
+            public string[] favoriteShelfIds;
+            public string[] availableNarrativeIds;
+            public int walletCapBase;
+            public int schemaVersion;
+
+            // 运行时字段（需要重置）
+            public int trust;
+            public int loyaltyLevel;
+            public int xp;
+            public int visitCount;
+            public string lastVisitDay;
+            public string lastLeaveReason;
+            public int lifetimeSpent;
         }
     }
 }
