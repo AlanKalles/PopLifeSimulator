@@ -18,7 +18,7 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
 
 ## Unity 环境配置
 - Unity 项目位置：`Pop Life Simulator/`
-- Unity 版本：6000.0.58f2 (Unity 6)
+- Unity 版本：6000.3.5f2 (Unity 6)
 - 构建方式：Unity 编辑器 → File → Build Settings → Build
 - 运行模式：Unity 编辑器 Play 按钮或 Ctrl+P
 - 第三方框架：
@@ -919,7 +919,7 @@ public enum EffectType {
 - **编辑器扩展**：4个工具
 
 ### 技术栈
-- **Unity 6000.0.58f2** (Unity 6)
+- **Unity 6000.3.5f2** (Unity 6)
 - **NodeCanvas** 行为树系统
 - **A* Pathfinding** 自动寻路（使用 AILerp 组件）
 - **ScriptableObject** 数据驱动

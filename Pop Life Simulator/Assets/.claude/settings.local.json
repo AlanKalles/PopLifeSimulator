@@ -5,7 +5,8 @@
       "Bash(del \"d:\\github\\PopLifeSimulator\\Pop Life Simulator\\Assets\\Scripts\\Editor\\NarrativeSystem\\NarrativeSegmentPropertyDrawer.cs\")",
       "Bash(grep:*)",
       "Bash(ls -la \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Documents\"\" 2>/dev/null || echo \"Documents文件夹不存在 \")",
-      "WebFetch(domain:www.pixelcrushers.com)"
+      "WebFetch(domain:www.pixelcrushers.com)",
+      "Bash(git -C \"/d/github/PopLifeSimulator\" ls-files \"Pop Life Simulator/Assets/Plugins/Sirenix/\")"
     ],
     "deny": [],
     "ask": []
