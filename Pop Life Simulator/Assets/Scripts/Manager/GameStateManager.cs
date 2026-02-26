@@ -21,7 +21,10 @@ namespace PopLife.Manager
         public bool hasOpenedStore = false;
         public bool hasServedFirstCustomer = false;
         public bool hasEarnedFirstFame = false;
+        public bool hasEnteredMoveMode = false;
+        public bool hasEnteredDestroyMode = false;
         public bool hasCompletedFirstRequest = false;
+        public bool hasCompletedFirstDay = false;
 
         // Game progress tracking
         [Header("Game Progress")]
@@ -188,6 +191,34 @@ namespace PopLife.Manager
         }
 
         /// <summary>
+        /// Call when player enters Move mode for the first time
+        /// 当玩家首次进入Move模式时调用
+        /// </summary>
+        public void NotifyMoveModeEntered()
+        {
+            if (!hasEnteredMoveMode)
+            {
+                hasEnteredMoveMode = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstMoveMode);
+                Debug.Log("[GameState] Move mode entered for the first time");
+            }
+        }
+
+        /// <summary>
+        /// Call when player enters Destroy mode for the first time
+        /// 当玩家首次进入Destroy模式时调用
+        /// </summary>
+        public void NotifyDestroyModeEntered()
+        {
+            if (!hasEnteredDestroyMode)
+            {
+                hasEnteredDestroyMode = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstDestroyMode);
+                Debug.Log("[GameState] Destroy mode entered for the first time");
+            }
+        }
+
+        /// <summary>
         /// Call when fame is earned
         /// </summary>
         public void NotifyFameEarned(int amount)
@@ -207,6 +238,20 @@ namespace PopLife.Manager
         }
 
         /// <summary>
+        /// Call when the first day settlement is confirmed (player clicks Continue)
+        /// 当首日结算确认（玩家按下Continue）时调用
+        /// </summary>
+        public void NotifyFirstDayCompleted()
+        {
+            if (!hasCompletedFirstDay)
+            {
+                hasCompletedFirstDay = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstDayCompleted);
+                Debug.Log("[GameState] First day completed");
+            }
+        }
+
+        /// <summary>
         /// Reset tutorial states (for testing)
         /// </summary>
         [ContextMenu("Reset Tutorial States")]
@@ -219,7 +264,10 @@ namespace PopLife.Manager
             hasOpenedStore = false;
             hasServedFirstCustomer = false;
             hasEarnedFirstFame = false;
+            hasEnteredMoveMode = false;
+            hasEnteredDestroyMode = false;
             hasCompletedFirstRequest = false;
+            hasCompletedFirstDay = false;
 
             totalShelvesPlaced = 0;
             totalCustomersServed = 0;

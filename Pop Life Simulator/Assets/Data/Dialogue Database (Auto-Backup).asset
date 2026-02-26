@@ -117,7 +117,7 @@ MonoBehaviour:
       type: 3
       typeString: CustomFieldType_Files
     - title: Description
-      value: This is your first mission you should always finish it
+      value: Your store is empty, try to build the first shelf in your store!
       type: 0
       typeString: CustomFieldType_Text
     - title: Success Description
@@ -137,9 +137,9 @@ MonoBehaviour:
       type: 2
       typeString: CustomFieldType_Boolean
     - title: Display Name
-      value: This is a test Quest
+      value: Build Your First Shelf
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Group
       value: Main
       type: 0
@@ -152,18 +152,53 @@ MonoBehaviour:
       value: True
       type: 2
       typeString: CustomFieldType_Boolean
-    - title: Entry Count
-      value: 1
-      type: 1
-      typeString: CustomFieldType_Number
-    - title: Entry 1 State
+  - id: 2
+    fields:
+    - title: Name
+      value: Main/2
+      type: 0
+      typeString: 
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: This is the side mission you can ignore it but I will curse you forever
+        if you do so
+      type: 0
+      typeString: 
+    - title: Success Description
+      value: 
+      type: 0
+      typeString: 
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: 
+    - title: State
       value: unassigned
       type: 0
       typeString: 
-    - title: Entry 1
-      value: Do this
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Display Name
+      value: side quest 1
       type: 0
       typeString: 
+    - title: Group
+      value: Side
+      type: 0
+      typeString: CustomFieldType_Text
   locations: []
   variables:
   - id: 1
@@ -307,8 +342,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "...You are here, sex expert.\nWhat\u2019s that look? You were confident
-          enough to accept my invite, after all.\n"
+        value: Sex expert, you are here!
         type: 0
         typeString: 
       - title: Sequence
@@ -363,8 +397,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "[narrows eyes] The email. \nTitled Midori\u2019s Sex Toy Shop. \nAnd
-          you wrote back, \u2018Yes, I would be honored to help operate the store.\u2019"
+        value: What's with that look? You are here so you were confident enough to
+          accept my invite, no?
         type: 0
         typeString: 
       - title: Sequence
@@ -419,8 +453,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "You don't remember...tch...\nI don\u2019t have time to find another
-          person before I leave the city.\n"
+        value: "The email. The one titled \"Midori\u2019s Sex Toy Shop\". I can pull
+          it up right now, hold on."
         type: 0
         typeString: 
       - title: Sequence
@@ -438,7 +472,7 @@ MonoBehaviour:
       - originConversationID: 1
         originDialogueID: 3
         destinationConversationID: 1
-        destinationDialogueID: 4
+        destinationDialogueID: 5
         isConnector: 0
         priority: 2
       conditionsString: 
@@ -475,7 +509,14 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Come on in. You\u2019re operating this store from now on!"
+        value: 'Fuck.
+
+
+          I don''t have enough time to find another person
+          before I leave the city...
+
+
+          Hmm...'
         type: 0
         typeString: 
       - title: Sequence
@@ -492,6 +533,121 @@ MonoBehaviour:
       outgoingLinks:
       - originConversationID: 1
         originDialogueID: 4
+        destinationConversationID: 1
+        destinationDialogueID: 6
+        isConnector: 0
+        priority: 2
+      conditionsString: 
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 271.27933
+        y: 496.25433
+        width: 160
+        height: 30
+    - id: 5
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: 
+      - title: Description
+        value: 
+        type: 0
+        typeString: 
+      - title: Actor
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: 
+        type: 0
+        typeString: 
+      - title: Dialogue Text
+        value: 'Ah yes, right here you wrote back, "Yes, I would be honored to help
+          operate the store."
+
+
+          You don''t remember...?'
+        type: 0
+        typeString: 
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: 
+      conversationID: 1
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks:
+      - originConversationID: 1
+        originDialogueID: 5
+        destinationConversationID: 1
+        destinationDialogueID: 4
+        isConnector: 0
+        priority: 2
+      conditionsString: 
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 266.34933
+        y: 367.77414
+        width: 160
+        height: 30
+    - id: 6
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: 
+      - title: Description
+        value: 
+        type: 0
+        typeString: 
+      - title: Actor
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: 
+        type: 0
+        typeString: 
+      - title: Dialogue Text
+        value: Alright well it looks like it has to be you! Come on in! You're going
+          to be running the store now, ok? Ok.
+        type: 0
+        typeString: 
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: 
+      conversationID: 1
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks:
+      - originConversationID: 1
+        originDialogueID: 6
         destinationConversationID: 2
         destinationDialogueID: 0
         isConnector: 0
@@ -503,13 +659,13 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 270.10312
-        y: 356.53607
+        x: 287.4332
+        y: 587.79266
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 0}
-    canvasZoom: 0.73000026
+    canvasScrollPosition: {x: 0, y: 267.79303}
+    canvasZoom: 0.52000046
   - id: 2
     fields:
     - title: Title
@@ -869,19 +1025,19 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: SetQuestState("Main/1", "active")
+      userScript: 'SetQuestState("Main/1", "active"); '
       onExecute:
         m_PersistentCalls:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 155.65714
-        y: 238.1714
+        x: 156.06134
+        y: 240.4571
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 1.8823853, y: 7.0251465}
-    canvasZoom: 0.85000014
+    canvasScrollPosition: {x: 0, y: 0}
+    canvasZoom: 0.7000003
   - id: 4
     fields:
     - title: Title

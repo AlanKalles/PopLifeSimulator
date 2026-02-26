@@ -15,6 +15,11 @@ namespace PopLife
     {
         public static BlueprintManager Instance;
 
+        /// <summary>
+        /// 货架蓝图解锁时触发，参数为对应的 ShelfArchetype SO
+        /// </summary>
+        public static event System.Action<Data.ShelfArchetype> OnShelfUnlocked;
+
         private BlueprintProfile profile;
 
         private void Awake()
@@ -196,9 +201,10 @@ namespace PopLife
                 return;
             }
 
-            if (building is ShelfArchetype)
+            if (building is ShelfArchetype shelf)
             {
                 UnlockShelf(archetypeId);
+                OnShelfUnlocked?.Invoke(shelf);
             }
             else if (building is FacilityArchetype)
             {

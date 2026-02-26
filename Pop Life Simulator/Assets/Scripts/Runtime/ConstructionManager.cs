@@ -461,6 +461,10 @@ namespace PopLife.Runtime
             hoveredBuildingInMoveMode = null;
             lastMousePositionInMoveMode = Vector3.zero;
             Debug.Log("Entered Move mode - Click any building to select and move");
+
+            // 首次进入Move模式时触发教程
+            if (GameStateManager.Instance != null)
+                GameStateManager.Instance.NotifyMoveModeEntered();
         }
 
         /// <summary>
@@ -779,6 +783,10 @@ namespace PopLife.Runtime
             hoveredBuildingInDestroyMode = null;
             lastMousePositionInDestroyMode = Vector3.zero;
             Debug.Log("Entered Destroy mode - Click any building to destroy");
+
+            // 首次进入Destroy模式时触发教程
+            if (GameStateManager.Instance != null)
+                GameStateManager.Instance.NotifyDestroyModeEntered();
         }
 
         /// <summary>

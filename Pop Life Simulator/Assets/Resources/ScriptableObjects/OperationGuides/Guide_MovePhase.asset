@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4615f8623ba4a6f42bf044c784618d23, type: 3}
+  m_Name: Guide_MovePhase
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
+  guideId: Guide_MovePhase
+  displayName: Move Phase
+  description: 
+  icon: {fileID: 0}
+  sortOrder: 100
+  pages:
+  - screenshot: {fileID: 7250129316690771573, guid: 11efacdf904127b4fac33c57a75aa48e, type: 3}
+    title: Moving Buildings
+    body: In Move phase, left-click any building to move it. Right-click with no
+      selection to return, or right-click while moving a building to cancel.
+  - screenshot: {fileID: 1341084641769212991, guid: 9104e8379d651ad4196f5716061e3a2c, type: 3}
+    title: Moving Buildings
+    body: Green indicates a valid location; Red indicates invalid.
+  - screenshot: {fileID: 422356891149872371, guid: 1fcf35c11fa46cf41b1554ce2e68935d, type: 3}
+    title: Moving alanbot
+    body: You can also move alanbot in the Move mode as the same way you move buildings.

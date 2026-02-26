@@ -75,6 +75,8 @@ namespace PopLife.Data
         public const string QUEST_TRACKER_CLOSE = "Quest_Tracker_Close";
         public const string QUEST_ENTRY_COMPLETE = "Quest_Entry_Complete";
         public const string QUEST_COMPLETE = "Quest_Complete";
+        public const string QUEST_NEW = "Quest_New";
+        public const string QUEST_FAILED = "Quest_Failed";
 
         #endregion
 

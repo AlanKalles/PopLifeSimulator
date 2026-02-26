@@ -50,14 +50,11 @@ namespace PopLife.AlanBot
             // 如果已经在交互中，忽略
             if (controller.isInteracting) return;
 
-            // 建造阶段Move模式由PlacementHandler处理
-            if (DayLoopManager.Instance != null &&
-                DayLoopManager.Instance.currentPhase == GamePhase.BuildPhase)
-            {
-                var cm = FindAnyObjectByType<ConstructionManager>();
-                if (cm != null && cm.mode == ConstructionManager.Mode.Move)
-                    return;
-            }
+            // 建造模式中禁止触发交互（Place/Move/Destroy）
+            // Move模式由PlacementHandler处理移动，此处仅阻止交互
+            var cm = FindAnyObjectByType<ConstructionManager>();
+            if (cm != null && cm.mode != ConstructionManager.Mode.None)
+                return;
 
             // Raycast检测AlanBot
             Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);

@@ -7,18 +7,24 @@ namespace PopLife.UI.Guide
 {
     /// <summary>
     /// 指南集合面板 - 列表展示所有已解锁的操作指南
+    /// 使用 CanvasGroup 控制显隐，root 始终 active
     /// </summary>
+    [RequireComponent(typeof(CanvasGroup))]
     public class GuideCollectionPanel : MonoBehaviour
     {
         [SerializeField] private Transform contentRoot;
         [SerializeField] private GuideCollectionEntry entryPrefab;
         [SerializeField] private GameObject emptyStateText;
 
-        [Header("Panel")]
-        [SerializeField] private GameObject panelRoot;
-
+        private CanvasGroup canvasGroup;
         private bool isShowing;
         private List<GuideCollectionEntry> spawnedEntries = new List<GuideCollectionEntry>();
+
+        private void Awake()
+        {
+            canvasGroup = GetComponent<CanvasGroup>();
+            SetCanvasGroupVisible(false);
+        }
 
         private void OnEnable()
         {
@@ -54,9 +60,7 @@ namespace PopLife.UI.Guide
         public void Show()
         {
             isShowing = true;
-            if (panelRoot != null)
-                panelRoot.SetActive(true);
-
+            SetCanvasGroupVisible(true);
             RefreshList();
         }
 
@@ -68,8 +72,7 @@ namespace PopLife.UI.Guide
             if (!isShowing) return;
 
             isShowing = false;
-            if (panelRoot != null)
-                panelRoot.SetActive(false);
+            SetCanvasGroupVisible(false);
         }
 
         /// <summary>
@@ -130,6 +133,14 @@ namespace PopLife.UI.Guide
             {
                 OperationGuideManager.Instance.ShowGuide(data);
             }
+        }
+
+        private void SetCanvasGroupVisible(bool visible)
+        {
+            if (canvasGroup == null) return;
+            canvasGroup.alpha = visible ? 1f : 0f;
+            canvasGroup.interactable = visible;
+            canvasGroup.blocksRaycasts = visible;
         }
     }
 }

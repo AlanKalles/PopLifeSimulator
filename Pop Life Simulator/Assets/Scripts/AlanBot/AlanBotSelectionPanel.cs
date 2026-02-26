@@ -3,12 +3,13 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using PopLife.AlanBot.UI;
+using PopLife.UI.Guide;
 
 namespace PopLife.AlanBot
 {
     /// <summary>
     /// AlanBot选择面板UI（Screen Space Canvas）
-    /// 3个按钮：Item Codex / Customer Codex / Calendar
+    /// 4个按钮：Item Codex / Customer Codex / Calendar / Guide
     /// CanvasGroup淡入淡出
     /// </summary>
     public class AlanBotSelectionPanel : MonoBehaviour
@@ -21,12 +22,14 @@ namespace PopLife.AlanBot
         [SerializeField] private Button itemCodexButton;
         [SerializeField] private Button customerCodexButton;
         [SerializeField] private Button calendarButton;
+        [SerializeField] private Button guideButton;
         [SerializeField] private Button closeButton;
 
         [Header("子面板引用")]
         [SerializeField] private ItemCodexPanel itemCodexPanel;
         [SerializeField] private CustomerCodexPanel customerCodexPanel;
         [SerializeField] private CalendarPanel calendarPanel;
+        [SerializeField] private GuideCollectionPanel guideCollectionPanel;
 
         [Header("动画")]
         [SerializeField] private float fadeInDuration = 0.2f;
@@ -55,6 +58,8 @@ namespace PopLife.AlanBot
                 customerCodexButton.onClick.AddListener(OnCustomerCodexClicked);
             if (calendarButton != null)
                 calendarButton.onClick.AddListener(OnCalendarClicked);
+            if (guideButton != null)
+                guideButton.onClick.AddListener(OnGuideClicked);
             if (closeButton != null)
                 closeButton.onClick.AddListener(OnCloseClicked);
         }
@@ -137,6 +142,13 @@ namespace PopLife.AlanBot
             Hide();
             if (calendarPanel != null)
                 calendarPanel.Show();
+        }
+
+        private void OnGuideClicked()
+        {
+            Hide();
+            if (guideCollectionPanel != null)
+                guideCollectionPanel.Show();
         }
 
         private void OnCloseClicked()

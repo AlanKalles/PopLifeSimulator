@@ -67,9 +67,8 @@ namespace PopLife.UI.Quest
     {
         public static QuestDataService Instance { get; private set; }
 
-        [Header("任务定义")]
-        [Tooltip("拖入所有 QuestDefinition SO 资产")]
-        [SerializeField] private QuestDefinition[] questDefinitions;
+        // 自动从 Resources/ScriptableObjects/Quests 加载所有 QuestDefinition
+        private QuestDefinition[] questDefinitions;
 
         [Header("调试")]
         [SerializeField] private bool debugMode = false;
@@ -101,6 +100,7 @@ namespace PopLife.UI.Quest
                 return;
             }
 
+            questDefinitions = Resources.LoadAll<QuestDefinition>("ScriptableObjects/Quests");
             BuildDefinitionMap();
         }
 
@@ -412,6 +412,34 @@ namespace PopLife.UI.Quest
         }
 
         #endregion
+
+        /// <summary>
+        /// 获取所有已注册的 QuestDefinition
+        /// </summary>
+        public QuestDefinition[] GetAllDefinitions() => questDefinitions;
+
+        /// <summary>
+        /// 根据 questName 获取对应的 QuestDefinition
+        /// </summary>
+        public QuestDefinition GetDefinition(string questName)
+        {
+            if (string.IsNullOrEmpty(questName)) return null;
+            definitionMap.TryGetValue(questName, out var def);
+            return def;
+        }
+
+        /// <summary>
+        /// 获取激活日映射副本（用于持久化）
+        /// </summary>
+        public Dictionary<string, int> GetActivationDayMap() => new(activationDayMap);
+
+        /// <summary>
+        /// 设置激活日映射（从持久化数据恢复）
+        /// </summary>
+        public void SetActivationDayMap(Dictionary<string, int> map)
+        {
+            activationDayMap = map ?? new();
+        }
 
         #region 内部辅助
 

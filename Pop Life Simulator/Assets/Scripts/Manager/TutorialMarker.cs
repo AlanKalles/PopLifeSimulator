@@ -36,8 +36,12 @@ namespace PopLife.Manager
         UnlockedBlueprint,        // 解锁蓝图
         PlacedFacility,           // 放置设施
 
+        // Construction modes
+        FirstMoveMode,            // 首次进入Move模式
+        FirstDestroyMode,         // 首次进入Destroy(Sell)模式
+
         // Custom markers (可扩展)
         D002toGBUILDFIRSTSHELF,
-        
+
     }
 }

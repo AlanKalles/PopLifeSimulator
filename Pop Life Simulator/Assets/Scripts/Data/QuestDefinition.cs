@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PopLife.Quest;
 
 namespace PopLife.Data
 {
@@ -60,6 +61,10 @@ namespace PopLife.Data
         [Header("奖励")]
         [SerializeField] private QuestReward[] rewards;
 
+        [Header("完成条件")]
+        [Tooltip("每个条件对应一个 Quest Entry（索引0=Entry1）。Manual类型由外部标记完成。为空则完全由外部控制。")]
+        [SerializeField] private QuestCondition[] conditions;
+
         [Header("UI 显示")]
         [SerializeField] private Sprite questIcon;
         [Tooltip("排序优先级，值越大越靠前")]
@@ -67,6 +72,7 @@ namespace PopLife.Data
         [SerializeField] private int sortPriority = 50;
 
         // 公共属性
+        public QuestCondition[] Conditions => conditions;
         public string QuestName => questName;
         public QuestType QuestType => questType;
         public int DeadlineDays => deadlineDays;

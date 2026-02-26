@@ -78,6 +78,9 @@ namespace PopLife.UI
 
             // Initialize toggle group
             InitializeFilterGroup();
+
+            // 订阅蓝图解锁事件
+            BlueprintManager.OnShelfUnlocked += OnShelfBlueprintUnlocked;
         }
 
         private void Start()
@@ -164,9 +167,11 @@ namespace PopLife.UI
             // Create "All" button
             CreateCategoryButton(null, "All");
 
-            // Create button for each ProductCategory enum value, sorted alphabetically
-            var sortedCategories = System.Enum.GetValues(typeof(ProductCategory))
-                .Cast<ProductCategory>()
+            // 只为有货架的类别创建按钮
+            var sortedCategories = availableShelves
+                .Where(s => s != null)
+                .Select(s => s.category)
+                .Distinct()
                 .OrderBy(c => c.ToString())
                 .ToList();
 
@@ -177,6 +182,34 @@ namespace PopLife.UI
 
             // Select "All" by default
             categoryToggleGroup.SelectAll();
+        }
+
+        /// <summary>
+        /// 重建类别按钮（解锁/移除货架导致类别变化时调用）
+        /// </summary>
+        private void RebuildCategoryButtons()
+        {
+            if (categoryToggleGroup == null) return;
+
+            // 记住当前选择
+            var previousSelection = selectedCategory;
+
+            // 清理已有按钮
+            categoryToggleGroup.Clear();
+            for (int i = categoryButtonContainer.childCount - 1; i >= 0; i--)
+                Destroy(categoryButtonContainer.GetChild(i).gameObject);
+
+            // 重建
+            InitializeCategoryButtons();
+
+            // 尝试恢复之前的选择（类别仍存在时）
+            if (previousSelection != null &&
+                availableShelves.Any(s => s != null && s.category == previousSelection.Value))
+            {
+                categoryToggleGroup.SelectByValue(previousSelection.Value);
+            }
+
+            ApplyFilters();
         }
 
         /// <summary>
@@ -377,6 +410,7 @@ namespace PopLife.UI
         private void OnDestroy()
         {
             UnsubscribeMoneyChanged();
+            BlueprintManager.OnShelfUnlocked -= OnShelfBlueprintUnlocked;
         }
 
         private void SubscribeMoneyChanged()
@@ -408,6 +442,15 @@ namespace PopLife.UI
 
         #region Utility
 
+        /// <summary>
+        /// 蓝图解锁时回调，面板已初始化才刷新（未初始化时首次打开会自动加载）
+        /// </summary>
+        private void OnShelfBlueprintUnlocked(ShelfArchetype shelf)
+        {
+            if (!isInitialized) return;
+            AddShelf(shelf);
+        }
+
         public void RefreshItemDisplays()
         {
             var placedArchetypes = GetPlacedShelfArchetypes();
@@ -438,6 +481,9 @@ namespace PopLife.UI
             if (shelf == null || availableShelves.Contains(shelf))
                 return;
 
+            // 检查是否引入了新类别
+            bool isNewCategory = !availableShelves.Any(s => s != null && s.category == shelf.category);
+
             availableShelves.Add(shelf);
 
             // Create new item
@@ -457,11 +503,17 @@ namespace PopLife.UI
                 var placedArchetypes = GetPlacedShelfArchetypes();
                 item.SetPlacementDisabled(placedArchetypes.Contains(shelf));
             }
+
+            // 新类别出现时重建类别按钮
+            if (isNewCategory)
+                RebuildCategoryButtons();
         }
 
         public void RemoveShelf(ShelfArchetype shelf)
         {
             if (shelf == null) return;
+
+            var removedCategory = shelf.category;
 
             availableShelves.Remove(shelf);
 
@@ -471,6 +523,11 @@ namespace PopLife.UI
                 itemInstances.Remove(itemToRemove);
                 Destroy(itemToRemove.gameObject);
             }
+
+            // 该类别已无货架时重建类别按钮
+            bool categoryEmpty = !availableShelves.Any(s => s != null && s.category == removedCategory);
+            if (categoryEmpty)
+                RebuildCategoryButtons();
         }
 
         #endregion

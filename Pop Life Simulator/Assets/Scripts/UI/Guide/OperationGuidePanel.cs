@@ -9,7 +9,9 @@ namespace PopLife.UI.Guide
 {
     /// <summary>
     /// 操作指南面板 - 模态多页面板，显示截图+文字指南
+    /// 使用 CanvasGroup 控制显隐，root 始终 active
     /// </summary>
+    [RequireComponent(typeof(CanvasGroup))]
     public class OperationGuidePanel : MonoBehaviour
     {
         [Header("Content")]
@@ -23,10 +25,7 @@ namespace PopLife.UI.Guide
         [SerializeField] private Button nextButton;
         [SerializeField] private Button closeButton;
 
-        [Header("Panel")]
-        [SerializeField] private GameObject backgroundOverlay;
-        [SerializeField] private GameObject contentPanel;
-
+        private CanvasGroup canvasGroup;
         private OperationGuideData currentGuide;
         private int currentPageIndex;
         private Action onCloseCallback;
@@ -34,6 +33,8 @@ namespace PopLife.UI.Guide
 
         private void Awake()
         {
+            canvasGroup = GetComponent<CanvasGroup>();
+
             // 绑定按钮事件
             if (prevButton != null)
                 prevButton.onClick.AddListener(PrevPage);
@@ -42,8 +43,8 @@ namespace PopLife.UI.Guide
             if (closeButton != null)
                 closeButton.onClick.AddListener(Close);
 
-            // 初始隐藏
-            HidePanel();
+            // 初始隐藏（CanvasGroup方式，GameObject保持active）
+            SetCanvasGroupVisible(false);
         }
 
         private void Update()
@@ -85,7 +86,7 @@ namespace PopLife.UI.Guide
             if (OperationGuideManager.Instance != null)
                 OperationGuideManager.Instance.MarkAsViewed(data.guideId);
 
-            ShowPanel();
+            SetCanvasGroupVisible(true);
             DisplayPage(0);
         }
 
@@ -97,7 +98,7 @@ namespace PopLife.UI.Guide
             if (!isShowing) return;
 
             isShowing = false;
-            HidePanel();
+            SetCanvasGroupVisible(false);
 
             var callback = onCloseCallback;
             onCloseCallback = null;
@@ -176,16 +177,12 @@ namespace PopLife.UI.Guide
                 AudioManager.Instance.PlaySound(AudioKeys.UI_GUIDE_PAGE);
         }
 
-        private void ShowPanel()
+        private void SetCanvasGroupVisible(bool visible)
         {
-            if (backgroundOverlay != null) backgroundOverlay.SetActive(true);
-            if (contentPanel != null) contentPanel.SetActive(true);
-        }
-
-        private void HidePanel()
-        {
-            if (backgroundOverlay != null) backgroundOverlay.SetActive(false);
-            if (contentPanel != null) contentPanel.SetActive(false);
+            if (canvasGroup == null) return;
+            canvasGroup.alpha = visible ? 1f : 0f;
+            canvasGroup.interactable = visible;
+            canvasGroup.blocksRaycasts = visible;
         }
     }
 }

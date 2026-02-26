@@ -680,6 +680,9 @@ namespace PopLife.UI
                 animationCoroutine = null;
             }
 
+            // 触发首日完成教程标记
+            GameStateManager.Instance?.NotifyFirstDayCompleted();
+
             // 隐藏面板
             gameObject.SetActive(false);
 
