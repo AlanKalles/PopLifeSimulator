@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4615f8623ba4a6f42bf044c784618d23, type: 3}
-  m_Name: BuildSelectionPanel
+  m_Name: Guide_Fame_UI
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
-  guideId: BuildSelectionPanel
+  guideId: Guide_Fame_UI
   displayName: 
   description: 
   icon: {fileID: 0}
   sortOrder: 100
   pages:
   - screenshot: {fileID: 0}
-    title: 
-    body: 
+    title: Fame UI
+    body: Here you can see how much fame you have.
