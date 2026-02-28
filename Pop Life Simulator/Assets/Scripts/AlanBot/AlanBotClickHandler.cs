@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Pathfinding;
 using System.Collections;
+using System.Collections.Generic;
 using PopLife.Runtime;
 
 namespace PopLife.AlanBot
@@ -45,25 +46,52 @@ namespace PopLife.AlanBot
             if (!Input.GetMouseButtonDown(0)) return;
 
             // 防止UI穿透
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                // 找出是哪个UI元素在拦截
+                var ped = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+                var results = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(ped, results);
+                foreach (var r in results)
+                {
+                    Debug.Log($"[AlanBotClick] 被UI拦截: {r.gameObject.name} (parent={r.gameObject.transform.parent?.name})");
+                }
+                return;
+            }
 
             // 如果已经在交互中，忽略
-            if (controller.isInteracting) return;
+            if (controller.isInteracting)
+            {
+                Debug.Log("[AlanBotClick] 已在交互中，忽略");
+                return;
+            }
 
             // 建造模式中禁止触发交互（Place/Move/Destroy）
             // Move模式由PlacementHandler处理移动，此处仅阻止交互
             var cm = FindAnyObjectByType<ConstructionManager>();
             if (cm != null && cm.mode != ConstructionManager.Mode.None)
+            {
+                Debug.Log($"[AlanBotClick] 建造模式中({cm.mode})，禁止交互");
                 return;
+            }
 
             // Raycast检测AlanBot
             Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             mouseWorld.z = 0f;
             RaycastHit2D hit = Physics2D.Raycast(mouseWorld, Vector2.zero, Mathf.Infinity, alanBotMask);
 
-            if (hit.collider == null) return;
-            if (hit.collider.gameObject != gameObject) return;
+            if (hit.collider == null)
+            {
+                Debug.Log("[AlanBotClick] Raycast未命中任何物体");
+                return;
+            }
+            if (hit.collider.gameObject != gameObject)
+            {
+                Debug.Log($"[AlanBotClick] Raycast命中了其他物体: {hit.collider.gameObject.name}");
+                return;
+            }
 
+            Debug.Log("[AlanBotClick] 点击成功，触发交互");
             // 触发交互
             HandleInteractionRequest();
         }

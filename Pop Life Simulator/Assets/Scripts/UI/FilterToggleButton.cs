@@ -17,6 +17,10 @@ namespace PopLife.UI
         [SerializeField] private Image backgroundImage;
         [SerializeField] private TextMeshProUGUI labelText;
 
+        [Header("Sprite Settings (可选，设置后优先使用sprite切换)")]
+        [SerializeField] private Sprite normalSprite;
+        [SerializeField] private Sprite selectedSprite;
+
         [Header("Color Settings")]
         [SerializeField] private Color normalColor = new Color(0.3f, 0.3f, 0.3f, 1f);
         [SerializeField] private Color selectedColor = new Color(0.5f, 0.7f, 0.9f, 1f); // Blue highlight
@@ -114,17 +118,24 @@ namespace PopLife.UI
 
         /// <summary>
         /// Update visual appearance based on state
+        /// 如果设置了 normalSprite/selectedSprite 则切换 sprite，否则仅切换颜色
         /// </summary>
         private void UpdateVisual()
         {
             if (backgroundImage == null) return;
 
+            bool useSpriteSwap = normalSprite != null && selectedSprite != null;
+
             if (isSelected)
             {
+                if (useSpriteSwap)
+                    backgroundImage.sprite = selectedSprite;
                 backgroundImage.color = selectedColor;
             }
             else
             {
+                if (useSpriteSwap)
+                    backgroundImage.sprite = normalSprite;
                 backgroundImage.color = normalColor;
             }
         }

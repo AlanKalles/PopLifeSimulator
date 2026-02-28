@@ -16,9 +16,12 @@ namespace PopLife
         [Header("Panel References")]
         [SerializeField] private NewSettlementPanel dailySettlementPanel;
         [SerializeField] private AlertPanel alertPanel;
-        [SerializeField] private ScrollingMessageBar scrollingMessageBar;
         [SerializeField] private UI.ConfirmationPanel confirmationPanel;
         [SerializeField] private StatsPanelController statsPanel;
+
+        [Header("Ticker Bars")]
+        [SerializeField] private ScrollingMessageBar newsTicker;
+        [SerializeField] private ScrollingMessageBar activityTicker;
 
         [Header("Quest UI")]
         [SerializeField] private QuestTrackerPanel questTrackerPanel;
@@ -113,30 +116,38 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 添加消息到滚动播报条
+        /// 添加消息到新闻播报条
         /// </summary>
-        /// <param name="message">消息内容</param>
-        public void ShowScrollingMessage(string message)
+        public void ShowNewsMessage(string message)
         {
-            if (scrollingMessageBar != null)
-            {
-                scrollingMessageBar.EnqueueMessage(message);
-            }
-            else
-            {
-                Debug.LogWarning("[UIManager] ScrollingMessageBar is not assigned!");
-            }
+            if (newsTicker != null)
+                newsTicker.EnqueueMessage(message);
         }
 
         /// <summary>
-        /// 清空滚动播报条的消息队列
+        /// 添加消息到活动播报条
+        /// </summary>
+        public void ShowActivityMessage(string message)
+        {
+            if (activityTicker != null)
+                activityTicker.EnqueueMessage(message);
+        }
+
+        /// <summary>
+        /// 添加消息到播报条（兼容旧接口，发送到新闻条）
+        /// </summary>
+        public void ShowScrollingMessage(string message)
+        {
+            ShowNewsMessage(message);
+        }
+
+        /// <summary>
+        /// 清空所有播报条的消息队列
         /// </summary>
         public void ClearScrollingMessages()
         {
-            if (scrollingMessageBar != null)
-            {
-                scrollingMessageBar.ClearQueue();
-            }
+            if (newsTicker != null) newsTicker.ClearQueue();
+            if (activityTicker != null) activityTicker.ClearQueue();
         }
 
         /// <summary>
