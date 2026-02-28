@@ -17,6 +17,10 @@ namespace PopLife.Data
         [TextArea(3, 10)]
         public string description;
 
+        [Header("使用说明")]
+        [TextArea(3, 10)]
+        public string usageInstruction;
+
         // 等级数据结构（不再序列化存储，由公式动态生成）
         [Serializable]
         public class ShelfLevelData : BuildingLevelData

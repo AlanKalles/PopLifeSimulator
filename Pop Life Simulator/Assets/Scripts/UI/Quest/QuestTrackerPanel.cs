@@ -30,7 +30,7 @@ namespace PopLife.UI.Quest
         [Header("Settings")]
         [SerializeField] private int maxDisplayCount = 5;
 
-        private bool isCollapsed = true; // 默认折叠
+        private bool isCollapsed = false; // 默认展开
         private readonly List<QuestTrackerEntry> activeEntries = new();
 
         private void OnEnable()
@@ -51,9 +51,9 @@ namespace PopLife.UI.Quest
                 QuestDataService.Instance.OnTrackedQuestsChanged += RefreshQuests;
             }
 
-            // 默认折叠状态：显示 expandIcon，隐藏 collapseIcon
-            if (collapseIcon != null) collapseIcon.SetActive(false);
-            if (expandIcon != null) expandIcon.SetActive(true);
+            // 默认展开状态：显示 collapseIcon，隐藏 expandIcon
+            if (collapseIcon != null) collapseIcon.SetActive(true);
+            if (expandIcon != null) expandIcon.SetActive(false);
             UpdateToggleLabel();
 
             // 初始刷新
@@ -105,6 +105,9 @@ namespace PopLife.UI.Quest
             }
 
             UpdateHeader(quests.Count);
+
+            // 强制重建布局，避免新条目与 header 重叠
+            LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer);
         }
 
         /// <summary>

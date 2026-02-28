@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: NewsLibrary
   m_EditorClassIdentifier: 
   newsTexts:
-  - "New study links city light pollution to declining sperm health\u2014experts
-    urge residents to turn off their lights at night."
-  - Employment rates have climbed this quarter, signaling steady growth across multiple
+  - "New study links city light pollution to declining sperm rates\u2014experts urge
+    residents to turn off their lights at night."
+  - Employment rates have risen this quarter, signaling steady growth across multiple
     sectors.
-  - Scientists announce the development of Vitamin 08-Alpha, hailed as the strongest
-    restorative tonic to date.
+  - 'Scientists announce the development of  a ew vitamin: Vitamin 08-Alpha. It has
+    been hailed as the strongest restorative vitamin known to date.'
   - "Murrow R. returns to court for his fourth divorce\u2014sources say the battle
     over inheritance is already turning ugly - News Sponsored by J.P Film"
   - National Police Department issues a warning against the growing propaganda of
@@ -27,9 +27,9 @@ MonoBehaviour:
     after relying heavily on \u2018sampling\u2019."
   - 'Festive Winter Approaching before you notice: Dec 16th. National holiday on
     Dec 16-17th.'
-  - "Nearly three-quarters of the nation\u2019s provinces now host PEI facilities,
-    marking a major milestone in the program\u2019s expansion"
+  - "Nearly three-quarters of the nation\u2019s provinces now host PEI (Pleasure
+    Economy Index) facilities, marking a major milestone in the program\u2019s expansion"
   - 'Ride w. the Trend: KUNI$Konig new album release. Sponsored by Exit App'
   - Famed boy band N.O.X begins filming their first adult-rated music video
-  minInsertInterval: 8
-  maxInsertInterval: 18
+  minInsertInterval: 10
+  maxInsertInterval: 20

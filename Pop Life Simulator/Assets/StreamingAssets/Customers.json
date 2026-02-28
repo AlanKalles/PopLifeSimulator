@@ -11,20 +11,20 @@
                 "Women’s Pleasure Condoms",
                 "Triple Stimulation Vibrator"
             ],
-            "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 153,
-            "walletCapBase": 50,
-            "visitCount": 9,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 1323,
             "availableNarrativeIds": [
                 "IN002",
                 "IN004",
                 "IN005"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C002",
@@ -37,19 +37,19 @@
                 "",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 117,
-            "walletCapBase": 50,
-            "visitCount": 8,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 417,
             "availableNarrativeIds": [
                 "IN004",
                 "IN005"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C003",
@@ -62,19 +62,19 @@
                 "",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 78,
-            "walletCapBase": 50,
-            "visitCount": 7,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 338,
             "availableNarrativeIds": [
                 "IN004",
                 "IN005"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C004",
@@ -87,20 +87,20 @@
                 "Textured Fantasy Fleshlight",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 139,
-            "walletCapBase": 50,
-            "visitCount": 9,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 482,
             "availableNarrativeIds": [
                 "IN001",
                 "IN002",
                 "IN003"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C005",
@@ -113,18 +113,18 @@
                 "Wireless Vibrator",
                 "Mouth Wash"
             ],
-            "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 130,
-            "walletCapBase": 50,
-            "visitCount": 8,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 1513,
             "availableNarrativeIds": [
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C006",
@@ -137,18 +137,18 @@
                 "Anal Vibrator",
                 "1-Step PlanB"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C007",
@@ -161,19 +161,19 @@
                 "Flower Vibrator",
                 "Silicone Toy Cleaner"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C008",
@@ -186,19 +186,19 @@
                 "Egg Fleshlight",
                 "G-spot vibrator"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN002",
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C009",
@@ -211,20 +211,20 @@
                 "Fleshlight",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003",
                 "IN005"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C010",
@@ -237,18 +237,18 @@
                 "Textured Fantasy Fleshlight",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C011",
@@ -261,19 +261,19 @@
                 "Latex Condoms",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C012",
@@ -286,20 +286,20 @@
                 "Lovi Couples Vibrator",
                 "Maid Outfit"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN002",
                 "IN004",
                 "IN001"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C013",
@@ -312,20 +312,20 @@
                 "Portable Vibrator",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003",
                 "IN005"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C014",
@@ -338,18 +338,18 @@
                 "",
                 "Anal Plug"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C015",
@@ -362,18 +362,18 @@
                 "",
                 "Prostate Messager"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C016",
@@ -386,21 +386,21 @@
                 "",
                 "90's Lingerie"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003",
                 "IN005",
                 "IN002"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C017",
@@ -413,18 +413,18 @@
                 "Thrusting Vibrator",
                 "Grinder Vibrator"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C018",
@@ -437,19 +437,19 @@
                 "",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN001",
                 "IN003"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C019",
@@ -462,18 +462,18 @@
                 "",
                 "Textured Stroker"
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
-            "walletCapBase": 50,
-            "visitCount": 0,
-            "lastVisitDay": "",
-            "lastLeaveReason": "",
-            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN004"
             ],
-            "schemaVersion": 1
+            "walletCapBase": 50,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C026",
@@ -486,16 +486,16 @@
                 "",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
+            "availableNarrativeIds": [],
             "walletCapBase": 100,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
             "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
-            "availableNarrativeIds": [],
-            "schemaVersion": 1
+            "lifetimeSpent": 0
         },
         {
             "customerId": "C031",
@@ -508,16 +508,16 @@
                 "",
                 ""
             ],
-            "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 0,
+            "availableNarrativeIds": [],
             "walletCapBase": 100,
+            "schemaVersion": 1,
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
             "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
-            "availableNarrativeIds": [],
-            "schemaVersion": 1
+            "lifetimeSpent": 0
         }
     ]
 }

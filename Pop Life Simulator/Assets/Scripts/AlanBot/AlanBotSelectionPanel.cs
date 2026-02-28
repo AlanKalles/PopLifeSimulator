@@ -125,9 +125,17 @@ namespace PopLife.AlanBot
 
         private void OnItemCodexClicked()
         {
+            // 保存当前回调，子面板关闭时恢复AlanBot状态
+            var savedCallback = onHideCallback;
+            onHideCallback = null; // 防止Hide()触发回调
+
             Hide();
             if (itemCodexPanel != null)
-                itemCodexPanel.Show();
+                itemCodexPanel.Show(closeCallback: () =>
+                {
+                    // 关闭Codex后恢复AlanBot状态
+                    savedCallback?.Invoke();
+                });
         }
 
         private void OnCustomerCodexClicked()
