@@ -1073,7 +1073,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestState("Main/1", "active"); '
+      userScript: 'SetQuestStateAfter("Main/1", "active"); '
       onExecute:
         m_PersistentCalls:
           m_Calls: []

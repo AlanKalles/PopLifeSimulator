@@ -133,16 +133,22 @@ namespace PopLife.AlanBot
             if (itemCodexPanel != null)
                 itemCodexPanel.Show(closeCallback: () =>
                 {
-                    // 关闭Codex后恢复AlanBot状态
-                    savedCallback?.Invoke();
+                    // 关闭Codex后返回选择面板
+                    Show(savedCallback);
                 });
         }
 
         private void OnCustomerCodexClicked()
         {
+            var savedCallback = onHideCallback;
+            onHideCallback = null;
+
             Hide();
             if (customerCodexPanel != null)
-                customerCodexPanel.Show();
+                customerCodexPanel.Show(closeCallback: () =>
+                {
+                    Show(savedCallback);
+                });
         }
 
         private void OnCalendarClicked()

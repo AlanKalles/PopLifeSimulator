@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PopLife.Manager;
@@ -20,6 +21,8 @@ namespace PopLife.DialogueBridge
     /// - GetFame() -> returns current fame
     /// - GetCurrentDay() -> returns current day number
     /// - IsStoreOpen() -> returns true/false
+    /// - SetQuestStateAfter("QuestName", "active") -> 延迟到对话结束后才执行 SetQuestState
+    /// - SetQuestEntryStateAfter("QuestName", 1, "success") -> 延迟到对话结束后才执行 SetQuestEntryState
     /// </summary>
     public class PopLifeLuaFunctions : MonoBehaviour
     {
@@ -42,6 +45,23 @@ namespace PopLife.DialogueBridge
 
         #endregion
 
+        #region Deferred Quest State
+
+        /// <summary>
+        /// 缓存的 SetQuestState / SetQuestEntryState 调用
+        /// </summary>
+        private struct DeferredQuestStateCall
+        {
+            public string questName;
+            public string state;
+            public int entryNumber; // 0 = 主任务状态，>0 = 条目状态
+        }
+
+        private readonly List<DeferredQuestStateCall> deferredQuestCalls = new();
+        private bool isListeningForConversationEnd;
+
+        #endregion
+
         #region Unity Lifecycle
 
         private void OnEnable()
@@ -52,6 +72,10 @@ namespace PopLife.DialogueBridge
         private void OnDisable()
         {
             UnregisterAllFunctions();
+
+            if (DialogueManager.instance != null)
+                DialogueManager.instance.conversationEnded -= OnConversationEndedFlushQuests;
+            isListeningForConversationEnd = false;
         }
 
         #endregion
@@ -82,6 +106,12 @@ namespace PopLife.DialogueBridge
             Lua.RegisterFunction("GetCurrentPhase", this, SymbolExtensions.GetMethodInfo(() => GetCurrentPhase()));
             Lua.RegisterFunction("GetCurrentHour", this, SymbolExtensions.GetMethodInfo(() => GetCurrentHour()));
 
+            // Deferred quest state functions（延迟到对话结束后执行）
+            Lua.RegisterFunction("SetQuestStateAfter", this,
+                SymbolExtensions.GetMethodInfo(() => SetQuestStateAfter(string.Empty, string.Empty)));
+            Lua.RegisterFunction("SetQuestEntryStateAfter", this,
+                SymbolExtensions.GetMethodInfo(() => SetQuestEntryStateAfter(string.Empty, (double)0, string.Empty)));
+
             // Utility functions
             Lua.RegisterFunction("PauseGame", this, SymbolExtensions.GetMethodInfo(() => PauseGame()));
             Lua.RegisterFunction("ResumeGame", this, SymbolExtensions.GetMethodInfo(() => ResumeGame()));
@@ -107,6 +137,8 @@ namespace PopLife.DialogueBridge
             Lua.UnregisterFunction("IsStoreOpen");
             Lua.UnregisterFunction("GetCurrentPhase");
             Lua.UnregisterFunction("GetCurrentHour");
+            Lua.UnregisterFunction("SetQuestStateAfter");
+            Lua.UnregisterFunction("SetQuestEntryStateAfter");
             Lua.UnregisterFunction("PauseGame");
             Lua.UnregisterFunction("ResumeGame");
 
@@ -377,6 +409,108 @@ namespace PopLife.DialogueBridge
         {
             Time.timeScale = 1f;
             Debug.Log("[PopLifeLuaFunctions] Game resumed");
+        }
+
+        #endregion
+
+        #region Deferred Quest State Functions
+
+        /// <summary>
+        /// 延迟版 SetQuestState - 对话进行中缓存调用，对话结束后批量执行
+        /// 如果不在对话中调用，则立即执行
+        /// Lua usage: SetQuestStateAfter("QuestName", "active")
+        /// </summary>
+        public void SetQuestStateAfter(string questName, string state)
+        {
+            if (string.IsNullOrEmpty(questName)) return;
+
+            if (DialogueManager.isConversationActive)
+            {
+                deferredQuestCalls.Add(new DeferredQuestStateCall
+                {
+                    questName = questName,
+                    state = state,
+                    entryNumber = 0
+                });
+                EnsureListeningForConversationEnd();
+                Debug.Log($"[PopLifeLuaFunctions] Deferred SetQuestState: {questName} = {state} (waiting for conversation end)");
+            }
+            else
+            {
+                // 不在对话中，立即执行
+                QuestLog.SetQuestState(questName, state);
+            }
+        }
+
+        /// <summary>
+        /// 延迟版 SetQuestEntryState - 对话进行中缓存调用，对话结束后批量执行
+        /// 如果不在对话中调用，则立即执行
+        /// Lua usage: SetQuestEntryStateAfter("QuestName", 1, "success")
+        /// 注意：Lua 传递的 entryNumber 是 double 类型
+        /// </summary>
+        public void SetQuestEntryStateAfter(string questName, double entryNumber, string state)
+        {
+            if (string.IsNullOrEmpty(questName)) return;
+
+            if (DialogueManager.isConversationActive)
+            {
+                deferredQuestCalls.Add(new DeferredQuestStateCall
+                {
+                    questName = questName,
+                    state = state,
+                    entryNumber = (int)entryNumber
+                });
+                EnsureListeningForConversationEnd();
+                Debug.Log($"[PopLifeLuaFunctions] Deferred SetQuestEntryState: {questName}[{(int)entryNumber}] = {state} (waiting for conversation end)");
+            }
+            else
+            {
+                QuestLog.SetQuestEntryState(questName, (int)entryNumber, state);
+            }
+        }
+
+        /// <summary>
+        /// 确保已订阅 conversationEnded 事件（避免重复订阅）
+        /// </summary>
+        private void EnsureListeningForConversationEnd()
+        {
+            if (isListeningForConversationEnd) return;
+            if (DialogueManager.instance == null) return;
+
+            DialogueManager.instance.conversationEnded += OnConversationEndedFlushQuests;
+            isListeningForConversationEnd = true;
+        }
+
+        /// <summary>
+        /// 对话结束后批量执行缓存的 SetQuestState 调用
+        /// </summary>
+        private void OnConversationEndedFlushQuests(Transform actor)
+        {
+            if (DialogueManager.instance != null)
+                DialogueManager.instance.conversationEnded -= OnConversationEndedFlushQuests;
+            isListeningForConversationEnd = false;
+
+            if (deferredQuestCalls.Count == 0) return;
+
+            Debug.Log($"[PopLifeLuaFunctions] Flushing {deferredQuestCalls.Count} deferred quest state call(s)");
+
+            // 复制列表后清空，防止回调中再次触发追加
+            var calls = new List<DeferredQuestStateCall>(deferredQuestCalls);
+            deferredQuestCalls.Clear();
+
+            foreach (var call in calls)
+            {
+                if (call.entryNumber > 0)
+                {
+                    QuestLog.SetQuestEntryState(call.questName, call.entryNumber, call.state);
+                    Debug.Log($"[PopLifeLuaFunctions] Executed deferred SetQuestEntryState: {call.questName}[{call.entryNumber}] = {call.state}");
+                }
+                else
+                {
+                    QuestLog.SetQuestState(call.questName, call.state);
+                    Debug.Log($"[PopLifeLuaFunctions] Executed deferred SetQuestState: {call.questName} = {call.state}");
+                }
+            }
         }
 
         #endregion

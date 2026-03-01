@@ -303,7 +303,8 @@ namespace PopLife.Manager
                 "AlanBot.es3",
                 "OperationGuides.es3",
                 "QuestProgress.es3",
-                "ItemCodex.es3"
+                "ItemCodex.es3",
+                "CustomerCodex.es3"
             };
             foreach (var file in es3Files)
             {

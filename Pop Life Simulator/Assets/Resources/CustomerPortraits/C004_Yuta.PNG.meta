@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e8b6ae96dcf2ffd43831067c1a5a4174
+guid: efed578fc7c23c14390617b7d351e451
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1775760227128963768
-    second: customer bg clicked_0
+      213: -3192907900599595240
+    second: C004_Yuta_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: customer bg clicked_0
+      name: C004_Yuta_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 39
         y: 0
-        width: 120
-        height: 113
+        width: 170
+        height: 249
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 84d06b75b7b3b57e0800000000000000
-      internalID: -1775760227128963768
+      spriteID: 81f09306e2380b3d0800000000000000
+      internalID: -3192907900599595240
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      customer bg clicked_0: -1775760227128963768
+      C004_Yuta_0: -3192907900599595240
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
