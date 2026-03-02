@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4615f8623ba4a6f42bf044c784618d23, type: 3}
+  m_Name: Guide_CustomerCodex
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
+  guideId: Guide_CustomerCodex
+  displayName: 
+  description: 
+  icon: {fileID: 0}
+  sortOrder: 100
+  pages:
+  - screenshot: {fileID: 0}
+    title: Customer Codex
+    body: This is the Customer Codex. From here you can access information on every
+      customer in the game! Scroll to see the list.
+  - screenshot: {fileID: 0}
+    title: Customer Codex - Searching
+    body: 'There is a search bar if you want to search for a specific customer. '
+  - screenshot: {fileID: 0}
+    title: Customer Codex - Customers
+    body: 'When you click on a customer in the codex it will display: their name,
+      age, a brief description, and their shelf intrests!'
+  - screenshot: {fileID: 0}
+    title: Customer Codex - New Customers
+    body: When your store gains a new customer they will show up like this in the
+      codex!

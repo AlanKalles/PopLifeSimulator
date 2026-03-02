@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4615f8623ba4a6f42bf044c784618d23, type: 3}
+  m_Name: Guide_ItemCodex
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
+  guideId: Guide_ItemCodex
+  displayName: 
+  description: 
+  icon: {fileID: 0}
+  sortOrder: 100
+  pages:
+  - screenshot: {fileID: 0}
+    title: Item Codex
+    body: This is the Item Codex. From here you can access information on every shelf
+      item in the game! Scroll to see the list.
+  - screenshot: {fileID: 0}
+    title: Item Codex - Sorting
+    body: 'At the top of the codex you can see category tabs. If you click on one
+      it will sort the codex by that category. '
+  - screenshot: {fileID: 0}
+    title: Item Codex - Searching
+    body: 'There is also a search bar if you want to search for a specific item. '
+  - screenshot: {fileID: 0}
+    title: Item Codex - Items
+    body: 'When you click on an item in the codex it will display: the name of the
+      item, a picture of the item, the brand the item is made by, the item description,
+      and sometimes useage instructions for the item.  '
+  - screenshot: {fileID: 0}
+    title: Item Codex - New Items
+    body: When you unlock a new item int he game it will automatically be added into
+      the codex. When you haven't viewed it in the codex the item name will look
+      like this.

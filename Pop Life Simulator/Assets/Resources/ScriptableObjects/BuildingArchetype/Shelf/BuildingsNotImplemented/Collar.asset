@@ -10,22 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Strap on Dildo
+  m_Name: Collar
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Strap on Dildo
-  displayName: Strap on Dildo
+  archetypeId: Collar
+  displayName: Collar
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 300
+  buildCost: 485
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
   canRotate: 0
   levels: []
-  category: 3
-  brand: {fileID: 11400000, guid: e7e77d3ad58c5f34eb00f91cc9f146bf, type: 2}
-  description: A toy designed for penetrative sex. It typically features an insertable
-    dildo attached to an adjustable harness system that secures around the hips or
-    thighs with straps and buckles. It can be used regardless of anatomy but is often
-    used for pegging or same-sex intimacy.
+  category: 0
+  brand: {fileID: 11400000, guid: 90bb1d60c1abe2d409d722007d97e3d8, type: 2}
+  description: A wearable accessory designed for BDSM and power exchange. It typically
+    features a band of leather, metal, or fabric that fastens around the neck, often
+    with a D-ring for attaching a leash or restraints. It symbolizes ownership and
+    submission, supports dominant and submissive dynamics, and serves both a functional
+    and ceremonial role in BDSM relationships and scenes.
   usageInstruction: 

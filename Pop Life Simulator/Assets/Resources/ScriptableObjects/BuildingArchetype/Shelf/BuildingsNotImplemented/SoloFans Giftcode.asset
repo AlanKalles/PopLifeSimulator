@@ -10,22 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Strap on Dildo
+  m_Name: SoloFans Giftcode
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Strap on Dildo
-  displayName: Strap on Dildo
+  archetypeId: SoloFans Giftcode
+  displayName: SoloFans Giftcode
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 300
+  buildCost: 80
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
   canRotate: 0
   levels: []
-  category: 3
-  brand: {fileID: 11400000, guid: e7e77d3ad58c5f34eb00f91cc9f146bf, type: 2}
-  description: A toy designed for penetrative sex. It typically features an insertable
-    dildo attached to an adjustable harness system that secures around the hips or
-    thighs with straps and buckles. It can be used regardless of anatomy but is often
-    used for pegging or same-sex intimacy.
-  usageInstruction: 
+  category: 2
+  brand: {fileID: 11400000, guid: 6ed66512bf92da14fb21db09df66223a, type: 2}
+  description: A gift card for the website SoloFans. SoloFans is an Internet pornographic
+    content paid subscription service.
+  usageInstruction: '1. Go to plw.solofans.xom/redeem
+
+    2. Enter in the code on
+    the back of the giftcard
+
+    3. Enjoy!'

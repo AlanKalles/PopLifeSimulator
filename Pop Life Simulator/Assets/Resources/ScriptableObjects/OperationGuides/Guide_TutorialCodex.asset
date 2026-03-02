@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4615f8623ba4a6f42bf044c784618d23, type: 3}
+  m_Name: Guide_TutorialCodex
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
+  guideId: Guide_TutorialCodex
+  displayName: 
+  description: 
+  icon: {fileID: 0}
+  sortOrder: 100
+  pages:
+  - screenshot: {fileID: 7587030081044789831, guid: 1506970853c1348b1a5b290bd9b599b3, type: 3}
+    title: Tutorial Codex
+    body: This is the Tutorial Codex. From here you can access all the tutorials
+      for things in the game! Scroll to see the list.
+  - screenshot: {fileID: 1182283864613249162, guid: 50fb7d357c6eb44c898c2ddf022beddc, type: 3}
+    title: Tutorial Codex - Searching
+    body: 'There is a search bar if you want to search for a specific tutorial. '
+  - screenshot: {fileID: 5551770138771401795, guid: ebb4b6b5c1e154d5d970806cefc19a79, type: 3}
+    title: Tutorial Codex - Tutorials
+    body: When you click on a tutorial in the codex it will display the tutorial.
+  - screenshot: {fileID: 885962298900877910, guid: 8e2ddc50c4f54453ba054e98ebd1365b, type: 3}
+    title: Tutorial Codex - Tutorials 2
+    body: To click thorugh the tutorial click on these little arrows.
+  - screenshot: {fileID: 514273440162133361, guid: c56c03d1635b74b60964ecadba2735bc, type: 3}
+    title: Item Codex - New Items
+    body: When you unlock a new tutorial int he game it will automatically be added
+      into the codex. When you haven't viewed it in the codex the item name will
+      look like this.

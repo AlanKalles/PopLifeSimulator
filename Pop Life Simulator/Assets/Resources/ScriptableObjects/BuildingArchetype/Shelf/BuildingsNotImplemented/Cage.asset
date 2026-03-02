@@ -10,22 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Strap on Dildo
+  m_Name: Cage
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Strap on Dildo
-  displayName: Strap on Dildo
+  archetypeId: Cage
+  displayName: Cage
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 300
+  buildCost: 250
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
   canRotate: 0
   levels: []
-  category: 3
-  brand: {fileID: 11400000, guid: e7e77d3ad58c5f34eb00f91cc9f146bf, type: 2}
-  description: A toy designed for penetrative sex. It typically features an insertable
-    dildo attached to an adjustable harness system that secures around the hips or
-    thighs with straps and buckles. It can be used regardless of anatomy but is often
-    used for pegging or same-sex intimacy.
+  category: 6
+  brand: {fileID: 11400000, guid: 95a2a0a1d3f74464d93ab079a8b9dabb, type: 2}
+  description: A sturdy enclosure designed for BDSM, intimacy, and restraint play.
+    It typically features a welded metal frame, a lockable door, and enough interior
+    space to kneel or sit comfortably. It facilitates a strong sense of confinement,
+    supports consensual power exchange dynamics, and enables physical restriction
+    for pleasure, control, and submission roleplay.
   usageInstruction: 

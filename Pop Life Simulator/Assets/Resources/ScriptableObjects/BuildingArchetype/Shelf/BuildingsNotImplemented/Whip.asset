@@ -10,22 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Strap on Dildo
+  m_Name: Whip
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Strap on Dildo
-  displayName: Strap on Dildo
+  archetypeId: Whip
+  displayName: Whip
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 300
+  buildCost: 255
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
   canRotate: 0
   levels: []
-  category: 3
-  brand: {fileID: 11400000, guid: e7e77d3ad58c5f34eb00f91cc9f146bf, type: 2}
-  description: A toy designed for penetrative sex. It typically features an insertable
-    dildo attached to an adjustable harness system that secures around the hips or
-    thighs with straps and buckles. It can be used regardless of anatomy but is often
-    used for pegging or same-sex intimacy.
+  category: 0
+  brand: {fileID: 11400000, guid: 12b3db02568405f47bcfd16f0b3ed416, type: 2}
+  description: A flexible impact tool designed for BDSM and sensation play. It typically
+    features a handle and a long tapered tail made from leather or synthetic materials.
+    It delivers varying levels of stinging or thudding sensation depending on technique,
+    supports dominant and submissive dynamics, and enables controlled pain play for
+    pleasure and discipline.
   usageInstruction: 
