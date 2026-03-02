@@ -7,27 +7,23 @@ using PopLife.Customers.Runtime;
 namespace PopLife.Customers.NodeCanvas.Actions
 {
     [Category("PopLife/Customer/Animation")]
-    [Description("播放拾取商品动画（整合了思考动作，仅在购买成功时播放）")]
+    [Description("播放拾取商品动画（仅在购买成功时播放，自动等待动画结束）")]
     public class PlayPickProductAnimationAction : ActionTask
     {
         [BlackboardOnly]
         [Tooltip("上一次购买是否成功的标志（由 ExecutePurchaseAction 设置）")]
         public BBParameter<bool> lastPurchaseSuccessful;
 
-        [Tooltip("动画持续时间（秒），需要根据实际动画长度调整")]
-        public float animationDuration = 0.8f;
-
         private CustomerAnimationController animController;
-        private Coroutine animationCoroutine;
+        private Coroutine waitCoroutine;
 
         protected override string info
         {
-            get { return "播放拾取商品动画并等待 (if purchase successful)"; }
+            get { return "播放拾取商品动画 (auto wait)"; }
         }
 
         protected override void OnExecute()
         {
-            // 获取动画控制器
             animController = agent.GetComponent<CustomerAnimationController>();
             if (animController == null)
             {
@@ -36,44 +32,39 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // 检查是否购买成功
             bool purchaseSuccess = lastPurchaseSuccessful != null && lastPurchaseSuccessful.value;
 
             if (purchaseSuccess)
             {
-                // 播放拾取商品动画（整合了think动画）
                 animController.PlayPickProduct();
-                Debug.Log($"[PlayPickProductAnimationAction] {agent.name} 播放拾取商品动画，等待 {animationDuration} 秒");
-
-                // 启动协程等待动画播放完成（保存引用以便中断时停止）
-                animationCoroutine = StartCoroutine(WaitForAnimation());
+                // 轮询等待动画系统自行结束，无需手动指定时长
+                waitCoroutine = StartCoroutine(WaitForAnimationComplete());
             }
             else
             {
-                Debug.Log($"[PlayPickProductAnimationAction] {agent.name} 购买失败，跳过拾取动画");
                 EndAction(true);
             }
         }
 
-        /// <summary>
-        /// 等待动画播放完成
-        /// </summary>
-        private IEnumerator WaitForAnimation()
+        private IEnumerator WaitForAnimationComplete()
         {
-            yield return new WaitForSeconds(animationDuration);
+            // 等一帧确保 isPlayingOneShot 已被置 true
+            yield return null;
 
-            // 动画播放完成
-            Debug.Log($"[PlayPickProductAnimationAction] {agent.name} 拾取商品动画播放完成");
+            while (animController != null && animController.IsPlayingOneShot)
+            {
+                yield return null;
+            }
+
             EndAction(true);
         }
 
         protected override void OnStop()
         {
-            // 节点被中断时，停止协程和动画
-            if (animationCoroutine != null)
+            if (waitCoroutine != null)
             {
-                StopCoroutine(animationCoroutine);
-                animationCoroutine = null;
+                StopCoroutine(waitCoroutine);
+                waitCoroutine = null;
             }
 
             if (animController != null)

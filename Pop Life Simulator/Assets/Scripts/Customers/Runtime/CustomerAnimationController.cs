@@ -72,6 +72,11 @@ namespace PopLife.Customers.Runtime
         private AnimState currentState = AnimState.Idle;
         private bool isPlayingOneShot;
         private bool isPlayingLoop;
+
+        /// <summary>
+        /// 单次特殊动画是否正在播放（供行为树 Action 轮询等待）
+        /// </summary>
+        public bool IsPlayingOneShot => isPlayingOneShot;
         private Sequence currentOneShotSequence;
 
         // 所有部件渲染器数组（用于批量操作）
