@@ -10,22 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Strap on Dildo
+  m_Name: PopLife Giftcard
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Strap on Dildo
-  displayName: Strap on Dildo
+  archetypeId: PopLife Giftcard
+  displayName: PopLife Giftcard
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 300
+  buildCost: 100
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
   canRotate: 0
   levels: []
-  category: 3
-  brand: {fileID: 11400000, guid: e7e77d3ad58c5f34eb00f91cc9f146bf, type: 2}
-  description: A toy designed for penetrative sex. It typically features an insertable
-    dildo attached to an adjustable harness system that secures around the hips or
-    thighs with straps and buckles. It can be used regardless of anatomy but is often
-    used for pegging or same-sex intimacy.
+  category: 2
+  brand: {fileID: 11400000, guid: 9c154f751f45e6143b420d5f898bb13e, type: 2}
+  description: A gift card for our store, PopLife!
   usageInstruction: 

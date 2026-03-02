@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
+  m_Name: Deep Throat Desensitizing Spray
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
+  archetypeId: Deep Throat Desensitizing Spray
+  displayName: Deep Throat Desensitizing Spray
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  buildCost: 365
+  moveCost: 0
+  destroyRefundRate: 0.75
+  footprintPattern: []
+  canRotate: 0
+  levels: []
+  category: 4
+  brand: {fileID: 11400000, guid: d71b015dbe7761a418c4b7d7a420731f, type: 2}
+  description: An oral desensitizer designed to reduce your gag reflex and any discomfort
+    you might experience while performing oral sex. The fast acting spray uses a
+    fine mist infused with Benzocaine to gently numb the sensitive, hard-to-reach
+    nerves in the back of your mouth and upper throat.
+  usageInstruction: '1. Insert the applicator into into your mouth with the spray
+    nozzle pointing towards the back of your throat
+
+    2. Spray 2-3 times approximately
+    2-5 minutes before performing oral sex.'
