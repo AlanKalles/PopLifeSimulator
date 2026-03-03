@@ -18,18 +18,39 @@ MonoBehaviour:
   icon: {fileID: 0}
   sortOrder: 100
   pages:
-  - screenshot: {fileID: 0}
+  - screenshot: {fileID: 7227917649443183103, guid: 1eb4f553aac88eb499a01ac580ffa836, type: 3}
     title: Customer Codex
     body: This is the Customer Codex. From here you can access information on every
       customer in the game! Scroll to see the list.
-  - screenshot: {fileID: 0}
-    title: Customer Codex - Searching
-    body: 'There is a search bar if you want to search for a specific customer. '
-  - screenshot: {fileID: 0}
-    title: Customer Codex - Customers
-    body: 'When you click on a customer in the codex it will display: their name,
-      age, a brief description, and their shelf intrests!'
-  - screenshot: {fileID: 0}
-    title: Customer Codex - New Customers
-    body: When your store gains a new customer they will show up like this in the
-      codex!
+  - screenshot: {fileID: 9220391828954253308, guid: a1e15e7b66a4f4b4c80bf7cbdb2dd3a6, type: 3}
+    title: Customer Codex - Customers in Store
+    body: At the top here, you can see how many customers are currently in your store
+      at this time.
+  - screenshot: {fileID: 3221195490784552306, guid: 763948f30b4768f44a847b3188120260, type: 3}
+    title: Customer Codex - Customer List
+    body: On the left of the screen you can see the list of customers in the game
+      that have visited your shop.
+  - screenshot: {fileID: 5426093213676001169, guid: af0fa9bf6e5ef9b42b23cae1bac940c2, type: 3}
+    title: Customer Codex - Search and Filter
+    body: You can search and through filter the customers here.
+  - screenshot: {fileID: 668061551953147936, guid: 629eaffef0a17e24ba85611b5b4b615e, type: 3}
+    title: Customer Codex - Customer
+    body: 'When you click on a customer you will see: their name, their loyalty level,
+      and their biography.'
+  - screenshot: {fileID: 2112266969576048849, guid: 2c5ba04615f6af4448983614b9a4e25c, type: 3}
+    title: Customer Codex - Customer Loyalty
+    body: Here you can view the loyalty level of the customer.
+  - screenshot: {fileID: -2420322087806991794, guid: a6a0fd6c3a2ac2e4b89f87f198d92701, type: 3}
+    title: Customer Codex - Customer Favorite
+    body: When you have the "favorite" tab clicked on, you will see the customer's
+      favorite items below their biography.
+  - screenshot: {fileID: 5708942291455286710, guid: baa89848ea0e2a94db00696fdb52f880, type: 3}
+    title: Customer Codex - Customer Lifetime Stats
+    body: When you have the "lifetime" tab clicked on, you will see the customer's
+      lifetime statistics of visitng your store, including the amount of times they
+      have visited the store as well as the total amount of money they have spent
+      at the store.
+  - screenshot: {fileID: -2257569283256787637, guid: 49203f9b53057f44b955e9ac7d1faca1, type: 3}
+    title: Customer Codex - New Customer
+    body: When you have gained a new customer that you have yet to look at in the
+      codex they will appear like this!
