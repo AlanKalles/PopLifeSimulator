@@ -24,5 +24,8 @@ MonoBehaviour:
   levels: []
   category: 7
   brand: {fileID: 11400000, guid: 12b3db02568405f47bcfd16f0b3ed416, type: 2}
-  description: 
+  description: 'A device designed for nipple stimulation and temporary enlargement.
+    It typically features small cylindrical cups that fit over the nipples, connected
+    to a manual or electric pump that creates a vacuum seal to draw blood into the
+    nipple tissue. It increases sensitivity and produces temporary swelling and firmness. '
   usageInstruction: 

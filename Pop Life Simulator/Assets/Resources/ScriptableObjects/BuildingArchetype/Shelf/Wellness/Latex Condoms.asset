@@ -28,4 +28,9 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: c5bf8ead07bd4084f929149102212fdd, type: 2}
-  description: 
+  description: A barrier device designed for safer sex and contraception. It is made
+    from a thin, stretchy material of natural rubber latex that unrolls over an erect
+    penis with a reservoir tip to collect fluids. It prevents the exchange of bodily
+    fluids during sex and reduces the risk of sexually transmitted infections and
+    unintended pregnancy.
+  usageInstruction: 

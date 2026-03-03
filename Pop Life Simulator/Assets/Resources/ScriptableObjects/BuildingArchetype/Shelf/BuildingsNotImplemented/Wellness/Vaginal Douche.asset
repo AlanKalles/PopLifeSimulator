@@ -24,4 +24,10 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: c5bb9c48130197c4abbbf57c89969213, type: 2}
-  description: 
+  description: A cleansing product designed for rinsing the vaginal canal. It typically
+    features a bottle or bag filled with a water-based solution, sometimes with added
+    vinegar, antiseptic agents, or fragrances, attached to a nozzle for internal
+    irrigation. It flushes liquid through the vagina ro remove discharge, odor, or
+    residue. It is important to note that medical professionals generally advise
+    against routine douching as it can disrupt natural vaginal pH and healthy bacteria.
+  usageInstruction: 

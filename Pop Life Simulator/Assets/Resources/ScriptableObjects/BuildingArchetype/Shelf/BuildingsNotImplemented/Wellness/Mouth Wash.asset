@@ -10,23 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Handcuffs
+  m_Name: Mouth Wash
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Handcuffs
-  displayName: Handcuffs
+  archetypeId: Mouth Wash
+  displayName: Mouth Wash
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 215
+  buildCost: 325
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
   canRotate: 0
   levels: []
-  category: 0
-  brand: {fileID: 11400000, guid: 90bb1d60c1abe2d409d722007d97e3d8, type: 2}
-  description: A type of BDSM restraint that binds someone's hands or feet together.
-    BDSM style handcuffs are primarily made from leather (genuine or synthetic/faux),
-    often lined with soft materials like fur or suede for comfort. Other common materials
-    include stainless steel, nickel-plated metal, nylon webbing, and, in some cases,
-    velcro or silicon.
+  category: 10
+  brand: {fileID: 11400000, guid: c5bf8ead07bd4084f929149102212fdd, type: 2}
+  description: An oral hygiene product designed for freshening breath and maintaining
+    dental health. It is typically an antiseptic solution containing ingredients
+    such as floride, alcohol, or essential oils that kill bacteria and neutralize
+    odors.
   usageInstruction: 

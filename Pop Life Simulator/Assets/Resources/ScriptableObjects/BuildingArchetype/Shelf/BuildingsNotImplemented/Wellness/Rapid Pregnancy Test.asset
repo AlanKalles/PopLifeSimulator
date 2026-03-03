@@ -24,4 +24,10 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: d71b015dbe7761a418c4b7d7a420731f, type: 2}
-  description: 
+  description: A diagnostic device designed to detect pregnancy through urine. It
+    typically features a test strip or stick with a sample window and result display,
+    which detects the presence of the hormone human chorionic gonadotropin (hCG)
+    that is produced during pregnancy. These types of tests are highly accurate and
+    can even detect pregnancy as early as the first day of a missed period. For the
+    best accuracy, it is recommended to test with your first morning urine.
+  usageInstruction: 

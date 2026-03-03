@@ -24,4 +24,7 @@ MonoBehaviour:
   levels: []
   category: 9
   brand: {fileID: 11400000, guid: 03826318e8a0620488e187d67886ed38, type: 2}
-  description: 
+  description: A wearable toy designed for manual stimulation and secual pleasure.
+    It typically features a small vibrating unity that attaches to the finger via
+    a strap, lopp, or sleeve with controls for speed and pattern adjustments.
+  usageInstruction: 

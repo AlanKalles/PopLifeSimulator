@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Orgy VR Porn
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Straight VR Porn 1
+  archetypeId: Orgy VR Porn
   displayName: Orgy VR Porn
   icon: {fileID: 0}
   prefab: {fileID: 0}
@@ -24,5 +24,7 @@ MonoBehaviour:
   levels: []
   category: 2
   brand: {fileID: 11400000, guid: 7af3021b30fe8974eb03fec8fcf902c6, type: 2}
-  description: 
-  usageInstruction: 
+  description: A chip for uploading virtual reality porn to your device at home!
+    This one features orgy porn.
+  usageInstruction: Insert the chip into a device of your choosing, download the
+    media, and enjoy!

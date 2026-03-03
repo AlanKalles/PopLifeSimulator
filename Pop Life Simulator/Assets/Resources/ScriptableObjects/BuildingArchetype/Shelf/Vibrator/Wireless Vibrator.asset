@@ -36,4 +36,7 @@ MonoBehaviour:
   levels: []
   category: 9
   brand: {fileID: 11400000, guid: 03826318e8a0620488e187d67886ed38, type: 2}
-  description: 
+  description: A toy designed for internal or external stimulation and sexual pleasure.
+    It typically features a rechargable vibrating body with remote control or smartphone
+    app connectivity.
+  usageInstruction: 
