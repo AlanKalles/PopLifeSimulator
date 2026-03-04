@@ -13,9 +13,11 @@ namespace PopLife.UI.Quest
         [SerializeField] private TextMeshProUGUI entryText;
         [SerializeField] private Image checkmarkIcon;
 
+        [Header("Checkmark Sprites")]
+        [SerializeField] private Sprite completedSprite;
+        [SerializeField] private Sprite pendingSprite;
+
         [Header("Colors")]
-        [SerializeField] private Color completedColor = new Color(0.4f, 1f, 0.4f);
-        [SerializeField] private Color pendingColor = new Color(0.6f, 0.6f, 0.6f);
         [SerializeField] private Color completedTextColor = new Color(0.6f, 0.6f, 0.6f);
         [SerializeField] private Color pendingTextColor = Color.white;
 
@@ -30,7 +32,7 @@ namespace PopLife.UI.Quest
 
             if (checkmarkIcon != null)
             {
-                checkmarkIcon.color = entry.isCompleted ? completedColor : pendingColor;
+                checkmarkIcon.sprite = entry.isCompleted ? completedSprite : pendingSprite;
             }
         }
     }

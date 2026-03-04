@@ -61,9 +61,14 @@ namespace PopLife.AlanBot.UI
         [SerializeField] private Image customerPortraitLarge;
         [SerializeField] private TMP_Text customerNameText;
         [SerializeField] private TMP_Text bioText;
-        [SerializeField] private TMP_Text loyaltyLevelText;
         [SerializeField] private Slider xpProgressBar;
         [SerializeField] private TMP_Text xpProgressText;
+
+        [Header("Right Panel - Loyalty Stars")]
+        [SerializeField] private Transform loyaltyStarContainer;
+        [SerializeField] private Sprite filledStarSprite;
+        [SerializeField] private Sprite emptyStarSprite;
+        [SerializeField] private float starSize = 24f;
 
         [Header("Right Panel - Page Toggle")]
         [SerializeField] private Button shelfInterestsTabButton;
@@ -95,6 +100,8 @@ namespace PopLife.AlanBot.UI
         private Coroutine fadeCoroutine;
         private bool isInitialized;
         private bool showingStats; // false=Shelf Interests, true=Lifetime Stats
+        private const int MaxLoyaltyLevel = 5;
+        private Image[] loyaltyStarImages;
 
         // ── 关闭回调 ──
         private Action onCloseCallback;
@@ -537,9 +544,8 @@ namespace PopLife.AlanBot.UI
             if (bioText != null)
                 bioText.text = record.bio ?? "";
 
-            // 忠诚度等级
-            if (loyaltyLevelText != null)
-                loyaltyLevelText.text = $"Loyalty Lv.{record.loyaltyLevel}";
+            // 忠诚度星星
+            UpdateLoyaltyStars(record.loyaltyLevel);
 
             // XP 进度条
             UpdateXpProgressBar(record, archetype);
@@ -713,6 +719,46 @@ namespace PopLife.AlanBot.UI
                 entry.CurrentState == CodexCustomerEntry.EntryState.New)
             {
                 entry.SetState(CodexCustomerEntry.EntryState.Unselected);
+            }
+        }
+
+        #endregion
+
+        #region 忠诚度星星
+
+        /// <summary>
+        /// 懒初始化星星Image（在loyaltyStarContainer下动态创建5个Image子物体）
+        /// </summary>
+        private void EnsureLoyaltyStars()
+        {
+            if (loyaltyStarImages != null) return;
+            if (loyaltyStarContainer == null) return;
+
+            loyaltyStarImages = new Image[MaxLoyaltyLevel];
+            for (int i = 0; i < MaxLoyaltyLevel; i++)
+            {
+                var go = new GameObject($"Star_{i}", typeof(RectTransform), typeof(Image));
+                go.transform.SetParent(loyaltyStarContainer, false);
+                var rt = go.GetComponent<RectTransform>();
+                rt.sizeDelta = new Vector2(starSize, starSize);
+                var img = go.GetComponent<Image>();
+                img.preserveAspect = true;
+                img.raycastTarget = false;
+                loyaltyStarImages[i] = img;
+            }
+        }
+
+        /// <summary>
+        /// 根据忠诚度等级更新星星显示（亮星=已达成，灰星=未达成）
+        /// </summary>
+        private void UpdateLoyaltyStars(int loyaltyLevel)
+        {
+            EnsureLoyaltyStars();
+            if (loyaltyStarImages == null) return;
+
+            for (int i = 0; i < MaxLoyaltyLevel; i++)
+            {
+                loyaltyStarImages[i].sprite = (i < loyaltyLevel) ? filledStarSprite : emptyStarSprite;
             }
         }
 
