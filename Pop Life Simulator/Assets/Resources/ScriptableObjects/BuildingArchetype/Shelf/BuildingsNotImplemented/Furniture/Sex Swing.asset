@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Sex Swing
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Cage 1
+  archetypeId: Sex Swing
   displayName: Sex Swing
   icon: {fileID: 0}
   prefab: {fileID: 0}
@@ -24,5 +24,10 @@ MonoBehaviour:
   levels: []
   category: 6
   brand: {fileID: 11400000, guid: 95a2a0a1d3f74464d93ab079a8b9dabb, type: 2}
-  description: 
-  usageInstruction: 
+  description: A suspended, sturdy device, made of fabric and straps, designed to
+    hold one partner in the air, offering varied angles, support, and weightlessness
+    during sexual activity.
+  usageInstruction: "To Install: \n1. Use a stud finder to find a secure ceiling
+    joist\n2. Drill pilot holes and screw in heavy-duty eye bolts or a dedicated
+    ceiling mount bracket\n3. Connect the swing straps/chains to the hooks using
+    carabiners"

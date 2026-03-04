@@ -24,4 +24,11 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: e7e77d3ad58c5f34eb00f91cc9f146bf, type: 2}
-  description: 
+  description: A cleaning product designed for sanitizing sex toys and and intimate
+    accessories. It typically features a spray or foam formulation with antibacterial
+    and antifungal agents that are safe for body contact and compatible with various
+    toy materials including silicone, glass, metal, and hard plastics. It removes
+    bodily fluids, bateria, and reside from toy surfaces, help maintain hygiene and
+    extend product lifespan, and is suitable for quick cleaning between uses or as
+    part of thorough toy maintenance routines.
+  usageInstruction: 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Textured Fantasy Sheath
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Vibrating Penis Ring
+  archetypeId: Textured Fantasy Sheath
   displayName: Vibrating Penis Ring
   icon: {fileID: 0}
   prefab: {fileID: 0}
@@ -24,5 +24,10 @@ MonoBehaviour:
   levels: []
   category: 4
   brand: {fileID: 11400000, guid: 11b0676861332bf408cae894fff69c6d, type: 2}
-  description: 
+  description: 'A toy designed to be worn over the penis. It often increases girth
+    and length of the penis while also providing enhanced stimulation for both partners
+    during sexual activity. The toy is made with raised ridges, ribs, or bumps that
+    resemble a fantasy creature such as a dragon, werewolf, or tentacle on the outside
+    to pleasure the receiving partner and often have the same or similar texture
+    on the inside to provide extra stimulation to the wearer. '
   usageInstruction: 

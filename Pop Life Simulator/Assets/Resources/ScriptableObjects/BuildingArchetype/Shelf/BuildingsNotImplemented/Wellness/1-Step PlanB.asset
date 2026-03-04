@@ -24,4 +24,11 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: d71b015dbe7761a418c4b7d7a420731f, type: 2}
-  description: 
+  description: 'An emergency contraceptive designed to prevent pregnancy after unprotected
+    sex or contraceptive failure. It is typically an oral pill/tablet containing
+    levonorgestrel, a synthetic hormone that prevents or delays ovulation. It reduces
+    the risk of pregnancy when taken within 72 hours of unprotected sex, with the
+    effectiveness decreasing over time. It should only be used as an emergency contraceptive. '
+  usageInstruction: "It is important to note that Plan B has been reported to be
+    less effective for individuals weighing over 155\u2013165 lbs (70\u201375 kg)
+    or with a BMI over 30. "

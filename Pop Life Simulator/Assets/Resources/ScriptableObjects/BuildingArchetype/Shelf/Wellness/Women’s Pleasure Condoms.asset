@@ -28,4 +28,11 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: d71b015dbe7761a418c4b7d7a420731f, type: 2}
-  description: 
+  description: A barrier device designed for safer sex and contraception. It is made
+    from a thin, stretchy material of synthetic polyisoprene rubber that unrolls
+    over an erect penis with a reservoir tip to collect fluids. It prevents the exchange
+    of bodily fluids during sex and reduces the risk of sexually transmitted infections
+    and unintended pregnancy. These types of condoms come with textured surfaces
+    like ribs, dots, or micro-ribbing to increase sensation and stimulation for the
+    receiver of penetrative sex.
+  usageInstruction: 

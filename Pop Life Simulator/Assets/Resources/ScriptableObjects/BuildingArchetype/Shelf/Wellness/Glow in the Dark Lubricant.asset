@@ -32,4 +32,9 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: f0029a9ee2b5adb4b92e6f20934d7466, type: 2}
-  description: 
+  description: A lubricant designed to reduce friction and enhance comfort during
+    sexual activity. It typically features a formulation made from based compounds.
+    The lubrication itself does not actually glow in the dark, but rather the tube
+    the lubrication comes in is glow in the dark, allowing users to find the bottle
+    easier.
+  usageInstruction: 

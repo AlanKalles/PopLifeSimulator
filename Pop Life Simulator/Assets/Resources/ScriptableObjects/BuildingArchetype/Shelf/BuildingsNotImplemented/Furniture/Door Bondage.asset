@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
   m_Name: Door Bondage
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Sex Couch 7
+  archetypeId: Door Bondage
   displayName: Door Bondage
   icon: {fileID: 0}
   prefab: {fileID: 0}
@@ -24,5 +24,8 @@ MonoBehaviour:
   levels: []
   category: 6
   brand: {fileID: 11400000, guid: 95a2a0a1d3f74464d93ab079a8b9dabb, type: 2}
-  description: 
-  usageInstruction: 
+  description: A type of BDSM restraint setup that uses a door, specifically the
+    frame, handle, or top edge, as an anchor point to immobilize or position a partner.
+  usageInstruction: To use, just find a sturdy bedroom door. Toss the two capped
+    anchors over the top of the door and close it. The anchors will stay on the other
+    side of the closed door as you play, keeping the item in place

@@ -24,5 +24,8 @@ MonoBehaviour:
   levels: []
   category: 6
   brand: {fileID: 11400000, guid: 95a2a0a1d3f74464d93ab079a8b9dabb, type: 2}
-  description: 
+  description: An ergonomic, angled memory foam cushion designed to enhance comfort,
+    intimacy, and positioning. It provides firm elevation for the hips, back, or
+    chest, reducing strain, improving alignment, and supporting various angles during
+    activity or rest.
   usageInstruction: 

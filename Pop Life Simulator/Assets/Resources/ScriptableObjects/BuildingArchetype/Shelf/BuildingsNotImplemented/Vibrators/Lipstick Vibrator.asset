@@ -24,4 +24,8 @@ MonoBehaviour:
   levels: []
   category: 9
   brand: {fileID: 11400000, guid: 03826318e8a0620488e187d67886ed38, type: 2}
-  description: 
+  description: A small, discreet, and portable sex toy designed to look like a tube
+    of lipstick for privacy. It is used primarily for clitoral or external stimulation.
+    They are also commonly waterproof, made of a soft silicone, rechargable, and
+    feature multiple speed settings.
+  usageInstruction: 

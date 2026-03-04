@@ -24,5 +24,8 @@ MonoBehaviour:
   levels: []
   category: 6
   brand: {fileID: 11400000, guid: 95a2a0a1d3f74464d93ab079a8b9dabb, type: 2}
-  description: 
+  description: A functional blanket featuring an inner moisture barrier sandwiched
+    between a soft velvet exterior. It is designed to stop liquids from soaking through.
+    It protects furniture, beds, and cars from spills, pet accidents, body fluids,
+    and sweat while remaining cozy and machine-washable.
   usageInstruction: 

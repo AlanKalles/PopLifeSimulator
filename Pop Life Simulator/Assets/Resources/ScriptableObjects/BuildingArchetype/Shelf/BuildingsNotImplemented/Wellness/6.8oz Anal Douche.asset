@@ -24,5 +24,10 @@ MonoBehaviour:
   levels: []
   category: 10
   brand: {fileID: 11400000, guid: c5bb9c48130197c4abbbf57c89969213, type: 2}
-  description: 
-  usageInstruction: 
+  description: 'A cleansing product designed for rinsing the rectum. It typically
+    features a bottle or bag filled with a water or saline solution attached to a
+    squeeze bottle with a nozzle for ease of use. It flushes liquid through the rectum
+    ro remove discharge, odor, or residue. '
+  usageInstruction: "Gently insert the tip 1 to 2 inches past the outer sphincter.
+    Inject water, hold for a few seconds, and expel into the toilet; repeat 1\u20133
+    times until the water runs clear."
