@@ -73,8 +73,19 @@ namespace PopLife.Customers.Runtime
                 if (so.brand != null) brands.Add(so.brand);
             }
 
-// 3) 采样本次钱袋与尴尬上限（无 trait 乘数）
-            int walletCap = Mathf.RoundToInt(record.walletCapBase * archetype.walletCapCurve.Eval(record.loyaltyLevel));
+// 2.5) 将当日奖励兴趣品类并入顾客偏好（去重：HashSet<int> 天然防重复）
+            if (PopLife.GlobalModifierManager.Instance != null)
+            {
+                var bonusCats = PopLife.GlobalModifierManager.Instance.GetBonusInterestCategories();
+                foreach (var cat in bonusCats)
+                    categories.Add((int)cat);
+            }
+
+// 3) 采样本次钱袋与尴尬上限（应用全局修饰器钱包乘数）
+            float moneyBagMul = PopLife.GlobalModifierManager.Instance != null
+                ? PopLife.GlobalModifierManager.Instance.GetMoneyBagMultiplier()
+                : 1f;
+            int walletCap = Mathf.RoundToInt(record.walletCapBase * archetype.walletCapCurve.Eval(record.loyaltyLevel) * moneyBagMul);
             int embarrassmentCap = Mathf.RoundToInt(archetype.embarrassmentCapCurve.Eval(record.loyaltyLevel));
             int queueTolerance = archetype.queueToleranceSeconds;
             float finalMoveSpeed = archetype.moveSpeed;

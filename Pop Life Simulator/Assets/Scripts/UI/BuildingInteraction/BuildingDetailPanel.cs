@@ -195,12 +195,23 @@ namespace PopLife.UI.BuildingInteraction
                 levelText.text = $"Level: {building.currentLevel}/{building.archetype.MaxLevel}";
             }
 
-            // Price (for shelves)
+            // Price (for shelves) — 有品类价格修饰器时显示增幅
             if (priceText != null)
             {
                 if (building is ShelfInstance shelf)
                 {
-                    priceText.text = $"Price: ${shelf.currentPrice}";
+                    int effectivePrice = shelf.GetEffectivePrice();
+                    int basePrice = shelf.currentPrice;
+                    if (effectivePrice != basePrice && basePrice > 0)
+                    {
+                        int pct = Mathf.RoundToInt((effectivePrice - basePrice) / (float)basePrice * 100f);
+                        string sign = pct >= 0 ? "+" : "";
+                        priceText.text = $"Price: ${effectivePrice} <color=#00B01C>({sign}{pct}%)</color>";
+                    }
+                    else
+                    {
+                        priceText.text = $"Price: ${basePrice}";
+                    }
                     priceText.gameObject.SetActive(true);
                 }
                 else
@@ -223,13 +234,25 @@ namespace PopLife.UI.BuildingInteraction
                 }
             }
 
-            // Appeal (for shelves)
+            // Appeal (for shelves) — 有Appeal加值修饰器时显示增量
             if (appealText != null)
             {
                 if (building is ShelfInstance shelf)
                 {
                     float appeal = shelf.GetAppeal();
-                    appealText.text = $"Appeal: {appeal:F1}";
+                    ShelfArchetype sa = shelf.archetype as ShelfArchetype;
+                    int addend = (sa != null && GlobalModifierManager.Instance != null)
+                        ? GlobalModifierManager.Instance.GetShelfAppealAddend(sa)
+                        : 0;
+                    if (addend != 0)
+                    {
+                        string sign = addend >= 0 ? "+" : "";
+                        appealText.text = $"Appeal: {appeal:F1} <color=#00B01C>({sign}{addend})</color>";
+                    }
+                    else
+                    {
+                        appealText.text = $"Appeal: {appeal:F1}";
+                    }
                     appealText.gameObject.SetActive(true);
                 }
                 else
@@ -374,23 +397,35 @@ namespace PopLife.UI.BuildingInteraction
                 nextLevelMaintenanceText.gameObject.SetActive(true);
             }
 
-            // Upgrade Cost (升级所需Fame)
+            // Upgrade Cost (升级所需Fame) — 使用统一方法获取修饰后成本
             if (nextLevelUpgradeCostText != null)
             {
-                if (isMaxLevel)
+                int displayFameCost = building.GetModifiedUpgradeCost();
+                if (isMaxLevel || displayFameCost < 0)
                 {
                     nextLevelUpgradeCostText.text = "MAX";
                     nextLevelUpgradeCostText.gameObject.SetActive(true);
                 }
                 else if (nextLevelData != null)
                 {
+                    int baseFameCost = nextLevelData.upgradeFameCost;
+
                     // 检查是否有足够的Fame
                     bool hasEnoughFame = resourceManager != null &&
-                                        resourceManager.CanAfford(0, nextLevelData.upgradeFameCost);
+                                        resourceManager.CanAfford(0, displayFameCost);
 
                     // 根据是否足够设置颜色
                     string colorTag = hasEnoughFame ? "<color=#00FF00>" : "<color=#FF6B6B>";
-                    nextLevelUpgradeCostText.text = $"Upgrade Cost: {colorTag}{nextLevelData.upgradeFameCost} Fame</color>";
+
+                    // 有修饰器影响时显示增幅百分比
+                    string modifierSuffix = "";
+                    if (displayFameCost != baseFameCost && baseFameCost > 0)
+                    {
+                        int pct = Mathf.RoundToInt((displayFameCost - baseFameCost) / (float)baseFameCost * 100f);
+                        string sign = pct >= 0 ? "+" : "";
+                        modifierSuffix = $" <color=#00B01C>({sign}{pct}%)</color>";
+                    }
+                    nextLevelUpgradeCostText.text = $"Upgrade Cost: {colorTag}{displayFameCost} Fame</color>{modifierSuffix}";
                     nextLevelUpgradeCostText.gameObject.SetActive(true);
                 }
                 else
@@ -437,20 +472,20 @@ namespace PopLife.UI.BuildingInteraction
             }
             else
             {
-                // Can upgrade
-                var nextLevel = currentBuilding.archetype.GetLevel(currentBuilding.currentLevel + 1);
-                if (nextLevel != null)
+                // Can upgrade — 使用统一方法获取修饰后成本
+                int displayFameCost = currentBuilding.GetModifiedUpgradeCost();
+                if (displayFameCost >= 0)
                 {
                     bool hasEnoughFame = resourceManager != null &&
-                                        resourceManager.CanAfford(0, nextLevel.upgradeFameCost);
+                                        resourceManager.CanAfford(0, displayFameCost);
 
                     upgradeButton.interactable = hasEnoughFame;
 
                     if (upgradeButtonText != null)
                     {
                         upgradeButtonText.text = hasEnoughFame
-                            ? $"Upgrade (Fame: {nextLevel.upgradeFameCost})"
-                            : $"Upgrade (Need Fame: {nextLevel.upgradeFameCost})";
+                            ? $"Upgrade (Fame: {displayFameCost})"
+                            : $"Upgrade (Need Fame: {displayFameCost})";
                     }
                 }
                 else
@@ -475,23 +510,16 @@ namespace PopLife.UI.BuildingInteraction
                 return;
             }
 
-            // 检查是否已达到最高等级
-            if (currentBuilding.currentLevel >= currentBuilding.archetype.MaxLevel)
+            // 使用统一方法获取修饰后成本并校验
+            int finalFameCost = currentBuilding.GetModifiedUpgradeCost();
+            if (finalFameCost < 0)
             {
-                Debug.Log("Already at max level!");
-                return;
-            }
-
-            // 获取下一等级数据
-            var nextLevel = currentBuilding.archetype.GetLevel(currentBuilding.currentLevel + 1);
-            if (nextLevel == null)
-            {
-                Debug.LogWarning("Cannot get next level data!");
+                Debug.Log("Already at max level or no next level data!");
                 return;
             }
 
             // 检查声望是否足够
-            if (!resourceManager.CanAfford(0, nextLevel.upgradeFameCost))
+            if (!resourceManager.CanAfford(0, finalFameCost))
             {
                 // 声望不足 - 显示警告弹窗
                 UIManager.Instance.ShowAlert(AlertType.NotEnoughFame);

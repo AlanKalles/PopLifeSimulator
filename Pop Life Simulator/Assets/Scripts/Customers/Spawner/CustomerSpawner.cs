@@ -477,7 +477,11 @@ namespace PopLife.Customers.Spawner
                 : 0f;
             float intervalMul = Mathf.Lerp(1f, minIntervalMultiplier, appealRatio);
 
-            float finalInterval = Mathf.Max(0.1f, (baseInterval + jitter) * intervalMul);
+            // 全局修饰器：spawnRate > 1 → 间隔缩短（反比关系）
+            float spawnRateMul = GlobalModifierManager.Instance != null
+                ? GlobalModifierManager.Instance.GetSpawnRateMultiplier()
+                : 1f;
+            float finalInterval = Mathf.Max(0.1f, (baseInterval + jitter) * intervalMul / Mathf.Max(0.01f, spawnRateMul));
             nextSpawnTime = Time.time + finalInterval;
         }
 

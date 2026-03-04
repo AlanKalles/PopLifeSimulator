@@ -280,9 +280,14 @@ namespace PopLife.Runtime
 
             // 检查蓝图是否已解锁（直接通过BlueprintManager判断）
             if (!BlueprintManager.Instance.HasBlueprint(arch.archetypeId)) return null;
-            if (!ResourceManager.Instance.CanAfford(arch.buildCost, 0)) return null;
 
-            ResourceManager.Instance.SpendMoney(arch.buildCost);
+            // 应用全局修饰器的建造成本乘数
+            int finalBuildCost = GlobalModifierManager.Instance != null
+                ? Mathf.RoundToInt(arch.buildCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                : arch.buildCost;
+            if (!ResourceManager.Instance.CanAfford(finalBuildCost, 0)) return null;
+
+            ResourceManager.Instance.SpendMoney(finalBuildCost);
             // 蓝图永久解锁，不需要消耗
             BlueprintManager.Instance.ConsumeBlueprint(arch.archetypeId);
 
@@ -295,8 +300,8 @@ namespace PopLife.Runtime
             }
             catch
             {
-                // 回滚资源（金钱）
-                ResourceManager.Instance.RefundMoney(arch.buildCost);
+                // 回滚资源（使用修正后的成本）
+                ResourceManager.Instance.RefundMoney(finalBuildCost);
                 // 蓝图不需要回滚（永久解锁）
                 if (inst) Destroy(inst.gameObject);
                 return null;

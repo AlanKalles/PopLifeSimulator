@@ -53,6 +53,10 @@ namespace PopLife.Data
         [Range(0f, 1f)]
         public float terminateProbability = 0.2f;
 
+        [Header("经济修正")]
+        [Tooltip("该Buffer的全局修饰器载荷（由 GlobalModifierManager 聚合）")]
+        public GlobalModifierPayload modifierPayload;
+
 #if UNITY_EDITOR
         private void OnValidate()
         {

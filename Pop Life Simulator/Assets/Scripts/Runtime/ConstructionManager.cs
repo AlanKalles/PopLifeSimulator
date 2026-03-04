@@ -260,12 +260,15 @@ namespace PopLife.Runtime
                 return;
             }
 
-            // 资源校验：金钱和声望检查
-            if (!resourceManager.CanAfford(arch.buildCost, 0))
+            // 资源校验：金钱和声望检查（应用全局修饰器的建造成本乘数）
+            int finalBuildCost = GlobalModifierManager.Instance != null
+                ? Mathf.RoundToInt(arch.buildCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                : arch.buildCost;
+            if (!resourceManager.CanAfford(finalBuildCost, 0))
             {
                 // 判断具体缺少哪种资源
                 AlertType alertType = AlertType.NotEnoughMoney;
-                if (resourceManager.GetMoney() < arch.buildCost)
+                if (resourceManager.GetMoney() < finalBuildCost)
                 {
                     alertType = AlertType.NotEnoughMoney;
                 }
@@ -421,12 +424,15 @@ namespace PopLife.Runtime
                     // 根据建筑类型播放不同音效
                     PlayBuildSound(selectedArchetype);
 
-                    // 浮动扣钱文字
+                    // 浮动扣钱文字（显示修正后的实际成本）
                     if (FloatingTextSpawner.Instance != null)
                     {
+                        int displayCost = GlobalModifierManager.Instance != null
+                            ? Mathf.RoundToInt(selectedArchetype.buildCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                            : selectedArchetype.buildCost;
                         FloatingTextSpawner.Instance.SpawnCostText(
                             inst.transform.position,
-                            selectedArchetype.buildCost
+                            displayCost
                         );
                     }
 

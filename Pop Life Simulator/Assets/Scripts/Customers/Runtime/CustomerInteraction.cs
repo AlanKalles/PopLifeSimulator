@@ -47,9 +47,12 @@ namespace PopLife.Customers.Runtime
                 return false;
             }
 
-            if (blackboard.moneyBag < targetShelf.currentPrice)
+            // 使用修饰后的有效售价（基础价格 × 品类价格乘数）
+            int effectivePrice = targetShelf.GetEffectivePrice();
+
+            if (blackboard.moneyBag < effectivePrice)
             {
-                string msg = $"Insufficient money (need ${targetShelf.currentPrice}, have ${blackboard.moneyBag})";
+                string msg = $"Insufficient money (need ${effectivePrice}, have ${blackboard.moneyBag})";
                 Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogWarning(blackboard.customerId, msg);
                 return false;
@@ -58,19 +61,19 @@ namespace PopLife.Customers.Runtime
             // 执行取货 - 只扣库存，不增加玩家金钱
             if (targetShelf.TryTakeOne())
             {
-                // 扣除顾客钱包
-                blackboard.moneyBag -= targetShelf.currentPrice;
+                // 扣除顾客钱包（使用有效售价）
+                blackboard.moneyBag -= effectivePrice;
                 // 累加待结账金额
-                blackboard.pendingPayment += targetShelf.currentPrice;
+                blackboard.pendingPayment += effectivePrice;
 
                 string msg = $"Took item from {targetShelf.instanceId}, pending payment: ${blackboard.pendingPayment}, remaining money: ${blackboard.moneyBag}";
                 Debug.Log($"[CustomerInteraction] Customer {blackboard.customerId} {msg}");
                 ScreenLogger.LogPurchase(blackboard.customerId, msg);
 
                 // 记录到当前会话
+                var shelfArchetype = targetShelf.archetype as ShelfArchetype;
                 if (customerAgent.currentSession != null)
                 {
-                    var shelfArchetype = targetShelf.archetype as ShelfArchetype;
                     customerAgent.currentSession.visitedShelves.Add(new ShelfVisit
                     {
                         shelfId = targetShelf.instanceId,
@@ -79,9 +82,11 @@ namespace PopLife.Customers.Runtime
                     });
                 }
 
-                // 计算并增加Fame
+                // 计算并增加Fame（应用全局Fame × 品类Fame乘数）
                 float appeal = targetShelf.GetAppeal();
-                float fameGained = FameCalculator.CalculateFame(targetShelf.currentPrice, appeal);
+                float fameGained = FameCalculator.CalculateFame(effectivePrice, appeal);
+                if (shelfArchetype != null && PopLife.GlobalModifierManager.Instance != null)
+                    fameGained *= PopLife.GlobalModifierManager.Instance.GetFameMultiplier(shelfArchetype.category);
                 PopLife.ResourceManager.Instance.AddFame(fameGained);
 
                 // 浮动 Fame 文字
@@ -97,7 +102,7 @@ namespace PopLife.Customers.Runtime
                 }
 
                 // 触发购买事件（此时只是拿货，未结账）
-                CustomerEventBus.RaisePurchased(customerAgent, targetShelf, 1, targetShelf.currentPrice);
+                CustomerEventBus.RaisePurchased(customerAgent, targetShelf, 1, effectivePrice);
 
                 return true;
             }

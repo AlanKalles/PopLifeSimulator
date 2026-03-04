@@ -56,19 +56,28 @@ namespace PopLife.Runtime
             OnInitialized();
         }
 
+        /// <summary>
+        /// 获取下一级升级所需Fame（含全局修饰器），-1 表示无法升级
+        /// </summary>
+        public int GetModifiedUpgradeCost()
+        {
+            if (archetype == null || currentLevel >= archetype.MaxLevel) return -1;
+            var next = archetype.GetLevel(currentLevel + 1);
+            if (next == null) return -1;
+            return GlobalModifierManager.Instance != null
+                ? Mathf.RoundToInt(next.upgradeFameCost * GlobalModifierManager.Instance.GetUpgradeCostMultiplier())
+                : next.upgradeFameCost;
+        }
+
         public virtual bool TryUpgrade()
         {
-            if (archetype == null) return false;
-            if (currentLevel >= archetype.MaxLevel) return false;
+            int finalFameCost = GetModifiedUpgradeCost();
+            if (finalFameCost < 0) return false;
 
-            var next = archetype.GetLevel(currentLevel + 1);
-            if (next == null) return false;
-
-            // 外部资源系统：自行替换
-            if (!ResourceManager.Instance.CanAfford(0,next.upgradeFameCost))
+            if (!ResourceManager.Instance.CanAfford(0, finalFameCost))
                 return false;
 
-            ResourceManager.Instance.Spend(0,next.upgradeFameCost);
+            ResourceManager.Instance.Spend(0, finalFameCost);
             currentLevel++;
             OnUpgraded();
 

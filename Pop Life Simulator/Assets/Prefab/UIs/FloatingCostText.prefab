@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: -100 usd
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 82089c1092aafd64d8c88725774de791, type: 2}
-  m_sharedMaterial: {fileID: -3620531424738490259, guid: 82089c1092aafd64d8c88725774de791, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
+  m_sharedMaterial: {fileID: -2483764444016197910, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -103,6 +103,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -237,7 +238,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2039
 --- !u!1 &8562623995798064861
 GameObject:
   m_ObjectHideFlags: 0

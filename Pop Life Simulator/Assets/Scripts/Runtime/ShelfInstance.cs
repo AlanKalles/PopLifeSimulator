@@ -44,7 +44,23 @@ namespace PopLife.Runtime
         {
             var lv = SA.GetShelfLevel(currentLevel);
             float catMul = CategoryManager.Instance.GetCategoryMultiplier(SA.category);
-            return lv.appeal * catMul;
+            float baseAppeal = lv.appeal * catMul;
+            // 全局修饰器：Appeal 平坦加值
+            int addend = GlobalModifierManager.Instance != null
+                ? GlobalModifierManager.Instance.GetShelfAppealAddend(SA)
+                : 0;
+            return baseAppeal + addend;
+        }
+
+        /// <summary>
+        /// 获取修饰后的有效售价（基础价格 × 品类价格乘数）
+        /// 不修改 currentPrice 基础值，运行时动态计算
+        /// </summary>
+        public int GetEffectivePrice()
+        {
+            if (GlobalModifierManager.Instance == null) return currentPrice;
+            float mul = GlobalModifierManager.Instance.GetCategoryPriceMultiplier(SA.category);
+            return Mathf.Max(1, Mathf.RoundToInt(currentPrice * mul));
         }
 
         /// <summary>

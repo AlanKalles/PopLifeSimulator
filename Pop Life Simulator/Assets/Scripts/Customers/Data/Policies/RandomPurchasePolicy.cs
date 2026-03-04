@@ -1,5 +1,6 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using PopLife.Data;
 
 namespace PopLife.Customers.Data
 {
@@ -116,9 +117,14 @@ namespace PopLife.Customers.Data
             // 6. 计算预算限制
             int budgetLimit = CalculateBudgetLimit(wallet, price);
 
-            // 7. 应用所有限制
+            // 7. 应用全局修饰器的品类购买数量乘数
+            float qtyMul = PopLife.GlobalModifierManager.Instance != null
+                ? PopLife.GlobalModifierManager.Instance.GetCategoryQuantityMultiplier((ProductCategory)shelf.categoryIndex)
+                : 1f;
+
+            // 8. 应用所有限制
             int finalQty = Mathf.Min(
-                Mathf.RoundToInt(adjustedQty),
+                Mathf.RoundToInt(adjustedQty * qtyMul),
                 budgetLimit,
                 shelf.stock
             );

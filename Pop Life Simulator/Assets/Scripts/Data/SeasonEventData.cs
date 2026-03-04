@@ -35,6 +35,10 @@ namespace PopLife.Data
         [Min(1)]
         public int durationDays = 1;
 
+        [Header("经济修正")]
+        [Tooltip("该事件的全局修饰器载荷（由 GlobalModifierManager 聚合）")]
+        public GlobalModifierPayload modifierPayload;
+
 #if UNITY_EDITOR
         private void OnValidate()
         {
