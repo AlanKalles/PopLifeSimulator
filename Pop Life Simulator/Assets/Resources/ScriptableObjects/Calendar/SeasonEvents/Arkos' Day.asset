@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9311eb1a9bb53945929a8a7b4c44d66, type: 3}
+  m_Name: Arkos' Day
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.SeasonEventData
+  eventId: Arkos' Day
+  displayName: Arkos' Day
+  description: The selfless spirit of the great leader Arkos moved countless people.
+    On this day, we revive his tradition, put on our red scarves, and exchange  gifts.
+  icon: {fileID: 0}
+  season: 0
+  dayInSeason: 11
+  durationDays: 1

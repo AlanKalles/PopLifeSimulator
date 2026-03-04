@@ -44,6 +44,9 @@ namespace PopLife.UI.Quest
         private Coroutine fadeCoroutine;
         private bool isShowing = false;
         private readonly List<GameObject> spawnedEntries = new();
+        private RectTransform cachedRectTransform;
+        private RectTransform parentRectTransform;
+        private Camera cachedCamera;
 
         private void Awake()
         {
@@ -54,6 +57,16 @@ namespace PopLife.UI.Quest
                     canvasGroup = gameObject.AddComponent<CanvasGroup>();
             }
 
+            // 缓存 Canvas 引用，用于 ScreenPointToLocalPointInRectangle
+            cachedRectTransform = GetComponent<RectTransform>();
+            var rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
+            parentRectTransform = transform.parent as RectTransform;
+            if (rootCanvas != null)
+            {
+                cachedCamera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+                    ? null : rootCanvas.worldCamera;
+            }
+
             canvasGroup.alpha = 0f;
             gameObject.SetActive(false);
         }
@@ -61,14 +74,14 @@ namespace PopLife.UI.Quest
         private void Update()
         {
             // 跟随鼠标位置
-            if (isShowing)
+            if (isShowing && cachedRectTransform != null && parentRectTransform != null)
             {
-                RectTransform rt = GetComponent<RectTransform>();
-                if (rt != null)
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    parentRectTransform, (Vector2)Input.mousePosition, cachedCamera, out Vector2 localPoint))
                 {
-                    rt.position = Input.mousePosition + positionOffset;
-                    ClampToScreen(rt);
+                    cachedRectTransform.localPosition = localPoint + (Vector2)positionOffset;
                 }
+                ClampToScreen();
             }
         }
 
@@ -148,11 +161,14 @@ namespace PopLife.UI.Quest
             PopulateEntries(data.entries);
 
             // 定位
-            RectTransform rt = GetComponent<RectTransform>();
-            if (rt != null)
+            if (cachedRectTransform != null && parentRectTransform != null)
             {
-                rt.position = screenPosition + positionOffset;
-                ClampToScreen(rt);
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    parentRectTransform, (Vector2)screenPosition, cachedCamera, out Vector2 localPoint))
+                {
+                    cachedRectTransform.localPosition = localPoint + (Vector2)positionOffset;
+                }
+                ClampToScreen();
             }
 
             // 淡入
@@ -213,39 +229,41 @@ namespace PopLife.UI.Quest
             }
         }
 
-        /// <summary>
-        /// 防止 Tooltip 超出屏幕边界
-        /// 复刻自 ShelfTooltip.ClampToScreen
-        /// </summary>
-        private void ClampToScreen(RectTransform rectTransform)
+        private void ClampToScreen()
         {
-            Canvas canvas = GetComponentInParent<Canvas>();
-            if (canvas == null) return;
+            if (parentRectTransform == null) return;
 
             Vector3[] corners = new Vector3[4];
-            rectTransform.GetWorldCorners(corners);
+            cachedRectTransform.GetWorldCorners(corners);
 
-            float screenWidth = Screen.width;
-            float screenHeight = Screen.height;
-            Vector3 pos = rectTransform.position;
+            // Overlay 模式 world == screen；Camera 模式需转换
+            Vector2 bl = cachedCamera != null
+                ? (Vector2)cachedCamera.WorldToScreenPoint(corners[0])
+                : (Vector2)corners[0];
+            Vector2 tr = cachedCamera != null
+                ? (Vector2)cachedCamera.WorldToScreenPoint(corners[2])
+                : (Vector2)corners[2];
 
-            // 右边界
-            if (corners[2].x > screenWidth)
-                pos.x -= (corners[2].x - screenWidth);
+            float sw = Screen.width;
+            float sh = Screen.height;
+            Vector2 delta = Vector2.zero;
 
-            // 左边界
-            if (corners[0].x < 0)
-                pos.x -= corners[0].x;
+            if (tr.x > sw) delta.x = sw - tr.x;
+            if (bl.x < 0) delta.x = -bl.x;
+            if (tr.y > sh) delta.y = sh - tr.y;
+            if (bl.y < 0) delta.y = -bl.y;
 
-            // 上边界
-            if (corners[1].y > screenHeight)
-                pos.y -= (corners[1].y - screenHeight);
+            if (delta.sqrMagnitude < 0.01f) return;
 
-            // 下边界
-            if (corners[0].y < 0)
-                pos.y -= corners[0].y;
+            Vector2 currentScreen = cachedCamera != null
+                ? (Vector2)cachedCamera.WorldToScreenPoint(cachedRectTransform.position)
+                : (Vector2)cachedRectTransform.position;
 
-            rectTransform.position = pos;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRectTransform, currentScreen + delta, cachedCamera, out Vector2 newLocal))
+            {
+                cachedRectTransform.localPosition = newLocal;
+            }
         }
 
         private IEnumerator FadeIn()

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9311eb1a9bb53945929a8a7b4c44d66, type: 3}
+  m_Name: Children's Day
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.SeasonEventData
+  eventId: Children's Day
+  displayName: Children's Day
+  description: "Society encourages human-centered compassion\nSpend the day with
+    your children! have a family trip! eat dinner together!\nIf you don\u2019t have
+    any child-- it\u2019s time to have one!"
+  icon: {fileID: 0}
+  season: 1
+  dayInSeason: 11
+  durationDays: 1

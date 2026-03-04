@@ -57,6 +57,8 @@ namespace PopLife.DialogueBridge.UI
         private RectTransform arrowRectTransform;
         private CanvasGroup canvasGroup;
         private Canvas parentCanvas;
+        private RectTransform parentRectTransform;
+        private Camera cachedCamera;
         private bool isVisible = false;
         private Tween currentTween;
 
@@ -81,6 +83,13 @@ namespace PopLife.DialogueBridge.UI
             rectTransform = GetComponent<RectTransform>();
             canvasGroup = GetComponent<CanvasGroup>();
             parentCanvas = GetComponentInParent<Canvas>();
+            parentRectTransform = rectTransform.parent as RectTransform;
+            var rootCanvas = parentCanvas?.rootCanvas ?? parentCanvas;
+            if (rootCanvas != null)
+            {
+                cachedCamera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+                    ? null : rootCanvas.worldCamera;
+            }
 
             if (arrowImage != null)
             {
@@ -317,30 +326,17 @@ namespace PopLife.DialogueBridge.UI
 
         private void SetScreenPosition(Vector2 screenPosition)
         {
-            if (parentCanvas == null) return;
+            if (parentRectTransform == null) return;
 
-            // Convert screen position to canvas position
-            Vector2 canvasSize = GetCanvasSize();
-            float scaleX = canvasSize.x / Screen.width;
-            float scaleY = canvasSize.y / Screen.height;
-
+            // screenPosition 是 tooltip 左下角的屏幕坐标，偏移到 pivot 位置
             Vector2 tooltipSize = GetTooltipSize();
+            Vector2 pivotScreen = screenPosition + tooltipSize * rectTransform.pivot;
 
-            // Set anchored position (assuming anchor is at center)
-            rectTransform.anchoredPosition = new Vector2(
-                screenPosition.x * scaleX + tooltipSize.x * scaleX / 2 - canvasSize.x / 2,
-                screenPosition.y * scaleY + tooltipSize.y * scaleY / 2 - canvasSize.y / 2
-            );
-        }
-
-        private Vector2 GetCanvasSize()
-        {
-            if (parentCanvas != null)
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRectTransform, pivotScreen, cachedCamera, out Vector2 localPoint))
             {
-                var canvasRT = parentCanvas.GetComponent<RectTransform>();
-                return canvasRT.sizeDelta;
+                rectTransform.localPosition = localPoint;
             }
-            return new Vector2(Screen.width, Screen.height);
         }
 
         #endregion

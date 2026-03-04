@@ -39,10 +39,21 @@ namespace PopLife.UI
 
         private Coroutine fadeCoroutine;
         private RectTransform cachedRectTransform;
+        private RectTransform parentRectTransform;
+        private Camera cachedCamera;
 
         private void Awake()
         {
             cachedRectTransform = GetComponent<RectTransform>();
+
+            // 缓存 Canvas 引用，用于 ScreenPointToLocalPointInRectangle
+            var rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
+            parentRectTransform = transform.parent as RectTransform;
+            if (rootCanvas != null)
+            {
+                cachedCamera = rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+                    ? null : rootCanvas.worldCamera;
+            }
 
             // Ensure canvas group exists
             if (canvasGroup == null)
@@ -160,12 +171,16 @@ namespace PopLife.UI
         /// <summary>
         /// 仅更新 tooltip 位置，不改变内容和动画状态（用于鼠标跟随）
         /// </summary>
-        public void UpdatePosition(Vector3 position)
+        public void UpdatePosition(Vector3 screenPosition)
         {
-            if (cachedRectTransform == null) return;
+            if (cachedRectTransform == null || parentRectTransform == null) return;
 
-            cachedRectTransform.position = position + positionOffset;
-            ClampToScreen(cachedRectTransform);
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRectTransform, (Vector2)screenPosition, cachedCamera, out Vector2 localPoint))
+            {
+                cachedRectTransform.localPosition = localPoint + (Vector2)positionOffset;
+            }
+            ClampToScreen();
         }
 
         /// <summary>
@@ -183,46 +198,42 @@ namespace PopLife.UI
         /// <summary>
         /// Clamp tooltip position to stay within screen bounds
         /// </summary>
-        private void ClampToScreen(RectTransform rectTransform)
+        private void ClampToScreen()
         {
-            Canvas canvas = GetComponentInParent<Canvas>();
-            if (canvas == null) return;
+            if (parentRectTransform == null) return;
 
             Vector3[] corners = new Vector3[4];
-            rectTransform.GetWorldCorners(corners);
+            cachedRectTransform.GetWorldCorners(corners);
 
-            // Get screen bounds
-            float screenWidth = Screen.width;
-            float screenHeight = Screen.height;
+            // Overlay 模式 world == screen；Camera 模式需转换
+            Vector2 bl = cachedCamera != null
+                ? (Vector2)cachedCamera.WorldToScreenPoint(corners[0])
+                : (Vector2)corners[0];
+            Vector2 tr = cachedCamera != null
+                ? (Vector2)cachedCamera.WorldToScreenPoint(corners[2])
+                : (Vector2)corners[2];
 
-            // Check if tooltip goes off screen
-            Vector3 pos = rectTransform.position;
+            float sw = Screen.width;
+            float sh = Screen.height;
+            Vector2 delta = Vector2.zero;
 
-            // Right edge
-            if (corners[2].x > screenWidth)
+            if (tr.x > sw) delta.x = sw - tr.x;
+            if (bl.x < 0) delta.x = -bl.x;
+            if (tr.y > sh) delta.y = sh - tr.y;
+            if (bl.y < 0) delta.y = -bl.y;
+
+            if (delta.sqrMagnitude < 0.01f) return;
+
+            // 将当前屏幕位置加上偏移量，再转回本地坐标
+            Vector2 currentScreen = cachedCamera != null
+                ? (Vector2)cachedCamera.WorldToScreenPoint(cachedRectTransform.position)
+                : (Vector2)cachedRectTransform.position;
+
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRectTransform, currentScreen + delta, cachedCamera, out Vector2 newLocal))
             {
-                pos.x -= (corners[2].x - screenWidth);
+                cachedRectTransform.localPosition = newLocal;
             }
-
-            // Left edge
-            if (corners[0].x < 0)
-            {
-                pos.x -= corners[0].x;
-            }
-
-            // Top edge
-            if (corners[1].y > screenHeight)
-            {
-                pos.y -= (corners[1].y - screenHeight);
-            }
-
-            // Bottom edge
-            if (corners[0].y < 0)
-            {
-                pos.y -= corners[0].y;
-            }
-
-            rectTransform.position = pos;
         }
 
         /// <summary>

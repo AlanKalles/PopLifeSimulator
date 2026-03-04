@@ -153,9 +153,16 @@ namespace PopLife.AlanBot
 
         private void OnCalendarClicked()
         {
+            // 保存回调链（与 ItemCodex/CustomerCodex 一致的模式）
+            var savedCallback = onHideCallback;
+            onHideCallback = null;
+
             Hide();
             if (calendarPanel != null)
-                calendarPanel.Show();
+                calendarPanel.Show(closeCallback: () =>
+                {
+                    Show(savedCallback);
+                });
         }
 
         private void OnGuideClicked()

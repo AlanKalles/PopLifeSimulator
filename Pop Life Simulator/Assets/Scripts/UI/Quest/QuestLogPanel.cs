@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -68,6 +69,9 @@ namespace PopLife.UI.Quest
         [SerializeField] private float fadeInDuration = 0.3f;
         [SerializeField] private float fadeOutDuration = 0.2f;
 
+        // 关闭回调（由 CalendarPanel Due Date 路由传入）
+        private Action onCloseCallback;
+
         private string selectedQuestName;
         private readonly List<GameObject> spawnedListItems = new();
         private readonly List<GameObject> spawnedEntries = new();
@@ -124,8 +128,12 @@ namespace PopLife.UI.Quest
         /// <summary>
         /// 显示面板，可选聚焦到指定任务
         /// </summary>
-        public void Show(string focusQuestName = null)
+        /// <param name="focusQuestName">聚焦到指定任务名（可选）</param>
+        /// <param name="closeCallback">关闭时触发的回调（由 CalendarPanel Due Date 路由传入）</param>
+        public void Show(string focusQuestName = null, Action closeCallback = null)
         {
+            onCloseCallback = closeCallback;
+
             RefreshList();
 
             if (!string.IsNullOrEmpty(focusQuestName))
@@ -494,6 +502,11 @@ namespace PopLife.UI.Quest
 
             canvasGroup.alpha = 0f;
             if (panelRoot != null) panelRoot.SetActive(false);
+
+            // 触发并清空关闭回调
+            var cb = onCloseCallback;
+            onCloseCallback = null;
+            cb?.Invoke();
         }
 
         #endregion

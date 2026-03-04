@@ -3491,8 +3491,8 @@ MonoBehaviour:
   stockText: {fileID: 4058576755275467482}
   appealText: {fileID: 744040759175928276}
   masterList: {fileID: 11400000, guid: e1d2711b0afab4d438ee7a5b07d86bc0, type: 2}
-  fadeInDuration: 0.2
-  fadeOutDuration: 0.15
+  fadeInDuration: 0.1
+  fadeOutDuration: 0.05
 --- !u!1 &3451084563497184763
 GameObject:
   m_ObjectHideFlags: 0

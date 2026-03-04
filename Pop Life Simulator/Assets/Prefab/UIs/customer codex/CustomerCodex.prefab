@@ -3527,8 +3527,8 @@ MonoBehaviour:
   shelfInterestEntryPrefab: {fileID: 573353334094559728, guid: 149d0486e9b80f148af27ac9535ce6f3, type: 3}
   visitCountText: {fileID: 8742078839229675317}
   lifetimeSpentText: {fileID: 5245490629217311827}
-  fadeInDuration: 0.2
-  fadeOutDuration: 0.15
+  fadeInDuration: 0.1
+  fadeOutDuration: 0.05
 --- !u!1 &5546002151200511813
 GameObject:
   m_ObjectHideFlags: 0

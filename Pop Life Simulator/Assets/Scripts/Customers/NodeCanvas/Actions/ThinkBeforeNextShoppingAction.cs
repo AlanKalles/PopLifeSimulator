@@ -6,251 +6,105 @@ using PopLife.Customers.Runtime;
 
 namespace PopLife.Customers.NodeCanvas.Actions
 {
-    [Category("PopLife/Customer")]
-    [Description("思考下一个购买目标：随机移动→播放思考动画→等待随机时间")]
+    [Category("PopLife/Customer/Animation")]
+    [Description("概率性原地思考：停下 → 播放Think表情 → 恢复。有每日次数上限")]
     public class ThinkBeforeNextShoppingAction : ActionTask
     {
-        [Tooltip("思考时间范围（秒）")]
-        public Vector2 thinkDurationRange = new Vector2(0.25f, 0.5f);
+        [UnityEngine.Header("概率控制")]
+        [Tooltip("每次购物循环结束后触发思考的概率（0~1）")]
+        [Range(0f, 1f)]
+        public float thinkProbability = 0.4f;
 
-        [Tooltip("随机移动的最大距离（格子数）")]
-        public int maxMoveDistance = 5;
+        [Tooltip("单个顾客每天最多触发的思考次数")]
+        public int maxThinkCountPerDay = 3;
 
-        [Tooltip("到达目标的停止距离")]
-        public float stoppingDistance = 0.5f;
+        [UnityEngine.Header("思考时长")]
+        [Tooltip("思考持续时间范围（秒），随机取值")]
+        public Vector2 thinkDurationRange = new Vector2(1.0f, 2.0f);
 
         // 组件缓存
-        private AILerp aiLerp;
-        private AIDestinationSetter destinationSetter;
         private CustomerAnimationController animController;
+        private IAstarAI ai;
 
-        // 状态变量
-        private enum ThinkState
-        {
-            MovingToThinkSpot,   // 移动到思考位置
-            Thinking             // 正在思考（播放动画+等待）
-        }
+        // 每日计数（顾客每天新生成，Action 实例随之重建，自动重置）
+        private int thinkCount;
 
-        private ThinkState currentState;
-        private Vector3 thinkPosition;
+        // 思考计时
         private float thinkDuration;
         private float thinkTimer;
 
         protected override string info
         {
-            get { return "思考下一个购买目标"; }
+            get
+            {
+                return $"Think? ({thinkProbability * 100:F0}%, max {maxThinkCountPerDay}/day)";
+            }
         }
 
         protected override void OnExecute()
         {
-            // 获取组件
-            aiLerp = agent.GetComponent<AILerp>();
-            destinationSetter = agent.GetComponent<AIDestinationSetter>();
-            animController = agent.GetComponent<CustomerAnimationController>();
-
-            if (aiLerp == null)
+            // 已达每日上限，跳过
+            if (thinkCount >= maxThinkCountPerDay)
             {
-                Debug.LogError($"[ThinkBeforeNextShoppingAction] {agent.name} 缺少 AILerp 组件！");
-                EndAction(false);
+                EndAction(true);
                 return;
             }
+
+            // 概率判定，未触发则跳过
+            if (Random.value > thinkProbability)
+            {
+                EndAction(true);
+                return;
+            }
+
+            // 获取组件
+            animController = agent.GetComponent<CustomerAnimationController>();
+            ai = agent.GetComponent<IAstarAI>();
 
             if (animController == null)
             {
-                Debug.LogError($"[ThinkBeforeNextShoppingAction] {agent.name} 缺少 CustomerAnimationController 组件！");
-                EndAction(false);
+                EndAction(true);
                 return;
             }
 
-            // 选择随机思考位置
-            thinkPosition = GetRandomThinkPosition();
+            // 停下脚步
+            if (ai != null)
+                ai.isStopped = true;
 
-            // 设置目标
-            if (destinationSetter != null)
-            {
-                // 创建临时目标点（因为需要 Transform）
-                GameObject tempTarget = new GameObject($"{agent.name}_ThinkTarget");
-                tempTarget.transform.position = thinkPosition;
-                destinationSetter.target = tempTarget.transform;
+            // 播放思考表情（循环动画）
+            animController.PlayThink();
 
-                // 标记为临时对象，稍后销毁
-                tempTarget.hideFlags = HideFlags.HideAndDontSave;
-            }
-            else
-            {
-                aiLerp.destination = thinkPosition;
-            }
-
-            // 开始移动
-            aiLerp.isStopped = false;
-            currentState = ThinkState.MovingToThinkSpot;
-
-            Debug.Log($"[ThinkBeforeNextShoppingAction] {agent.name} 开始移动到思考位置：{thinkPosition}");
+            // 随机思考时长
+            thinkDuration = Random.Range(thinkDurationRange.x, thinkDurationRange.y);
+            thinkTimer = 0f;
+            thinkCount++;
         }
 
         protected override void OnUpdate()
         {
-            if (aiLerp == null || animController == null)
-            {
-                EndAction(false);
-                return;
-            }
-
-            switch (currentState)
-            {
-                case ThinkState.MovingToThinkSpot:
-                    UpdateMoving();
-                    break;
-
-                case ThinkState.Thinking:
-                    UpdateThinking();
-                    break;
-            }
-        }
-
-        private void UpdateMoving()
-        {
-            // 检查是否到达思考位置
-            float distance = Vector3.Distance(agent.transform.position, thinkPosition);
-
-            if (distance <= stoppingDistance || aiLerp.reachedDestination)
-            {
-                // 到达，开始思考
-                aiLerp.isStopped = true;
-
-                // 播放思考动画
-                animController.PlayThink();
-
-                // 随机思考时长
-                thinkDuration = Random.Range(thinkDurationRange.x, thinkDurationRange.y);
-                thinkTimer = 0f;
-
-                currentState = ThinkState.Thinking;
-
-                Debug.Log($"[ThinkBeforeNextShoppingAction] {agent.name} 到达思考位置，开始思考 {thinkDuration:F2} 秒");
-            }
-        }
-
-        private void UpdateThinking()
-        {
-            // 计时
             thinkTimer += Time.deltaTime;
 
             if (thinkTimer >= thinkDuration)
             {
-                // 思考结束，停止动画
+                // 思考结束，停止动画，恢复移动
                 animController.StopLoop();
 
-                Debug.Log($"[ThinkBeforeNextShoppingAction] {agent.name} 思考完成");
+                if (ai != null)
+                    ai.isStopped = false;
 
-                // 完成
                 EndAction(true);
             }
         }
 
         protected override void OnStop()
         {
-            // 清理：停止动画、恢复移动
             if (animController != null)
-            {
                 animController.StopLoop();
-            }
 
-            if (aiLerp != null)
-            {
-                aiLerp.isStopped = false;
-            }
+            if (ai != null)
+                ai.isStopped = false;
 
-            // 清理临时目标对象
-            if (destinationSetter != null && destinationSetter.target != null)
-            {
-                if (destinationSetter.target.name.Contains("ThinkTarget"))
-                {
-                    GameObject.Destroy(destinationSetter.target.gameObject);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 获取随机思考位置（在当前 Graph 中）
-        /// </summary>
-        private Vector3 GetRandomThinkPosition()
-        {
-            // 获取当前位置的节点
-            NNInfo currentNodeInfo = AstarPath.active.GetNearest(agent.transform.position);
-            GraphNode currentNode = currentNodeInfo.node;
-
-            if (currentNode == null)
-            {
-                Debug.LogWarning($"[ThinkBeforeNextShoppingAction] {agent.name} 无法获取当前节点，使用当前位置");
-                return agent.transform.position;
-            }
-
-            // 尝试获取随机邻近节点
-            GraphNode randomNode = GetRandomWalkableNodeNearby(currentNode, maxMoveDistance);
-
-            if (randomNode != null)
-            {
-                return (Vector3)randomNode.position;
-            }
-            else
-            {
-                // 失败则原地思考
-                Debug.LogWarning($"[ThinkBeforeNextShoppingAction] {agent.name} 无法找到随机位置，原地思考");
-                return agent.transform.position;
-            }
-        }
-
-        /// <summary>
-        /// 获取附近的随机可行走节点
-        /// </summary>
-        private GraphNode GetRandomWalkableNodeNearby(GraphNode startNode, int maxDistance)
-        {
-            // 简单实现：使用 ConstantPath 获取范围内所有节点
-            var path = ConstantPath.Construct(agent.transform.position, maxDistance * 1000); // 距离转换为成本
-            AstarPath.StartPath(path);
-            path.BlockUntilCalculated();
-
-            if (path.allNodes != null && path.allNodes.Count > 0)
-            {
-                // 随机选择一个节点
-                int randomIndex = Random.Range(0, path.allNodes.Count);
-                GraphNode randomNode = path.allNodes[randomIndex];
-
-                if (randomNode.Walkable)
-                {
-                    return randomNode;
-                }
-            }
-
-            // 失败，尝试简单的邻近节点查找
-            return GetRandomNeighborNode(startNode);
-        }
-
-        /// <summary>
-        /// 获取随机邻近节点（简单方法）
-        /// </summary>
-        private GraphNode GetRandomNeighborNode(GraphNode node)
-        {
-            if (node == null) return null;
-
-            // 使用 GetConnections 方法获取连接列表
-            System.Collections.Generic.List<GraphNode> neighbors = new System.Collections.Generic.List<GraphNode>();
-            node.GetConnections((GraphNode neighbor) => {
-                if (neighbor != null && neighbor.Walkable)
-                {
-                    neighbors.Add(neighbor);
-                }
-            });
-
-            if (neighbors.Count == 0)
-            {
-                return null;
-            }
-
-            // 随机选择一个可行走的邻居
-            int randomIndex = Random.Range(0, neighbors.Count);
-            return neighbors[randomIndex];
+            base.OnStop();
         }
     }
 }

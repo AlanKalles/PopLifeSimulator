@@ -40,8 +40,32 @@ namespace PopLife
         private bool isPaused = false;
         private bool hasStoppedSpawning = false; // 防止重复触发停止生成事件
 
+        [Header("Calendar")]
+        [SerializeField] private int startingYear = 2126; // 设计师可在Inspector中调整起始年份
+        public int StartingYear => startingYear;
+
         [Header("Current State")]
-        public int currentDay = 1;
+        [SerializeField] private int absoluteDay = 1; // absoluteDay 从1开始
+
+        /// <summary>
+        /// 当前游戏天数（== absoluteDay，向后兼容）
+        /// </summary>
+        public int currentDay
+        {
+            get => absoluteDay;
+            set => absoluteDay = value;
+        }
+
+        /// <summary>
+        /// 当前游戏日期（年/季节/天）
+        /// </summary>
+        public GameDate CurrentDate => CalendarUtils.AbsoluteDayToDate(absoluteDay, startingYear);
+
+        /// <summary>
+        /// 当前季节
+        /// </summary>
+        public Season CurrentSeason => CurrentDate.season;
+
         public float currentHour = 6f; // 当前游戏时间（小时）
         public GamePhase currentPhase = GamePhase.BuildPhase;
         public bool isStoreOpen = false;
@@ -79,6 +103,7 @@ namespace PopLife
         public event Action<DailySettlementData> OnDailySettlement;
         public event Action<int> OnDayChanged;
         public event Action OnBankruptcy; // 破产事件
+        public event Action<Season> OnSeasonChanged; // 季节变更事件
 
         private void Awake()
         {
@@ -372,8 +397,19 @@ namespace PopLife
                 return;
             }
 
+            // 记录前一天的季节（用于检测季节变更）
+            var prevSeason = CurrentSeason;
+
             currentDay++;
             currentHour = buildPhaseHour;
+
+            // 检测季节变更
+            var newSeason = CurrentSeason;
+            if (prevSeason != newSeason)
+            {
+                OnSeasonChanged?.Invoke(newSeason);
+                Debug.Log($"[DayLoopManager] 季节变更: {prevSeason} → {newSeason}");
+            }
 
             // 重置每日统计
             dailyTotalSale = 0f;

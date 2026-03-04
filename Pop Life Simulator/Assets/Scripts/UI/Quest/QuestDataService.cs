@@ -414,6 +414,28 @@ namespace PopLife.UI.Quest
         #endregion
 
         /// <summary>
+        /// 获取所有有截止日期的活跃任务及其截止日（absoluteDay）
+        /// 供 CalendarPanel 显示 Due Date 标签
+        /// </summary>
+        public List<(string questName, string displayTitle, int dueAbsoluteDay, string giverName)> GetActiveQuestDeadlines()
+        {
+            var result = new List<(string, string, int, string)>();
+            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
+            if (activeQuests == null) return result;
+
+            foreach (string qName in activeQuests)
+            {
+                if (!definitionMap.TryGetValue(qName, out var def)) continue;
+                if (def.DeadlineDays <= 0) continue;
+                if (!activationDayMap.TryGetValue(qName, out int activateDay)) continue;
+
+                int dueDay = activateDay + def.DeadlineDays;
+                result.Add((qName, QuestLog.GetQuestTitle(qName), dueDay, def.GiverName));
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 获取所有已注册的 QuestDefinition
         /// </summary>
         public QuestDefinition[] GetAllDefinitions() => questDefinitions;
