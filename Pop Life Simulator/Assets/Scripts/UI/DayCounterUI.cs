@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using PopLife.Data;
 
 namespace PopLife
 {
@@ -7,8 +8,13 @@ namespace PopLife
     {
         [SerializeField] private TextMeshProUGUI dayText;
         [SerializeField] private TextMeshProUGUI timeText;
-        [SerializeField] private string dayFormat = "Day {0}";
         [SerializeField] private bool showTime = true;
+
+        [Header("Season Colors")]
+        [SerializeField] private Color springColor = new Color(0.2f, 0.8f, 0.2f);
+        [SerializeField] private Color summerColor = new Color(0.95f, 0.85f, 0.1f);
+        [SerializeField] private Color autumnColor = new Color(0.95f, 0.55f, 0.1f);
+        [SerializeField] private Color winterColor = new Color(0.3f, 0.6f, 1f);
 
         private void OnEnable()
         {
@@ -53,9 +59,22 @@ namespace PopLife
                     displayDay = day + 1;
                 }
 
-                dayText.text = string.Format(dayFormat, displayDay);
+                var date = CalendarUtils.AbsoluteDayToDate(displayDay, DayLoopManager.Instance.StartingYear);
+                string seasonName = date.season.ToString();
+                string seasonHex = ColorUtility.ToHtmlStringRGB(GetSeasonColor(date.season));
+
+                dayText.text = $"<color=#{seasonHex}>{seasonName}</color> Day {date.dayInSeason}";
             }
         }
+
+        private Color GetSeasonColor(Season season) => season switch
+        {
+            Season.Spring => springColor,
+            Season.Summer => summerColor,
+            Season.Autumn => autumnColor,
+            Season.Winter => winterColor,
+            _ => Color.white
+        };
 
         private void UpdateTimeDisplay()
         {

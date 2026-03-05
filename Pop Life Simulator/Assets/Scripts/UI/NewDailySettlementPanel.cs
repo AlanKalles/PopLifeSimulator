@@ -184,7 +184,9 @@ namespace PopLife.UI
 
             // --- Header ---
             if (dayText != null)
-                dayText.text = $"Day {data.day}";
+                dayText.text = DayLoopManager.Instance != null
+                    ? CalendarUtils.FormatFullDate(data.day, DayLoopManager.Instance.StartingYear)
+                    : $"Day {data.day}";
 
             string grade = CalculateDailyGrade(data);
             SetGrade(grade);

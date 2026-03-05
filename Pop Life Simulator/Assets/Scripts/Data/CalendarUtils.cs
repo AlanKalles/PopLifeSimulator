@@ -98,5 +98,23 @@ namespace PopLife.Data
             Season.Winter => "WINTER",
             _ => ""
         };
+
+        /// <summary>
+        /// 格式化为短日期: "Spring Day 11"
+        /// </summary>
+        public static string FormatShortDate(int absoluteDay, int startingYear)
+        {
+            var date = AbsoluteDayToDate(absoluteDay, startingYear);
+            return $"{date.season} Day {date.dayInSeason}";
+        }
+
+        /// <summary>
+        /// 格式化为带年份的日期: "Spring Day 11, 2126"
+        /// </summary>
+        public static string FormatFullDate(int absoluteDay, int startingYear)
+        {
+            var date = AbsoluteDayToDate(absoluteDay, startingYear);
+            return $"{date.season} Day {date.dayInSeason}, {date.year}";
+        }
     }
 }

@@ -99,6 +99,8 @@ MonoBehaviour:
   normalOutlineColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   hoverOutlineColor: {r: 0.29803923, g: 0.9019608, b: 1, a: 1}
   outlineWidth: 3
+  disabledIconColor: {r: 0.4, g: 0.4, b: 0.4, a: 0.5}
+  disabledCostColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
 --- !u!1 &2678346383297499661
 GameObject:
   m_ObjectHideFlags: 0

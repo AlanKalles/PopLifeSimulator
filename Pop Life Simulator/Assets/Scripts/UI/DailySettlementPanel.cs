@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using PopLife.Customers.Runtime;
+using PopLife.Data;
 
 namespace PopLife
 {
@@ -48,7 +49,9 @@ namespace PopLife
         {
             // 标题：天数
             if (dayText != null)
-                dayText.text = $"Day {data.day}";
+                dayText.text = DayLoopManager.Instance != null
+                    ? CalendarUtils.FormatShortDate(data.day, DayLoopManager.Instance.StartingYear)
+                    : $"Day {data.day}";
 
             // === 收入部分 ===
             if (todaySalesText != null)

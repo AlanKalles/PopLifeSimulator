@@ -1724,11 +1724,11 @@ MonoBehaviour:
       canvasRect:
         serializedVersion: 2
         x: 156.7547
-        y: 430.48196
+        y: 431.676
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 140.87953}
+    canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 0.6700003
   syncInfo:
     syncActors: 0

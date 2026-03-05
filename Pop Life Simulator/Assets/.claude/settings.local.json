@@ -8,7 +8,9 @@
       "WebFetch(domain:www.pixelcrushers.com)",
       "Bash(git -C \"/d/github/PopLifeSimulator\" ls-files \"Pop Life Simulator/Assets/Plugins/Sirenix/\")",
       "Bash(find . -type f -name \"*.cs\" -exec grep -l \"Ticker\\\\|ticker\" {} ;)",
-      "Bash(cd /d/github/PopLifeSimulator/\"Pop Life Simulator\"/Assets)"
+      "Bash(cd /d/github/PopLifeSimulator/\"Pop Life Simulator\"/Assets)",
+      "Bash(ls -la *.unity)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
