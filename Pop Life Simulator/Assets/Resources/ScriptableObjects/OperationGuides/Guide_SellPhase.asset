@@ -18,9 +18,10 @@ MonoBehaviour:
   icon: {fileID: 0}
   sortOrder: 100
   activationMarker: 20
+  closingMarker: -1
   pages:
   - screenshot: {fileID: -8459898597398048846, guid: 0b3b3f45920d8e94495a2e6de64d3a86, type: 3}
     title: Sell Buildings
     body: In Sell phase, left-click any building to sell it. Right-click with no
-      selection to return. You will get 80% of the building cost and upgrading cost
+      selection to return. You will get 75% of the building cost and upgrading cost
       back once you sell a shelf.

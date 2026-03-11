@@ -235,6 +235,12 @@ namespace PopLife.Quest
             // 3. 检查所有 active 任务的 DDL
             CheckDeadlines();
 
+            // 4. 按天触发 marker（在DDL判定之后）
+            if (newDay == 5)
+            {
+                TutorialEventBus.RaiseMarker(TutorialMarker.Day5Auditor1stQuestDDL);
+            }
+
             SaveProgress();
         }
 

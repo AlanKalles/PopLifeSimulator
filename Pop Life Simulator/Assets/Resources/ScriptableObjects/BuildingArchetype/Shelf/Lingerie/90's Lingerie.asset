@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: 90's Lingerie
   displayName: 90's Lingerie
-  icon: {fileID: 21300000, guid: a36aa73837c5e433e95958ce33446fa6, type: 3}
+  icon: {fileID: 21300000, guid: cb2139d6f7cf38b40b39c86e3a0415b4, type: 3}
   prefab: {fileID: 6477555939506826541, guid: a76d84d37126f46efb73013778c96ea3, type: 3}
   buildCost: 75
   moveCost: 0

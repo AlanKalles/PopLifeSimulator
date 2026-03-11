@@ -195,7 +195,7 @@ MonoBehaviour:
     - title: Name
       value: Main/2
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Pictures
       value: '[]'
       type: 3
@@ -205,19 +205,19 @@ MonoBehaviour:
         be difficult.\nYou'll have three days. The local news will advertise for
         you. Don't let us down"
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Success Description
       value: 
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Failure Description
       value: 
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: State
       value: unassigned
       type: 0
-      typeString: 
+      typeString: CustomFieldType_QuestState
     - title: Is Item
       value: False
       type: 2
@@ -233,7 +233,7 @@ MonoBehaviour:
     - title: Display Name
       value: Auditor's Request #1
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Group
       value: Main
       type: 0
@@ -245,11 +245,11 @@ MonoBehaviour:
     - title: Entry 1 State
       value: unassigned
       type: 0
-      typeString: 
+      typeString: CustomFieldType_QuestState
     - title: Entry 1
-      value: Build 7 shelves
+      value: Build 6 shelves
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
   locations: []
   variables:
   - id: 1
@@ -679,7 +679,7 @@ MonoBehaviour:
         typeString: 
       - title: Dialogue Text
         value: Alright well it looks like it has to be you! Come on in! You're going
-          to be running the store now, ok? Ok.
+          to be running the store now, ok?
         type: 0
         typeString: 
       - title: Sequence
@@ -693,27 +693,21 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks:
-      - originConversationID: 1
-        originDialogueID: 6
-        destinationConversationID: 2
-        destinationDialogueID: 0
-        isConnector: 0
-        priority: 2
+      outgoingLinks: []
       conditionsString: 
-      userScript: 
+      userScript: RaiseMarkerAfter("WhatIsMoney")
       onExecute:
         m_PersistentCalls:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
         x: 287.4332
-        y: 587.0235
+        y: 588.21747
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 14.367676, y: 0}
-    canvasZoom: 0.5800004
+    canvasScrollPosition: {x: 0, y: 121.48767}
+    canvasZoom: 0.6700003
   - id: 2
     fields:
     - title: Title
@@ -1001,7 +995,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Surprised the interior isn\u2019t already filled with dildos?"
+        value: Are you surprised that the store is empty? What did you think it was
+          going to filled with dildos already?
         type: 0
         typeString: 
       - title: Sequence
@@ -1056,8 +1051,65 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Of course, silly. You \u2014 as the operator (owner) \u2014 decide
-          what goes in the store!"
+        value: Ha! No no. That's your job now as the store operator--you get to decide
+          what the store sells.
+        type: 0
+        typeString: 
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: 
+      conversationID: 3
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks:
+      - originConversationID: 3
+        originDialogueID: 2
+        destinationConversationID: 3
+        destinationDialogueID: 3
+        isConnector: 0
+        priority: 2
+      conditionsString: 
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 156.06134
+        y: 240.4571
+        width: 160
+        height: 30
+    - id: 3
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: 
+      - title: Description
+        value: 
+        type: 0
+        typeString: 
+      - title: Actor
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 3
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: 
+        type: 0
+        typeString: 
+      - title: Dialogue Text
+        value: "The government is funding us for a \u2018sexual economy initiation',
+          which really doesnt mean anything other than you should spend your money
+          wisely. "
         type: 0
         typeString: 
       - title: Sequence
@@ -1079,8 +1131,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 156.06134
-        y: 240.4571
+        x: 154.74985
+        y: 362.5882
         width: 160
         height: 30
     entryGroups: []
@@ -1278,12 +1330,6 @@ MonoBehaviour:
         destinationDialogueID: 1
         isConnector: 0
         priority: 2
-      - originConversationID: 5
-        originDialogueID: 0
-        destinationConversationID: 5
-        destinationDialogueID: 6
-        isConnector: 0
-        priority: 2
       conditionsString: 
       userScript: 
       onExecute:
@@ -1318,7 +1364,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "First day\u2019s numbers look... average."
+        value: Your first day and the number's look... average.
         type: 0
         typeString: 
       - title: Sequence
@@ -1346,8 +1392,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 153.6
-        y: 129.59999
+        x: 154.79404
+        y: 131.39104
         width: 160
         height: 30
     - id: 2
@@ -1373,8 +1419,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I\u2019m with the local PEI Administration\u2014assigned to monitor
-          your store."
+        value: "You haven't heard of PEI? \u2026 I don't have the time to explain
+          it fully but it stands for Pleasure Economy Index."
         type: 0
         typeString: 
       - title: Sequence
@@ -1429,8 +1475,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "You haven\u2019t heard of PEI? \u2026 I don\u2019t have the time
-          to explain."
+        value: 'What matters about it is this: your shop, your license, everything
+          here operates under government backing. '
         type: 0
         typeString: 
       - title: Sequence
@@ -1485,8 +1531,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: 'What matters is this: your shop, your license, everything operates
-          under government backing. '
+        value: I'll be dropping by regularly to make sure your business meets PEI
+          standards. I'll also set some new sales targets for you to make sure you
+          are keeping on track.
         type: 0
         typeString: 
       - title: Sequence
@@ -1541,7 +1588,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Just run your business properly and things will go smoothly.
+        value: Here is your first task.
         type: 0
         typeString: 
       - title: Sequence
@@ -1559,7 +1606,7 @@ MonoBehaviour:
       - originConversationID: 5
         originDialogueID: 5
         destinationConversationID: 5
-        destinationDialogueID: 7
+        destinationDialogueID: 6
         isConnector: 0
         priority: 2
       conditionsString: 
@@ -1596,7 +1643,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: 
+        value: You need some more products to draw in new customers. Six more item
+          shelves should do the trick.
         type: 0
         typeString: 
       - title: Sequence
@@ -1610,7 +1658,13 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: []
+      outgoingLinks:
+      - originConversationID: 5
+        originDialogueID: 6
+        destinationConversationID: 5
+        destinationDialogueID: 7
+        isConnector: 0
+        priority: 2
       conditionsString: 
       userScript: 
       onExecute:
@@ -1618,8 +1672,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 160
-        y: 78
+        x: 154.96365
+        y: 378.69092
         width: 160
         height: 30
     - id: 7
@@ -1637,7 +1691,7 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Conversant
-        value: -1
+        value: 1
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
@@ -1645,63 +1699,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I\u2019ll be dropping by regularly to make sure your business meets
-          PEI standards and to set a few sales targets for you."
-        type: 0
-        typeString: 
-      - title: Sequence
-        value: 
-        type: 0
-        typeString: 
-      conversationID: 5
-      isRoot: 0
-      isGroup: 0
-      nodeColor: 
-      delaySimStatus: 0
-      falseConditionAction: Block
-      conditionPriority: 2
-      outgoingLinks:
-      - originConversationID: 5
-        originDialogueID: 7
-        destinationConversationID: 5
-        destinationDialogueID: 8
-        isConnector: 0
-        priority: 2
-      conditionsString: 
-      userScript: 
-      onExecute:
-        m_PersistentCalls:
-          m_Calls: []
-      canvasRect:
-        serializedVersion: 2
-        x: 156.7547
-        y: 380.48196
-        width: 160
-        height: 30
-    - id: 8
-      fields:
-      - title: Title
-        value: 
-        type: 0
-        typeString: 
-      - title: Description
-        value: 
-        type: 0
-        typeString: 
-      - title: Actor
-        value: 4
-        type: 5
-        typeString: CustomFieldType_Actor
-      - title: Conversant
-        value: -1
-        type: 5
-        typeString: CustomFieldType_Actor
-      - title: Menu Text
-        value: 
-        type: 0
-        typeString: 
-      - title: Dialogue Text
-        value: here is your first goal
+        value: You have three days to complete the task. Don't worry, the local news
+          will advertise for you. Don't let us down.
         type: 0
         typeString: 
       - title: Sequence
@@ -1723,12 +1722,12 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 156.7547
-        y: 431.676
+        x: 154.96365
+        y: 428.69092
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 1.5096016, y: 0.53731394}
+    canvasScrollPosition: {x: 0, y: 11.880575}
     canvasZoom: 0.6700003
   syncInfo:
     syncActors: 0

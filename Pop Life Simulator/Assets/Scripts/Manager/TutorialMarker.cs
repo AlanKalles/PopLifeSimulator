@@ -57,5 +57,8 @@ namespace PopLife.Manager
         AlreadyKnowShelfSelectionPanel,
         PointOverShelf,
         Alanbot,
+
+        // Day-based
+        Day5Auditor1stQuestDDL,       // 第5天开始时触发（审计员首个任务DDL）
     }
 }

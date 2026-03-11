@@ -32,6 +32,14 @@ namespace PopLife.Data
         protected virtual void OnValidate()
         {
             archetypeId = name;
+
+            // icon未设置时，尝试从prefab的SpriteRenderer取sprite作为回退
+            if (icon == null && prefab != null)
+            {
+                var sr = prefab.GetComponent<SpriteRenderer>();
+                if (sr != null && sr.sprite != null)
+                    icon = sr.sprite;
+            }
         }
 #endif
         public Sprite icon;
