@@ -236,6 +236,10 @@ namespace PopLife.Quest
             CheckDeadlines();
 
             // 4. 按天触发 marker（在DDL判定之后）
+            if (newDay == 3)
+            {
+                TutorialEventBus.RaiseMarker(TutorialMarker.LotteryUnlocked);
+            }
             if (newDay == 5)
             {
                 TutorialEventBus.RaiseMarker(TutorialMarker.Day5Auditor1stQuestDDL);

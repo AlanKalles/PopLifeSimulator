@@ -137,6 +137,28 @@ namespace PopLife.UI
         }
 
         /// <summary>
+        /// 优先级消息：插入到队列最前面（下一条播放）
+        /// 如果正在滚动当前消息，该消息会在当前消息结束后立即播放
+        /// </summary>
+        public void EnqueuePriorityMessage(string message)
+        {
+            // 将当前队列转为临时列表，在前面插入新消息，重建队列
+            var tempList = new System.Collections.Generic.List<string>(messageQueue);
+            tempList.Insert(0, message);
+            messageQueue.Clear();
+            foreach (var msg in tempList)
+                messageQueue.Enqueue(msg);
+
+            currentQueueCount = messageQueue.Count;
+
+            if (autoHide)
+                SetBarVisible(true);
+
+            if (!isScrolling)
+                DisplayNextMessage();
+        }
+
+        /// <summary>
         /// 添加消息到队列
         /// </summary>
         public void EnqueueMessage(string message)

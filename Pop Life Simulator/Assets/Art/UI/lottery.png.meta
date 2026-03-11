@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 27f4e932a16b63448bf22ef82dbaf361
+guid: f4243b6849998064b949508408b00643
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8596418143885016452
-    second: elevatorBackground_0
+      213: -1858359774449552485
+    second: lottery_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -48,11 +48,11 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 3, y: 3, z: 3, w: 3}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: elevatorBackground_0
+      name: lottery_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 30
-        height: 48
+        width: 87
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 48d3dfe81cc9c4770800000000000000
-      internalID: 8596418143885016452
+      spriteID: b933f0391a7c536e0800000000000000
+      internalID: -1858359774449552485
       vertices: []
       indices: 
       edges: []
@@ -139,7 +139,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      elevatorBackground_0: 8596418143885016452
+      lottery_0: -1858359774449552485
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

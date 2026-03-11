@@ -31,6 +31,10 @@ namespace PopLife
         [SerializeField] private OperationGuidePanel operationGuidePanel;
         [SerializeField] private GuideCollectionPanel guideCollectionPanel;
 
+        [Header("Lottery UI")]
+        [SerializeField] private LotteryPanel lotteryPanel;
+        [SerializeField] private LotteryWinPanel lotteryWinPanel;
+
         private void Awake()
         {
             Instance = this;
@@ -273,6 +277,36 @@ namespace PopLife
                 questTrackerPanel.RefreshQuests();
             }
         }
+
+        #region Lottery UI
+
+        /// <summary>
+        /// 添加优先级消息到新闻播报条（插入到队首）
+        /// </summary>
+        public void ShowPriorityNewsMessage(string message)
+        {
+            if (newsTicker != null)
+                newsTicker.EnqueuePriorityMessage(message);
+        }
+
+        /// <summary>
+        /// 显示彩票中奖贺喜面板
+        /// </summary>
+        public void ShowLotteryWinPanel(int[] drawnNumber, int[] playerTicket,
+            int matchCount, int prizeAmount, Action onCollected)
+        {
+            if (lotteryWinPanel != null)
+            {
+                lotteryWinPanel.Show(drawnNumber, playerTicket, matchCount, prizeAmount, onCollected);
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] LotteryWinPanel is not assigned!");
+                onCollected?.Invoke();
+            }
+        }
+
+        #endregion
 
         #region Guide UI
 

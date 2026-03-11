@@ -80,6 +80,13 @@ namespace PopLife.Data
 
         #endregion
 
+        #region 彩票音效 (Lottery Sound Effects)
+
+        public const string LOTTERY_PURCHASE = "Lottery_Purchase";
+        public const string LOTTERY_WIN = "Lottery_Win";
+
+        #endregion
+
         #region 背景音乐 (Background Music)
 
         public const string BGM_MENU = "BGM_Menu";

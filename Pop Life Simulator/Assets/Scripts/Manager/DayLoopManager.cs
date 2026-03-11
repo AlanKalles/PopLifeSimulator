@@ -76,6 +76,7 @@ namespace PopLife
         public int dailyTotalCustomers = 0;
         public float dailyFameEarned = 0f; // 今日累计获得的Fame
         private int buildPhaseStartMoney = 0; // 建造阶段开始时的金钱快照
+        private int lotteryWinnings = 0; // 今日彩票奖金（供结算面板显示）
 
         [Header("Customer Level Up Tracking")]
         private System.Collections.Generic.List<CustomerLevelUpInfo> todayLevelUps = new System.Collections.Generic.List<CustomerLevelUpInfo>();
@@ -250,8 +251,46 @@ namespace PopLife
             OnStoreClose?.Invoke();
             Debug.Log("[DayLoopManager] 触发 OnStoreClose 事件");
 
+            // 检查彩票中奖（在结算界面之前）
+            yield return StartCoroutine(CheckLotteryWinBeforeSettlement());
+
             // 所有顾客离开，显示结算界面
             ShowSettlementUI();
+        }
+
+        /// <summary>
+        /// 在结算面板之前检查彩票中奖
+        /// 如果中奖则显示贺喜面板并等待玩家领取
+        /// </summary>
+        private IEnumerator CheckLotteryWinBeforeSettlement()
+        {
+            if (LotteryManager.Instance == null || !LotteryManager.Instance.HasPendingWin())
+            {
+                lotteryWinnings = 0;
+                yield break;
+            }
+
+            // 重置时间倍速，确保面板动画正常
+            SetTimeScale(1f);
+
+            int prize = LotteryManager.Instance.GetPendingPrize();
+            int matchCount = LotteryManager.Instance.GetPendingMatchCount();
+            int[] drawnNumber = LotteryManager.Instance.GetLastDrawnNumber();
+            int[] playerTicket = LotteryManager.Instance.GetPendingPlayerTicket();
+
+            bool collected = false;
+
+            UIManager.Instance?.ShowLotteryWinPanel(
+                drawnNumber, playerTicket, matchCount, prize,
+                onCollected: () => { collected = true; }
+            );
+
+            // 等待玩家点击 Collect 按钮
+            while (!collected)
+                yield return null;
+
+            lotteryWinnings = prize;
+            Debug.Log($"[DayLoopManager] 彩票奖金 ${prize} 已领取，将在结算中显示");
         }
 
         /// <summary>
@@ -278,9 +317,10 @@ namespace PopLife
             DailySettlementData data = new DailySettlementData();
             data.day = currentDay;
             data.totalSale = dailyTotalSale;
-            data.bonusIncome = 0f; // 目前为0，预留给未来的奖励系统
+            data.bonusIncome = lotteryWinnings; // 彩票奖金
+            lotteryWinnings = 0; // 重置
             data.dailyExpenses = dailyTotalExpenses + totalMaintenanceFee;
-            data.dailyIncome = dailyTotalSale - data.dailyExpenses;
+            data.dailyIncome = dailyTotalSale + data.bonusIncome - data.dailyExpenses;
             data.totalCustomers = dailyTotalCustomers;
             data.levelUps = todayLevelUps.ToArray(); // 传递升级列表
 
@@ -605,9 +645,9 @@ namespace PopLife
     {
         public int day;
         public float totalSale;              // 今日开店收益（当日销售总金额）
-        public float bonusIncome;            // 今日开店额外收益（目前为0，预留）
+        public float bonusIncome;            // 今日额外收益（彩票奖金等）
         public float dailyExpenses;          // 今日维护费
-        public float dailyIncome;            // 今日净收入（totalSale - dailyExpenses）
+        public float dailyIncome;            // 今日净收入（totalSale + bonusIncome - dailyExpenses）
         public int dailyMoneyChange;         // 今日金钱变化（建造阶段开始时的钱 - 结算时的钱）
         public int lifetimeIncome;           // 总收入（累计，仅来自顾客结账）
         public int lifetimeExpenses;         // 总开支（累计，所有花费）
