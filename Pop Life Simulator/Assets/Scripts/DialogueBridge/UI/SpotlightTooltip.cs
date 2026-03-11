@@ -116,7 +116,8 @@ namespace PopLife.DialogueBridge.UI
         /// <param name="spotlightRect">Screen rect of the spotlight area</param>
         /// <param name="position">Position relative to spotlight</param>
         /// <param name="customOffset">Custom normalized offset (only used when position is Custom)</param>
-        public void Show(string text, Rect spotlightRect, TooltipPosition position, Vector2? customOffset = null)
+        public void Show(string text, Rect spotlightRect, TooltipPosition position,
+            Vector2? customOffset = null, bool isClickButton = false, Vector2? clickButtonOffset = null)
         {
             if (string.IsNullOrEmpty(text))
             {
@@ -138,7 +139,7 @@ namespace PopLife.DialogueBridge.UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 
             // Calculate and apply position
-            Vector2 tooltipPos = CalculatePosition(spotlightRect, position, customOffset);
+            Vector2 tooltipPos = CalculatePosition(spotlightRect, position, customOffset, isClickButton, clickButtonOffset);
             SetScreenPosition(tooltipPos);
 
             // Fade in
@@ -175,7 +176,8 @@ namespace PopLife.DialogueBridge.UI
 
         #region Position Calculation
 
-        private Vector2 CalculatePosition(Rect spotlightRect, TooltipPosition position, Vector2? customOffset)
+        private Vector2 CalculatePosition(Rect spotlightRect, TooltipPosition position,
+            Vector2? customOffset, bool isClickButton, Vector2? clickButtonOffset = null)
         {
             Vector2 tooltipSize = GetTooltipSize();
             Vector2 result;
@@ -216,7 +218,10 @@ namespace PopLife.DialogueBridge.UI
                     break;
 
                 case TooltipPosition.Auto:
-                    (result, arrowDir) = CalculateAutoPosition(spotlightRect, tooltipSize);
+                    (result, arrowDir) = isClickButton
+                        ? CalculateClickButtonAutoPosition(spotlightRect, tooltipSize,
+                            clickButtonOffset ?? new Vector2(55f, 55f))
+                        : CalculateAutoPosition(spotlightRect, tooltipSize);
                     break;
 
                 case TooltipPosition.Custom:
@@ -289,6 +294,88 @@ namespace PopLife.DialogueBridge.UI
                 new Vector2(spotlightRect.center.x - tooltipSize.x / 2, spotlightRect.y - tooltipSize.y - margin),
                 ArrowDirection.Up
             );
+        }
+
+        /// <summary>
+        /// ClickButton 模式下的 Auto 定位：
+        /// 按钮在屏幕左半边 → tooltip 右边界不超过按钮左边界（tooltip 在按钮左侧）
+        /// 按钮在屏幕右半边 → tooltip 左边界不低于按钮右边界（tooltip 在按钮右侧）
+        /// 上下同理，最终从水平/垂直两个候选方向中选空间更充裕的
+        /// </summary>
+        /// <param name="offset">额外偏移量（像素），x 用于水平方向，y 用于垂直方向，远离按钮方向为正</param>
+        private (Vector2, ArrowDirection) CalculateClickButtonAutoPosition(
+            Rect spotlightRect, Vector2 tooltipSize, Vector2 offset)
+        {
+            float screenCenterX = Screen.width / 2f;
+            float screenCenterY = Screen.height / 2f;
+
+            // --- 水平候选 ---
+            float hSpace;
+            Vector2 hPos;
+            ArrowDirection hArrow;
+
+            if (spotlightRect.center.x < screenCenterX)
+            {
+                // 按钮在左半屏 → tooltip 放按钮左侧（tooltip.xMax ≤ button.x - offset.x）
+                hSpace = spotlightRect.x - margin - offset.x;
+                hPos = new Vector2(
+                    spotlightRect.x - tooltipSize.x - margin - offset.x,
+                    spotlightRect.center.y - tooltipSize.y / 2
+                );
+                hArrow = ArrowDirection.Right;
+            }
+            else
+            {
+                // 按钮在右半屏 → tooltip 放按钮右侧（tooltip.x ≥ button.xMax + offset.x）
+                hSpace = Screen.width - spotlightRect.xMax - margin - offset.x;
+                hPos = new Vector2(
+                    spotlightRect.xMax + margin + offset.x,
+                    spotlightRect.center.y - tooltipSize.y / 2
+                );
+                hArrow = ArrowDirection.Left;
+            }
+
+            // --- 垂直候选 ---
+            float vSpace;
+            Vector2 vPos;
+            ArrowDirection vArrow;
+
+            if (spotlightRect.center.y > screenCenterY)
+            {
+                // 按钮在上半屏 → tooltip 放按钮上方（tooltip.y ≥ button.yMax + offset.y）
+                vSpace = Screen.height - spotlightRect.yMax - margin - offset.y;
+                vPos = new Vector2(
+                    spotlightRect.center.x - tooltipSize.x / 2,
+                    spotlightRect.yMax + margin + offset.y
+                );
+                vArrow = ArrowDirection.Down;
+            }
+            else
+            {
+                // 按钮在下半屏 → tooltip 放按钮下方（tooltip.yMax ≤ button.y - offset.y）
+                vSpace = spotlightRect.y - margin - offset.y;
+                vPos = new Vector2(
+                    spotlightRect.center.x - tooltipSize.x / 2,
+                    spotlightRect.y - tooltipSize.y - margin - offset.y
+                );
+                vArrow = ArrowDirection.Up;
+            }
+
+            // 选择能放下 tooltip 且空间更充裕的方向
+            bool hFits = hSpace >= tooltipSize.x;
+            bool vFits = vSpace >= tooltipSize.y;
+
+            if (hFits && vFits)
+            {
+                // 都放得下，比较相对空间余量
+                return (hSpace - tooltipSize.x) >= (vSpace - tooltipSize.y)
+                    ? (hPos, hArrow) : (vPos, vArrow);
+            }
+            if (hFits) return (hPos, hArrow);
+            if (vFits) return (vPos, vArrow);
+
+            // 都放不下，选空间较大的方向（ClampToScreen 会保证不超出屏幕）
+            return hSpace >= vSpace ? (hPos, hArrow) : (vPos, vArrow);
         }
 
         private Vector2 ClampToScreen(Vector2 position, Vector2 size)

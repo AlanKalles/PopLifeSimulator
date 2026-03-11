@@ -3,7 +3,9 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using PopLife.AlanBot.UI;
+using PopLife.Manager;
 using PopLife.UI.Guide;
+using PopLife.UI.Quest;
 
 namespace PopLife.AlanBot
 {
@@ -22,6 +24,7 @@ namespace PopLife.AlanBot
         [SerializeField] private Button itemCodexButton;
         [SerializeField] private Button customerCodexButton;
         [SerializeField] private Button calendarButton;
+        [SerializeField] private Button questLogButton;
         [SerializeField] private Button guideButton;
         [SerializeField] private Button closeButton;
 
@@ -29,6 +32,7 @@ namespace PopLife.AlanBot
         [SerializeField] private ItemCodexPanel itemCodexPanel;
         [SerializeField] private CustomerCodexPanel customerCodexPanel;
         [SerializeField] private CalendarPanel calendarPanel;
+        [SerializeField] private QuestLogPanel questLogPanel;
         [SerializeField] private GuideCollectionPanel guideCollectionPanel;
 
         [Header("动画")]
@@ -58,6 +62,8 @@ namespace PopLife.AlanBot
                 customerCodexButton.onClick.AddListener(OnCustomerCodexClicked);
             if (calendarButton != null)
                 calendarButton.onClick.AddListener(OnCalendarClicked);
+            if (questLogButton != null)
+                questLogButton.onClick.AddListener(OnQuestLogClicked);
             if (guideButton != null)
                 guideButton.onClick.AddListener(OnGuideClicked);
             if (closeButton != null)
@@ -111,7 +117,7 @@ namespace PopLife.AlanBot
             float elapsed = 0f;
             while (elapsed < duration)
             {
-                elapsed += Time.deltaTime;
+                elapsed += Time.unscaledDeltaTime;
                 canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, elapsed / duration);
                 yield return null;
             }
@@ -125,6 +131,8 @@ namespace PopLife.AlanBot
 
         private void OnItemCodexClicked()
         {
+            GameStateManager.Instance?.NotifyItemCodexOpened();
+
             // 保存当前回调，子面板关闭时恢复AlanBot状态
             var savedCallback = onHideCallback;
             onHideCallback = null; // 防止Hide()触发回调
@@ -140,6 +148,8 @@ namespace PopLife.AlanBot
 
         private void OnCustomerCodexClicked()
         {
+            GameStateManager.Instance?.NotifyCustomerCodexOpened();
+
             var savedCallback = onHideCallback;
             onHideCallback = null;
 
@@ -153,6 +163,8 @@ namespace PopLife.AlanBot
 
         private void OnCalendarClicked()
         {
+            GameStateManager.Instance?.NotifyCalendarOpened();
+
             // 保存回调链（与 ItemCodex/CustomerCodex 一致的模式）
             var savedCallback = onHideCallback;
             onHideCallback = null;
@@ -160,6 +172,19 @@ namespace PopLife.AlanBot
             Hide();
             if (calendarPanel != null)
                 calendarPanel.Show(closeCallback: () =>
+                {
+                    Show(savedCallback);
+                });
+        }
+
+        private void OnQuestLogClicked()
+        {
+            var savedCallback = onHideCallback;
+            onHideCallback = null;
+
+            Hide();
+            if (questLogPanel != null)
+                questLogPanel.Show(closeCallback: () =>
                 {
                     Show(savedCallback);
                 });

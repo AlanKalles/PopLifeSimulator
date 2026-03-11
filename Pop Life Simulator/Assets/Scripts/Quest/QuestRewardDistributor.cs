@@ -28,7 +28,7 @@ namespace PopLife.Quest
             Debug.Log($"[QuestRewardDistributor] 已发放任务 {questName} 的 {def.Rewards.Length} 项奖励");
         }
 
-        private static void DistributeSingleReward(QuestReward reward)
+        public static void DistributeSingleReward(QuestReward reward)
         {
             switch (reward.type)
             {

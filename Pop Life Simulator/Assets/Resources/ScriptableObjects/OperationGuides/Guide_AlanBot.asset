@@ -17,16 +17,18 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   sortOrder: 100
+  activationMarker: 29
+  closingMarker: 26
   pages:
-  - screenshot: {fileID: 0}
+  - screenshot: {fileID: 21300000, guid: 508a0bd87e84c084181a091e111bd912, type: 3}
     title: AlanBot
     body: This is AlanBot! He is your personal helper in the store and also acts
       as a source of important information.
-  - screenshot: {fileID: 0}
+  - screenshot: {fileID: 21300000, guid: 7b2411fb95e207d459833e9aaecb95e3, type: 3}
     title: AlanBot Menu
-    body: 'When you click on AlanBot himself or on his icon on your screen to open
-      his menu! '
-  - screenshot: {fileID: 0}
+    body: 'When you click on AlanBot himself or on his icon on your screen you will
+      open a menu! '
+  - screenshot: {fileID: 21300000, guid: cd642a4e83cc7f745b8adc83e046630d, type: 3}
     title: AlanBot Menu 2
     body: 'From here you can access: The Calendar, The Item Codex, The Customer Codex,
       The Tutorial Codex, and Quests!'

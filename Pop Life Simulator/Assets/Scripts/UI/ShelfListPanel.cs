@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using PrimeTween;
 using PopLife.Data;
 using PopLife.Runtime;
 using PopLife.Manager;
@@ -41,6 +42,14 @@ namespace PopLife.UI
         [Header("References")]
         [SerializeField] private ConstructionManager constructionManager;
 
+        [Header("Animation Settings")]
+        [SerializeField] private float slideDuration = 0.3f;
+        [SerializeField] private float slideDistance = 600f;
+
+        private RectTransform panelRectTransform;
+        private bool isOpen = false;
+        private Tween slideTween;
+
         // Filter state
         private FilterToggleGroup categoryToggleGroup;
         private ProductCategory? selectedCategory = null; // null = All
@@ -56,11 +65,16 @@ namespace PopLife.UI
                 closeButton.onClick.AddListener(ClosePanel);
 
             if (openButton != null)
-                openButton.onClick.AddListener(OpenPanel);
+                openButton.onClick.AddListener(TogglePanel);
 
-            // Initial state: closed
+            // 缓存 RectTransform 并设置初始位置（屏幕下方隐藏）
             if (panelRoot != null)
+            {
+                panelRectTransform = panelRoot.GetComponent<RectTransform>();
+                panelRectTransform.anchoredPosition = new Vector2(
+                    panelRectTransform.anchoredPosition.x, -slideDistance);
                 panelRoot.SetActive(false);
+            }
 
             // Auto-find ConstructionManager
             if (constructionManager == null)
@@ -320,6 +334,9 @@ namespace PopLife.UI
 
         public void OpenPanel()
         {
+            if (isOpen) return;
+            isOpen = true;
+
             // Initialize on first open
             InitializePanel();
 
@@ -333,6 +350,13 @@ namespace PopLife.UI
             {
                 panelRoot.SetActive(true);
             }
+
+            // 从下往上滑入动画
+            slideTween.Stop();
+            slideTween = Tween.Custom(this, -slideDistance, 0f, slideDuration,
+                (target, val) => target.panelRectTransform.anchoredPosition = new Vector2(
+                    target.panelRectTransform.anchoredPosition.x, val),
+                Ease.OutCubic, useUnscaledTime: true);
 
             // Play open sound
             if (AudioManager.Instance != null)
@@ -356,35 +380,42 @@ namespace PopLife.UI
 
         public void ClosePanel()
         {
+            if (!isOpen) return;
+            isOpen = false;
+
             // 取消订阅金钱变化事件
             UnsubscribeMoneyChanged();
-
-            if (panelRoot != null)
-            {
-                panelRoot.SetActive(false);
-            }
 
             // Hide tooltip if visible
             if (tooltip != null)
             {
                 tooltip.HideImmediate();
             }
+
+            // 从上往下滑出动画
+            slideTween.Stop();
+            slideTween = Tween.Custom(this, panelRectTransform.anchoredPosition.y, -slideDistance, slideDuration,
+                (target, val) => target.panelRectTransform.anchoredPosition = new Vector2(
+                    target.panelRectTransform.anchoredPosition.x, val),
+                Ease.InCubic, useUnscaledTime: true)
+                .OnComplete(this, target =>
+                {
+                    if (target.panelRoot != null)
+                        target.panelRoot.SetActive(false);
+                });
         }
 
         public void TogglePanel()
         {
-            if (panelRoot != null)
-            {
-                if (panelRoot.activeSelf)
-                    ClosePanel();
-                else
-                    OpenPanel();
-            }
+            if (isOpen)
+                ClosePanel();
+            else
+                OpenPanel();
         }
 
         public bool IsOpen()
         {
-            return panelRoot != null && panelRoot.activeSelf;
+            return isOpen;
         }
 
         #endregion

@@ -85,6 +85,7 @@ namespace PopLife
         [SerializeField] private Button buildButton; // 建造按钮，营业时禁用
         [SerializeField] private Button openStoreButton; // 开店按钮，营业时禁用
         [SerializeField] private ShelfListPanel buildingListPanel; // 建造面板，开店时需要关闭
+        [SerializeField] private StoreToggleAnimator storeToggleAnimator; // 开店/闭店切换动画
 
         [Header("Gate Settings")]
         [Tooltip("商店大门GameObject（需要包含SpriteRenderer组件）")]
@@ -351,11 +352,15 @@ namespace PopLife
                 Debug.Log("[DayLoopManager] 建造按钮已禁用（营业阶段）");
             }
 
-            // 禁用开店按钮
-            if (openStoreButton != null)
+            // 播放开店切换动画（OpenStoreButton → TimeControlUI）
+            if (storeToggleAnimator != null)
             {
+                storeToggleAnimator.PlayOpenStoreSequence();
+            }
+            else if (openStoreButton != null)
+            {
+                // 无动画器时退回旧逻辑
                 openStoreButton.interactable = false;
-                Debug.Log("[DayLoopManager] 开店按钮已禁用（营业阶段）");
             }
 
             // 关闭建造面板（如果打开的话）
@@ -447,11 +452,15 @@ namespace PopLife
                 Debug.Log("[DayLoopManager] 建造按钮已启用（建造阶段）");
             }
 
-            // 恢复开店按钮可交互状态
-            if (openStoreButton != null)
+            // 播放闭店切换动画（TimeControlUI → OpenStoreButton）
+            if (storeToggleAnimator != null)
             {
+                storeToggleAnimator.PlayCloseStoreSequence();
+            }
+            else if (openStoreButton != null)
+            {
+                // 无动画器时退回旧逻辑
                 openStoreButton.interactable = true;
-                Debug.Log("[DayLoopManager] 开店按钮已启用（建造阶段）");
             }
 
             OnDayChanged?.Invoke(currentDay);

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4615f8623ba4a6f42bf044c784618d23, type: 3}
+  m_Name: Guide_ShelfDetail
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
+  guideId: Guide_ShelfDetail
+  displayName: In-Store Shelf info
+  description: 
+  icon: {fileID: 0}
+  sortOrder: 100
+  activationMarker: 28
+  closingMarker: 25
+  pages:
+  - screenshot: {fileID: 21300000, guid: 69b9ee361d556e845b1bc389040c84ef, type: 3}
+    title: Blue Frame
+    body: Whenever you hover on your building, there will be a blue frame
+  - screenshot: {fileID: 21300000, guid: 5c0a56d5979a1e04f916afb2cba77eac, type: 3}
+    title: Simple Info Panel
+    body: 'Press on the shelf and a simple information panel will occur.
+
+      It
+      shows the name of this shelf, and its current stock.'
+  - screenshot: {fileID: 21300000, guid: 9b9298dafe83bcc4db85f118967f4002, type: 3}
+    title: Upgrade Panel
+    body: Press on the shelf again and a more detailed panel pops up. It shows the
+      attributes of your shelf, and the next-level attributes as well. You can spend
+      your fame to upgrade your shelf.

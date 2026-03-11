@@ -4,6 +4,7 @@ using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
 using PopLife.Runtime;
+using PopLife.Services;
 
 namespace PopLife.AlanBot
 {
@@ -42,8 +43,8 @@ namespace PopLife.AlanBot
             // 检查等待中的交互
             CheckPendingInteraction();
 
-            // 点击检测
-            if (!Input.GetMouseButtonDown(0)) return;
+            // 点击检测：使用 InputGateService 判定纯点击（避免拖拽误触）
+            if (InputGateService.Instance == null || !InputGateService.Instance.WasClickThisFrame) return;
 
             // 防止UI穿透
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
@@ -147,7 +148,7 @@ namespace PopLife.AlanBot
 
         private IEnumerator ShowPanelAfterDelay(float delay)
         {
-            yield return new WaitForSeconds(delay);
+            yield return new WaitForSecondsRealtime(delay);
 
             if (selectionPanel != null)
             {

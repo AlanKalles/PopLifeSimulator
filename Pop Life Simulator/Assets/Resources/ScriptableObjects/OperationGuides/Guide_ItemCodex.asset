@@ -13,29 +13,34 @@ MonoBehaviour:
   m_Name: Guide_ItemCodex
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
   guideId: Guide_ItemCodex
-  displayName: 
+  displayName: Item Codex
   description: 
   icon: {fileID: 0}
   sortOrder: 100
+  activationMarker: 23
+  closingMarker: -1
   pages:
-  - screenshot: {fileID: 0}
+  - screenshot: {fileID: 21300000, guid: c6b26f92d9d93e247afb94a7614fb9db, type: 3}
     title: Item Codex
-    body: This is the Item Codex. From here you can access information on every shelf
-      item in the game! Scroll to see the list.
-  - screenshot: {fileID: 0}
+    body: 'This is the Item Codex. From here you can access information on every
+      shelf item in the game! When you click on an item in the codex it will display:
+      the name of the item, a picture of the item, the brand the item is made by,
+      the item description, and sometimes useage instructions for the item.  '
+  - screenshot: {fileID: 21300000, guid: 65a778f9599f5b240836572444d4e2f9, type: 3}
+    title: Item Codex - Detail and Stats
+    body: By Clicking the detail or stats button you can switch between description
+      information of the item and its level 1 attributes.
+  - screenshot: {fileID: 21300000, guid: c6b26f92d9d93e247afb94a7614fb9db, type: 3}
+    title: Item Codex - New Item
+    body: When you unlock a new item in the game it will automatically be added into
+      the codex, and its label is shown in light blue color, representing new.
+  - screenshot: {fileID: -6184308288810062334, guid: c81ed934d27ecac44b40a91316d40464, type: 3}
     title: Item Codex - Sorting
     body: 'At the top of the codex you can see category tabs. If you click on one
       it will sort the codex by that category. '
-  - screenshot: {fileID: 0}
+  - screenshot: {fileID: -275431863333609685, guid: 7fc599678a47a1e4e8c3f0079b39eb8f, type: 3}
     title: Item Codex - Searching
     body: 'There is also a search bar if you want to search for a specific item. '
-  - screenshot: {fileID: 0}
-    title: Item Codex - Items
-    body: 'When you click on an item in the codex it will display: the name of the
-      item, a picture of the item, the brand the item is made by, the item description,
-      and sometimes useage instructions for the item.  '
-  - screenshot: {fileID: 0}
-    title: Item Codex - New Items
-    body: When you unlock a new item int he game it will automatically be added into
-      the codex. When you haven't viewed it in the codex the item name will look
-      like this.
+  - screenshot: {fileID: 21300000, guid: 26d3265ca09d8614989cb0fcf57025fb, type: 3}
+    title: Item Codex - Sorting
+    body: By clicking on sort button you can sort the list in different ways.

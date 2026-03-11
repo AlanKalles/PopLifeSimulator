@@ -10,14 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4615f8623ba4a6f42bf044c784618d23, type: 3}
-  m_Name: Guide_Fame_UI
+  m_Name: Guide_BottomButtons
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
-  guideId: Guide_Fame_UI
-  displayName: 
+  guideId: Guide_BottomButtons
+  displayName: Bottom Buttons
   description: 
   icon: {fileID: 0}
   sortOrder: 100
+  activationMarker: 26
+  closingMarker: -1
   pages:
-  - screenshot: {fileID: 0}
-    title: Fame UI
-    body: Here you can see how much fame you have.
+  - screenshot: {fileID: 21300000, guid: a630597fd99f3c04da8a8e9fb2b45e95, type: 3}
+    title: Bottom Button
+    body: 'At the bottom of your screen there are two buttons. BUILD and STAT.
+
+      BUILD
+      leads you to building panel. STAT leads you to in-store stat panel.'

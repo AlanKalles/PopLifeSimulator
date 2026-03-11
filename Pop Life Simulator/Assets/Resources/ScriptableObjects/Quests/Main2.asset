@@ -27,5 +27,8 @@ MonoBehaviour:
     targetValue: 6
     useFilterCategory: 0
     filterCategory: 0
+  activationMarker: -1
+  completionMarker: -1
+  triggerMarkerAfterToast: 0
   questIcon: {fileID: 0}
   sortPriority: 50

@@ -25,6 +25,9 @@ namespace PopLife.Manager
         // 缓存所有SO
         private OperationGuideData[] allGuides;
 
+        // marker → guide 查找表
+        private Dictionary<TutorialMarker, OperationGuideData> markerToGuide;
+
         // 事件
         public event Action<string> OnGuideUnlocked;
         public event Action<string> OnGuideViewed;
@@ -33,7 +36,18 @@ namespace PopLife.Manager
         {
             Instance = this;
             LoadAllGuideAssets();
+            BuildMarkerLookup();
             LoadState();
+        }
+
+        private void OnEnable()
+        {
+            TutorialEventBus.OnMarkerTriggered += OnMarkerTriggered;
+        }
+
+        private void OnDisable()
+        {
+            TutorialEventBus.OnMarkerTriggered -= OnMarkerTriggered;
         }
 
         #region 资源加载
@@ -41,6 +55,37 @@ namespace PopLife.Manager
         private void LoadAllGuideAssets()
         {
             allGuides = Resources.LoadAll<OperationGuideData>("ScriptableObjects/OperationGuides");
+        }
+
+        /// <summary>
+        /// 构建 marker → guide 查找表，用于自动触发
+        /// </summary>
+        private void BuildMarkerLookup()
+        {
+            markerToGuide = new Dictionary<TutorialMarker, OperationGuideData>();
+            if (allGuides == null) return;
+
+            foreach (var guide in allGuides)
+            {
+                if (guide.activationMarker != TutorialMarker.None)
+                {
+                    if (!markerToGuide.TryAdd(guide.activationMarker, guide))
+                    {
+                        Debug.LogWarning($"[OperationGuideManager] Duplicate marker {guide.activationMarker} on guide: {guide.guideId}");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 当 marker 触发时，自动显示对应的操作指南
+        /// </summary>
+        private void OnMarkerTriggered(TutorialMarker marker)
+        {
+            if (markerToGuide != null && markerToGuide.TryGetValue(marker, out var guide))
+            {
+                ShowGuide(guide);
+            }
         }
 
         /// <summary>
@@ -105,10 +150,18 @@ namespace PopLife.Manager
             // 自动解锁
             UnlockGuide(data.guideId);
 
+            // 构建关闭回调：如果配置了 closingMarker，关闭时自动触发
+            Action onClose = null;
+            if (data.closingMarker != TutorialMarker.None)
+            {
+                var marker = data.closingMarker;
+                onClose = () => TutorialEventBus.RaiseMarker(marker);
+            }
+
             // 通过UIManager显示面板
             if (UIManager.Instance != null)
             {
-                UIManager.Instance.ShowOperationGuide(data);
+                UIManager.Instance.ShowOperationGuide(data, onClose);
             }
             else
             {

@@ -392,7 +392,8 @@ namespace PopLife.DialogueBridge.UI
         /// <param name="customOffset">Custom offset for Custom position mode (normalized 0-1)</param>
         /// <param name="triggerMode">How to trigger continue dialogue</param>
         public void ShowTooltipFromDialogue(TooltipPosition position, Vector2? customOffset = null,
-            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere)
+            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere,
+            Vector2? clickButtonOffset = null)
         {
             if (tooltip == null)
             {
@@ -430,7 +431,8 @@ namespace PopLife.DialogueBridge.UI
 
             // Show tooltip
             isTooltipActive = true;
-            tooltip.Show(text, currentSpotlightRect, position, customOffset);
+            tooltip.Show(text, currentSpotlightRect, position, customOffset,
+                triggerMode == ContinueTriggerMode.ClickButton, clickButtonOffset);
 
             if (debugMode)
             {
@@ -446,7 +448,8 @@ namespace PopLife.DialogueBridge.UI
         /// <param name="customOffset">Custom offset for Custom position mode (normalized 0-1)</param>
         /// <param name="triggerMode">How to trigger continue dialogue</param>
         public void ShowTooltip(string text, TooltipPosition position, Vector2? customOffset = null,
-            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere)
+            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere,
+            Vector2? clickButtonOffset = null)
         {
             if (tooltip == null)
             {
@@ -480,7 +483,8 @@ namespace PopLife.DialogueBridge.UI
 
             // Show tooltip
             isTooltipActive = true;
-            tooltip.Show(text, currentSpotlightRect, position, customOffset);
+            tooltip.Show(text, currentSpotlightRect, position, customOffset,
+                triggerMode == ContinueTriggerMode.ClickButton, clickButtonOffset);
 
             if (debugMode)
             {

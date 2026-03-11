@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Guide_CustomerCodex
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.OperationGuideData
   guideId: Guide_CustomerCodex
-  displayName: 
+  displayName: Customer Codex
   description: 
   icon: {fileID: 0}
   sortOrder: 100
+  activationMarker: 22
   pages:
   - screenshot: {fileID: 7227917649443183103, guid: 1eb4f553aac88eb499a01ac580ffa836, type: 3}
     title: Customer Codex

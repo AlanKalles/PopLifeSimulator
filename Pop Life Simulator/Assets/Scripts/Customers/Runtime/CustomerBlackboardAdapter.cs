@@ -54,6 +54,12 @@ namespace PopLife.Customers.Runtime
         public bool isUpset = false;       // 是否处于 upset 状态（找不到商品/购买失败）
         public int consecutivePurchaseFailures = 0;    // 连续到达货架但购买失败的次数（到达货架库存为0）
 
+        [Header("交互事件状态")]
+        public InteractionEventData assignedInteraction;    // 分配的交互事件（null = 无交互）
+        public bool interactionUsedToday = false;           // 今日是否已触发过交互
+        public bool interactionBubbleActive = false;        // 交互气泡是否正在显示（供点击检测使用）
+        public bool interactionDialogueStarted = false;     // 对话是否已开始（由 CustomerDialogueTrigger 设置）
+
         [Header("策略集合（只读引用）")]
         public BehaviorPolicySet policies;
 

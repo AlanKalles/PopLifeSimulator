@@ -399,7 +399,8 @@ namespace PopLife.Runtime
             if (Input.GetKeyDown(KeyCode.R) && selectedArchetype.canRotate)
                 previewRot = (previewRot + 1) % 4;
 
-            if (Input.GetMouseButtonDown(0))
+            // 使用 InputGateService 判定纯点击（避免拖拽时误放置建筑）
+            if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
             {
                 // 使用自动检测的楼层（如果可用），否则使用目标楼层
                 var floor = currentDetectedFloor ?? GetTargetFloor();
@@ -626,8 +627,8 @@ namespace PopLife.Runtime
 
             if (!isMoveDragging)
             {
-                // 阶段1：选择建筑
-                if (Input.GetMouseButtonDown(0))
+                // 阶段1：选择建筑（使用 InputGateService 判定纯点击）
+                if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
                 {
                     // 检查相机是否存在
                     if (mainCamera == null)
@@ -662,8 +663,8 @@ namespace PopLife.Runtime
                 if (Input.GetKeyDown(KeyCode.R) && selectedInstance.archetype.canRotate)
                     previewRot = (previewRot + 1) % 4;
 
-                // 点击放置
-                if (Input.GetMouseButtonDown(0))
+                // 点击放置（使用 InputGateService 判定纯点击）
+                if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
                 {
                     // 使用自动检测的楼层（如果可用），否则使用目标楼层
                     var targetFloor = currentDetectedFloor ?? GetTargetFloor();
@@ -859,8 +860,8 @@ namespace PopLife.Runtime
                 return;
             }
 
-            // 左键点击建筑
-            if (Input.GetMouseButtonDown(0))
+            // 左键点击建筑（使用 InputGateService 判定纯点击）
+            if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
             {
                 // 检查相机是否存在
                 if (mainCamera == null)

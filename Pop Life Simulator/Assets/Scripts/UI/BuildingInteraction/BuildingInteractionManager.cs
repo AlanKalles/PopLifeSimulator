@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using PopLife.Runtime;
+using PopLife.Services;
 using System.Collections.Generic;
 
 namespace PopLife.UI.BuildingInteraction
@@ -150,7 +151,8 @@ namespace PopLife.UI.BuildingInteraction
         /// </summary>
         private void UpdateClickDetection()
         {
-            if (Input.GetMouseButtonDown(0))
+            // 使用 InputGateService 判定：只有"纯点击"（未拖拽）才触发建筑交互
+            if (InputGateService.Instance != null && InputGateService.Instance.WasClickThisFrame)
             {
                 BuildingInstance clicked = GetBuildingUnderMouse();
 

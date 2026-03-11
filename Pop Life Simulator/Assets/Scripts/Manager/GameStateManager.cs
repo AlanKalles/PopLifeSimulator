@@ -32,6 +32,10 @@ namespace PopLife.Manager
         public bool hasEnteredDestroyMode = false;
         public bool hasCompletedFirstRequest = false;
         public bool hasCompletedFirstDay = false;
+        public bool hasOpenedCalendar = false;
+        public bool hasOpenedCustomerCodex = false;
+        public bool hasOpenedItemCodex = false;
+        public bool hasDismissedFirstQuestToast = false;
 
         // Game progress tracking
         [Header("Game Progress")]
@@ -264,6 +268,58 @@ namespace PopLife.Manager
         }
 
         /// <summary>
+        /// 首次打开日历面板时调用
+        /// </summary>
+        public void NotifyCalendarOpened()
+        {
+            if (!hasOpenedCalendar)
+            {
+                hasOpenedCalendar = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstCalendarOpened);
+                Debug.Log("[GameState] Calendar opened for the first time");
+            }
+        }
+
+        /// <summary>
+        /// 首次打开顾客图鉴面板时调用
+        /// </summary>
+        public void NotifyCustomerCodexOpened()
+        {
+            if (!hasOpenedCustomerCodex)
+            {
+                hasOpenedCustomerCodex = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstCustomerCodexOpened);
+                Debug.Log("[GameState] Customer Codex opened for the first time");
+            }
+        }
+
+        /// <summary>
+        /// 首次打开物品图鉴面板时调用
+        /// </summary>
+        public void NotifyItemCodexOpened()
+        {
+            if (!hasOpenedItemCodex)
+            {
+                hasOpenedItemCodex = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstItemCodexOpened);
+                Debug.Log("[GameState] Item Codex opened for the first time");
+            }
+        }
+
+        /// <summary>
+        /// 首个任务通知Toast完全消失时调用
+        /// </summary>
+        public void NotifyFirstQuestToastDismissed()
+        {
+            if (!hasDismissedFirstQuestToast)
+            {
+                hasDismissedFirstQuestToast = true;
+                TutorialEventBus.RaiseMarker(TutorialMarker.FirstQuestToastDismissed);
+                Debug.Log("[GameState] First quest toast dismissed");
+            }
+        }
+
+        /// <summary>
         /// Reset tutorial states (for testing)
         /// </summary>
         [ContextMenu("Reset Tutorial States")]
@@ -280,6 +336,10 @@ namespace PopLife.Manager
             hasEnteredDestroyMode = false;
             hasCompletedFirstRequest = false;
             hasCompletedFirstDay = false;
+            hasOpenedCalendar = false;
+            hasOpenedCustomerCodex = false;
+            hasOpenedItemCodex = false;
+            hasDismissedFirstQuestToast = false;
 
             totalShelvesPlaced = 0;
             totalCustomersServed = 0;

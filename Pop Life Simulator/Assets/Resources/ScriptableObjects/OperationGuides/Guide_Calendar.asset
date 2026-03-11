@@ -17,6 +17,7 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   sortOrder: 100
+  activationMarker: 21
   pages:
   - screenshot: {fileID: 0}
     title: Calendar

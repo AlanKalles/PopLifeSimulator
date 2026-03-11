@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using PopLife.Quest;
+using PopLife.Manager;
 
 namespace PopLife.Data
 {
@@ -65,6 +66,16 @@ namespace PopLife.Data
         [Tooltip("每个条件对应一个 Quest Entry（索引0=Entry1）。Manual类型由外部标记完成。为空则完全由外部控制。")]
         [SerializeField] private QuestCondition[] conditions;
 
+        [Header("自动激活")]
+        [Tooltip("当此 Marker 触发时自动激活此任务（None = 不自动激活，需通过 Lua 或其他方式激活）")]
+        [SerializeField] private TutorialMarker activationMarker = TutorialMarker.None;
+
+        [Header("完成时触发")]
+        [Tooltip("任务完成时触发的 Marker（None = 不触发）")]
+        [SerializeField] private TutorialMarker completionMarker = TutorialMarker.None;
+        [Tooltip("勾选后，Marker 在完成通知 Toast 消失后才触发；否则任务完成时立即触发")]
+        [SerializeField] private bool triggerMarkerAfterToast = false;
+
         [Header("UI 显示")]
         [SerializeField] private Sprite questIcon;
         [Tooltip("排序优先级，值越大越靠前")]
@@ -79,6 +90,9 @@ namespace PopLife.Data
         public string GiverName => giverName;
         public Sprite GiverPortrait => giverPortrait;
         public QuestReward[] Rewards => rewards;
+        public TutorialMarker ActivationMarker => activationMarker;
+        public TutorialMarker CompletionMarker => completionMarker;
+        public bool TriggerMarkerAfterToast => triggerMarkerAfterToast;
         public Sprite QuestIcon => questIcon;
         public int SortPriority => sortPriority;
     }

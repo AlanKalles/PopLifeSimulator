@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PopLife.Manager;
 
 namespace PopLife.Data
 {
@@ -23,6 +24,13 @@ namespace PopLife.Data
 
         [Tooltip("排序优先级，数值越小越靠前")]
         public int sortOrder = 100;
+
+        [Header("Marker 触发")]
+        [Tooltip("当此 Marker 触发时自动显示此指南（None = 不自动触发）")]
+        public TutorialMarker activationMarker = TutorialMarker.None;
+
+        [Tooltip("指南关闭后自动触发此 Marker（None = 不触发）")]
+        public TutorialMarker closingMarker = TutorialMarker.None;
 
         [Tooltip("多页内容")]
         public GuidePage[] pages;

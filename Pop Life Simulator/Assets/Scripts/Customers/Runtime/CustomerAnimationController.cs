@@ -245,6 +245,9 @@ namespace PopLife.Customers.Runtime
             isPlayingOneShot = true;
             currentState = AnimState.PickProduct;
 
+            if (emojiController == null)
+                Debug.LogWarning($"[AnimController] {gameObject.name} PlayPickProduct: emojiController is null!");
+
             // 身体+头部下蹲效果
             if (bodyRenderer && headRenderer)
             {
@@ -289,6 +292,9 @@ namespace PopLife.Customers.Runtime
             isPlayingOneShot = true;
             currentState = AnimState.Checkout;
 
+            if (emojiController == null)
+                Debug.LogWarning($"[AnimController] {gameObject.name} PlayCheckout: emojiController is null!");
+
             currentOneShotSequence = Sequence.Create()
                 .ChainDelay(0.67f)
                 .ChainCallback(this, target =>
@@ -309,6 +315,9 @@ namespace PopLife.Customers.Runtime
             StopCurrentAnimation();
             isPlayingOneShot = true;
             currentState = AnimState.Upset;
+
+            if (emojiController == null)
+                Debug.LogWarning($"[AnimController] {gameObject.name} PlayUpset: emojiController is null!");
 
             // 衰减水平抖动
             if (bodyPartsContainer)
@@ -354,6 +363,10 @@ namespace PopLife.Customers.Runtime
             StopCurrentAnimation();
             isPlayingLoop = true;
             currentState = AnimState.Think;
+
+            if (emojiController == null)
+                Debug.LogWarning($"[AnimController] {gameObject.name} PlayThink: emojiController is null!");
+
             emojiController?.PlayThink();
         }
 
@@ -365,6 +378,10 @@ namespace PopLife.Customers.Runtime
             StopCurrentAnimation();
             isPlayingLoop = true;
             currentState = AnimState.Interaction;
+
+            if (emojiController == null)
+                Debug.LogWarning($"[AnimController] {gameObject.name} PlayInteraction: emojiController is null!");
+
             emojiController?.PlayInteraction();
         }
 

@@ -2,18 +2,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
-using PopLife.Data;
 using PopLife.Manager;
 using Sirenix.OdinInspector;
 
 namespace PopLife.DialogueBridge
 {
     /// <summary>
-    /// Bridges TutorialMarker events with Dialogue System Quest system
-    /// When a TutorialMarker is triggered, this component can:
-    /// - Update a corresponding Quest entry state
-    /// - Start a conversation
-    /// - Set Lua variables
+    /// Bridges TutorialMarker events with Dialogue System conversations and Lua scripts.
+    /// Guide 触发由 OperationGuideManager 自处理，Quest 激活由 QuestLogicManager 自处理。
     /// </summary>
     public class TutorialMarkerBridge : MonoBehaviour
     {
@@ -39,8 +35,8 @@ namespace PopLife.DialogueBridge
 
         #region Serialized Fields
 
-        [Title("Marker to Quest Mappings")]
-        [InfoBox("Configure how TutorialMarkers map to Dialogue System Quests and Conversations")]
+        [Title("Marker to Conversation/Lua Mappings")]
+        [InfoBox("配置 Marker → Conversation / Lua 映射。Guide 和 Quest 触发请直接在各自的 SO 中配置 activationMarker。")]
         [SerializeField]
         [ListDrawerSettings(ShowFoldout = true, DraggableItems = true)]
         private List<MarkerQuestMapping> mappings = new List<MarkerQuestMapping>();
@@ -60,7 +56,9 @@ namespace PopLife.DialogueBridge
         #region Data Classes
 
         /// <summary>
-        /// Mapping between TutorialMarker and Dialogue System Quest/Conversation
+        /// 简化后的映射：仅处理 marker → conversation / lua
+        /// Guide 触发已由 OperationGuideManager 自处理
+        /// Quest 激活已由 QuestLogicManager 自处理
         /// </summary>
         [Serializable]
         public class MarkerQuestMapping
@@ -69,20 +67,7 @@ namespace PopLife.DialogueBridge
             [EnumToggleButtons]
             public TutorialMarker marker;
 
-            [Title("Quest Actions")]
-            [Tooltip("Quest name in Dialogue Database (leave empty to skip quest update)")]
-            public string questName;
-
-            [Tooltip("Quest entry number (0 = main quest state, 1+ = entry state)")]
-            [ShowIf("@!string.IsNullOrEmpty(questName)")]
-            public int questEntryNumber = 0;
-
-            [Tooltip("Target state for the quest/entry")]
-            [ShowIf("@!string.IsNullOrEmpty(questName)")]
-            [ValueDropdown("GetQuestStates")]
-            public string targetState = "success";
-
-            [Title("Conversation Actions")]
+            [Title("Conversation")]
             [Tooltip("Conversation to start (leave empty to skip)")]
             public string conversationToStart;
 
@@ -91,36 +76,14 @@ namespace PopLife.DialogueBridge
             [Range(0f, 5f)]
             public float conversationDelay = 0f;
 
-            [Title("Lua Actions")]
+            [Title("Lua")]
             [Tooltip("Custom Lua code to execute (optional)")]
             [TextArea(2, 4)]
             public string luaScript;
 
-            [Title("Operation Guide")]
-            [Tooltip("触发此标记时显示的操作指南（可选）")]
-            public OperationGuideData operationGuide;
-
             [Title("Metadata")]
             [TextArea(1, 2)]
             public string description;
-
-            private static IEnumerable<string> GetQuestStates()
-            {
-                return new[] { "unassigned", "active", "success", "failure", "abandoned" };
-            }
-
-            /// <summary>
-            /// Editor display label
-            /// </summary>
-            public string GetLabel()
-            {
-                string label = marker.ToString();
-                if (!string.IsNullOrEmpty(questName))
-                    label += $" -> {questName}";
-                if (!string.IsNullOrEmpty(conversationToStart))
-                    label += $" + Conv";
-                return label;
-            }
         }
 
         #endregion
@@ -185,46 +148,11 @@ namespace PopLife.DialogueBridge
                 Debug.Log($"[TutorialMarkerBridge] Processing marker: {marker}");
             }
 
-            // Execute all configured actions
-            ExecuteQuestAction(mapping);
+            // Execute conversation and lua actions
+            // Guide 触发由 OperationGuideManager 自处理
+            // Quest 激活由 QuestLogicManager 自处理
             ExecuteLuaAction(mapping);
             ExecuteConversationAction(mapping);
-            ExecuteGuideAction(mapping);
-        }
-
-        /// <summary>
-        /// Update Quest state based on mapping
-        /// </summary>
-        private void ExecuteQuestAction(MarkerQuestMapping mapping)
-        {
-            if (string.IsNullOrEmpty(mapping.questName))
-                return;
-
-            try
-            {
-                if (mapping.questEntryNumber > 0)
-                {
-                    // Update specific entry state
-                    QuestLog.SetQuestEntryState(mapping.questName, mapping.questEntryNumber, mapping.targetState);
-                    if (debugMode)
-                    {
-                        Debug.Log($"[TutorialMarkerBridge] Set quest entry state: {mapping.questName}[{mapping.questEntryNumber}] = {mapping.targetState}");
-                    }
-                }
-                else
-                {
-                    // Update main quest state
-                    QuestLog.SetQuestState(mapping.questName, mapping.targetState);
-                    if (debugMode)
-                    {
-                        Debug.Log($"[TutorialMarkerBridge] Set quest state: {mapping.questName} = {mapping.targetState}");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"[TutorialMarkerBridge] Failed to update quest state: {e.Message}");
-            }
         }
 
         /// <summary>
@@ -276,24 +204,6 @@ namespace PopLife.DialogueBridge
             else
             {
                 StartConversation(mapping.conversationToStart);
-            }
-        }
-
-        /// <summary>
-        /// 显示操作指南（如果配置了的话）
-        /// </summary>
-        private void ExecuteGuideAction(MarkerQuestMapping mapping)
-        {
-            if (mapping.operationGuide == null) return;
-
-            if (OperationGuideManager.Instance != null)
-            {
-                OperationGuideManager.Instance.ShowGuide(mapping.operationGuide);
-
-                if (debugMode)
-                {
-                    Debug.Log($"[TutorialMarkerBridge] Showing operation guide: {mapping.operationGuide.guideId}");
-                }
             }
         }
 
@@ -356,16 +266,13 @@ namespace PopLife.DialogueBridge
         /// <summary>
         /// Add or update a mapping at runtime
         /// </summary>
-        public void AddMapping(TutorialMarker marker, string questName, int entryNumber = 0,
-            string targetState = "success", string conversation = null)
+        public void AddMapping(TutorialMarker marker, string conversation = null, string lua = null)
         {
             var mapping = new MarkerQuestMapping
             {
                 marker = marker,
-                questName = questName,
-                questEntryNumber = entryNumber,
-                targetState = targetState,
-                conversationToStart = conversation
+                conversationToStart = conversation,
+                luaScript = lua
             };
 
             mappingDictionary[marker] = mapping;
@@ -424,7 +331,7 @@ namespace PopLife.DialogueBridge
             Debug.Log("=== Tutorial Marker Mappings ===");
             foreach (var mapping in mappings)
             {
-                Debug.Log($"{mapping.marker} -> Quest: {mapping.questName}[{mapping.questEntryNumber}]={mapping.targetState}, Conv: {mapping.conversationToStart}");
+                Debug.Log($"{mapping.marker} -> Conv: {mapping.conversationToStart}, Lua: {mapping.luaScript}");
             }
         }
 #endif

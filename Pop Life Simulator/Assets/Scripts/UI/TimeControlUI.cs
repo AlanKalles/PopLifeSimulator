@@ -68,39 +68,37 @@ namespace PopLife.UI
         }
 
         /// <summary>
-        /// 建造阶段开始时禁用时间控制
-        /// 重置内部状态为Normal，确保下一天开店时默认为原速
+        /// 建造阶段开始时重置内部状态为Normal
+        /// 可见性由 StoreToggleAnimator 控制
         /// </summary>
         private void OnBuildPhaseStart()
         {
-            SetButtonsInteractable(false);
-            currentState = TimeControlState.Normal; // 重置状态为Normal
+            currentState = TimeControlState.Normal;
             UpdateButtonStates();
-            Debug.Log("[TimeControlUI] Build phase started - time controls disabled, state reset to Normal");
+            Debug.Log("[TimeControlUI] Build phase started - state reset to Normal");
         }
 
         /// <summary>
-        /// 开店时启用时间控制，默认恢复为原速
+        /// 开店时恢复为原速
+        /// 可见性由 StoreToggleAnimator 控制
         /// </summary>
         private void OnStoreOpen()
         {
-            SetButtonsInteractable(true);
             currentState = TimeControlState.Normal;
             ApplyTimeControl();
             UpdateButtonStates();
-            Debug.Log("[TimeControlUI] Store opened - time controls enabled, set to normal speed");
+            Debug.Log("[TimeControlUI] Store opened - set to normal speed");
         }
 
         /// <summary>
-        /// 关店时禁用时间控制（结算阶段）
-        /// 重置内部状态为Normal，确保按钮显示与DayLoopManager重置的1x倍速一致
+        /// 关店时重置内部状态为Normal
+        /// 可见性由 StoreToggleAnimator 控制
         /// </summary>
         private void OnStoreClose()
         {
-            SetButtonsInteractable(false);
-            currentState = TimeControlState.Normal; // 重置状态为Normal
+            currentState = TimeControlState.Normal;
             UpdateButtonStates();
-            Debug.Log("[TimeControlUI] Store closed - time controls disabled, state reset to Normal");
+            Debug.Log("[TimeControlUI] Store closed - state reset to Normal");
         }
 
         private void OnPauseClicked()

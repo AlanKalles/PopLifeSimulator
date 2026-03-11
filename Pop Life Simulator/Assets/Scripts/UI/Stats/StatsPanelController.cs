@@ -1,7 +1,7 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using PrimeTween;
 using PopLife.Data;
 using PopLife.Manager;
 
@@ -36,7 +36,7 @@ namespace PopLife.UI.Stats
         [SerializeField] private float panelWidth = 400f; // 面板宽度
 
         private bool isVisible = false;
-        private Coroutine slideCoroutine;
+        private Tween slideTween;
 
         // 当前激活的面板
         private enum PanelType { Economy, Products, CurrentCustomers }
@@ -143,10 +143,10 @@ namespace PopLife.UI.Stats
 
             isVisible = true;
 
-            if (slideCoroutine != null)
-                StopCoroutine(slideCoroutine);
-
-            slideCoroutine = StartCoroutine(SlideIn());
+            slideTween.Stop();
+            slideTween = Tween.Custom(this, -panelWidth, 0f, slideDuration,
+                (target, val) => target.panelRoot.anchoredPosition = new Vector2(val, target.panelRoot.anchoredPosition.y),
+                Ease.OutCubic, useUnscaledTime: true);
 
             // 显示默认面板
             SwitchPanel(PanelType.Economy);
@@ -161,61 +161,17 @@ namespace PopLife.UI.Stats
 
             isVisible = false;
 
-            if (slideCoroutine != null)
-                StopCoroutine(slideCoroutine);
-
-            slideCoroutine = StartCoroutine(SlideOut());
+            slideTween.Stop();
+            slideTween = Tween.Custom(this, panelRoot.anchoredPosition.x, -panelWidth, slideDuration,
+                (target, val) => target.panelRoot.anchoredPosition = new Vector2(val, target.panelRoot.anchoredPosition.y),
+                Ease.InCubic, useUnscaledTime: true)
+                .OnComplete(this, target =>
+                {
+                    if (target.rootObject != null)
+                        target.rootObject.SetActive(false);
+                });
         }
 
-        /// <summary>
-        /// 滑入动画（从左往右）
-        /// </summary>
-        private IEnumerator SlideIn()
-        {
-            float elapsed = 0f;
-            Vector2 startPos = new Vector2(-panelWidth, panelRoot.anchoredPosition.y);
-            Vector2 endPos = new Vector2(0, panelRoot.anchoredPosition.y);
-
-            while (elapsed < slideDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / slideDuration;
-                // 使用 EaseOutCubic 缓动
-                t = 1 - Mathf.Pow(1 - t, 3);
-                panelRoot.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
-                yield return null;
-            }
-
-            panelRoot.anchoredPosition = endPos;
-        }
-
-        /// <summary>
-        /// 滑出动画（从右往左）
-        /// </summary>
-        private IEnumerator SlideOut()
-        {
-            float elapsed = 0f;
-            Vector2 startPos = panelRoot.anchoredPosition;
-            Vector2 endPos = new Vector2(-panelWidth, panelRoot.anchoredPosition.y);
-
-            while (elapsed < slideDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / slideDuration;
-                // 使用 EaseInCubic 缓动
-                t = Mathf.Pow(t, 3);
-                panelRoot.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
-                yield return null;
-            }
-
-            panelRoot.anchoredPosition = endPos;
-
-            // 隐藏 root 对象
-            if (rootObject != null)
-            {
-                rootObject.SetActive(false);
-            }
-        }
 
         /// <summary>
         /// 切换子面板

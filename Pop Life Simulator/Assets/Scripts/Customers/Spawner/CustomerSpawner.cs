@@ -611,6 +611,19 @@ namespace PopLife.Customers.Spawner
                 Debug.Log($"[CustomerSpawner] 记录顾客 {record.customerId} 今日访问 (防止重复: {preventSameDayRevisit})");
             }
 
+            // ── 【隐患修正：对象池脏数据重置】 ──
+            // 即使当前顾客是 Destroy(gameObject) 而非对象池复用，
+            // 在分配前重置所有交互状态是防御性编码。
+            // 如果未来改为对象池复用，不会出现 interactionUsedToday 残留为 true
+            // 导致该 GameObject 永远无法再次触发交互的问题。
+            if (agent.bb != null)
+            {
+                agent.bb.assignedInteraction = null;
+                agent.bb.interactionUsedToday = false;
+                agent.bb.interactionBubbleActive = false;
+                agent.bb.interactionDialogueStarted = false;
+            }
+
             lastSpawnedCustomer = $"{record.customerId}: {record.name}";
             Debug.Log($"[CustomerSpawner] 自动生成顾客: {lastSpawnedCustomer}");
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PopLife.Data;
+using PopLife.Manager;
 using PopLife.UI.Quest;
 
 namespace PopLife.Quest
@@ -25,6 +26,9 @@ namespace PopLife.Quest
 
         // 已处理过奖励的任务集合（防止重复发放）
         private HashSet<string> rewardedQuests = new();
+
+        // marker → questName 查找表（用于 marker 自动激活）
+        private Dictionary<TutorialMarker, string> markerToQuest;
 
         // ES3 持久化
         private const string ES3_FILE = "QuestProgress.es3";
@@ -81,6 +85,10 @@ namespace PopLife.Quest
             if (DayLoopManager.Instance != null)
                 DayLoopManager.Instance.OnDayChanged += HandleDayChanged;
 
+            // 构建 marker → quest 查找表并订阅事件
+            BuildMarkerLookup();
+            TutorialEventBus.OnMarkerTriggered += OnMarkerTriggered;
+
             // 初始扫描已激活的任务
             ScanActiveQuests();
 
@@ -104,6 +112,8 @@ namespace PopLife.Quest
 
             if (DayLoopManager.Instance != null)
                 DayLoopManager.Instance.OnDayChanged -= HandleDayChanged;
+
+            TutorialEventBus.OnMarkerTriggered -= OnMarkerTriggered;
 
             Instance = null;
         }
@@ -131,6 +141,41 @@ namespace PopLife.Quest
 
             if (debugMode)
                 Debug.Log($"[QuestLogicManager] 激活任务: {questName}");
+        }
+
+        #endregion
+
+        #region Marker 自动激活
+
+        /// <summary>
+        /// 构建 marker → questName 查找表
+        /// </summary>
+        private void BuildMarkerLookup()
+        {
+            markerToQuest = new Dictionary<TutorialMarker, string>();
+            var allDefs = Resources.LoadAll<QuestDefinition>("ScriptableObjects/Quests");
+
+            foreach (var def in allDefs)
+            {
+                if (def.ActivationMarker != TutorialMarker.None)
+                {
+                    if (!markerToQuest.TryAdd(def.ActivationMarker, def.QuestName))
+                    {
+                        Debug.LogWarning($"[QuestLogicManager] Duplicate marker {def.ActivationMarker} on quest: {def.QuestName}");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 当 marker 触发时，自动激活对应的任务
+        /// </summary>
+        private void OnMarkerTriggered(TutorialMarker marker)
+        {
+            if (markerToQuest != null && markerToQuest.TryGetValue(marker, out var questName))
+            {
+                ActivateQuest(questName);
+            }
         }
 
         #endregion
@@ -219,6 +264,15 @@ namespace PopLife.Quest
 
             // 触发事件
             OnQuestCompleted?.Invoke(questName);
+
+            // 完成时立即触发 Marker（非 AfterToast 模式）
+            var def = QuestDataService.Instance?.GetDefinition(questName);
+            if (def != null && def.CompletionMarker != TutorialMarker.None && !def.TriggerMarkerAfterToast)
+            {
+                TutorialEventBus.RaiseMarker(def.CompletionMarker);
+                if (debugMode)
+                    Debug.Log($"[QuestLogicManager] 任务完成触发 Marker: {def.CompletionMarker}");
+            }
 
             // 音效
             AudioManager.Instance?.PlaySound(AudioKeys.QUEST_COMPLETE);

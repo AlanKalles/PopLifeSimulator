@@ -17,12 +17,23 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   sortOrder: 100
+  activationMarker: 1
+  closingMarker: 27
   pages:
-  - screenshot: {fileID: 0}
+  - screenshot: {fileID: 21300000, guid: 89e7a09192d11f945b3a39c294091b32, type: 3}
     title: Shelf Selection
     body: This is the shelf selection panel. From here you can choose what shelf
       you would like to build.
-  - screenshot: {fileID: 0}
-    title: Shelf Selection
-    body: At the top of the panel there are category tabs for the different categories
+  - screenshot: {fileID: 21300000, guid: 46c1c47860397dc4ebf0d970dfa7ef64, type: 3}
+    title: Shelf Attributes
+    body: The tooltip contains three shelf attributes. Price for unit price of each
+      product in this shelf, and maintenance for the shelve's each day cost once
+      you build it.
+  - screenshot: {fileID: 21300000, guid: 9d76bc73216dace41b05c3c723048b5d, type: 3}
+    title: Category Filter
+    body: At left of the panel there are category tabs for the different categories
       of shelves that you can build.
+  - screenshot: {fileID: 21300000, guid: cb8d2282317ef324f9f28c359042277e, type: 3}
+    title: Move and Destroy button
+    body: At top are two other actions - move and destroy - and the close button
+      to close the shelf selection panel

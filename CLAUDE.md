@@ -436,6 +436,9 @@ EffectType {
   - `BankruptcyPanel.cs` - 破产面板
   - `DayCounterUI.cs` - 天数计数器
   - `ScreenLogger.cs` - 屏幕日志
+  - `StoreToggleAnimator.cs` - 开店/闭店 UI 切换动画（OpenStoreButton ↔ TimeControlUI）
+  - `ButtonHoverWobble.cs` - 通用按钮悬停晃动组件（挂载即用）
+  - `FrameSizeSync.cs` - 同步 frame 尺寸到 Preserve Aspect 的 Image 实际显示尺寸（含 borderPadding）
 
 - **建筑交互系统** (`UI/BuildingInteraction/`) ⭐ **新增设计**：
   - **`BuildingInteractionManager.cs`** - 核心管理器（单例）

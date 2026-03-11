@@ -1,6 +1,7 @@
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using Sirenix.OdinInspector;
+using PopLife.Services;
 
 namespace PopLife.DialogueBridge
 {
@@ -70,8 +71,12 @@ namespace PopLife.DialogueBridge
                 return;
             }
 
-            // Check for click
-            if (Input.GetMouseButtonDown(mouseButton))
+            // Check for click: 使用 InputGateService 判定纯点击（避免拖拽误触）
+            bool clicked = (mouseButton == 0 && InputGateService.Instance != null)
+                ? InputGateService.Instance.WasClickThisFrame
+                : Input.GetMouseButtonDown(mouseButton);
+
+            if (clicked)
             {
                 HandleClick();
             }

@@ -90,8 +90,16 @@ namespace PopLife.Customers.Runtime
 
         private void StartLoop(Sprite[] sprites)
         {
-            if (emojiRenderer == null || sprites == null || sprites.Length == 0)
+            if (emojiRenderer == null)
+            {
+                Debug.LogWarning($"[EmojiController] {gameObject.name} StartLoop FAILED: emojiRenderer is null");
                 return;
+            }
+            if (sprites == null || sprites.Length == 0)
+            {
+                Debug.LogWarning($"[EmojiController] {gameObject.name} StartLoop FAILED: sprites is null or empty");
+                return;
+            }
 
             currentLoopSprites = sprites;
             currentFrameIndex = 0;
@@ -99,6 +107,7 @@ namespace PopLife.Customers.Runtime
             isLooping = true;
             emojiRenderer.sprite = sprites[0];
             emojiRenderer.color = Color.white;
+            Debug.Log($"[EmojiController] {gameObject.name} StartLoop OK: sprite={sprites[0]?.name}, count={sprites.Length}");
         }
 
         // ──────────────────── 单次播放 ────────────────────
@@ -109,8 +118,18 @@ namespace PopLife.Customers.Runtime
         public void PlayPickProduct()
         {
             StopEmoji();
-            if (emojiRenderer == null || pickProductSprite == null) return;
+            if (emojiRenderer == null)
+            {
+                Debug.LogWarning($"[EmojiController] {gameObject.name} PlayPickProduct FAILED: emojiRenderer is null");
+                return;
+            }
+            if (pickProductSprite == null)
+            {
+                Debug.LogWarning($"[EmojiController] {gameObject.name} PlayPickProduct FAILED: pickProductSprite is null");
+                return;
+            }
 
+            Debug.Log($"[EmojiController] {gameObject.name} PlayPickProduct START: sprite={pickProductSprite.name}");
             emojiRenderer.sprite = pickProductSprite;
             emojiRenderer.color = Color.white;
             emojiTransform.localPosition = originLocalPos;
@@ -131,8 +150,18 @@ namespace PopLife.Customers.Runtime
         public void PlayCheckout()
         {
             StopEmoji();
-            if (emojiRenderer == null || checkoutSprite == null) return;
+            if (emojiRenderer == null)
+            {
+                Debug.LogWarning($"[EmojiController] {gameObject.name} PlayCheckout FAILED: emojiRenderer is null");
+                return;
+            }
+            if (checkoutSprite == null)
+            {
+                Debug.LogWarning($"[EmojiController] {gameObject.name} PlayCheckout FAILED: checkoutSprite is null");
+                return;
+            }
 
+            Debug.Log($"[EmojiController] {gameObject.name} PlayCheckout START: sprite={checkoutSprite.name}");
             emojiRenderer.sprite = checkoutSprite;
             emojiRenderer.color = new Color(1f, 1f, 1f, 0f);
             emojiTransform.localPosition = originLocalPos;
@@ -154,6 +183,12 @@ namespace PopLife.Customers.Runtime
         /// </summary>
         public void StopEmoji()
         {
+            // 只在有活跃动画时打印，避免日志过多
+            if (isLooping || currentSequence.isAlive || (emojiRenderer != null && emojiRenderer.sprite != null))
+            {
+                Debug.Log($"[EmojiController] {gameObject.name} StopEmoji CALLED (isLooping={isLooping}, seqAlive={currentSequence.isAlive}, sprite={emojiRenderer?.sprite?.name})\n{System.Environment.StackTrace}");
+            }
+
             isLooping = false;
             currentLoopSprites = null;
 

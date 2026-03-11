@@ -6,8 +6,10 @@ namespace PopLife.Manager
     /// </summary>
     public enum TutorialMarker
     {
+        None = -1,                // 无触发（默认）
+
         // Game start
-        GameStarted,              // 游戏启动
+        GameStarted = 0,          // 游戏启动
 
         // Build phase
         FirstBuildPhaseEntered,   // 首次进入建造模式
@@ -40,8 +42,20 @@ namespace PopLife.Manager
         FirstMoveMode,            // 首次进入Move模式
         FirstDestroyMode,         // 首次进入Destroy(Sell)模式
 
-        // Custom markers (可扩展)
-        D002toGBUILDFIRSTSHELF,
+        // AlanBot panels
+        FirstCalendarOpened,      // 首次打开日历面板
+        FirstCustomerCodexOpened, // 首次打开顾客图鉴面板
+        FirstItemCodexOpened,     // 首次打开物品图鉴面板
 
+        // Quest
+        FirstQuestToastDismissed, // 首个任务通知Toast完全消失
+
+        // Store UI
+        EnableStoreToggle,            // 解锁开店按钮（一次性，游戏开局教程用）
+
+        BottomButton,
+        AlreadyKnowShelfSelectionPanel,
+        PointOverShelf,
+        Alanbot,
     }
 }

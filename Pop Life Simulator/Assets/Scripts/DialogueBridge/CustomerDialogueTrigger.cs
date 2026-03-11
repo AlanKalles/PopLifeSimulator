@@ -93,6 +93,27 @@ namespace PopLife.DialogueBridge
                 return false;
             }
 
+            // ── 交互事件优先级最高 ──
+            var adapter = GetComponent<CustomerBlackboardAdapter>();
+            if (adapter != null && adapter.interactionBubbleActive
+                && adapter.assignedInteraction != null)
+            {
+                string conv = adapter.assignedInteraction.ConversationTitle;
+                if (!string.IsNullOrEmpty(conv)
+                    && DialogueManager.ConversationHasValidEntry(conv))
+                {
+                    SyncCustomerDataToLua();
+                    DialogueLua.SetVariable("InteractionCorrect", false);
+                    lastDialogueTime = Time.time;
+                    adapter.interactionDialogueStarted = true;
+                    DialogueManager.StartConversation(conv, null, transform);
+                    if (debugMode)
+                        Debug.Log($"[CustomerDialogueTrigger] {gameObject.name}: " +
+                                  $"开始交互事件对话: {conv}");
+                    return true;
+                }
+            }
+
             // Check if a conversation is already active
             if (DialogueManager.isConversationActive)
             {

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using PopLife.Services;
 
 namespace PopLife.Runtime
 {
@@ -55,6 +56,7 @@ namespace PopLife.Runtime
         private float targetZoom = 1f;
 
         private bool isDragging = false;
+        private bool pendingDragStart = false; // 等待 InputGateService 确认拖拽
         private Vector3 dragOrigin;
         private Vector3 lastMousePosition;
 
@@ -120,17 +122,28 @@ namespace PopLife.Runtime
 
         private void HandleDragInput()
         {
+            var gate = InputGateService.Instance;
+
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject() && !isDragging)
                 return;
 
-            if (Input.GetMouseButtonDown(0) && !isDragging)
+            // 鼠标按下：预记录拖拽起点，但不立即移动相机
+            if (Input.GetMouseButtonDown(0) && !isDragging && !pendingDragStart)
             {
                 if (EventSystem.current == null || !EventSystem.current.IsPointerOverGameObject())
                 {
-                    isDragging = true;
+                    pendingDragStart = true;
                     dragOrigin = targetCamera.ScreenToWorldPoint(Input.mousePosition);
                     lastMousePosition = Input.mousePosition;
                 }
+            }
+
+            // 等待 InputGateService 确认超过拖拽阈值后才开始移动
+            if (pendingDragStart && !isDragging && gate != null && gate.IsDragging)
+            {
+                isDragging = true;
+                // 重新采样 dragOrigin 以消除阈值阶段的跳跃
+                dragOrigin = targetCamera.ScreenToWorldPoint(Input.mousePosition);
             }
 
             if (Input.GetMouseButton(0) && isDragging)
@@ -153,6 +166,7 @@ namespace PopLife.Runtime
             if (Input.GetMouseButtonUp(0))
             {
                 isDragging = false;
+                pendingDragStart = false;
             }
         }
 

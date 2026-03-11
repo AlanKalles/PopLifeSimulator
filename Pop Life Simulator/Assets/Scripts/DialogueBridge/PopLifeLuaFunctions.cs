@@ -58,6 +58,12 @@ namespace PopLife.DialogueBridge
         }
 
         private readonly List<DeferredQuestStateCall> deferredQuestCalls = new();
+
+        /// <summary>
+        /// 缓存的 RaiseMarker 调用（对话结束后执行）
+        /// </summary>
+        private readonly List<string> deferredMarkerCalls = new();
+
         private bool isListeningForConversationEnd;
 
         #endregion
@@ -96,6 +102,7 @@ namespace PopLife.DialogueBridge
 
             // Tutorial marker functions
             Lua.RegisterFunction("RaiseTutorialMarker", this, SymbolExtensions.GetMethodInfo(() => RaiseTutorialMarker(string.Empty)));
+            Lua.RegisterFunction("RaiseMarkerAfter", this, SymbolExtensions.GetMethodInfo(() => RaiseMarkerAfter(string.Empty)));
             Lua.RegisterFunction("IsMarkerTriggered", this, SymbolExtensions.GetMethodInfo(() => IsMarkerTriggered(string.Empty)));
 
             // Query functions
@@ -130,6 +137,7 @@ namespace PopLife.DialogueBridge
             Lua.UnregisterFunction("UnlockCustomer");
             Lua.UnregisterFunction("GiveReward");
             Lua.UnregisterFunction("RaiseTutorialMarker");
+            Lua.UnregisterFunction("RaiseMarkerAfter");
             Lua.UnregisterFunction("IsMarkerTriggered");
             Lua.UnregisterFunction("GetMoney");
             Lua.UnregisterFunction("GetFame");
@@ -413,6 +421,32 @@ namespace PopLife.DialogueBridge
 
         #endregion
 
+        #region Deferred Marker Functions
+
+        /// <summary>
+        /// 延迟版 RaiseTutorialMarker - 对话结束后触发 marker
+        /// 适合在 conversation 最后一个节点使用，让 OperationGuide 在对话 UI 消失后弹出
+        /// Lua usage: RaiseMarkerAfter("FirstShelfPlaced")
+        /// </summary>
+        public void RaiseMarkerAfter(string markerName)
+        {
+            if (string.IsNullOrEmpty(markerName)) return;
+
+            if (DialogueManager.isConversationActive)
+            {
+                deferredMarkerCalls.Add(markerName);
+                EnsureListeningForConversationEnd();
+                Debug.Log($"[PopLifeLuaFunctions] Deferred RaiseMarker: {markerName} (waiting for conversation end)");
+            }
+            else
+            {
+                // 不在对话中，立即执行
+                RaiseTutorialMarker(markerName);
+            }
+        }
+
+        #endregion
+
         #region Deferred Quest State Functions
 
         /// <summary>
@@ -482,7 +516,7 @@ namespace PopLife.DialogueBridge
         }
 
         /// <summary>
-        /// 对话结束后批量执行缓存的 SetQuestState 调用
+        /// 对话结束后批量执行缓存的 SetQuestState 和 RaiseMarker 调用
         /// </summary>
         private void OnConversationEndedFlushQuests(Transform actor)
         {
@@ -490,25 +524,42 @@ namespace PopLife.DialogueBridge
                 DialogueManager.instance.conversationEnded -= OnConversationEndedFlushQuests;
             isListeningForConversationEnd = false;
 
-            if (deferredQuestCalls.Count == 0) return;
-
-            Debug.Log($"[PopLifeLuaFunctions] Flushing {deferredQuestCalls.Count} deferred quest state call(s)");
-
-            // 复制列表后清空，防止回调中再次触发追加
-            var calls = new List<DeferredQuestStateCall>(deferredQuestCalls);
-            deferredQuestCalls.Clear();
-
-            foreach (var call in calls)
+            // 先处理 quest state 调用
+            if (deferredQuestCalls.Count > 0)
             {
-                if (call.entryNumber > 0)
+                Debug.Log($"[PopLifeLuaFunctions] Flushing {deferredQuestCalls.Count} deferred quest state call(s)");
+
+                // 复制列表后清空，防止回调中再次触发追加
+                var calls = new List<DeferredQuestStateCall>(deferredQuestCalls);
+                deferredQuestCalls.Clear();
+
+                foreach (var call in calls)
                 {
-                    QuestLog.SetQuestEntryState(call.questName, call.entryNumber, call.state);
-                    Debug.Log($"[PopLifeLuaFunctions] Executed deferred SetQuestEntryState: {call.questName}[{call.entryNumber}] = {call.state}");
+                    if (call.entryNumber > 0)
+                    {
+                        QuestLog.SetQuestEntryState(call.questName, call.entryNumber, call.state);
+                        Debug.Log($"[PopLifeLuaFunctions] Executed deferred SetQuestEntryState: {call.questName}[{call.entryNumber}] = {call.state}");
+                    }
+                    else
+                    {
+                        QuestLog.SetQuestState(call.questName, call.state);
+                        Debug.Log($"[PopLifeLuaFunctions] Executed deferred SetQuestState: {call.questName} = {call.state}");
+                    }
                 }
-                else
+            }
+
+            // 再处理 marker 调用
+            if (deferredMarkerCalls.Count > 0)
+            {
+                Debug.Log($"[PopLifeLuaFunctions] Flushing {deferredMarkerCalls.Count} deferred marker call(s)");
+
+                var markers = new List<string>(deferredMarkerCalls);
+                deferredMarkerCalls.Clear();
+
+                foreach (var markerName in markers)
                 {
-                    QuestLog.SetQuestState(call.questName, call.state);
-                    Debug.Log($"[PopLifeLuaFunctions] Executed deferred SetQuestState: {call.questName} = {call.state}");
+                    RaiseTutorialMarker(markerName);
+                    Debug.Log($"[PopLifeLuaFunctions] Executed deferred RaiseMarker: {markerName}");
                 }
             }
         }

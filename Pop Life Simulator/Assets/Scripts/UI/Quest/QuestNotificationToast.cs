@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using PixelCrushers.DialogueSystem;
 using PopLife.Data;
+using PopLife.Manager;
 using PopLife.Quest;
 
 namespace PopLife.UI.Quest
@@ -50,6 +51,8 @@ namespace PopLife.UI.Quest
             public Sprite icon;
             public Color titleColor;
             public string audioKey;
+            // Toast消失后触发的Marker（None = 不触发）
+            public TutorialMarker afterToastMarker;
         }
 
         private void Awake()
@@ -115,6 +118,11 @@ namespace PopLife.UI.Quest
             var def = QuestDataService.Instance?.GetDefinition(questName);
             string successDesc = DialogueLua.GetQuestField(questName, "Success Description").asString;
 
+            // 仅 TriggerMarkerAfterToast 模式才把 marker 传给 toast
+            var afterMarker = TutorialMarker.None;
+            if (def != null && def.TriggerMarkerAfterToast && def.CompletionMarker != TutorialMarker.None)
+                afterMarker = def.CompletionMarker;
+
             EnqueueToast(new ToastData
             {
                 title = "QUEST COMPLETE",
@@ -122,7 +130,8 @@ namespace PopLife.UI.Quest
                 subMessage = string.IsNullOrEmpty(successDesc) ? null : successDesc,
                 icon = def?.QuestIcon,
                 titleColor = questCompleteTitleColor,
-                audioKey = AudioKeys.QUEST_COMPLETE
+                audioKey = AudioKeys.QUEST_COMPLETE,
+                afterToastMarker = afterMarker
             });
         }
 
@@ -246,6 +255,14 @@ namespace PopLife.UI.Quest
 
             if (canvasGroup != null) canvasGroup.alpha = 0f;
             if (toastRoot != null) toastRoot.SetActive(false);
+
+            // 首个新任务Toast完全消失时触发marker
+            if (data.title == "NEW QUEST")
+                GameStateManager.Instance?.NotifyFirstQuestToastDismissed();
+
+            // 任务完成Toast消失后触发配置的Marker
+            if (data.afterToastMarker != TutorialMarker.None)
+                TutorialEventBus.RaiseMarker(data.afterToastMarker);
         }
 
         #endregion

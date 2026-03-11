@@ -763,6 +763,10 @@ MonoBehaviour:
   isClosingTime: 0
   isUpset: 0
   consecutivePurchaseFailures: 0
+  assignedInteraction: {fileID: 0}
+  interactionUsedToday: 0
+  interactionBubbleActive: 0
+  interactionDialogueStarted: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
 --- !u!114 &6812213515813458708
@@ -1360,7 +1364,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.931, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2943874870459843310}

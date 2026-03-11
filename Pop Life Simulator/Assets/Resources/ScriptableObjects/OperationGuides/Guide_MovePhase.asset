@@ -17,6 +17,7 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   sortOrder: 100
+  activationMarker: 19
   pages:
   - screenshot: {fileID: 7250129316690771573, guid: 11efacdf904127b4fac33c57a75aa48e, type: 3}
     title: Moving Buildings
