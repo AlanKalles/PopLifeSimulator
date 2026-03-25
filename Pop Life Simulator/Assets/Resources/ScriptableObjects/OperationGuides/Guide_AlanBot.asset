@@ -26,8 +26,8 @@ MonoBehaviour:
       as a source of important information.
   - screenshot: {fileID: 21300000, guid: 7b2411fb95e207d459833e9aaecb95e3, type: 3}
     title: AlanBot Menu
-    body: 'When you click on AlanBot himself or on his icon on your screen you will
-      open a menu! '
+    body: 'When you click on AlanBot who is roaming around your store, you will open
+      his menu. '
   - screenshot: {fileID: 21300000, guid: cd642a4e83cc7f745b8adc83e046630d, type: 3}
     title: AlanBot Menu 2
     body: 'From here you can access: The Calendar, The Item Codex, The Customer Codex,

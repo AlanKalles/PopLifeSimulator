@@ -23,7 +23,7 @@ MonoBehaviour:
   - screenshot: {fileID: 21300000, guid: e8ac0c9bc478a4949b527e730b735d95, type: 3}
     title: Money
     body: Here you can see how much money you have. Use your money to pay for building
-      shelves.
+      shelves in your store.
   - screenshot: {fileID: 21300000, guid: 935d5e55a0d39a54cabec6fd400c47ef, type: 3}
     title: Fame
     body: Here you can see how much fame you have. Use your fame to upgrade your
