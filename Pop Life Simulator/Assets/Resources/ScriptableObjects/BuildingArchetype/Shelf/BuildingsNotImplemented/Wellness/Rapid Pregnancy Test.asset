@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Rapid Pregnancy Test
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 60
+  buildCost: 90
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []

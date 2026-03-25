@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Silicone Toy Cleaner
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 85
+  buildCost: 37
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
