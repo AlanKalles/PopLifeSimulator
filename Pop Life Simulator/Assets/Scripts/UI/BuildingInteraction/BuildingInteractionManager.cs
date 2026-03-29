@@ -29,9 +29,9 @@ namespace PopLife.UI.BuildingInteraction
         [Header("Debug")]
         [SerializeField] private bool enableDebugLogs = false;
 
-        [Header("UI Blocking")]
-        [Tooltip("List of UI GameObjects that should block building interaction when mouse is over them")]
-        [SerializeField] private List<GameObject> blockingUIElements = new List<GameObject>();
+        [Header("UI Blocking (Blacklist)")]
+        [Tooltip("UI elements in this list will NOT block building interaction (passthrough). All other UI blocks by default.")]
+        [SerializeField] private List<GameObject> passthroughUIElements = new List<GameObject>();
 
         // State tracking
         private BuildingInstance currentHoveredBuilding;
@@ -47,6 +47,10 @@ namespace PopLife.UI.BuildingInteraction
         // Cached references
         private Camera mainCamera;
         private ConstructionManager constructionManager;
+
+        // 缓存 EventSystem 查询对象，避免每帧 GC 分配
+        private PointerEventData cachedPointerData;
+        private List<RaycastResult> cachedRaycastResults = new List<RaycastResult>();
 
         private void Awake()
         {
@@ -190,45 +194,54 @@ namespace PopLife.UI.BuildingInteraction
         }
 
         /// <summary>
-        /// Check if mouse is over any blocking UI element
-        /// 检查鼠标是否悬停在阻挡UI元素上
+        /// Check if mouse is over blocking UI (blacklist mode: all UI blocks by default, passthrough list exempted)
+        /// 检查鼠标是否在阻挡性UI上（黑名单模式：默认所有UI阻挡，passthroughUIElements列表中的例外放行）
         /// </summary>
         private bool IsPointerOverBlockingUI()
         {
-            // Check if pointer is over UI
-            if (!EventSystem.current.IsPointerOverGameObject())
-            {
-                return false; // Not over any UI
-            }
+            if (EventSystem.current == null) return false;
+            if (!EventSystem.current.IsPointerOverGameObject()) return false;
 
-            // Get raycast results
-            PointerEventData pointerData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
+            // 没有穿透列表 → 所有UI都阻挡，无需细查
+            if (passthroughUIElements.Count == 0) return true;
 
-            List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerData, results);
+            // 有穿透列表，需要判断命中的是否全部属于可穿透UI
+            if (cachedPointerData == null)
+                cachedPointerData = new PointerEventData(EventSystem.current);
+            cachedPointerData.position = Input.mousePosition;
 
-            // Check if any raycast result is in the blocking UI list
-            foreach (RaycastResult result in results)
+            cachedRaycastResults.Clear();
+            EventSystem.current.RaycastAll(cachedPointerData, cachedRaycastResults);
+
+            // 遍历所有命中的UI元素，只要有一个不在穿透列表中就阻挡
+            foreach (RaycastResult result in cachedRaycastResults)
             {
-                foreach (GameObject blockingUI in blockingUIElements)
+                if (!IsPassthroughUI(result.gameObject))
                 {
-                    if (blockingUI == null) continue;
-
-                    // Check if result is the blocking UI or a child of it
-                    if (result.gameObject == blockingUI || result.gameObject.transform.IsChildOf(blockingUI.transform))
+                    if (enableDebugLogs)
                     {
-                        if (enableDebugLogs)
-                        {
-                            Debug.Log($"Mouse over blocking UI: {blockingUI.name}");
-                        }
-                        return true;
+                        Debug.Log($"Blocked by UI: {result.gameObject.name}");
                     }
+                    return true;
                 }
             }
 
+            // 所有命中UI都在穿透列表中 → 不阻挡
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a GameObject belongs to any passthrough UI element (self or child)
+        /// 检查一个GameObject是否属于可穿透UI（自身或其子物体）
+        /// </summary>
+        private bool IsPassthroughUI(GameObject go)
+        {
+            foreach (GameObject passthrough in passthroughUIElements)
+            {
+                if (passthrough == null) continue;
+                if (go == passthrough || go.transform.IsChildOf(passthrough.transform))
+                    return true;
+            }
             return false;
         }
 
@@ -253,16 +266,11 @@ namespace PopLife.UI.BuildingInteraction
             Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             mouseWorld.z = 0; // Ensure Z is 0 for 2D
 
-            RaycastHit2D hit = Physics2D.Raycast(
-                mouseWorld,
-                Vector2.zero,
-                Mathf.Infinity,
-                buildingLayerMask
-            );
+            Collider2D hit = Physics2D.OverlapPoint(mouseWorld, buildingLayerMask);
 
-            if (hit.collider != null)
+            if (hit != null)
             {
-                BuildingInstance building = hit.collider.GetComponent<BuildingInstance>();
+                BuildingInstance building = hit.GetComponent<BuildingInstance>();
                 if (building != null && enableDebugLogs)
                 {
                     Debug.Log($"Building detected: {building.archetype.displayName}");

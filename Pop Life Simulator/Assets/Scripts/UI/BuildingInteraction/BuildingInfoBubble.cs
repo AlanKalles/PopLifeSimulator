@@ -40,8 +40,10 @@ namespace PopLife.UI.BuildingInteraction
             // Initialize canvas with camera configuration
             InitializeCanvas();
 
-            // Set initial alpha to 0
+            // Set initial alpha to 0; disable raycasts so bubble never blocks building interaction
             canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = false;
+            canvasGroup.interactable = false;
 
             // Find UI components if not assigned
             if (nameText == null)
