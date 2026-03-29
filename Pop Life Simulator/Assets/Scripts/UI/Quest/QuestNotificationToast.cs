@@ -103,10 +103,11 @@ namespace PopLife.UI.Quest
         private void OnQuestActivated(string questName)
         {
             var def = QuestDataService.Instance?.GetDefinition(questName);
+            var store = QuestLogicManager.Instance?.StateStore;
             EnqueueToast(new ToastData
             {
                 title = "NEW QUEST",
-                message = QuestLog.GetQuestTitle(questName),
+                message = store?.GetTitle(questName) ?? questName,
                 icon = def?.QuestIcon,
                 titleColor = newQuestTitleColor,
                 audioKey = AudioKeys.QUEST_NEW
@@ -116,7 +117,8 @@ namespace PopLife.UI.Quest
         private void OnQuestCompleted(string questName)
         {
             var def = QuestDataService.Instance?.GetDefinition(questName);
-            string successDesc = DialogueLua.GetQuestField(questName, "Success Description").asString;
+            var store = QuestLogicManager.Instance?.StateStore;
+            string successDesc = store?.GetSuccessDescription(questName) ?? "";
 
             // 仅 TriggerMarkerAfterToast 模式才把 marker 传给 toast
             var afterMarker = TutorialMarker.None;
@@ -126,7 +128,7 @@ namespace PopLife.UI.Quest
             EnqueueToast(new ToastData
             {
                 title = "QUEST COMPLETE",
-                message = QuestLog.GetQuestTitle(questName),
+                message = store?.GetTitle(questName) ?? questName,
                 subMessage = string.IsNullOrEmpty(successDesc) ? null : successDesc,
                 icon = def?.QuestIcon,
                 titleColor = questCompleteTitleColor,
@@ -137,10 +139,11 @@ namespace PopLife.UI.Quest
 
         private void OnQuestFailed(string questName)
         {
+            var store = QuestLogicManager.Instance?.StateStore;
             EnqueueToast(new ToastData
             {
                 title = "QUEST FAILED",
-                message = QuestLog.GetQuestTitle(questName),
+                message = store?.GetTitle(questName) ?? questName,
                 icon = null,
                 titleColor = questFailedTitleColor,
                 audioKey = AudioKeys.QUEST_FAILED

@@ -23,6 +23,12 @@ namespace PopLife.Quest
 
         // 子系统
         private QuestProgressTracker tracker;
+        private QuestStateStore stateStore;
+
+        /// <summary>
+        /// 任务状态 store，替代 QuestLog 作为状态后端
+        /// </summary>
+        public QuestStateStore StateStore => stateStore;
 
         // 已处理过奖励的任务集合（防止重复发放）
         private HashSet<string> rewardedQuests = new();
@@ -35,6 +41,7 @@ namespace PopLife.Quest
         private const string ES3_KEY_COUNTERS = "questCounters";
         private const string ES3_KEY_ACTIVATION = "questActivationDays";
         private const string ES3_KEY_REWARDED = "questRewarded";
+        private const string ES3_KEY_STATE_DATA = "questStateData";
 
         /// <summary>
         /// 任务被激活时触发
@@ -68,6 +75,9 @@ namespace PopLife.Quest
 
         private void Start()
         {
+            // 初始化 QuestStateStore（必须在 LoadProgress 之前）
+            InitializeStateStore();
+
             // 初始化追踪器
             tracker = new QuestProgressTracker();
             tracker.SetDebugMode(debugMode);
@@ -115,6 +125,8 @@ namespace PopLife.Quest
 
             TutorialEventBus.OnMarkerTriggered -= OnMarkerTriggered;
 
+            stateStore?.Dispose();
+
             Instance = null;
         }
 
@@ -137,7 +149,7 @@ namespace PopLife.Quest
             }
 
             QuestLog.SetQuestState(questName, QuestState.Active);
-            QuestLog.SetQuestTracking(questName, true);
+            stateStore?.SetTracking(questName, true);
 
             if (debugMode)
                 Debug.Log($"[QuestLogicManager] 激活任务: {questName}");
@@ -202,8 +214,8 @@ namespace PopLife.Quest
         /// </summary>
         private void HandleQuestStateChanged()
         {
-            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
-            if (activeQuests == null) return;
+            string[] activeQuests = stateStore?.GetAllQuests(QuestState.Active);
+            if (activeQuests == null || activeQuests.Length == 0) return;
 
             foreach (string questName in activeQuests)
             {
@@ -324,8 +336,8 @@ namespace PopLife.Quest
         /// </summary>
         private void ScanActiveQuests()
         {
-            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
-            if (activeQuests == null) return;
+            string[] activeQuests = stateStore?.GetAllQuests(QuestState.Active);
+            if (activeQuests == null || activeQuests.Length == 0) return;
 
             foreach (string questName in activeQuests)
             {
@@ -344,8 +356,8 @@ namespace PopLife.Quest
         /// </summary>
         private void CheckDeadlines()
         {
-            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
-            if (activeQuests == null) return;
+            string[] activeQuests = stateStore?.GetAllQuests(QuestState.Active);
+            if (activeQuests == null || activeQuests.Length == 0) return;
 
             foreach (string questName in activeQuests)
             {
@@ -364,8 +376,8 @@ namespace PopLife.Quest
         /// </summary>
         private void CheckExternalCompletions()
         {
-            string[] successQuests = QuestLog.GetAllQuests(QuestState.Success);
-            if (successQuests == null) return;
+            string[] successQuests = stateStore?.GetAllQuests(QuestState.Success);
+            if (successQuests == null || successQuests.Length == 0) return;
 
             foreach (string questName in successQuests)
             {
@@ -400,6 +412,25 @@ namespace PopLife.Quest
 
         #endregion
 
+        #region StateStore 初始化
+
+        private void InitializeStateStore()
+        {
+            // 构建 defMap
+            var defMap = new Dictionary<string, QuestDefinition>();
+            var allDefs = Resources.LoadAll<QuestDefinition>("ScriptableObjects/Quests");
+            foreach (var def in allDefs)
+            {
+                if (def != null && !string.IsNullOrEmpty(def.QuestName))
+                    defMap.TryAdd(def.QuestName, def);
+            }
+
+            stateStore = new QuestStateStore();
+            stateStore.Initialize(defMap, debugMode);
+        }
+
+        #endregion
+
         #region 持久化
 
         private void SaveProgress()
@@ -416,6 +447,10 @@ namespace PopLife.Quest
 
                 // 保存已奖励的任务集合
                 ES3.Save(ES3_KEY_REWARDED, new List<string>(rewardedQuests), ES3_FILE);
+
+                // 保存任务状态数据
+                if (stateStore != null)
+                    ES3.Save(ES3_KEY_STATE_DATA, stateStore.GetSaveData(), ES3_FILE);
             }
             catch (Exception e)
             {
@@ -427,6 +462,13 @@ namespace PopLife.Quest
         {
             try
             {
+                // 加载任务状态数据（必须在其他数据之前，delegate 已安装）
+                if (stateStore != null && ES3.KeyExists(ES3_KEY_STATE_DATA, ES3_FILE))
+                {
+                    var stateData = ES3.Load<QuestStateSaveData>(ES3_KEY_STATE_DATA, ES3_FILE);
+                    stateStore.LoadSaveData(stateData);
+                }
+
                 // 加载计数器
                 if (ES3.KeyExists(ES3_KEY_COUNTERS, ES3_FILE))
                 {

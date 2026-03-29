@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PopLife.Data;
+using PopLife.Quest;
 
 namespace PopLife.UI.Quest
 {
@@ -59,7 +60,7 @@ namespace PopLife.UI.Quest
 
     /// <summary>
     /// 任务数据桥接服务
-    /// 合并 QuestLog（状态/进度）和 QuestDefinition SO（元数据）的数据，供 UI 消费
+    /// 合并 QuestStateStore（状态/进度）和 QuestDefinition SO（元数据）的数据，供 UI 消费
     ///
     /// 挂载位置：DialogueManager 的子物体上（接收 OnQuestStateChange BroadcastMessage）
     /// </summary>
@@ -77,6 +78,9 @@ namespace PopLife.UI.Quest
         private Dictionary<string, QuestDefinition> definitionMap = new();
         // questName → 激活时的 currentDay（用于 DDL 计算）
         private Dictionary<string, int> activationDayMap = new();
+
+        // 快捷访问 QuestStateStore
+        private QuestStateStore Store => QuestLogicManager.Instance?.StateStore;
 
         /// <summary>
         /// UI 订阅此事件以刷新追踪面板
@@ -171,8 +175,8 @@ namespace PopLife.UI.Quest
         /// </summary>
         private void ScanActiveQuests()
         {
-            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
-            if (activeQuests == null) return;
+            string[] activeQuests = Store?.GetAllQuests(QuestState.Active);
+            if (activeQuests == null || activeQuests.Length == 0) return;
 
             int currentDay = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
 
@@ -202,7 +206,7 @@ namespace PopLife.UI.Quest
         private void OnQuestStateChange(string questName)
         {
             // 如果任务刚变为 active，记录激活日
-            var state = QuestLog.GetQuestState(questName);
+            var state = Store?.GetQuestState(questName) ?? QuestState.Unassigned;
             if (state == QuestState.Active && !activationDayMap.ContainsKey(questName))
             {
                 int currentDay = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
@@ -238,17 +242,17 @@ namespace PopLife.UI.Quest
         public List<QuestViewModel> GetTrackedQuests()
         {
             var result = new List<QuestViewModel>();
-            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
-            if (activeQuests == null) return result;
+            string[] activeQuests = Store?.GetAllQuests(QuestState.Active);
+            if (activeQuests == null || activeQuests.Length == 0) return result;
 
             foreach (string qName in activeQuests)
             {
-                if (!QuestLog.IsQuestTrackingEnabled(qName)) continue;
+                if (Store != null && !Store.IsTrackingEnabled(qName)) continue;
 
                 var vm = new QuestViewModel
                 {
                     questName = qName,
-                    displayTitle = QuestLog.GetQuestTitle(qName),
+                    displayTitle = Store?.GetTitle(qName) ?? qName,
                     questType = GetQuestType(qName),
                     remainingDays = GetRemainingDays(qName),
                     sortPriority = GetSortPriority(qName)
@@ -279,23 +283,23 @@ namespace PopLife.UI.Quest
         /// </summary>
         public QuestDetailViewModel? GetQuestDetail(string questName)
         {
-            if (string.IsNullOrEmpty(questName)) return null;
+            if (string.IsNullOrEmpty(questName) || Store == null) return null;
 
-            var state = QuestLog.GetQuestState(questName);
+            var state = Store.GetQuestState(questName);
             if (state == QuestState.Unassigned) return null;
 
             definitionMap.TryGetValue(questName, out var def);
 
             // 构建条目列表
-            int entryCount = QuestLog.GetQuestEntryCount(questName);
+            int entryCount = Store.GetEntryCount(questName);
             var entries = new QuestEntryInfo[entryCount];
             for (int i = 0; i < entryCount; i++)
             {
-                int entryNum = i + 1; // QuestLog entry 从 1 开始
+                int entryNum = i + 1; // entry 从 1 开始
                 entries[i] = new QuestEntryInfo
                 {
                     entryNumber = entryNum,
-                    text = QuestLog.GetQuestEntry(questName, entryNum),
+                    text = Store.GetEntry(questName, entryNum),
                     isCompleted = QuestLog.GetQuestEntryState(questName, entryNum) == QuestState.Success
                 };
             }
@@ -303,8 +307,8 @@ namespace PopLife.UI.Quest
             return new QuestDetailViewModel
             {
                 questName = questName,
-                displayTitle = QuestLog.GetQuestTitle(questName),
-                description = QuestLog.GetQuestDescription(questName),
+                displayTitle = Store.GetTitle(questName),
+                description = Store.GetDescription(questName),
                 questType = def != null ? def.QuestType : QuestType.Side,
                 remainingDays = GetRemainingDays(questName),
                 giverName = def != null ? def.GiverName : "",
@@ -338,10 +342,11 @@ namespace PopLife.UI.Quest
         /// </summary>
         public (int completed, int total) GetProgress(string questName)
         {
-            int total = QuestLog.GetQuestEntryCount(questName);
+            int total = Store?.GetEntryCount(questName) ?? 0;
             int completed = 0;
             for (int i = 1; i <= total; i++)
             {
+                // entry 状态通过 override delegate 路由到 store
                 if (QuestLog.GetQuestEntryState(questName, i) == QuestState.Success)
                     completed++;
             }
@@ -376,15 +381,15 @@ namespace PopLife.UI.Quest
                 quests = new List<QuestViewModel>()
             };
 
-            string[] questNames = QuestLog.GetAllQuests(state);
-            if (questNames == null) return group;
+            string[] questNames = Store?.GetAllQuests(state);
+            if (questNames == null || questNames.Length == 0) return group;
 
             foreach (string qName in questNames)
             {
                 var vm = new QuestViewModel
                 {
                     questName = qName,
-                    displayTitle = QuestLog.GetQuestTitle(qName),
+                    displayTitle = Store?.GetTitle(qName) ?? qName,
                     questType = GetQuestType(qName),
                     remainingDays = GetRemainingDays(qName),
                     sortPriority = GetSortPriority(qName)
@@ -420,8 +425,8 @@ namespace PopLife.UI.Quest
         public List<(string questName, string displayTitle, int dueAbsoluteDay, string giverName)> GetActiveQuestDeadlines()
         {
             var result = new List<(string, string, int, string)>();
-            string[] activeQuests = QuestLog.GetAllQuests(QuestState.Active);
-            if (activeQuests == null) return result;
+            string[] activeQuests = Store?.GetAllQuests(QuestState.Active);
+            if (activeQuests == null || activeQuests.Length == 0) return result;
 
             foreach (string qName in activeQuests)
             {
@@ -430,7 +435,7 @@ namespace PopLife.UI.Quest
                 if (!activationDayMap.TryGetValue(qName, out int activateDay)) continue;
 
                 int dueDay = activateDay + def.DeadlineDays;
-                result.Add((qName, QuestLog.GetQuestTitle(qName), dueDay, def.GiverName));
+                result.Add((qName, Store?.GetTitle(qName) ?? qName, dueDay, def.GiverName));
             }
             return result;
         }
@@ -470,8 +475,8 @@ namespace PopLife.UI.Quest
             if (definitionMap.TryGetValue(questName, out var def))
                 return def.QuestType;
 
-            // 尝试从 QuestLog 的 Group 字段推断
-            string group = QuestLog.GetQuestGroup(questName);
+            // 从 store 推断
+            string group = Store?.GetGroup(questName);
             if (!string.IsNullOrEmpty(group) && group.Equals("Main", StringComparison.OrdinalIgnoreCase))
                 return QuestType.Main;
 

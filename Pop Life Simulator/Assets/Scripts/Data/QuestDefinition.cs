@@ -38,14 +38,13 @@ namespace PopLife.Data
     }
 
     /// <summary>
-    /// 任务元数据 ScriptableObject
-    /// 与 Dialogue System 的 QuestLog 通过 questName 关联
+    /// 任务元数据 ScriptableObject - 任务系统的唯一数据源
     /// </summary>
     [CreateAssetMenu(menuName = "PopLife/Quest/QuestDefinition")]
     public class QuestDefinition : ScriptableObject
     {
-        [Header("关联标识")]
-        [Tooltip("必须与 Dialogue Database 中 Quest 的 Name 完全一致")]
+        [Header("标识")]
+        [Tooltip("任务唯一标识名")]
         [SerializeField] private string questName;
 
         [Header("分类")]
@@ -76,6 +75,21 @@ namespace PopLife.Data
         [Tooltip("勾选后，Marker 在完成通知 Toast 消失后才触发；否则任务完成时立即触发")]
         [SerializeField] private bool triggerMarkerAfterToast = false;
 
+        [Header("显示文本")]
+        [Tooltip("任务标题（UI显示用，留空则使用 questName）")]
+        [SerializeField] private string title;
+
+        [Tooltip("任务描述")]
+        [TextArea(2, 5)]
+        [SerializeField] private string description;
+
+        [Tooltip("任务完成时的描述")]
+        [TextArea(2, 5)]
+        [SerializeField] private string successDescription;
+
+        [Tooltip("每个条目的描述文本，索引0对应Entry1，长度应与conditions一致")]
+        [SerializeField] private string[] entryTexts;
+
         [Header("UI 显示")]
         [SerializeField] private Sprite questIcon;
         [Tooltip("排序优先级，值越大越靠前")]
@@ -83,6 +97,10 @@ namespace PopLife.Data
         [SerializeField] private int sortPriority = 50;
 
         // 公共属性
+        public string Title => string.IsNullOrEmpty(title) ? questName : title;
+        public string Description => description ?? "";
+        public string SuccessDescription => successDescription ?? "";
+        public string[] EntryTexts => entryTexts ?? Array.Empty<string>();
         public QuestCondition[] Conditions => conditions;
         public string QuestName => questName;
         public QuestType QuestType => questType;
@@ -95,5 +113,11 @@ namespace PopLife.Data
         public bool TriggerMarkerAfterToast => triggerMarkerAfterToast;
         public Sprite QuestIcon => questIcon;
         public int SortPriority => sortPriority;
+
+        private void OnValidate()
+        {
+            if (conditions != null && entryTexts != null && conditions.Length != entryTexts.Length)
+                Debug.LogWarning($"[QuestDefinition] {name}: conditions({conditions.Length}) 与 entryTexts({entryTexts.Length}) 长度不一致");
+        }
     }
 }
