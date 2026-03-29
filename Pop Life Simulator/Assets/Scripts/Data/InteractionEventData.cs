@@ -18,8 +18,8 @@ namespace PopLife.Data
         [Tooltip("是否要求特定货架")]
         [SerializeField] private bool useFilterShelf = false;
 
-        [Tooltip("要求的货架原型（启用 useFilterShelf 时有效）")]
-        [SerializeField] private ShelfArchetype requiredShelf;
+        [Tooltip("要求的货架原型列表（启用 useFilterShelf 时有效，匹配任一即可）")]
+        [SerializeField] private ShelfArchetype[] requiredShelves;
 
         [Header("对话配置")]
         [Tooltip("Pixel Crushers Dialogue System 对话标题")]
@@ -37,7 +37,7 @@ namespace PopLife.Data
         public bool UseFilterCategory => useFilterCategory;
         public ProductCategory RequiredCategory => requiredCategory;
         public bool UseFilterShelf => useFilterShelf;
-        public ShelfArchetype RequiredShelf => requiredShelf;
+        public ShelfArchetype[] RequiredShelves => requiredShelves;
         public string ConversationTitle => conversationTitle;
         public QuestReward[] Rewards => rewards;
         public float BubbleTimeout => bubbleTimeout;

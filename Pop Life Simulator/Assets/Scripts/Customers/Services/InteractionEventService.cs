@@ -74,7 +74,10 @@ namespace PopLife.Customers.Services
             if (evt.UseFilterCategory && sa.category != evt.RequiredCategory)
                 return false;
 
-            if (evt.UseFilterShelf && sa != evt.RequiredShelf)
+            if (evt.UseFilterShelf
+                && evt.RequiredShelves != null
+                && evt.RequiredShelves.Length > 0
+                && !System.Array.Exists(evt.RequiredShelves, s => s == sa))
                 return false;
 
             return true;

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfcc2cb3d78f877428f6abb5df9e47a9, type: 3}
+  m_Name: Fleshlights_001
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.InteractionEventData
+  eventId: Fleshlights_001
+  useFilterCategory: 1
+  requiredCategory: 5
+  useFilterShelf: 1
+  requiredShelves:
+  - {fileID: 11400000, guid: 844c518a506e37746b0bad845254db89, type: 2}
+  conversationTitle: Interaction/Fleshlights_001
+  rewards:
+  - type: 1
+    amount: 20
+    itemId: 
+  bubbleTimeout: 10

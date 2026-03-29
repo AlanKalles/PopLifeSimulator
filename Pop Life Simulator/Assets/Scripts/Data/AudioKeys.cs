@@ -84,6 +84,8 @@ namespace PopLife.Data
 
         public const string LOTTERY_PURCHASE = "Lottery_Purchase";
         public const string LOTTERY_WIN = "Lottery_Win";
+        public const string LOTTERY_REEL_TICK = "Lottery_Reel_Tick";
+        public const string LOTTERY_REEL_STOP = "Lottery_Reel_Stop";
 
         #endregion
 

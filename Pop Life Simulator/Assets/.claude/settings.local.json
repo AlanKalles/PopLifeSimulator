@@ -10,7 +10,15 @@
       "Bash(find . -type f -name \"*.cs\" -exec grep -l \"Ticker\\\\|ticker\" {} ;)",
       "Bash(cd /d/github/PopLifeSimulator/\"Pop Life Simulator\"/Assets)",
       "Bash(ls -la *.unity)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(find 'd:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Prefab\\\\UIs' -type f \\\\\\(-name *.prefab -o -name *.unity \\\\\\))",
+      "Bash(for id:*)",
+      "Bash(do echo:*)",
+      "Bash(done)",
+      "Bash(find 'd:/github/PopLifeSimulator/Pop Life Simulator/Assets/Scenes' -name *.unity -type f)",
+      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Prefab\" -name \"*.prefab\" -exec basename {})",
+      "Bash(find 'd:/github/PopLifeSimulator/Pop Life Simulator/Assets' -type d -name *Pixel* -o -type d -name *Dialogue*)",
+      "Bash(find 'd:/github/PopLifeSimulator/Pop Life Simulator/Assets' -type f -name *Dialogue* -name *.asset)"
     ],
     "deny": [],
     "ask": []

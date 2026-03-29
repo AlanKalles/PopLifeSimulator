@@ -47,8 +47,12 @@ namespace PopLife.UI
         [Header("Unlock Animation")]
         [SerializeField] private float fadeInDuration = 0.5f;
 
+        [Header("Animation")]
+        [SerializeField] private LotteryPanelAnimator animator;
+
         private int[] selectedDigits;
         private bool isUnlocked;
+        private LotteryDigitReel[] digitReels;
 
         private UnityEngine.Events.UnityAction[] incrementActions;
         private UnityEngine.Events.UnityAction[] decrementActions;
@@ -73,6 +77,17 @@ namespace PopLife.UI
 
             if (panelRoot != null)
                 panelRoot.SetActive(false);
+
+            // 初始化滚轴
+            int maxVal = LotteryManager.Instance?.GetMaxDigitValue() ?? 9;
+            digitReels = new LotteryDigitReel[digitCount];
+            for (int i = 0; i < digitCount && i < digitTexts.Length; i++)
+            {
+                if (digitTexts[i] == null) continue;
+                var reel = digitTexts[i].gameObject.AddComponent<LotteryDigitReel>();
+                reel.Initialize(digitTexts[i], maxVal);
+                digitReels[i] = reel;
+            }
         }
 
         private void OnEnable()
@@ -180,14 +195,27 @@ namespace PopLife.UI
             if (panelRoot == null) return;
             panelRoot.SetActive(true);
             RefreshDisplay();
+            if (animator != null)
+                animator.PlayOpenAnimation();
             AudioManager.Instance?.PlaySound(AudioKeys.UI_CLICK);
         }
 
         public void Hide()
         {
             if (panelRoot == null) return;
-            panelRoot.SetActive(false);
             AudioManager.Instance?.PlaySound(AudioKeys.UI_CLICK);
+            if (animator != null)
+            {
+                animator.PlayCloseAnimation(() =>
+                {
+                    if (panelRoot != null)
+                        panelRoot.SetActive(false);
+                });
+            }
+            else
+            {
+                panelRoot.SetActive(false);
+            }
         }
 
         public bool IsShowing()
@@ -223,10 +251,10 @@ namespace PopLife.UI
 
         private void UpdateDigitDisplay(int index)
         {
-            if (index < digitTexts.Length && digitTexts[index] != null)
-            {
+            if (digitReels != null && index < digitReels.Length && digitReels[index] != null)
+                digitReels[index].ScrollToDigit(selectedDigits[index]);
+            else if (index < digitTexts.Length && digitTexts[index] != null)
                 digitTexts[index].text = selectedDigits[index].ToString();
-            }
         }
 
         private void OnPurchaseClicked()
@@ -236,11 +264,13 @@ namespace PopLife.UI
             if (LotteryManager.Instance.TryPurchaseTicket(selectedDigits))
             {
                 AudioManager.Instance?.PlaySound(AudioKeys.LOTTERY_PURCHASE);
+                if (animator != null) animator.PlayPurchaseSuccess();
                 RefreshDisplay();
             }
             else
             {
                 AudioManager.Instance?.PlaySound(AudioKeys.UI_ERROR);
+                if (animator != null) animator.PlayPurchaseFailure();
             }
         }
 
@@ -311,8 +341,14 @@ namespace PopLife.UI
                     digitDownButtons[i].interactable = canEdit;
             }
 
+            // RefreshDisplay 时直接 snap 到正确数字，不播动画
             for (int i = 0; i < selectedDigits.Length; i++)
-                UpdateDigitDisplay(i);
+            {
+                if (digitReels != null && i < digitReels.Length && digitReels[i] != null)
+                    digitReels[i].ScrollToDigit(selectedDigits[i], animate: false);
+                else if (i < digitTexts.Length && digitTexts[i] != null)
+                    digitTexts[i].text = selectedDigits[i].ToString();
+            }
         }
     }
 }
