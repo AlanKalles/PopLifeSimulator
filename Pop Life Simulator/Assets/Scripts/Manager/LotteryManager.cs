@@ -16,6 +16,11 @@ namespace PopLife
         public int lastDrawDay;           // 最近开奖的 absoluteDay
         public int totalWinnings;         // 历史总奖金
         public int totalTicketsBought;    // 历史总购买次数
+
+        // 待领取奖金（持久化，防止退出游戏丢失）
+        public int pendingPrize;          // 待领取奖金额
+        public int pendingMatchCount;     // 待领取的匹配数
+        public int[] pendingPlayerTicket; // 开奖时暂存的玩家票号
     }
 
     /// <summary>
@@ -38,9 +43,6 @@ namespace PopLife
         private LotterySaveData saveData = new();
 
         // 运行时状态（不持久化）
-        private int pendingPrize;
-        private int pendingMatchCount;
-        private int[] pendingPlayerTicket; // 暂存玩家票号（开奖时 currentTicket 被清空前保存）
         private bool hasAnnouncedToday;
 
         // ===== 事件 =====
@@ -189,9 +191,6 @@ namespace PopLife
         private void OnNewDayStart()
         {
             hasAnnouncedToday = false;
-            pendingPrize = 0;
-            pendingMatchCount = 0;
-            pendingPlayerTicket = null;
 
             int today = DayLoopManager.Instance.currentDay;
 
@@ -201,6 +200,9 @@ namespace PopLife
 
             if (!IsDrawDay(today)) return;
 
+            // 防重入：同一天不重复开奖（防止场景重载/热重载导致二次开奖覆盖号码）
+            if (saveData.lastDrawDay == today) return;
+
             // 生成开奖号码
             int[] drawnNumber = GenerateDrawNumber();
             saveData.lastDrawnNumber = drawnNumber;
@@ -209,15 +211,18 @@ namespace PopLife
             Debug.Log($"[LotteryManager] 开奖日 Day {today}，号码: {string.Join("", drawnNumber)}");
 
             // 判定中奖（在清空彩票前）
+            saveData.pendingPrize = 0;
+            saveData.pendingMatchCount = 0;
+            saveData.pendingPlayerTicket = null;
+
             if (saveData.currentTicket != null && saveData.currentTicket.Length > 0)
             {
-                // 暂存玩家票号用于贺喜面板展示
-                pendingPlayerTicket = (int[])saveData.currentTicket.Clone();
+                saveData.pendingPlayerTicket = (int[])saveData.currentTicket.Clone();
 
                 int matches = CountMatches(saveData.currentTicket, drawnNumber);
                 int prize = config.GetPrize(matches);
-                pendingMatchCount = matches;
-                pendingPrize = prize;
+                saveData.pendingMatchCount = matches;
+                saveData.pendingPrize = prize;
 
                 Debug.Log($"[LotteryManager] 玩家票号: {string.Join("", saveData.currentTicket)}，匹配 {matches}/4，奖金: ${prize}");
             }
@@ -264,11 +269,11 @@ namespace PopLife
         /// <summary>
         /// 是否有待领取的奖金
         /// </summary>
-        public bool HasPendingWin() => pendingPrize > 0;
+        public bool HasPendingWin() => saveData.pendingPrize > 0;
 
-        public int GetPendingPrize() => pendingPrize;
-        public int GetPendingMatchCount() => pendingMatchCount;
-        public int[] GetPendingPlayerTicket() => pendingPlayerTicket;
+        public int GetPendingPrize() => saveData.pendingPrize;
+        public int GetPendingMatchCount() => saveData.pendingMatchCount;
+        public int[] GetPendingPlayerTicket() => saveData.pendingPlayerTicket;
         public int[] GetLastDrawnNumber() => saveData.lastDrawnNumber;
 
         /// <summary>
@@ -276,18 +281,23 @@ namespace PopLife
         /// </summary>
         public void CollectPrize()
         {
-            if (pendingPrize <= 0) return;
+            if (saveData.pendingPrize <= 0) return;
 
-            ResourceManager.Instance?.AddMoney(pendingPrize);
-            saveData.totalWinnings += pendingPrize;
+            int prize = saveData.pendingPrize;
+            int matchCount = saveData.pendingMatchCount;
+
+            ResourceManager.Instance?.AddMoney(prize);
+            saveData.totalWinnings += prize;
+
+            // 清零并持久化，防止重复领取
+            saveData.pendingPrize = 0;
+            saveData.pendingMatchCount = 0;
+            saveData.pendingPlayerTicket = null;
             SaveState();
 
-            OnPlayerWon?.Invoke(pendingMatchCount, pendingPrize);
+            OnPlayerWon?.Invoke(matchCount, prize);
 
-            Debug.Log($"[LotteryManager] 玩家领取奖金: ${pendingPrize}（{pendingMatchCount}/4 匹配）");
-
-            pendingPrize = 0;
-            pendingMatchCount = 0;
+            Debug.Log($"[LotteryManager] 玩家领取奖金: ${prize}（{matchCount}/4 匹配）");
         }
 
         #endregion
