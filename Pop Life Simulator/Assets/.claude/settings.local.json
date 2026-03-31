@@ -20,7 +20,9 @@
       "Bash(find 'd:/github/PopLifeSimulator/Pop Life Simulator/Assets' -type d -name *Pixel* -o -type d -name *Dialogue*)",
       "Bash(find 'd:/github/PopLifeSimulator/Pop Life Simulator/Assets' -type f -name *Dialogue* -name *.asset)",
       "Bash(find /d/github/PopLifeSimulator -type f \\\\\\(-name *[Qq]uest* -o -name *[Tt]ask* -o -name *[Mm]ission* -o -name *[Rr]equest* -o -name *[Oo]bjective* \\\\\\))",
-      "Bash(xargs ls:*)"
+      "Bash(xargs ls:*)",
+      "Bash(find '/d/github/PopLifeSimulator/Pop Life Simulator/Assets/Scenes' -name *.unity)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []
