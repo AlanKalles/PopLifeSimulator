@@ -8,7 +8,7 @@ namespace PopLife.Runtime
 {
     public class ConstructionManager : MonoBehaviour
     {
-        public enum Mode { None, Place, Move, Destroy }
+        public enum Mode { None, Place, Move, Destroy, PlaceElevator, MoveFloorTile, DestroyFloorTile }
 
         // 建筑放置、销毁、移动或升级后触发，用于UI刷新和 Store Appeal 重算
         public static event System.Action OnBuildingPlacedOrDestroyed;
@@ -30,12 +30,7 @@ namespace PopLife.Runtime
         private Color validColor = new Color(0.5f, 1f, 0.5f, 0.7f); // 半透明绿色
         private Color invalidColor = new Color(1f, 0.5f, 0.5f, 0.7f); // 半透明红色
 
-        [Header("楼层控制")]
-        [SerializeField] private FloorGrid targetFloor; // 当前目标楼层
-        [SerializeField] private bool showFloorIndicator = true; // 是否显示当前楼层指示器
-
         [Header("引用")]
-        public FloorManager floorManager;        // 支持多楼层管理
         public BlueprintManager blueprintManager;// 需由你项目提供
         public ResourceManager resourceManager;  // 需由你项目提供
         private Camera mainCamera;               // 缓存主相机引用
@@ -50,11 +45,22 @@ namespace PopLife.Runtime
         private Vector3 lastMousePositionInMoveMode;           // Move模式上次鼠标位置（优化性能）
         private bool isMoveDragging = false;                   // Move模式：是否正在拖动建筑
 
-        [Header("楼层自动检测")]
-        [SerializeField] private int detectionInterval = 3; // 检测间隔（帧），默认3帧检测一次
-        private FloorDetectionService floorDetector;        // 楼层检测服务
-        private FloorGrid currentDetectedFloor;             // 当前检测到的楼层
-        private FloorGrid lastPreviewFloor;                 // 上一次预览所在楼层
+        // Move模式：记录原始位置/旋转用于取消回滚
+        private Vector2Int moveOriginalGridPos;
+        private int moveOriginalRot;
+
+        // MoveFloorTile / DestroyFloorTile 模式
+        private FloorTileInstance hoveredFloorTile;
+        private Vector3 lastMousePositionInMoveFloorTileMode;
+        private Vector3 lastMousePositionInDestroyFloorTileMode;
+
+        // 当前鼠标所在的 FloorTileInstance（shelf/facility 放置用）
+        private FloorTileInstance currentTargetTile;
+
+        // 电梯放置（两次点击）
+        private FloorTileInstance elevatorFirstTile;
+        private Vector2Int elevatorFirstLocalCell;
+        private bool hasElevatorFirstClick;
 
         void Awake()
         {
@@ -64,65 +70,24 @@ namespace PopLife.Runtime
             {
                 Debug.LogError("ConstructionManager: 找不到主相机！请确保场景中有一个相机的tag设置为'MainCamera'");
             }
-
-            // 初始化楼层检测服务
-            if (mainCamera != null)
-            {
-                floorDetector = new FloorDetectionService(mainCamera, detectionInterval);
-            }
-
-            // 初始化时设置默认目标楼层
-            if (floorManager != null && targetFloor == null)
-            {
-                targetFloor = floorManager.GetActiveFloor();
-                if (targetFloor != null)
-                {
-                    targetFloor.isSelected = true;
-                }
-            }
         }
 
         void OnDisable()
         {
-            // 清理选中状态
-            if (targetFloor != null)
-            {
-                targetFloor.isSelected = false;
-            }
+            // 无需清理楼层选中状态（FloorManager 已移除）
         }
 
         void OnDestroy()
         {
-            // 清理选中状态
-            if (targetFloor != null)
-            {
-                targetFloor.isSelected = false;
-            }
+            // 无需清理楼层选中状态（FloorManager 已移除）
         }
 
         void Update()
         {
-            // 处理楼层切换输入（保留Tab键功能）
-            HandleFloorSwitching();
-
             if (mode == Mode.Place)
             {
-                // 自动检测鼠标所在楼层
-                if (floorDetector != null)
-                {
-                    currentDetectedFloor = floorDetector.DetectFloorAtMouse();
-
-                    // 楼层变化时切换预览
-                    if (currentDetectedFloor != lastPreviewFloor)
-                    {
-                        SwitchPreviewFloor(currentDetectedFloor);
-                        lastPreviewFloor = currentDetectedFloor;
-                    }
-                }
-
-                // 始终更新预览位置（即使没有检测到楼层）
+                // 始终更新预览位置
                 UpdatePlacePreview();
-
                 HandlePlaceInput();
             }
             else if (mode == Mode.Move)
@@ -130,20 +95,6 @@ namespace PopLife.Runtime
                 if (isMoveDragging)
                 {
                     // 拖动状态：显示预览并跟随鼠标
-                    // 自动检测鼠标所在楼层（Move模式也支持）
-                    if (floorDetector != null)
-                    {
-                        currentDetectedFloor = floorDetector.DetectFloorAtMouse();
-
-                        // 楼层变化时切换预览
-                        if (currentDetectedFloor != lastPreviewFloor)
-                        {
-                            SwitchMovePreviewFloor(currentDetectedFloor);
-                            lastPreviewFloor = currentDetectedFloor;
-                        }
-                    }
-
-                    // 始终更新预览位置（即使没有检测到楼层）
                     UpdateMovePreview();
                 }
                 else
@@ -159,84 +110,30 @@ namespace PopLife.Runtime
                 UpdateDestroyHover();
                 HandleDestroyInput();
             }
-        }
-
-        // 处理楼层切换
-        private void HandleFloorSwitching()
-        {
-            if (floorManager == null) return;
-
-            // 使用Tab键循环切换激活的楼层
-            if (Input.GetKeyDown(KeyCode.Tab))
+            else if (mode == Mode.PlaceElevator)
             {
-                SwitchToNextActiveFloor();
+                HandleElevatorInput();
             }
-
-            // 使用数字键直接切换到对应楼层（1-9）
-            for (int i = 1; i <= 9; i++)
+            else if (mode == Mode.MoveFloorTile)
             {
-                if (Input.GetKeyDown(KeyCode.Alpha0 + i))
+                if (isMoveDragging)
                 {
-                    SwitchToFloorByIndex(i - 1);
+                    // 拖动状态：显示预览并跟随鼠标
+                    UpdateMovePreview();
+                    HandleMoveFloorTileInput();
+                }
+                else
+                {
+                    // 选择状态：悬停高亮地板
+                    UpdateMoveFloorTileHover();
+                    HandleMoveFloorTileInput();
                 }
             }
-        }
-
-        // 切换到下一个激活的楼层
-        public void SwitchToNextActiveFloor()
-        {
-            var activeFloors = floorManager.GetAllActiveFloors();
-            if (activeFloors.Count <= 1) return;
-
-            int currentIndex = activeFloors.IndexOf(targetFloor);
-            int nextIndex = (currentIndex + 1) % activeFloors.Count;
-            SetTargetFloor(activeFloors[nextIndex]);
-        }
-
-        // 通过索引切换到楼层
-        public void SwitchToFloorByIndex(int index)
-        {
-            var activeFloors = floorManager.GetAllActiveFloors();
-            if (index >= 0 && index < activeFloors.Count)
+            else if (mode == Mode.DestroyFloorTile)
             {
-                SetTargetFloor(activeFloors[index]);
+                UpdateDestroyFloorTileHover();
+                HandleDestroyFloorTileInput();
             }
-        }
-
-        // 设置目标楼层
-        public void SetTargetFloor(FloorGrid floor)
-        {
-            if (floor != null && floor != targetFloor)
-            {
-                // 取消之前楼层的选中状态
-                if (targetFloor != null)
-                {
-                    targetFloor.isSelected = false;
-                }
-
-                targetFloor = floor;
-
-                // 设置新楼层的选中状态
-                targetFloor.isSelected = true;
-
-                // 通知UI更新（如果有楼层指示器）
-                if (showFloorIndicator)
-                {
-                    Debug.Log($"切换到楼层: {floor.floorId}");
-                    // TODO: 更新UI显示当前楼层
-                }
-            }
-        }
-
-        // 获取当前操作的目标楼层
-        private FloorGrid GetTargetFloor()
-        {
-            // 如果没有设置目标楼层，使用FloorManager的当前活跃楼层
-            if (targetFloor == null && floorManager != null)
-            {
-                targetFloor = floorManager.GetActiveFloor();
-            }
-            return targetFloor;
         }
 
         // —— 放置模式 ——
@@ -347,15 +244,15 @@ namespace PopLife.Runtime
 
             var facilities = obj.GetComponentsInChildren<FacilityInstance>();
             foreach (var facility in facilities) facility.enabled = false;
+
+            var floorTiles = obj.GetComponentsInChildren<FloorTileInstance>();
+            foreach (var ft in floorTiles) ft.enabled = false;
         }
 
 
         private void UpdatePlacePreview()
         {
             if (!preview) return;
-
-            // 使用自动检测的楼层（如果可用），否则使用目标楼层
-            var floor = currentDetectedFloor ?? GetTargetFloor();
 
             // 检查相机是否存在
             if (mainCamera == null)
@@ -370,21 +267,45 @@ namespace PopLife.Runtime
 
             var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
 
-            // 如果有楼层，使用楼层坐标系；否则直接使用鼠标世界坐标
             bool canPlace = false;
-            if (floor != null)
-            {
-                var gridPos = floor.WorldToGrid(mouse);
-                preview.transform.SetPositionAndRotation(floor.GridToWorld(gridPos), Quaternion.Euler(0, 0, previewRot * 90));
 
-                canPlace = floor.CanPlaceFootprint(selectedArchetype.GetRotatedFootprint(previewRot), gridPos)
-                          && selectedArchetype.ValidatePlacement(floor, gridPos, previewRot);
-            }
-            else
+            if (selectedArchetype is Data.IWorldPlaceable wp)
             {
-                // 没有楼层时，预览直接跟随鼠标（但标记为不可建造）
-                preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
-                canPlace = false;
+                // FloorTile: 使用 WorldGrid 坐标，通过 IWorldPlaceable 验证
+                var wg = WorldGrid.Instance;
+                if (wg != null)
+                {
+                    var gridPos = wg.WorldToGrid(mouse);
+                    preview.transform.SetPositionAndRotation(
+                        wg.GridToWorld(gridPos),
+                        Quaternion.Euler(0, 0, previewRot * 90));
+
+                    canPlace = wp.ValidateWorldPlacement(wg, gridPos, previewRot);
+                }
+                else
+                {
+                    preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
+                }
+            }
+            else if (selectedArchetype is Data.IInteriorPlaceable ip)
+            {
+                // Shelf/Facility: 检测 FloorTileInstance，通过 IInteriorPlaceable 验证
+                currentTargetTile = DetectFloorTileAtWorld(mouse);
+                if (currentTargetTile?.Interior != null)
+                {
+                    var localPos = currentTargetTile.Interior.WorldToLocal(mouse);
+                    preview.transform.SetPositionAndRotation(
+                        currentTargetTile.Interior.LocalToWorld(localPos),
+                        Quaternion.Euler(0, 0, previewRot * 90));
+
+                    canPlace = ip.ValidateInteriorPlacement(currentTargetTile.Interior, localPos, previewRot);
+                }
+                else
+                {
+                    // 没有地板时，预览直接跟随鼠标（但标记为不可建造）
+                    preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
+                    canPlace = false;
+                }
             }
 
             // 更新所有渲染器的颜色
@@ -402,14 +323,6 @@ namespace PopLife.Runtime
             // 使用 InputGateService 判定纯点击（避免拖拽时误放置建筑）
             if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
             {
-                // 使用自动检测的楼层（如果可用），否则使用目标楼层
-                var floor = currentDetectedFloor ?? GetTargetFloor();
-                if (floor == null)
-                {
-                    // 鼠标不在楼层区域 - 不弹窗，预览已经变红
-                    return;
-                }
-
                 if (mainCamera == null)
                 {
                     Debug.LogError("ConstructionManager: 无法放置建筑 - 主相机未找到");
@@ -417,15 +330,39 @@ namespace PopLife.Runtime
                 }
 
                 var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
-                var gp = floor.WorldToGrid(mouse);
 
-                var inst = floor.PlaceBuildingTransactional(selectedArchetype, gp, previewRot);
+                // 根据类型走不同放置路径
+                BuildingInstance inst = null;
+
+                if (selectedArchetype is Data.IWorldPlaceable && selectedArchetype is FloorTileArchetype fta)
+                {
+                    // FloorTile: 通过 WorldGrid 放置（IWorldPlaceable 验证已在预览阶段完成）
+                    var wg = WorldGrid.Instance;
+                    if (wg != null)
+                    {
+                        var gp = wg.WorldToGrid(mouse);
+                        inst = wg.PlaceFloorTileTransactional(fta, gp, previewRot);
+                    }
+                }
+                else if (selectedArchetype is Data.IInteriorPlaceable)
+                {
+                    // Shelf/Facility: 通过 FloorTileInstance.Interior 放置（IInteriorPlaceable 验证已在预览阶段完成）
+                    if (currentTargetTile != null && currentTargetTile.Interior != null)
+                    {
+                        var localPos = currentTargetTile.Interior.WorldToLocal(mouse);
+                        inst = currentTargetTile.PlaceBuildingTransactional(selectedArchetype, localPos, previewRot);
+                    }
+                    else
+                    {
+                        // 鼠标不在地板区域 - 不弹窗，预览已经变红
+                        return;
+                    }
+                }
+
                 if (inst)
                 {
-                    // 根据建筑类型播放不同音效
                     PlayBuildSound(selectedArchetype);
 
-                    // 浮动扣钱文字（显示修正后的实际成本）
                     if (FloatingTextSpawner.Instance != null)
                     {
                         int displayCost = GlobalModifierManager.Instance != null
@@ -437,16 +374,12 @@ namespace PopLife.Runtime
                         );
                     }
 
-                    // 通知货架/建筑放置成功
                     if (GameStateManager.Instance != null)
-                    {
                         GameStateManager.Instance.NotifyShelfPlaced();
-                    }
 
-                    // 通知UI刷新已放置货架状态
                     OnBuildingPlacedOrDestroyed?.Invoke();
 
-                    // 货架唯一性：放置成功后强制退出（不允许Shift连续放置同archetype）
+                    // 地板可以按 Shift 连续放置，货架不可
                     if (selectedArchetype is ShelfArchetype || !Input.GetKey(KeyCode.LeftShift))
                         Cancel();
                 }
@@ -497,7 +430,7 @@ namespace PopLife.Runtime
                 }
             }
 
-            // Raycast检测鼠标悬停的建筑
+            // Raycast检测鼠标悬停的建筑（含地板）
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
 
@@ -531,35 +464,77 @@ namespace PopLife.Runtime
         /// </summary>
         private void BeginMoveDragging(BuildingInstance bi)
         {
+            var wg = WorldGrid.Instance;
+            if (wg == null) return;
+
+            // Editor 锁定检查
+            if (bi.EditorLockedMove)
+            {
+                UIManager.Instance?.ShowAlert("This building is locked and cannot be moved.");
+                return;
+            }
+
+            // 地板：检查限制
+            if (bi is FloorTileInstance fti)
+            {
+                if (fti.IsDefault)
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Cannot move the default floor.");
+                    return;
+                }
+                if (fti.HasBuildingsInInterior())
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Cannot move: remove all buildings on this floor tile first.");
+                    return;
+                }
+                if (wg.HasElevatorOnFloorTile(fti))
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Cannot move: remove elevator first.");
+                    return;
+                }
+                if (wg.WouldBreakSupport(fti))
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Cannot move: other floor tiles depend on this one.");
+                    return;
+                }
+
+                // 记录原始位置用于取消回滚
+                moveOriginalGridPos = fti.gridPosition;
+                moveOriginalRot = fti.rotation;
+
+                // 临时反注册地板（不销毁 GO）
+                if (!wg.UnregisterFloorTile(fti))
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Cannot move this floor tile.");
+                    return;
+                }
+            }
+            else
+            {
+                // Shelf/Facility: 记录原始位置
+                moveOriginalGridPos = bi.gridPosition;
+                moveOriginalRot = bi.rotation;
+            }
+
             selectedInstance = bi;
             previewRot = bi.rotation;
             isMoveDragging = true;
 
-            // 设置目标楼层为建筑所在楼层
-            var floor = floorManager.GetFloor(bi.floorId);
-            if (floor != null)
-            {
-                SetTargetFloor(floor);
-            }
-
-            // 隐藏悬停高亮
             if (buildingHighlighter != null)
-            {
                 buildingHighlighter.Hide();
-            }
 
-            // 创建预览
             CreatePreview(bi.archetype);
-
-            Debug.Log($"Started dragging building: {bi.archetype.displayName}");
+            Debug.Log($"Started dragging: {bi.archetype.displayName}");
         }
 
         private void UpdateMovePreview()
         {
             if (!preview || !selectedInstance) return;
-
-            // 使用自动检测的楼层（如果可用），否则使用目标楼层
-            var floor = currentDetectedFloor ?? GetTargetFloor();
 
             // 检查相机是否存在
             if (mainCamera == null)
@@ -574,30 +549,45 @@ namespace PopLife.Runtime
 
             var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
 
-            // 如果有楼层，使用楼层坐标系；否则直接使用鼠标世界坐标
             bool canPlace = false;
-            if (floor != null)
-            {
-                var gp = floor.WorldToGrid(mouse);
-                preview.transform.SetPositionAndRotation(floor.GridToWorld(gp), Quaternion.Euler(0, 0, previewRot * 90));
 
-                // 如果是跨楼层移动，不允许自身占用检查
-                if (floor.floorId == selectedInstance.floorId)
+            if (selectedInstance is FloorTileInstance)
+            {
+                // FloorTile: 使用 WorldGrid 坐标
+                var wg = WorldGrid.Instance;
+                if (wg != null)
                 {
-                    // 同楼层移动，允许自身占用
-                    canPlace = floor.CanPlaceFootprintAllowSelf(selectedInstance.archetype.GetRotatedFootprint(previewRot), gp, selectedInstance.instanceId);
+                    var gp = wg.WorldToGrid(mouse);
+                    preview.transform.SetPositionAndRotation(
+                        wg.GridToWorld(gp),
+                        Quaternion.Euler(0, 0, previewRot * 90));
+
+                    var fp = selectedInstance.archetype.GetRotatedFootprint(previewRot);
+                    canPlace = wg.CanPlaceFloorTile(fp, gp);
                 }
                 else
                 {
-                    // 跨楼层移动，不允许自身占用
-                    canPlace = floor.CanPlaceFootprint(selectedInstance.archetype.GetRotatedFootprint(previewRot), gp);
+                    preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
                 }
             }
             else
             {
-                // 没有楼层时，预览直接跟随鼠标（但标记为不可建造）
-                preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
-                canPlace = false;
+                // Shelf/Facility: 使用宿主 tile 的 interior
+                var hostTile = FindFloorTileByInstanceId(selectedInstance.hostFloorTileInstanceId);
+                if (hostTile?.Interior != null)
+                {
+                    var localPos = hostTile.Interior.WorldToLocal(mouse);
+                    preview.transform.SetPositionAndRotation(
+                        hostTile.Interior.LocalToWorld(localPos),
+                        Quaternion.Euler(0, 0, previewRot * 90));
+
+                    var fp = selectedInstance.archetype.GetRotatedFootprint(previewRot);
+                    canPlace = hostTile.Interior.CanPlaceAllowSelf(fp, localPos, selectedInstance.instanceId);
+                }
+                else
+                {
+                    preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
+                }
             }
 
             // 更新所有渲染器的颜色
@@ -641,7 +631,7 @@ namespace PopLife.Runtime
                         }
                     }
 
-                    // Raycast检测点击的建筑
+                    // Raycast检测点击的建筑（含地板）
                     Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
 
@@ -650,7 +640,6 @@ namespace PopLife.Runtime
                         BuildingInstance building = hit.collider.GetComponent<BuildingInstance>();
                         if (building != null)
                         {
-                            // 进入拖动阶段
                             BeginMoveDragging(building);
                         }
                     }
@@ -659,21 +648,13 @@ namespace PopLife.Runtime
             else
             {
                 // 阶段2：拖动并放置建筑
-                // 支持R键旋转
+                // 支持R键旋转（地板总是可旋转，shelf根据archetype决定）
                 if (Input.GetKeyDown(KeyCode.R) && selectedInstance.archetype.canRotate)
                     previewRot = (previewRot + 1) % 4;
 
                 // 点击放置（使用 InputGateService 判定纯点击）
                 if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
                 {
-                    // 使用自动检测的楼层（如果可用），否则使用目标楼层
-                    var targetFloor = currentDetectedFloor ?? GetTargetFloor();
-                    if (targetFloor == null)
-                    {
-                        // 鼠标不在楼层区域 - 预览已经变红，不需要弹窗
-                        return;
-                    }
-
                     if (mainCamera == null)
                     {
                         Debug.LogError("ConstructionManager: 无法移动建筑 - 主相机未找到");
@@ -681,40 +662,51 @@ namespace PopLife.Runtime
                     }
 
                     var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
-                    var gp = targetFloor.WorldToGrid(mouse);
 
-                    // 统一移动逻辑：先检查资源，再执行移动
-                    bool isCrossFloor = (targetFloor.floorId != selectedInstance.floorId);
-                    int moveCost = isCrossFloor ? selectedInstance.archetype.moveCost * 2 : selectedInstance.archetype.moveCost;
+                    // 移动成本
+                    int moveCost = selectedInstance.archetype.moveCost;
 
                     // 1. 资源检查
                     if (!resourceManager.CanAfford(moveCost, 0))
                     {
-                        // 资金不足 - 预览变红已经提示，不需要弹窗
                         Debug.Log($"Not enough money to move building. Required: ${moveCost}, Current: ${resourceManager.GetMoney()}");
                         return;
                     }
 
                     // 2. 执行移动
                     bool moveSuccess = false;
-                    if (isCrossFloor)
+
+                    if (selectedInstance is FloorTileInstance movingFti)
                     {
-                        // 跨楼层移动
-                        moveSuccess = MoveBuilingAcrossFloors(selectedInstance, targetFloor, gp, previewRot);
+                        // FloorTile: 重新注册到新位置
+                        var wg = WorldGrid.Instance;
+                        if (wg != null)
+                        {
+                            var gp = wg.WorldToGrid(mouse);
+                            moveSuccess = wg.ReregisterFloorTile(movingFti, gp, previewRot);
+                        }
                     }
                     else
                     {
-                        // 同楼层移动
-                        moveSuccess = targetFloor.MoveBuilding(selectedInstance, gp, previewRot);
+                        // Shelf/Facility: 在宿主 tile 的 interior 内移动
+                        var hostTile = FindFloorTileByInstanceId(selectedInstance.hostFloorTileInstanceId);
+                        if (hostTile != null)
+                        {
+                            var localPos = hostTile.Interior.WorldToLocal(mouse);
+                            moveSuccess = hostTile.MoveBuilding(selectedInstance, localPos, previewRot);
+                        }
                     }
 
                     // 3. 处理结果
                     if (moveSuccess)
                     {
+                        // 扣除移动费用
+                        if (moveCost > 0)
+                            resourceManager.SpendMoney(moveCost);
+
                         AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
                         OnBuildingPlacedOrDestroyed?.Invoke();
-                        // 移动成功后回到悬停选择状态，继续留在Move模式
-                        CancelMoveDrag();
+                        FinishMoveDrag(); // 成功后不回滚
                     }
                     // 注意：移动失败时预览已经是红色，不需要额外弹窗
                 }
@@ -722,62 +714,144 @@ namespace PopLife.Runtime
         }
 
         /// <summary>
-        /// 取消当前拖动，回到Move模式的悬停选择状态
+        /// 取消拖动并回滚到原位
         /// </summary>
         private void CancelMoveDrag()
+        {
+            if (selectedInstance is FloorTileInstance cancelFti)
+            {
+                // FloorTile: 回滚到原位置（gridPosition 未被修改，因为 ReregisterFloorTile 没被成功调用过）
+                var wg = WorldGrid.Instance;
+                if (wg != null)
+                {
+                    wg.ReregisterFloorTile(cancelFti, moveOriginalGridPos, moveOriginalRot, skipSupportCheck: true);
+                }
+            }
+            // Shelf/Facility: 无需回滚（MoveBuilding 是原子操作，没调用过就没有副作用）
+
+            FinishMoveDrag();
+        }
+
+        /// <summary>
+        /// 完成拖动（成功或取消后的通用清理，不做回滚）
+        /// </summary>
+        private void FinishMoveDrag()
         {
             isMoveDragging = false;
             selectedInstance = null;
             if (preview) Destroy(preview);
             previewRenderers = null;
 
-            // 重置楼层检测状态
-            currentDetectedFloor = null;
-            lastPreviewFloor = null;
-            if (floorDetector != null)
-            {
-                floorDetector.ResetCache();
-            }
-
-            // 重置悬停状态，让UpdateMoveHover重新检测
             hoveredBuildingInMoveMode = null;
             lastMousePositionInMoveMode = Vector3.zero;
+
+            hoveredFloorTile = null;
+            lastMousePositionInMoveFloorTileMode = Vector3.zero;
+        }
+
+        // —— 移动地板模式 ——
+        /// <summary>
+        /// 进入移动地板模式（使用逻辑检测而非 Raycast）
+        /// </summary>
+        public void BeginMoveFloorTile()
+        {
+            mode = Mode.MoveFloorTile;
+            isMoveDragging = false;
+            selectedInstance = null;
+            hoveredFloorTile = null;
+            lastMousePositionInMoveFloorTileMode = Vector3.zero;
+            Debug.Log("Entered MoveFloorTile mode - Click any floor tile to move");
         }
 
         /// <summary>
-        /// 跨楼层移动建筑
-        /// 注意：调用此方法前应先检查资源是否足够！
+        /// 更新MoveFloorTile模式下的鼠标悬停高亮（选择阶段）
         /// </summary>
-        private bool MoveBuilingAcrossFloors(BuildingInstance bi, FloorGrid targetFloor, Vector2Int newPos, int newRot)
+        private void UpdateMoveFloorTileHover()
         {
-            // 1. 检查目标位置是否可用
-            var footprint = bi.archetype.GetRotatedFootprint(newRot);
-            if (!targetFloor.CanPlaceFootprint(footprint, newPos))
-                return false;
+            Vector3 currentMousePos = Input.mousePosition;
+            if (currentMousePos == lastMousePositionInMoveFloorTileMode) return;
+            lastMousePositionInMoveFloorTileMode = currentMousePos;
 
-            // 2. 从原楼层移除
-            var sourceFloor = floorManager.GetFloor(bi.floorId);
-            if (sourceFloor == null) return false;
+            if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
 
-            sourceFloor.RemoveBuilding(bi, refundBlueprint: false, refundMoney: false); // 移动时不返还任何资源
+            Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorld.z = 0;
+            FloorTileInstance newHovered = DetectFloorTileAtWorld(mouseWorld);
 
-            // 3. 移动GameObject到新楼层
-            bi.transform.SetPositionAndRotation(targetFloor.GridToWorld(newPos), Quaternion.Euler(0, 0, newRot * 90));
-            bi.transform.SetParent(targetFloor.buildingContainer);
-
-            // 4. 注册到新楼层
-            if (!targetFloor.RegisterExistingBuilding(bi, newPos, newRot))
+            if (newHovered != hoveredFloorTile)
             {
-                // 如果注册失败，恢复到原楼层
-                sourceFloor.RegisterExistingBuilding(bi, bi.gridPosition, bi.rotation);
-                bi.transform.SetParent(sourceFloor.buildingContainer);
-                return false;
+                if (hoveredFloorTile != null && buildingHighlighter != null)
+                    buildingHighlighter.Hide();
+                if (newHovered != null && buildingHighlighter != null)
+                    buildingHighlighter.Show(newHovered, moveHighlightColor);
+                hoveredFloorTile = newHovered;
+            }
+        }
+
+        /// <summary>
+        /// 处理MoveFloorTile模式的输入
+        /// </summary>
+        private void HandleMoveFloorTileInput()
+        {
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (isMoveDragging)
+                    CancelMoveDrag();
+                else
+                    Cancel();
+                return;
             }
 
-            // 5. 扣除资源（跨楼层移动成本×2，调用方应先检查 CanAfford）
-            resourceManager.SpendMoney(bi.archetype.moveCost * 2);
+            if (!isMoveDragging)
+            {
+                // 选择阶段：使用逻辑检测，非 Raycast
+                if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
+                {
+                    if (hoveredFloorTile != null)
+                        BeginMoveDragging(hoveredFloorTile);
+                }
+            }
+            else
+            {
+                // 拖动阶段：支持R键旋转
+                if (Input.GetKeyDown(KeyCode.R) && selectedInstance.archetype.canRotate)
+                    previewRot = (previewRot + 1) % 4;
 
-            return true;
+                // 点击放置
+                if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
+                {
+                    if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
+
+                    var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
+                    var wg = WorldGrid.Instance;
+                    if (wg == null) return;
+
+                    var gp = wg.WorldToGrid(mouse);
+                    int moveCost = selectedInstance.archetype.moveCost;
+
+                    if (!resourceManager.CanAfford(moveCost, 0))
+                    {
+                        Debug.Log($"Not enough money to move floor tile. Required: ${moveCost}, Current: ${resourceManager.GetMoney()}");
+                        return;
+                    }
+
+                    var movingFti = selectedInstance as FloorTileInstance;
+                    if (movingFti != null)
+                    {
+                        bool moveSuccess = wg.ReregisterFloorTile(movingFti, gp, previewRot);
+                        if (moveSuccess)
+                        {
+                            if (moveCost > 0)
+                                resourceManager.SpendMoney(moveCost);
+
+                            movingFti.InitializeInterior();
+                            AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
+                            OnBuildingPlacedOrDestroyed?.Invoke();
+                            FinishMoveDrag();
+                        }
+                    }
+                }
+            }
         }
 
         // —— 销毁模式 ——
@@ -819,7 +893,7 @@ namespace PopLife.Runtime
                 }
             }
 
-            // Raycast检测鼠标悬停的建筑
+            // Raycast检测鼠标悬停的建筑（含地板）
             Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
 
@@ -874,7 +948,7 @@ namespace PopLife.Runtime
                     }
                 }
 
-                // Raycast检测点击的建筑
+                // Raycast检测点击的建筑（含地板）
                 Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
                 RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("InteractableShelf"));
 
@@ -883,7 +957,42 @@ namespace PopLife.Runtime
                     BuildingInstance building = hit.collider.GetComponent<BuildingInstance>();
                     if (building != null)
                     {
-                        // 显示确认弹窗
+                        // Editor 锁定检查
+                        if (building.EditorLockedDestroy)
+                        {
+                            UIManager.Instance?.ShowAlert("This building is locked and cannot be destroyed.");
+                            return;
+                        }
+
+                        // 地板拆除：额外检查（通��� WorldGrid）
+                        if (building is FloorTileInstance destroyFti)
+                        {
+                            var wg = WorldGrid.Instance;
+                            if (destroyFti.IsDefault)
+                            {
+                                if (UIManager.Instance != null)
+                                    UIManager.Instance.ShowAlert("Cannot destroy the default floor.");
+                                return;
+                            }
+                            if (destroyFti.HasBuildingsInInterior())
+                            {
+                                if (UIManager.Instance != null)
+                                    UIManager.Instance.ShowAlert("Cannot destroy: remove all buildings on this floor tile first.");
+                                return;
+                            }
+                            if (wg != null && wg.HasElevatorOnFloorTile(destroyFti))
+                            {
+                                if (UIManager.Instance != null)
+                                    UIManager.Instance.ShowAlert("Cannot destroy: remove elevator first.");
+                                return;
+                            }
+                            if (wg != null && wg.WouldBreakSupport(destroyFti))
+                            {
+                                if (UIManager.Instance != null)
+                                    UIManager.Instance.ShowAlert("Cannot destroy: other floor tiles depend on this one.");
+                                return;
+                            }
+                        }
                         ShowDestroyConfirmation(building);
                     }
                 }
@@ -927,16 +1036,24 @@ namespace PopLife.Runtime
         /// </summary>
         private void ExecuteDestroyBuilding(BuildingInstance bi)
         {
-            var floor = floorManager.GetFloor(bi.floorId);
+            if (bi is FloorTileInstance fti)
+            {
+                // 地板拆除（WorldGrid.RemoveFloorTile 会 Destroy GO 并退款）
+                var wg = WorldGrid.Instance;
+                if (wg != null)
+                {
+                    wg.RemoveFloorTile(fti, refundMoney: true);
+                }
+            }
+            else
+            {
+                // 普通建筑拆除：通过宿主 FloorTileInstance 移除
+                var hostTile = FindFloorTileByInstanceId(bi.hostFloorTileInstanceId);
+                hostTile?.RemoveBuilding(bi, refundMoney: true);
+                Destroy(bi.gameObject);
+            }
 
-            // 蓝图已改为永久解锁，不需要返还
-            // 但返还建造成本（按destroyRefundRate比例，默认80%）
-            floor.RemoveBuilding(bi, refundBlueprint: false, refundMoney: true);
-
-            Destroy(bi.gameObject);
             AudioManager.Instance.PlaySound(AudioKeys.BUILDING_DESTROYED);
-
-            // 通知UI刷新已放置货架状态
             OnBuildingPlacedOrDestroyed?.Invoke();
 
             Debug.Log($"Destroyed {bi.archetype.displayName}, refunded ${Mathf.RoundToInt(bi.archetype.buildCost * bi.archetype.destroyRefundRate)}");
@@ -948,6 +1065,95 @@ namespace PopLife.Runtime
         public void DestroyBuilding(BuildingInstance bi)
         {
             ExecuteDestroyBuilding(bi);
+        }
+
+        // —— 销毁地板模式 ——
+        /// <summary>
+        /// 进入销毁地板模式（使用逻辑检测而非 Raycast）
+        /// </summary>
+        public void BeginDestroyFloorTile()
+        {
+            mode = Mode.DestroyFloorTile;
+            hoveredFloorTile = null;
+            lastMousePositionInDestroyFloorTileMode = Vector3.zero;
+            Debug.Log("Entered DestroyFloorTile mode - Click any floor tile to destroy");
+        }
+
+        /// <summary>
+        /// 更新DestroyFloorTile模式下的鼠标悬停高亮
+        /// </summary>
+        private void UpdateDestroyFloorTileHover()
+        {
+            Vector3 currentMousePos = Input.mousePosition;
+            if (currentMousePos == lastMousePositionInDestroyFloorTileMode) return;
+            lastMousePositionInDestroyFloorTileMode = currentMousePos;
+
+            if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
+
+            Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorld.z = 0;
+            FloorTileInstance newHovered = DetectFloorTileAtWorld(mouseWorld);
+
+            if (newHovered != hoveredFloorTile)
+            {
+                if (hoveredFloorTile != null && buildingHighlighter != null)
+                    buildingHighlighter.Hide();
+                if (newHovered != null && buildingHighlighter != null)
+                    buildingHighlighter.Show(newHovered, destroyHighlightColor);
+                hoveredFloorTile = newHovered;
+            }
+        }
+
+        /// <summary>
+        /// 处理DestroyFloorTile模式的输入
+        /// </summary>
+        private void HandleDestroyFloorTileInput()
+        {
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                Cancel();
+                return;
+            }
+
+            if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
+            {
+                if (hoveredFloorTile != null)
+                {
+                    var wg = WorldGrid.Instance;
+
+                    // Editor 锁定检查
+                    if (hoveredFloorTile.EditorLockedDestroy)
+                    {
+                        UIManager.Instance?.ShowAlert("This building is locked and cannot be destroyed.");
+                        return;
+                    }
+
+                    // 地板拆除限制检查
+                    if (hoveredFloorTile.IsDefault)
+                    {
+                        UIManager.Instance?.ShowAlert("Cannot destroy the default floor.");
+                        return;
+                    }
+                    if (hoveredFloorTile.HasBuildingsInInterior())
+                    {
+                        UIManager.Instance?.ShowAlert("Cannot destroy: remove all buildings on this floor tile first.");
+                        return;
+                    }
+                    if (wg != null && wg.HasElevatorOnFloorTile(hoveredFloorTile))
+                    {
+                        UIManager.Instance?.ShowAlert("Cannot destroy: remove elevator first.");
+                        return;
+                    }
+                    if (wg != null && wg.WouldBreakSupport(hoveredFloorTile))
+                    {
+                        UIManager.Instance?.ShowAlert("Cannot destroy: other floor tiles depend on this one.");
+                        return;
+                    }
+
+                    // 显示确认弹窗
+                    ShowDestroyConfirmation(hoveredFloorTile);
+                }
+            }
         }
 
         private void UpdatePreviewColor(bool canPlace)
@@ -968,56 +1174,6 @@ namespace PopLife.Runtime
                 {
                     // 红色调，表示不可建造
                     renderer.color = invalidColor;
-                }
-            }
-        }
-
-        // 切换预览楼层（Place模式）
-        private void SwitchPreviewFloor(FloorGrid newFloor)
-        {
-            // 如果新楼层为null（鼠标离开所有楼层），不需要清理预览
-            // 预览会被HidePreview()方法处理
-
-            if (newFloor == null)
-            {
-                return;
-            }
-
-            // 更新目标楼层（这会自动更新FloorManager的选中状态）
-            SetTargetFloor(newFloor);
-
-            // 通知FloorManager切换楼层（触发高亮效果）
-            if (floorManager != null)
-            {
-                floorManager.SetActiveFloorProgrammatic(newFloor);
-            }
-        }
-
-        // 切换预览楼层（Move模式）
-        private void SwitchMovePreviewFloor(FloorGrid newFloor)
-        {
-            if (newFloor == null)
-            {
-                return;
-            }
-
-            // 更新目标楼层
-            SetTargetFloor(newFloor);
-
-            // 通知FloorManager切换楼层
-            if (floorManager != null)
-            {
-                floorManager.SetActiveFloorProgrammatic(newFloor);
-            }
-
-            // 检查是否跨楼层移动（用于成本显示）
-            if (selectedInstance != null)
-            {
-                bool isCrossFloor = (newFloor.floorId != selectedInstance.floorId);
-                if (isCrossFloor && showFloorIndicator)
-                {
-                    Debug.Log($"跨楼层移动：{selectedInstance.floorId} → {newFloor.floorId} (成本×2)");
-                    // TODO: 更新UI显示移动成本
                 }
             }
         }
@@ -1055,23 +1211,125 @@ namespace PopLife.Runtime
             }
         }
 
+        // ========== 电梯放置 ==========
+
+        /// <summary>
+        /// 进入电梯放置模式（由 UI 调用）
+        /// </summary>
+        public void BeginPlaceElevator()
+        {
+            Cancel(); // 先退出当前模式
+            mode = Mode.PlaceElevator;
+            hasElevatorFirstClick = false;
+            elevatorFirstTile = null;
+            Debug.Log("Entered Elevator placement mode - Click first cell, then second cell.");
+        }
+
+        private void HandleElevatorInput()
+        {
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                Cancel();
+                return;
+            }
+
+            if (!(InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0)))
+                return;
+
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+                if (mainCamera == null) return;
+            }
+
+            // 检测点击位置所在的 FloorTileInstance 和 interior 局部坐标
+            var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mouse.z = 0;
+
+            var tile = DetectFloorTileAtWorld(mouse);
+            if (tile?.Interior == null)
+            {
+                if (UIManager.Instance != null)
+                    UIManager.Instance.ShowAlert("No floor tile here. Click on a floor tile.");
+                return;
+            }
+
+            var localCell = tile.Interior.WorldToLocal(mouse);
+            if (!tile.Interior.InBounds(localCell))
+            {
+                if (UIManager.Instance != null)
+                    UIManager.Instance.ShowAlert("Click inside a floor tile's interior.");
+                return;
+            }
+
+            if (!hasElevatorFirstClick)
+            {
+                // 第一次点击
+                if (tile.Interior.IsOccupied(localCell))
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Cell occupied by a building. Choose an empty cell.");
+                    return;
+                }
+
+                elevatorFirstTile = tile;
+                elevatorFirstLocalCell = localCell;
+                hasElevatorFirstClick = true;
+                Debug.Log($"Elevator first cell: tile={tile.instanceId}, local={localCell}. Now click the second cell on an adjacent floor.");
+            }
+            else
+            {
+                // 第二次点击
+                if (tile.instanceId == elevatorFirstTile.instanceId && localCell == elevatorFirstLocalCell)
+                {
+                    Debug.Log("Same cell. Click a different cell.");
+                    return;
+                }
+
+                if (tile.Interior.IsOccupied(localCell))
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Cell occupied. Choose an empty cell.");
+                    hasElevatorFirstClick = false;
+                    return;
+                }
+
+                var wg = WorldGrid.Instance;
+                if (wg == null)
+                {
+                    hasElevatorFirstClick = false;
+                    return;
+                }
+
+                // 尝试两种方向
+                bool placed = wg.PlaceElevator(elevatorFirstTile, elevatorFirstLocalCell, tile, localCell)
+                           || wg.PlaceElevator(tile, localCell, elevatorFirstTile, elevatorFirstLocalCell);
+
+                if (placed)
+                {
+                    AudioManager.Instance?.PlaySound(AudioKeys.BUILDING_PLACED);
+                    OnBuildingPlacedOrDestroyed?.Invoke();
+                    Debug.Log($"Elevator placed: {elevatorFirstTile.instanceId}:{elevatorFirstLocalCell} ↔ {tile.instanceId}:{localCell}");
+                }
+                else
+                {
+                    if (UIManager.Instance != null)
+                        UIManager.Instance.ShowAlert("Invalid: cells must be on adjacent floors, both with floor tiles, both empty.");
+                }
+
+                hasElevatorFirstClick = false;
+                elevatorFirstTile = null;
+            }
+        }
+
         public void Cancel()
         {
             mode = Mode.None;
             selectedArchetype = null;
             selectedInstance = null;
+            currentTargetTile = null;
             if (preview) Destroy(preview);
             previewRenderers = null;
-
-            // 重置检测状态
-            currentDetectedFloor = null;
-            lastPreviewFloor = null;
-
-            // 重置FloorDetector缓存
-            if (floorDetector != null)
-            {
-                floorDetector.ResetCache();
-            }
 
             // 清理Destroy模式的高亮
             if (hoveredBuildingInDestroyMode != null && buildingHighlighter != null)
@@ -1088,6 +1346,19 @@ namespace PopLife.Runtime
             }
             isMoveDragging = false;
 
+            // 清理MoveFloorTile / DestroyFloorTile模式的状态
+            if (hoveredFloorTile != null && buildingHighlighter != null)
+            {
+                buildingHighlighter.Hide();
+            }
+            hoveredFloorTile = null;
+            lastMousePositionInMoveFloorTileMode = Vector3.zero;
+            lastMousePositionInDestroyFloorTileMode = Vector3.zero;
+
+            // 清理电梯放置状态
+            hasElevatorFirstClick = false;
+            elevatorFirstTile = null;
+
             // 关闭确认面板（如果正在显示）
             if (UIManager.Instance != null && UIManager.Instance.IsConfirmationShowing())
             {
@@ -1096,11 +1367,27 @@ namespace PopLife.Runtime
             }
         }
 
-        // 获取当前目标楼层（供UI显示）
-        public FloorGrid GetCurrentTargetFloor() => targetFloor;
+        // ========== 辅助方法 ==========
 
-        // 获取当前目标楼层ID
-        public int GetCurrentTargetFloorId() => targetFloor != null ? targetFloor.floorId : -1;
+        /// <summary> 通过世界坐标检测鼠标所在的 FloorTileInstance </summary>
+        private FloorTileInstance DetectFloorTileAtWorld(Vector3 worldPos)
+        {
+            var wg = WorldGrid.Instance;
+            if (wg == null) return null;
+            var gridPos = wg.WorldToGrid(worldPos);
+            return wg.GetFloorTileAt(gridPos);
+        }
+
+        /// <summary> 通过 instanceId 查找 FloorTileInstance </summary>
+        private FloorTileInstance FindFloorTileByInstanceId(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            var wg = WorldGrid.Instance;
+            if (wg == null) return null;
+            foreach (var tile in wg.AllFloorTiles())
+                if (tile.instanceId == id) return tile;
+            return null;
+        }
 
         // 根据建筑类型播放对应的建造音效
         private void PlayBuildSound(BuildingArchetype archetype)

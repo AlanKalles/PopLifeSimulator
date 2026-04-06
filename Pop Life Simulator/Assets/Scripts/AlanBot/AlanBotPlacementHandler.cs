@@ -8,7 +8,7 @@ namespace PopLife.AlanBot
     /// <summary>
     /// AlanBot建造阶段拖放
     /// 仅在BuildPhase + ConstructionManager.mode == Move时激活
-    /// AlanBot不占格子，使用FloorDetectionService检测鼠标所在楼层
+    /// 使用FloorDetectionService检测鼠标所在地板瓦片
     /// 拖动时为虚影状态自由跟随鼠标，确认放置后锚定到地面
     /// </summary>
     public class AlanBotPlacementHandler : MonoBehaviour
@@ -23,13 +23,12 @@ namespace PopLife.AlanBot
         private AlanBotController controller;
         private SpriteRenderer spriteRenderer;
         private Camera mainCamera;
-        private FloorManager floorManager;
         private ConstructionManager constructionManager;
-        private FloorDetectionService floorDetector; // 与ConstructionManager相同的楼层检测方式
+        private FloorDetectionService floorDetector;
 
         private bool isDragging;
         private Vector3 originalPosition;
-        private FloorGrid currentTargetFloor; // 当前拖动时检测到的楼层
+        private FloorTileInstance currentTargetTile; // 当前拖动时检测到的地板瓦片
 
         private void Awake()
         {
@@ -40,7 +39,6 @@ namespace PopLife.AlanBot
 
         private void Start()
         {
-            floorManager = FindAnyObjectByType<FloorManager>();
             constructionManager = FindAnyObjectByType<ConstructionManager>();
 
             // 每帧检测（interval=1），拖放时需要即时响应
@@ -112,14 +110,14 @@ namespace PopLife.AlanBot
             Vector3 mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             mouse.z = 0f;
 
-            // 使用FloorDetectionService检测鼠标所在楼层（Raycast对FloorDetection层，支持垂直堆叠楼层）
-            currentTargetFloor = floorDetector?.DetectFloorAtMouse();
+            // 使用FloorDetectionService检测鼠标所在地板瓦片
+            currentTargetTile = floorDetector?.DetectFloorTileAtMouse();
 
             // 拖动时自由跟随鼠标（X、Y均跟随，不锁定地面）
             transform.position = mouse;
 
-            // 虚影颜色反馈：有效楼层=半透明白，无效=半透明红
-            SetGhostColor(currentTargetFloor != null);
+            // 虚影颜色反馈：有效地板=半透明白，无效=半透明红
+            SetGhostColor(currentTargetTile != null);
         }
 
         private void HandleDragInput()
@@ -127,7 +125,7 @@ namespace PopLife.AlanBot
             // 左键确认放置
             if (Input.GetMouseButtonDown(0))
             {
-                if (currentTargetFloor != null)
+                if (currentTargetTile != null)
                 {
                     ConfirmPlacement();
                 }
@@ -145,10 +143,10 @@ namespace PopLife.AlanBot
         {
             isDragging = false;
 
-            // 确认放置：锚定到目标楼层地面
-            if (currentTargetFloor != null)
+            // 确认放置：锚定到目标地板瓦片的地面
+            if (currentTargetTile != null)
             {
-                float floorY = GetFloorOriginY(currentTargetFloor);
+                float floorY = GetTileOriginY(currentTargetTile);
                 transform.position = new Vector3(transform.position.x, floorY + controller.GroundYOffset, 0f);
             }
 
@@ -211,11 +209,11 @@ namespace PopLife.AlanBot
         // ─── 楼层工具 ───
 
         /// <summary>
-        /// 获取楼层原点的Y坐标（地面高度）
+        /// 获取地板瓦片原点的Y坐标（地面高度）
         /// </summary>
-        private float GetFloorOriginY(FloorGrid floor)
+        private float GetTileOriginY(FloorTileInstance tile)
         {
-            return floor.origin != null ? floor.origin.position.y : floor.transform.position.y;
+            return tile.transform.position.y;
         }
     }
 }

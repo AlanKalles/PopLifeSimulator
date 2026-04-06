@@ -21,14 +21,5 @@ namespace PopLife.Data
         }
 
         public List<FacilityEffect> effects = new();
-
-        public override bool ValidatePlacement(PopLife.Runtime.FloorGrid floor, Vector2Int position, int rotation)
-        {
-            // 示例：每层仅允许一个收银台
-            if (facilityType == FacilityType.Cashier && floor.HasFacilityOfType(FacilityType.Cashier))
-                return false;
-
-            return base.ValidatePlacement(floor, position, rotation);
-        }
     }
 }

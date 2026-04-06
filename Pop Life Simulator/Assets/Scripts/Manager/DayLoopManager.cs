@@ -350,11 +350,11 @@ namespace PopLife
         {
             float total = 0f;
 
-            // 遍历所有楼层的所有建筑
-            var floors = FindObjectsByType<Runtime.FloorGrid>(FindObjectsSortMode.None);
-            foreach (var floor in floors)
+            // 遍历所有建筑
+            var wg = Runtime.WorldGrid.Instance;
+            if (wg != null)
             {
-                foreach (var building in floor.AllBuildings())
+                foreach (var building in wg.AllBuildings())
                 {
                     total += building.GetMaintenanceFee();
                 }
@@ -516,17 +516,14 @@ namespace PopLife
         {
             int restockedCount = 0;
 
-            // 遍历所有楼层的所有货架
-            var floors = FindObjectsByType<Runtime.FloorGrid>(FindObjectsSortMode.None);
-            foreach (var floor in floors)
+            // 遍历所有货架
+            var wg = Runtime.WorldGrid.Instance;
+            if (wg != null)
             {
-                foreach (var building in floor.AllBuildings())
+                foreach (var shelf in wg.AllShelves())
                 {
-                    if (building is Runtime.ShelfInstance shelf)
-                    {
-                        shelf.Restock();
-                        restockedCount++;
-                    }
+                    shelf.Restock();
+                    restockedCount++;
                 }
             }
 

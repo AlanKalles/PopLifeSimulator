@@ -26,7 +26,6 @@ namespace PopLife.UI.BuildingInteraction
         [SerializeField] private bool enableDebugLogs = false;
 
         private LineRenderer lineRenderer;
-        private FloorManager floorManager;
         private Material lineMaterial;
 
         // Animation state
@@ -44,13 +43,6 @@ namespace PopLife.UI.BuildingInteraction
             currentColor = highlightColor;
 
             ConfigureLineRenderer();
-
-            // Get FloorManager
-            floorManager = FindFirstObjectByType<FloorManager>();
-            if (floorManager == null)
-            {
-                Debug.LogWarning("BuildingHighlighter: FloorManager not found!");
-            }
         }
 
         /// <summary>
@@ -105,16 +97,8 @@ namespace PopLife.UI.BuildingInteraction
                 return;
             }
 
-            // Get floor
-            FloorGrid floor = GetFloorForBuilding(building);
-            if (floor == null)
-            {
-                Debug.LogWarning($"BuildingHighlighter: Cannot find floor {building.floorId}");
-                return;
-            }
-
             // Calculate outline vertices
-            List<Vector3> vertices = CalculateOutlineVertices(building, floor);
+            List<Vector3> vertices = CalculateOutlineVertices(building);
 
             if (vertices.Count < 3)
             {
@@ -150,31 +134,10 @@ namespace PopLife.UI.BuildingInteraction
         }
 
         /// <summary>
-        /// Get floor for building
-        /// 获取建筑所在楼层
-        /// </summary>
-        private FloorGrid GetFloorForBuilding(BuildingInstance building)
-        {
-            if (floorManager == null) return null;
-
-            // Try to find floor with matching ID
-            var floors = floorManager.GetAllActiveFloors();
-            foreach (var floor in floors)
-            {
-                if (floor.floorId == building.floorId)
-                {
-                    return floor;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Calculate outline vertices from occupied cells
         /// 从占用格子计算外轮廓顶点
         /// </summary>
-        private List<Vector3> CalculateOutlineVertices(BuildingInstance building, FloorGrid floor)
+        private List<Vector3> CalculateOutlineVertices(BuildingInstance building)
         {
             // 1. Get absolute grid positions
             List<Vector2Int> cells = GetAbsoluteCells(building);
@@ -218,11 +181,41 @@ namespace PopLife.UI.BuildingInteraction
             }
 
             // 5. Convert to world coordinates
+            // 判断坐标转换方式：FloorTile 用 WorldGrid，内部建筑用 host tile 的 InteriorGrid
+            bool isFloorTile = building is FloorTileInstance;
+            InteriorGrid interior = null;
+            if (!isFloorTile && !string.IsNullOrEmpty(building.hostFloorTileInstanceId) && WorldGrid.Instance != null)
+            {
+                // 查找宿主 FloorTile 的 InteriorGrid
+                foreach (var tile in WorldGrid.Instance.AllFloorTiles())
+                {
+                    if (tile.instanceId == building.hostFloorTileInstanceId)
+                    {
+                        interior = tile.Interior;
+                        break;
+                    }
+                }
+            }
+
             List<Vector3> worldVertices = new List<Vector3>();
             for (int i = 0; i < gridLoop.Count; i++)
             {
                 Vector2Int gridPos = gridLoop[i];
-                Vector3 worldPos = floor.GridToWorld(gridPos);
+                Vector3 worldPos;
+
+                if (isFloorTile && WorldGrid.Instance != null)
+                {
+                    worldPos = WorldGrid.Instance.GridToWorld(gridPos);
+                }
+                else if (interior != null)
+                {
+                    worldPos = interior.LocalToWorld(gridPos);
+                }
+                else
+                {
+                    // 备用方案：使用建筑世界位置 + 偏移
+                    worldPos = new Vector3(gridPos.x, gridPos.y, 0);
+                }
 
                 if (enableDebugLogs)
                 {

@@ -21,6 +21,9 @@ namespace PopLife.Data
         [Tooltip("已解锁的设施蓝图ID列表")]
         public List<string> unlockedFacilityIds = new List<string>();
 
+        [Tooltip("已解锁的地板蓝图ID列表")]
+        public List<string> unlockedFloorTileIds = new List<string>();
+
         /// <summary>
         /// 加载BlueprintProfile (使用SavePathManager自动处理路径)
         /// </summary>
@@ -53,6 +56,10 @@ namespace PopLife.Data
                 if (profile.unlockedFacilityIds == null)
                 {
                     profile.unlockedFacilityIds = new List<string>();
+                }
+                if (profile.unlockedFloorTileIds == null)
+                {
+                    profile.unlockedFloorTileIds = new List<string>();
                 }
 
                 Debug.Log($"[BlueprintProfile] Loaded {profile.unlockedShelfIds.Count} shelves and {profile.unlockedFacilityIds.Count} facilities from {path}");
@@ -113,6 +120,11 @@ namespace PopLife.Data
             return unlockedFacilityIds != null && unlockedFacilityIds.Contains(facilityId);
         }
 
+        public bool HasFloorTileBlueprint(string floorTileId)
+        {
+            return unlockedFloorTileIds != null && unlockedFloorTileIds.Contains(floorTileId);
+        }
+
         /// <summary>
         /// 解锁货架蓝图
         /// </summary>
@@ -140,6 +152,18 @@ namespace PopLife.Data
             {
                 unlockedFacilityIds.Add(facilityId);
                 Debug.Log($"[BlueprintProfile] Unlocked facility blueprint: {facilityId}");
+            }
+        }
+
+        public void UnlockFloorTile(string floorTileId)
+        {
+            if (unlockedFloorTileIds == null)
+                unlockedFloorTileIds = new List<string>();
+
+            if (!unlockedFloorTileIds.Contains(floorTileId))
+            {
+                unlockedFloorTileIds.Add(floorTileId);
+                Debug.Log($"[BlueprintProfile] Unlocked floor tile blueprint: {floorTileId}");
             }
         }
 

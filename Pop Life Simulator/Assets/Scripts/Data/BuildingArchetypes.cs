@@ -21,8 +21,20 @@ namespace PopLife.Data
     public enum FacilityType { Cashier, AirConditioner, ATM, SecurityCamera, MusicPlayer }
     public enum EffectType { ReduceEmbarrassment, IncreaseAppeal, IncreaseCustomerSpeed, RestoreMoney }
 
+    /// <summary> FloorTile 放置到世界网格的验证接口 </summary>
+    public interface IWorldPlaceable
+    {
+        bool ValidateWorldPlacement(PopLife.Runtime.WorldGrid grid, Vector2Int position, int rotation);
+    }
+
+    /// <summary> Shelf/Facility 放置到 interior 的验证接口 </summary>
+    public interface IInteriorPlaceable
+    {
+        bool ValidateInteriorPlacement(PopLife.Runtime.InteriorGrid interior, Vector2Int localPos, int rotation);
+    }
+
     // 原型基类
-    public abstract class BuildingArchetype : ScriptableObject
+    public abstract class BuildingArchetype : ScriptableObject, IInteriorPlaceable
     {
         [Header("基础信息")]
         [HideInInspector] public string archetypeId; // 由 OnValidate 自动同步为资产文件名
@@ -55,7 +67,7 @@ namespace PopLife.Data
         public float destroyRefundRate = 0.8f;
 
         [Header("占用空间")]
-        [SerializeField] private List<Vector2Int> footprintPattern = new(); // 相对原点
+        [SerializeField] protected List<Vector2Int> footprintPattern = new(); // 相对原点
 
         public bool canRotate = false;
 
@@ -71,10 +83,10 @@ namespace PopLife.Data
             return levels[i];
         }
 
-        // 校验放置
-        public virtual bool ValidatePlacement(PopLife.Runtime.FloorGrid floor, Vector2Int position, int rotation)
+        /// <summary> Interior 放置验证默认实现 </summary>
+        public virtual bool ValidateInteriorPlacement(PopLife.Runtime.InteriorGrid interior, Vector2Int localPos, int rotation)
         {
-            return floor.CanPlaceFootprint(GetRotatedFootprint(rotation), position);
+            return interior.CanPlace(GetRotatedFootprint(rotation), localPos);
         }
 
         // 返回旋转后占格（始终返回新列表，避免外部修改污染原型）
@@ -88,7 +100,7 @@ namespace PopLife.Data
             return res;
         }
 
-        private static Vector2Int Rotate(Vector2Int v, int r)
+        protected static Vector2Int Rotate(Vector2Int v, int r)
         {
             return r switch
             {

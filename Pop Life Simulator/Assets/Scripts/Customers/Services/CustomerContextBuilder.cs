@@ -12,9 +12,6 @@ namespace PopLife.Customers.Services
     /// </summary>
     public class CustomerContextBuilder : MonoBehaviour
     {
-        [Header("引用")]
-        [SerializeField] private FloorManager floorManager;
-
         // 静态实例供全局访问
         private static CustomerContextBuilder _instance;
         public static CustomerContextBuilder Instance => _instance;
@@ -22,16 +19,6 @@ namespace PopLife.Customers.Services
         void Awake()
         {
             _instance = this;
-
-            // 如果没有手动设置，尝试查找
-            if (floorManager == null)
-            {
-                floorManager = FindFirstObjectByType<FloorManager>();
-                if (floorManager == null)
-                {
-                    Debug.LogWarning("[CustomerContextBuilder] FloorManager 未找到，请在 Inspector 中设置");
-                }
-            }
         }
         /// <summary>
         /// 从 CustomerBlackboardAdapter 创建顾客上下文快照
@@ -94,28 +81,14 @@ namespace PopLife.Customers.Services
                 return default;
             }
 
-            // 使用货架所在楼层的 FloorGrid 进行坐标转换
-            Vector2Int gridPos = new Vector2Int();
-            var floorManager = Instance?.floorManager;
-            if (floorManager != null)
+            // 使用 WorldGrid 坐标（非 interior 局部坐标），用于跨 tile 距离比较
+            Vector2Int gridPos;
+            if (WorldGrid.Instance != null)
             {
-                var floorGrid = floorManager.GetFloor(shelf.floorId);
-                if (floorGrid != null)
-                {
-                    gridPos = floorGrid.WorldToGrid(shelf.transform.position);
-                }
-                else
-                {
-                    // 备用方案：简单转换
-                    gridPos = new Vector2Int(
-                        Mathf.RoundToInt(shelf.transform.position.x),
-                        Mathf.RoundToInt(shelf.transform.position.y)
-                    );
-                }
+                gridPos = WorldGrid.Instance.WorldToGrid(shelf.transform.position);
             }
             else
             {
-                // 没有 FloorManager，使用简单转换
                 gridPos = new Vector2Int(
                     Mathf.RoundToInt(shelf.transform.position.x),
                     Mathf.RoundToInt(shelf.transform.position.y)
@@ -178,28 +151,14 @@ namespace PopLife.Customers.Services
                 return default;
             }
 
-            // 使用设施所在楼层的 FloorGrid 进行坐标转换
-            Vector2Int gridPos = new Vector2Int();
-            var floorManager = Instance?.floorManager;
-            if (floorManager != null)
+            // 使用 WorldGrid 坐标（非 interior 局部坐标），用于跨 tile 距离比较
+            Vector2Int gridPos;
+            if (WorldGrid.Instance != null)
             {
-                var floorGrid = floorManager.GetFloor(facility.floorId);
-                if (floorGrid != null)
-                {
-                    gridPos = floorGrid.WorldToGrid(facility.transform.position);
-                }
-                else
-                {
-                    // 备用方案：简单转换
-                    gridPos = new Vector2Int(
-                        Mathf.RoundToInt(facility.transform.position.x),
-                        Mathf.RoundToInt(facility.transform.position.y)
-                    );
-                }
+                gridPos = WorldGrid.Instance.WorldToGrid(facility.transform.position);
             }
             else
             {
-                // 没有 FloorManager，使用简单转换
                 gridPos = new Vector2Int(
                     Mathf.RoundToInt(facility.transform.position.x),
                     Mathf.RoundToInt(facility.transform.position.y)
@@ -282,23 +241,16 @@ namespace PopLife.Customers.Services
 
         /// <summary>
         /// 将世界坐标转换为网格坐标（废弃方法，保留仅为兼容）
-        /// 注意：应该使用具体楼层的 FloorGrid 进行转换
         /// </summary>
-        [System.Obsolete("使用具体楼层的 FloorGrid.WorldToGrid 方法代替")]
+        [System.Obsolete("使用 WorldGrid.Instance.WorldToGrid 代替")]
         private static Vector2Int GetGridPosition(Vector3 worldPosition)
         {
-            // 通过 FloorManager 获取当前活跃楼层（不准确，仅作备用）
-            var floorManager = Instance?.floorManager;
-            if (floorManager != null)
+            if (WorldGrid.Instance != null)
             {
-                var activeFloor = floorManager.GetActiveFloor();
-                if (activeFloor != null)
-                {
-                    return activeFloor.WorldToGrid(worldPosition);
-                }
+                return WorldGrid.Instance.WorldToGrid(worldPosition);
             }
 
-            // 否则使用简单的转换（假设网格单位为1）
+            // 备用方案：简单转换（假设网格单位为1）
             return new Vector2Int(
                 Mathf.RoundToInt(worldPosition.x),
                 Mathf.RoundToInt(worldPosition.y)

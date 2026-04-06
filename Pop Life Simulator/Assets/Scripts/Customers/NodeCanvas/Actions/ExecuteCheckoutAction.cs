@@ -85,15 +85,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (string.IsNullOrEmpty(cashierId))
                 return null;
 
-            var floors = Object.FindObjectsByType<FloorGrid>(FindObjectsSortMode.None);
-            foreach (var floor in floors)
+            var wg = WorldGrid.Instance;
+            if (wg == null) return null;
+
+            foreach (var building in wg.AllBuildings())
             {
-                foreach (var building in floor.AllBuildings())
+                if (building is FacilityInstance facility && facility.instanceId == cashierId)
                 {
-                    if (building is FacilityInstance facility && facility.instanceId == cashierId)
-                    {
-                        return facility;
-                    }
+                    return facility;
                 }
             }
 

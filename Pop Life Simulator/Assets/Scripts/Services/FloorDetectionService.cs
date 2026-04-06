@@ -3,22 +3,18 @@ using UnityEngine;
 namespace PopLife.Services
 {
     /// <summary>
-    /// 楼层检测服务 - 用于鼠标自动检测楼层系统
-    /// 功能：检测鼠标位置对应的楼层，支持性能优化的间隔帧检测
+    /// 楼层检测服务 - 用于鼠标自动检测地板瓦片
+    /// 功能：检测鼠标位置对应的 FloorTileInstance，支持性能优化的间隔帧检测
     /// </summary>
     public class FloorDetectionService
     {
         // === 配置 ===
         private readonly int detectionInterval;     // 检测间隔（帧）
         private readonly Camera targetCamera;       // 目标相机
-        private readonly LayerMask floorLayer;      // 楼层Layer
 
         // === 缓存 ===
-        private Runtime.FloorGrid cachedFloor;      // 上一帧检测结果
-        private int frameCounter;                   // 帧计数器
-
-        // === 性能优化：预分配Raycast缓冲区 ===
-        private readonly RaycastHit2D[] hitBuffer = new RaycastHit2D[1];
+        private Runtime.FloorTileInstance cachedTile; // 上一帧检测结果
+        private int frameCounter;                     // 帧计数器
 
         /// <summary>
         /// 构造函数
@@ -29,41 +25,33 @@ namespace PopLife.Services
         {
             targetCamera = camera;
             detectionInterval = Mathf.Max(1, interval);
-            floorLayer = LayerMask.GetMask("FloorDetection");
-
-            if (floorLayer == 0)
-            {
-                Debug.LogWarning("FloorDetectionService: Layer 'FloorDetection' not found. Detection will not work.");
-            }
         }
 
         /// <summary>
-        /// 检测鼠标当前位置的楼层
+        /// 检测鼠标当前位置的地板瓦片
         /// </summary>
-        /// <returns>检测到的FloorGrid，如果没有检测到则返回null</returns>
-        public Runtime.FloorGrid DetectFloorAtMouse()
+        /// <returns>检测到的 FloorTileInstance，如果没有检测到则返回 null</returns>
+        public Runtime.FloorTileInstance DetectFloorTileAtMouse()
         {
             // 间隔帧检测（性能优化）
             frameCounter++;
             if (frameCounter < detectionInterval)
             {
-                return cachedFloor;
+                return cachedTile;
             }
             frameCounter = 0;
 
             // 检查鼠标是否在UI上
             if (IsPointerOverUI())
             {
-                cachedFloor = null;
+                cachedTile = null;
                 return null;
             }
 
-            // 执行检测
+            // 逻辑查表检测（不依赖 Collider）
             Vector2 mousePos = GetMouseWorldPosition();
-            Runtime.FloorGrid detected = RaycastFloor(mousePos);
-
-            cachedFloor = detected;
-            return detected;
+            cachedTile = LogicDetectFloorTile(mousePos);
+            return cachedTile;
         }
 
         /// <summary>
@@ -83,25 +71,14 @@ namespace PopLife.Services
         }
 
         /// <summary>
-        /// 使用Raycast检测指定位置的楼层
+        /// 逻辑查表检测：WorldGrid.WorldToGrid → GetFloorTileAt（不依赖 Collider）
         /// </summary>
-        private Runtime.FloorGrid RaycastFloor(Vector2 worldPos)
+        private Runtime.FloorTileInstance LogicDetectFloorTile(Vector2 worldPos)
         {
-            // 使用RaycastNonAlloc减少GC分配
-            int hitCount = Physics2D.RaycastNonAlloc(
-                worldPos,
-                Vector2.zero,  // 零距离射线（点检测）
-                hitBuffer,
-                0f,
-                floorLayer
-            );
-
-            if (hitCount > 0 && hitBuffer[0].collider != null)
-            {
-                return hitBuffer[0].collider.GetComponent<Runtime.FloorGrid>();
-            }
-
-            return null;
+            var wg = Runtime.WorldGrid.Instance;
+            if (wg == null) return null;
+            var gridPos = wg.WorldToGrid(new Vector3(worldPos.x, worldPos.y, 0));
+            return wg.GetFloorTileAt(gridPos);
         }
 
         /// <summary>
@@ -123,7 +100,7 @@ namespace PopLife.Services
         /// </summary>
         public void ResetCache()
         {
-            cachedFloor = null;
+            cachedTile = null;
             frameCounter = 0;
         }
 

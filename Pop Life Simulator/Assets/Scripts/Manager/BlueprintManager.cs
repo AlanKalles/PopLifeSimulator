@@ -20,6 +20,11 @@ namespace PopLife
         /// </summary>
         public static event System.Action<Data.ShelfArchetype> OnShelfUnlocked;
 
+        /// <summary>
+        /// 地板蓝图解锁时触发
+        /// </summary>
+        public static event System.Action<Data.FloorTileArchetype> OnFloorTileUnlocked;
+
         private BlueprintProfile profile;
 
         private void Awake()
@@ -74,8 +79,9 @@ namespace PopLife
                 return false;
             }
 
-            // 检查是否在货架列表或设施列表中
-            return profile.HasShelfBlueprint(archetypeId) || profile.HasFacilityBlueprint(archetypeId);
+            return profile.HasShelfBlueprint(archetypeId)
+                || profile.HasFacilityBlueprint(archetypeId)
+                || profile.HasFloorTileBlueprint(archetypeId);
         }
 
         /// <summary>
@@ -155,6 +161,29 @@ namespace PopLife
         }
 
         /// <summary>
+        /// 解锁地板蓝图
+        /// </summary>
+        public void UnlockFloorTile(string floorTileId)
+        {
+            if (profile == null)
+            {
+                Debug.LogError("[BlueprintManager] Profile is null, cannot unlock floor tile");
+                return;
+            }
+
+            profile.UnlockFloorTile(floorTileId);
+            profile.Save();
+        }
+
+        /// <summary>
+        /// 获取所有已解锁的地板ID
+        /// </summary>
+        public List<string> GetUnlockedFloorTileIds()
+        {
+            return profile?.unlockedFloorTileIds ?? new List<string>();
+        }
+
+        /// <summary>
         /// 获取所有已解锁的货架ID
         /// </summary>
         public List<string> GetUnlockedShelfIds()
@@ -209,6 +238,11 @@ namespace PopLife
             else if (building is FacilityArchetype)
             {
                 UnlockFacility(archetypeId);
+            }
+            else if (building is FloorTileArchetype floorTile)
+            {
+                UnlockFloorTile(archetypeId);
+                OnFloorTileUnlocked?.Invoke(floorTile);
             }
             else
             {

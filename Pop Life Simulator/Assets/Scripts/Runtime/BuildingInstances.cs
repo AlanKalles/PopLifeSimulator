@@ -12,7 +12,7 @@ namespace PopLife.Runtime
         public string archetypeId;
         public string instanceId;
         public Vector2Int position;
-        public int floorId;
+        public string hostFloorTileInstanceId;
         public int rotation;
         public int level;
         public string payloadJson; // 子类自定义数据序列化
@@ -29,8 +29,8 @@ namespace PopLife.Runtime
         public int currentLevel = 1;
         [SerializeField] // 确保被序列化保存到场景
         public Vector2Int gridPosition;
-        [SerializeField] // 确保被序列化保存到场景
-        public int floorId;
+        [SerializeField]
+        public string hostFloorTileInstanceId;
         [SerializeField] // 确保被序列化保存到场景
         public int rotation;
 
@@ -38,21 +38,25 @@ namespace PopLife.Runtime
         public bool isOperational = true;
         protected float operationStartTime;
 
+        [Header("Editor 锁定")]
+        [SerializeField] private bool editorLockedMove;
+        [SerializeField] private bool editorLockedDestroy;
+
+        public bool EditorLockedMove => editorLockedMove;
+        public bool EditorLockedDestroy => editorLockedDestroy;
+
         protected virtual void Awake() { }
         protected virtual void OnInitialized() { }
         protected virtual void OnUpgraded() { }
 
-        public virtual void Initialize(BuildingArchetype arch, Vector2Int pos, int floor)
+        public virtual void Initialize(BuildingArchetype arch, Vector2Int gridPos, string hostTileId)
         {
             archetype = arch;
-            gridPosition = pos;
-            floorId = floor;
+            gridPosition = gridPos;
+            hostFloorTileInstanceId = hostTileId;
             instanceId = Guid.NewGuid().ToString();
             operationStartTime = Time.time;
-
-            // 初始化时设置 sorting order
             UpdateSortingOrder();
-
             OnInitialized();
         }
 
@@ -106,7 +110,7 @@ namespace PopLife.Runtime
                 archetypeId = archetype ? archetype.archetypeId : "",
                 instanceId = instanceId,
                 position = gridPosition,
-                floorId = floorId,
+                hostFloorTileInstanceId = hostFloorTileInstanceId,
                 rotation = rotation,
                 level = currentLevel,
                 payloadJson = null
@@ -118,10 +122,29 @@ namespace PopLife.Runtime
             instanceId = data.instanceId;
             currentLevel = data.level;
             rotation = data.rotation;
-
-            // 加载时也需要设置 sorting order
+            gridPosition = data.position;
+            hostFloorTileInstanceId = data.hostFloorTileInstanceId;
             UpdateSortingOrder();
         }
+
+        /// <summary> 世界网格位置（仅 FloorTileInstance 有意义） </summary>
+        public Vector2Int GetWorldGridPosition()
+        {
+            Debug.Assert(this is FloorTileInstance,
+                $"GetWorldGridPosition called on interior building: {GetType().Name}");
+            return gridPosition;
+        }
+
+        /// <summary> Interior 局部位置（仅 shelf/facility 有意义） </summary>
+        public Vector2Int GetInteriorLocalPosition()
+        {
+            Debug.Assert(!string.IsNullOrEmpty(hostFloorTileInstanceId),
+                $"GetInteriorLocalPosition called on FloorTile: {GetType().Name}");
+            return gridPosition;
+        }
+
+        /// <summary> 世界锚点（排序/高亮/寻路统一使用，不区分网格类型） </summary>
+        public Vector3 GetWorldAnchorPosition() => transform.position;
 
         /// <summary>
         /// 更新建筑的 sorting order，用于实现透视关系
@@ -129,7 +152,7 @@ namespace PopLife.Runtime
         /// </summary>
         public void UpdateSortingOrder()
         {
-            SortingOrderUtility.UpdateBuildingSortingOrder(gameObject, gridPosition, floorId);
+            SortingOrderUtility.UpdateBuildingSortingOrder(gameObject, transform.position);
         }
     }
 

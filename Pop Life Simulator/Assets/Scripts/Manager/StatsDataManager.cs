@@ -161,36 +161,33 @@ namespace PopLife.Manager
         {
             var shelfStatsList = new List<ShelfStatsData>();
 
-            // 遍历所有楼层的所有货架
-            var floors = FindObjectsByType<FloorGrid>(FindObjectsSortMode.None);
-            foreach (var floor in floors)
+            // 遍历所有货架
+            var wg = WorldGrid.Instance;
+            if (wg != null)
             {
-                foreach (var building in floor.AllBuildings())
+                foreach (var shelf in wg.AllShelves())
                 {
-                    if (building is ShelfInstance shelf)
+                    // 获取货架今日收入
+                    int todayRevenue = shelfRevenueTracker.ContainsKey(shelf.instanceId)
+                        ? shelfRevenueTracker[shelf.instanceId]
+                        : 0;
+
+                    // 获取货架原型数据
+                    var archetype = shelf.archetype as ShelfArchetype;
+                    if (archetype == null) continue;
+
+                    var statsData = new ShelfStatsData
                     {
-                        // 获取货架今日收入
-                        int todayRevenue = shelfRevenueTracker.ContainsKey(shelf.instanceId)
-                            ? shelfRevenueTracker[shelf.instanceId]
-                            : 0;
+                        shelfId = shelf.instanceId,
+                        name = archetype.displayName,
+                        category = archetype.category.ToString(),
+                        level = shelf.currentLevel,
+                        todayRevenue = todayRevenue,
+                        unitPrice = shelf.currentPrice,
+                        sprite = archetype.icon
+                    };
 
-                        // 获取货架原型数据
-                        var archetype = shelf.archetype as ShelfArchetype;
-                        if (archetype == null) continue;
-
-                        var statsData = new ShelfStatsData
-                        {
-                            shelfId = shelf.instanceId,
-                            name = archetype.displayName,
-                            category = archetype.category.ToString(),
-                            level = shelf.currentLevel,
-                            todayRevenue = todayRevenue,
-                            unitPrice = shelf.currentPrice,
-                            sprite = archetype.icon
-                        };
-
-                        shelfStatsList.Add(statsData);
-                    }
+                    shelfStatsList.Add(statsData);
                 }
             }
 
@@ -224,10 +221,10 @@ namespace PopLife.Manager
         {
             float total = 0f;
 
-            var floors = FindObjectsByType<FloorGrid>(FindObjectsSortMode.None);
-            foreach (var floor in floors)
+            var wg = WorldGrid.Instance;
+            if (wg != null)
             {
-                foreach (var building in floor.AllBuildings())
+                foreach (var building in wg.AllBuildings())
                 {
                     total += building.GetMaintenanceFee();
                 }
@@ -245,20 +242,17 @@ namespace PopLife.Manager
             foreach (ProductCategory cat in Enum.GetValues(typeof(ProductCategory)))
                 breakdown[cat] = 0f;
 
-            var floors = FindObjectsByType<FloorGrid>(FindObjectsSortMode.None);
-            foreach (var floor in floors)
+            var wg = WorldGrid.Instance;
+            if (wg != null)
             {
-                foreach (var building in floor.AllBuildings())
+                foreach (var shelf in wg.AllShelves())
                 {
-                    if (building is ShelfInstance shelf)
-                    {
-                        var archetype = shelf.archetype as ShelfArchetype;
-                        if (archetype == null) continue;
+                    var archetype = shelf.archetype as ShelfArchetype;
+                    if (archetype == null) continue;
 
-                        int revenue = shelfRevenueTracker.ContainsKey(shelf.instanceId)
-                            ? shelfRevenueTracker[shelf.instanceId] : 0;
-                        breakdown[archetype.category] += revenue;
-                    }
+                    int revenue = shelfRevenueTracker.ContainsKey(shelf.instanceId)
+                        ? shelfRevenueTracker[shelf.instanceId] : 0;
+                    breakdown[archetype.category] += revenue;
                 }
             }
 

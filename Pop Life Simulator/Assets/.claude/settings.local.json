@@ -22,7 +22,9 @@
       "Bash(find /d/github/PopLifeSimulator -type f \\\\\\(-name *[Qq]uest* -o -name *[Tt]ask* -o -name *[Mm]ission* -o -name *[Rr]equest* -o -name *[Oo]bjective* \\\\\\))",
       "Bash(xargs ls:*)",
       "Bash(find '/d/github/PopLifeSimulator/Pop Life Simulator/Assets/Scenes' -name *.unity)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''Has floorTileIds:'''', ''''unlockedFloorTileIds'''' in d\\)\")",
+      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Scripts\" -name \"*.cs\" -exec grep -l \"FloorGrid\\\\|FloorManager\" {})"
     ],
     "deny": [],
     "ask": []

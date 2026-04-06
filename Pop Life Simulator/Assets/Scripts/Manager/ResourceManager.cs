@@ -32,9 +32,6 @@ namespace PopLife
         // Fame小数累积器（用于累积小数fame直到满1）
         private float fameAccumulator = 0f;
 
-        // FloorManager 缓存引用（用于 Store Appeal 计算）
-        private FloorManager floorManagerCache;
-
         void Awake()
         {
             Instance = this;
@@ -154,18 +151,13 @@ namespace PopLife
         /// </summary>
         public void RecalculateStoreAppeal()
         {
-            if (floorManagerCache == null)
-                floorManagerCache = FindFirstObjectByType<FloorManager>();
-
-            if (floorManagerCache == null) return;
+            var wg = WorldGrid.Instance;
+            if (wg == null) return;
 
             int total = 0;
-            foreach (var floor in floorManagerCache.GetAllActiveFloors())
+            foreach (var shelf in wg.AllShelves())
             {
-                foreach (var shelf in floor.AllShelves())
-                {
-                    total += Mathf.RoundToInt(shelf.GetAppeal());
-                }
+                total += Mathf.RoundToInt(shelf.GetAppeal());
             }
             storeAppeal = total;
             OnStoreAppealChanged?.Invoke(storeAppeal);

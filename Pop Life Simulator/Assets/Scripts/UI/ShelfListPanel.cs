@@ -42,6 +42,14 @@ namespace PopLife.UI
         [Header("References")]
         [SerializeField] private ConstructionManager constructionManager;
 
+        [Header("Tab 切换")]
+        [SerializeField] private Button shelvesTabButton;
+        [SerializeField] private Button floorTabButton;
+
+        [Header("Floor 类别区")]
+        [SerializeField] private Transform floorCategoryContainer;
+        [SerializeField] private GameObject floorTileItemPrefab;
+
         [Header("Animation Settings")]
         [SerializeField] private float slideDuration = 0.3f;
         [SerializeField] private float slideDistance = 600f;
@@ -50,13 +58,23 @@ namespace PopLife.UI
         private bool isOpen = false;
         private Tween slideTween;
 
+        // Tab 状态
+        private enum PanelTab { Shelves, Floor }
+        private PanelTab currentTab = PanelTab.Shelves;
+
         // Filter state
         private FilterToggleGroup categoryToggleGroup;
         private ProductCategory? selectedCategory = null; // null = All
 
-        // Item instances
+        // Shelf items
         private List<ShelfListItem> itemInstances = new List<ShelfListItem>();
-        private bool isInitialized = false; // Track initialization state
+        private bool isInitialized = false;
+
+        // Floor tab
+        private FilterToggleGroup floorCategoryToggleGroup;
+        private List<FloorTileListItem> floorItemInstances = new();
+        private List<FloorTileArchetype> availableFloorTiles = new();
+        private string selectedFloorCategory; // "Floor" or "Elevator"
 
         private void Awake()
         {
@@ -75,6 +93,12 @@ namespace PopLife.UI
                     panelRectTransform.anchoredPosition.x, -slideDistance);
                 panelRoot.SetActive(false);
             }
+
+            // Tab 按钮
+            if (shelvesTabButton != null)
+                shelvesTabButton.onClick.AddListener(() => SwitchTab(PanelTab.Shelves));
+            if (floorTabButton != null)
+                floorTabButton.onClick.AddListener(() => SwitchTab(PanelTab.Floor));
 
             // Auto-find ConstructionManager
             if (constructionManager == null)
@@ -95,6 +119,7 @@ namespace PopLife.UI
 
             // 订阅蓝图解锁事件
             BlueprintManager.OnShelfUnlocked += OnShelfBlueprintUnlocked;
+            BlueprintManager.OnFloorTileUnlocked += OnFloorTileBlueprintUnlocked;
         }
 
         private void Start()
@@ -114,11 +139,17 @@ namespace PopLife.UI
             if (loadShelvesFromResources)
             {
                 LoadShelvesFromResources();
+                LoadFloorTilesFromResources();
             }
 
             // Initialize UI
             InitializeCategoryButtons();
             InitializeShelfItems();
+            InitializeFloorCategoryButtons();
+
+            // 默认隐藏 Floor 类别区
+            if (floorCategoryContainer != null)
+                floorCategoryContainer.gameObject.SetActive(false);
 
             isInitialized = true;
         }
@@ -288,6 +319,174 @@ namespace PopLife.UI
 
         #endregion
 
+        #region Floor Tile Data & Items
+
+        private void LoadFloorTilesFromResources()
+        {
+            var allBuildings = Resources.LoadAll<BuildingArchetype>(shelfResourcePath);
+            availableFloorTiles.Clear();
+
+            var unlockedIds = BlueprintManager.Instance?.GetUnlockedFloorTileIds();
+            if (unlockedIds == null || unlockedIds.Count == 0) return;
+
+            foreach (var building in allBuildings)
+            {
+                if (building is FloorTileArchetype fta && unlockedIds.Contains(fta.archetypeId))
+                    availableFloorTiles.Add(fta);
+            }
+
+            // 按面积排序
+            availableFloorTiles.Sort((a, b) =>
+                (a.TileSize.x * a.TileSize.y).CompareTo(b.TileSize.x * b.TileSize.y));
+        }
+
+        private void InitializeFloorCategoryButtons()
+        {
+            if (floorCategoryContainer == null || categoryButtonPrefab == null) return;
+
+            floorCategoryToggleGroup = floorCategoryContainer.gameObject.AddComponent<FilterToggleGroup>();
+            floorCategoryToggleGroup.OnSelectionChanged += OnFloorCategoryChanged;
+
+            // 创建 Floor 和 Elevator 按钮
+            CreateFloorCategoryButton("Floor", "Floor");
+            CreateFloorCategoryButton("Elevator", "Elevator");
+
+            floorCategoryToggleGroup.SelectByValue("Floor"); // 默认选中 Floor
+        }
+
+        private void CreateFloorCategoryButton(object filterValue, string displayText)
+        {
+            var buttonObj = Instantiate(categoryButtonPrefab, floorCategoryContainer);
+            var toggleButton = buttonObj.GetComponent<FilterToggleButton>();
+            if (toggleButton != null)
+            {
+                toggleButton.Initialize(filterValue, displayText, (clickedToggle) =>
+                {
+                    floorCategoryToggleGroup.OnToggleClicked(clickedToggle);
+                });
+                floorCategoryToggleGroup.RegisterToggle(toggleButton);
+            }
+        }
+
+        private void OnFloorCategoryChanged(object filterValue)
+        {
+            selectedFloorCategory = filterValue as string;
+            RebuildFloorContent();
+        }
+
+        private void InitializeFloorItems()
+        {
+            ClearFloorItems();
+
+            if (selectedFloorCategory == "Elevator")
+            {
+                // 电梯: 创建一个"Place Elevator"按钮
+                if (floorTileItemPrefab != null)
+                {
+                    var itemObj = Instantiate(floorTileItemPrefab, contentContainer);
+                    var item = itemObj.GetComponent<FloorTileListItem>();
+                    if (item != null)
+                    {
+                        // 用 null archetype 初始化，特殊处理为电梯按钮
+                        item.InitializeAsElevator(OnElevatorSelected);
+                        floorItemInstances.Add(item);
+                    }
+                }
+            }
+            else // "Floor" 或默认
+            {
+                foreach (var fta in availableFloorTiles)
+                {
+                    if (fta == null || floorTileItemPrefab == null) continue;
+                    var itemObj = Instantiate(floorTileItemPrefab, contentContainer);
+                    var item = itemObj.GetComponent<FloorTileListItem>();
+                    if (item != null)
+                    {
+                        item.Initialize(fta, OnFloorTileSelected);
+                        floorItemInstances.Add(item);
+                    }
+                }
+            }
+        }
+
+        private void ClearFloorItems()
+        {
+            foreach (var item in floorItemInstances)
+            {
+                if (item != null) Destroy(item.gameObject);
+            }
+            floorItemInstances.Clear();
+        }
+
+        private void RebuildFloorContent()
+        {
+            ClearFloorItems();
+            InitializeFloorItems();
+        }
+
+        private void OnFloorTileSelected(FloorTileArchetype fta)
+        {
+            if (constructionManager != null)
+                constructionManager.SelectArchetypeForPlacement(fta);
+        }
+
+        private void OnElevatorSelected()
+        {
+            if (constructionManager != null)
+                constructionManager.BeginPlaceElevator();
+        }
+
+        #endregion
+
+        #region Tab 切换
+
+        private void SwitchTab(PanelTab tab)
+        {
+            if (currentTab == tab) return;
+            currentTab = tab;
+
+            if (tab == PanelTab.Shelves)
+            {
+                // 显示 Shelf 类别区，隐藏 Floor 类别区
+                if (categoryButtonContainer != null)
+                    categoryButtonContainer.gameObject.SetActive(true);
+                if (floorCategoryContainer != null)
+                    floorCategoryContainer.gameObject.SetActive(false);
+
+                // 清除 Floor 内容，重建 Shelf 内容
+                ClearFloorItems();
+                ClearItemList();
+                InitializeShelfItems();
+            }
+            else
+            {
+                // 显示 Floor 类别区，隐藏 Shelf 类别区
+                if (categoryButtonContainer != null)
+                    categoryButtonContainer.gameObject.SetActive(false);
+                if (floorCategoryContainer != null)
+                    floorCategoryContainer.gameObject.SetActive(true);
+
+                // 清除 Shelf 内容，重建 Floor 内容
+                ClearItemList();
+                ClearFloorItems();
+                InitializeFloorItems();
+            }
+
+            // Tab 按钮高亮
+            UpdateTabButtonVisuals();
+        }
+
+        private void UpdateTabButtonVisuals()
+        {
+            // 简单处理：选中的 Tab 按钮 interactable = false（视觉上表示当前选中）
+            if (shelvesTabButton != null)
+                shelvesTabButton.interactable = currentTab != PanelTab.Shelves;
+            if (floorTabButton != null)
+                floorTabButton.interactable = currentTab != PanelTab.Floor;
+        }
+
+        #endregion
+
         #region Filter Logic
 
         private void OnCategoryChanged(object filterValue)
@@ -442,6 +641,7 @@ namespace PopLife.UI
         {
             UnsubscribeMoneyChanged();
             BlueprintManager.OnShelfUnlocked -= OnShelfBlueprintUnlocked;
+            BlueprintManager.OnFloorTileUnlocked -= OnFloorTileBlueprintUnlocked;
         }
 
         private void SubscribeMoneyChanged()
@@ -482,13 +682,35 @@ namespace PopLife.UI
             AddShelf(shelf);
         }
 
+        private void OnFloorTileBlueprintUnlocked(FloorTileArchetype fta)
+        {
+            if (!isInitialized) return;
+            if (fta == null || availableFloorTiles.Contains(fta)) return;
+
+            availableFloorTiles.Add(fta);
+            availableFloorTiles.Sort((a, b) =>
+                (a.TileSize.x * a.TileSize.y).CompareTo(b.TileSize.x * b.TileSize.y));
+
+            // 当前在 Floor Tab 时立即刷新内容
+            if (currentTab == PanelTab.Floor)
+                RebuildFloorContent();
+        }
+
         public void RefreshItemDisplays()
         {
+            // Shelf items
             var placedArchetypes = GetPlacedShelfArchetypes();
             foreach (var item in itemInstances)
             {
                 item.UpdateCostDisplay();
                 item.SetPlacementDisabled(placedArchetypes.Contains(item.GetShelf()));
+            }
+
+            // Floor items
+            foreach (var item in floorItemInstances)
+            {
+                if (item != null)
+                    item.UpdateCostDisplay();
             }
         }
 
@@ -498,12 +720,11 @@ namespace PopLife.UI
         private HashSet<ShelfArchetype> GetPlacedShelfArchetypes()
         {
             var placed = new HashSet<ShelfArchetype>();
-            if (constructionManager == null || constructionManager.floorManager == null)
-                return placed;
-            foreach (var floor in constructionManager.floorManager.GetAllActiveFloors())
-                foreach (var shelf in floor.AllShelves())
-                    if (shelf.archetype is ShelfArchetype sa)
-                        placed.Add(sa);
+            var wg = WorldGrid.Instance;
+            if (wg == null) return placed;
+            foreach (var shelf in wg.AllShelves())
+                if (shelf.archetype is ShelfArchetype sa)
+                    placed.Add(sa);
             return placed;
         }
 

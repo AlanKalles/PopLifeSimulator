@@ -432,25 +432,22 @@ namespace PopLife.Quest
         /// </summary>
         private int CountBuildings(QuestCondition cond)
         {
-            var floorManager = UnityEngine.Object.FindFirstObjectByType<FloorManager>();
-            if (floorManager == null) return 0;
+            var wg = WorldGrid.Instance;
+            if (wg == null) return 0;
 
             int count = 0;
-            foreach (var floor in floorManager.GetAllActiveFloors())
+            if (cond.useFilterCategory)
             {
-                if (cond.useFilterCategory)
+                foreach (var shelf in wg.AllShelves())
                 {
-                    foreach (var shelf in floor.AllShelves())
-                    {
-                        if (shelf.archetype is ShelfArchetype sa && sa.category == cond.filterCategory)
-                            count++;
-                    }
-                }
-                else
-                {
-                    foreach (var _ in floor.AllBuildings())
+                    if (shelf.archetype is ShelfArchetype sa && sa.category == cond.filterCategory)
                         count++;
                 }
+            }
+            else
+            {
+                foreach (var _ in wg.AllBuildings())
+                    count++;
             }
 
             return count;
@@ -461,23 +458,20 @@ namespace PopLife.Quest
         /// </summary>
         private int CountShelves(QuestCondition cond)
         {
-            var floorManager = UnityEngine.Object.FindFirstObjectByType<FloorManager>();
-            if (floorManager == null) return 0;
+            var wg = WorldGrid.Instance;
+            if (wg == null) return 0;
 
             int count = 0;
-            foreach (var floor in floorManager.GetAllActiveFloors())
+            foreach (var shelf in wg.AllShelves())
             {
-                foreach (var shelf in floor.AllShelves())
+                if (cond.useFilterCategory)
                 {
-                    if (cond.useFilterCategory)
-                    {
-                        if (shelf.archetype is ShelfArchetype sa && sa.category == cond.filterCategory)
-                            count++;
-                    }
-                    else
-                    {
+                    if (shelf.archetype is ShelfArchetype sa && sa.category == cond.filterCategory)
                         count++;
-                    }
+                }
+                else
+                {
+                    count++;
                 }
             }
 
