@@ -44,6 +44,10 @@ namespace PopLife.Runtime
         private string[,] floorTileOwnerId;
         private readonly Dictionary<string, FloorTileInstance> floorTileInstances = new();
 
+        // 楼层层级缓存 (instanceId → 相对层级, default=0)
+        private readonly Dictionary<string, int> floorLevels = new();
+        private bool floorLevelsDirty = true;
+
         // 电梯
         [Serializable]
         public struct ElevatorData
@@ -64,7 +68,135 @@ namespace PopLife.Runtime
         public event Action OnStructureChanged;
 
         /// <summary> 公共触发点，供外部类调用 </summary>
-        public void NotifyStructureChanged() => OnStructureChanged?.Invoke();
+        public void NotifyStructureChanged()
+        {
+            InvalidateFloorLevels();
+            OnStructureChanged?.Invoke();
+        }
+
+        private void InvalidateFloorLevels() => floorLevelsDirty = true;
+
+        /// <summary>
+        /// BFS 重算所有 FloorTile 的楼层层级。
+        /// default tile = 0, 上方 +1, 下方 -1, 水平相邻同层。
+        /// 不可达的 tile 不会被分配层级（GetFloorLevel 返回 null）。
+        /// </summary>
+        private void RecalculateFloorLevels()
+        {
+            floorLevels.Clear();
+            floorLevelsDirty = false;
+
+            // 找 default tile
+            FloorTileInstance defaultTile = null;
+            foreach (var kv in floorTileInstances)
+            {
+                if (kv.Value.IsDefault) { defaultTile = kv.Value; break; }
+            }
+            if (defaultTile == null)
+            {
+                if (floorTileInstances.Count > 0)
+                    Debug.LogWarning("WorldGrid: 没有 IsDefault=true 的 FloorTile，无法计算楼层层级");
+                return;
+            }
+
+            // BFS
+            var queue = new Queue<string>();
+            floorLevels[defaultTile.instanceId] = 0;
+            queue.Enqueue(defaultTile.instanceId);
+
+            while (queue.Count > 0)
+            {
+                var currentId = queue.Dequeue();
+                var currentTile = floorTileInstances[currentId];
+                int currentLevel = floorLevels[currentId];
+
+                foreach (var kv in floorTileInstances)
+                {
+                    var otherId = kv.Key;
+                    var otherTile = kv.Value;
+
+                    int proposedLevel;
+
+                    if (IsSameFloorNeighbor(currentTile, otherTile))
+                        proposedLevel = currentLevel;
+                    else if (IsUpperFloorNeighbor(currentTile, otherTile))
+                        proposedLevel = currentLevel + 1;
+                    else if (IsUpperFloorNeighbor(otherTile, currentTile))
+                        proposedLevel = currentLevel - 1;
+                    else
+                        continue;
+
+                    if (floorLevels.TryGetValue(otherId, out int existingLevel))
+                    {
+                        // 冲突检测：已分配但值不一致
+                        if (existingLevel != proposedLevel)
+                            Debug.LogWarning($"WorldGrid: FloorTile '{otherTile.name}' 层级冲突: " +
+                                             $"已有={existingLevel}, 从 '{currentTile.name}' 推导={proposedLevel}。检查拓扑或 default 配置");
+                        continue;
+                    }
+
+                    floorLevels[otherId] = proposedLevel;
+                    queue.Enqueue(otherId);
+                }
+            }
+        }
+
+        // ================================================================
+        //  楼层层级查询 API
+        // ================================================================
+
+        /// <summary>
+        /// 获取 FloorTile 的相对层级（default=0, 上方+1, 下方-1...）。
+        /// 不可达或未注册返回 null。
+        /// </summary>
+        public int? GetFloorLevel(FloorTileInstance tile)
+        {
+            if (tile == null) return null;
+            return GetFloorLevel(tile.instanceId);
+        }
+
+        /// <summary> 通过 instanceId 获取楼层层级 </summary>
+        public int? GetFloorLevel(string instanceId)
+        {
+            if (string.IsNullOrEmpty(instanceId)) return null;
+            if (floorLevelsDirty) RecalculateFloorLevels();
+            return floorLevels.TryGetValue(instanceId, out int level) ? level : null;
+        }
+
+        /// <summary> 获取指定层级的所有 FloorTile </summary>
+        public IEnumerable<FloorTileInstance> GetFloorTilesOnLevel(int level)
+        {
+            if (floorLevelsDirty) RecalculateFloorLevels();
+            foreach (var kv in floorLevels)
+            {
+                if (kv.Value == level && floorTileInstances.TryGetValue(kv.Key, out var tile))
+                    yield return tile;
+            }
+        }
+
+        /// <summary> 总楼层数（最高层级 - 最低层级 + 1，无 tile 返回 0） </summary>
+        public int TotalFloorCount
+        {
+            get
+            {
+                if (floorLevelsDirty) RecalculateFloorLevels();
+                if (floorLevels.Count == 0) return 0;
+                int min = int.MaxValue, max = int.MinValue;
+                foreach (var kv in floorLevels)
+                {
+                    if (kv.Value < min) min = kv.Value;
+                    if (kv.Value > max) max = kv.Value;
+                }
+                return max - min + 1;
+            }
+        }
+
+        /// <summary> 层级→显示名 (0→"1F", 1→"2F", -1→"B1", -2→"B2") </summary>
+        public static string FloorLevelToDisplayName(int level)
+        {
+            if (level >= 0) return $"{level + 1}F";
+            return $"B{-level}";
+        }
 
         // ================================================================
         //  只读属性
@@ -125,6 +257,7 @@ namespace PopLife.Runtime
         {
             floorTileLayer = new bool[gridSize.x, gridSize.y];
             floorTileOwnerId = new string[gridSize.x, gridSize.y];
+            InvalidateFloorLevels();
         }
 
         public void RebuildFromScene()
@@ -132,6 +265,7 @@ namespace PopLife.Runtime
             Init();
             floorTileInstances.Clear();
             RegisterAllChildBuildings();
+            InvalidateFloorLevels();
         }
 
         // ================================================================
@@ -592,6 +726,7 @@ namespace PopLife.Runtime
             if (HasElevatorOnFloorTile(inst)) return false;
             ClearFloorTileCells(inst);
             floorTileInstances.Remove(inst.instanceId);
+            InvalidateFloorLevels();
             return true;
         }
 
@@ -685,6 +820,7 @@ namespace PopLife.Runtime
                     }
                 }
             }
+            InvalidateFloorLevels();
         }
 
         // ================================================================
@@ -709,24 +845,109 @@ namespace PopLife.Runtime
             return floorTileOwnerId[pos.x, pos.y];
         }
 
-        /// <summary> 检查两个 FloorTile 是否为相邻楼层 </summary>
-        public bool AreAdjacentFloors(FloorTileInstance a, FloorTileInstance b)
+        // ================================================================
+        //  统一邻接 Helper
+        // ================================================================
+
+        /// <summary> 获取 FloorTile 在世界网格中的 Y 范围 </summary>
+        private (int minY, int maxY) GetTileYRange(FloorTileInstance tile)
+        {
+            var fp = tile.archetype.GetRotatedFootprint(tile.rotation);
+            int minY = int.MaxValue, maxY = int.MinValue;
+            foreach (var off in fp)
+            {
+                var p = tile.gridPosition + off;
+                if (p.y < minY) minY = p.y;
+                if (p.y > maxY) maxY = p.y;
+            }
+            return (minY, maxY);
+        }
+
+        /// <summary> 获取 FloorTile 在世界网格中的 X 范围 </summary>
+        private (int minX, int maxX) GetTileXRange(FloorTileInstance tile)
+        {
+            var fp = tile.archetype.GetRotatedFootprint(tile.rotation);
+            int minX = int.MaxValue, maxX = int.MinValue;
+            foreach (var off in fp)
+            {
+                var p = tile.gridPosition + off;
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+            }
+            return (minX, maxX);
+        }
+
+        /// <summary>
+        /// 两个 FloorTile 是否为同楼层水平邻居。
+        /// 条件: Y 范围完全一致 + 列紧贴 + 接触面高度一致。
+        /// </summary>
+        public bool IsSameFloorNeighbor(FloorTileInstance a, FloorTileInstance b)
         {
             if (a == null || b == null || a.instanceId == b.instanceId) return false;
 
-            var fpA = a.archetype.GetRotatedFootprint(a.rotation);
-            foreach (var off in fpA)
+            var (aMinY, aMaxY) = GetTileYRange(a);
+            var (bMinY, bMaxY) = GetTileYRange(b);
+            if (aMinY != bMinY || aMaxY != bMaxY) return false;
+
+            var (aMinX, aMaxX) = GetTileXRange(a);
+            var (bMinX, bMaxX) = GetTileXRange(b);
+
+            int height = aMaxY - aMinY + 1;
+
+            // a 在 b 左侧
+            if (aMaxX + 1 == bMinX)
+                return CheckContactHeight(b, bMinX, height);
+            // a 在 b 右侧
+            if (bMaxX + 1 == aMinX)
+                return CheckContactHeight(a, aMinX, height);
+
+            return false;
+        }
+
+        /// <summary>
+        /// 检查 tile 在指定列 x 上的格子数是否等于 expectedHeight。
+        /// 复用 HasHorizontalSupport 的接触面高度一致逻辑。
+        /// </summary>
+        private bool CheckContactHeight(FloorTileInstance tile, int x, int expectedHeight)
+        {
+            var fp = tile.archetype.GetRotatedFootprint(tile.rotation);
+            int count = 0;
+            foreach (var off in fp)
             {
-                var cellA = a.gridPosition + off;
-                var above = new Vector2Int(cellA.x, cellA.y + 1);
-                if (InBounds(above) && floorTileOwnerId[above.x, above.y] == b.instanceId)
-                    return true;
-                var below = new Vector2Int(cellA.x, cellA.y - 1);
-                if (InBounds(below) && floorTileOwnerId[below.x, below.y] == b.instanceId)
+                var p = tile.gridPosition + off;
+                if (p.x == x) count++;
+            }
+            return count == expectedHeight;
+        }
+
+        /// <summary>
+        /// lower 是否是 upper 的正下方楼层。
+        /// 条件: upper 的底行 minY == lower 的顶行 maxY + 1，且至少一个 upper 底行格子正下方属于 lower。
+        /// </summary>
+        public bool IsUpperFloorNeighbor(FloorTileInstance lower, FloorTileInstance upper)
+        {
+            if (lower == null || upper == null || lower.instanceId == upper.instanceId) return false;
+
+            var (_, lowerMaxY) = GetTileYRange(lower);
+            var (upperMinY, _) = GetTileYRange(upper);
+            if (upperMinY != lowerMaxY + 1) return false;
+
+            // 检查至少一个 upper 底行格子正下方属于 lower
+            var fpUpper = upper.archetype.GetRotatedFootprint(upper.rotation);
+            foreach (var off in fpUpper)
+            {
+                var p = upper.gridPosition + off;
+                if (p.y != upperMinY) continue;
+                var below = new Vector2Int(p.x, p.y - 1);
+                if (InBounds(below) && floorTileOwnerId[below.x, below.y] == lower.instanceId)
                     return true;
             }
             return false;
         }
+
+        /// <summary> 检查两个 FloorTile 是否为相邻楼层（上下关系，任一方向） </summary>
+        public bool AreAdjacentFloors(FloorTileInstance a, FloorTileInstance b)
+            => IsUpperFloorNeighbor(a, b) || IsUpperFloorNeighbor(b, a);
 
         public IEnumerable<FloorTileInstance> AllFloorTiles()
         {
@@ -905,10 +1126,32 @@ namespace PopLife.Runtime
                     Gizmos.DrawWireCube(p, Vector3.one * cellSize * 0.98f);
                 }
 
-            // 建造模式: floorTileLayer 可视化
+            // 楼层标签（Rebuild from Scene 后可用，编辑模式+运行时均显示）
+#if UNITY_EDITOR
+            if (floorTileInstances.Count > 0)
+            {
+                var style = new GUIStyle(UnityEditor.EditorStyles.boldLabel)
+                {
+                    fontSize = 14,
+                    normal = { textColor = Color.cyan },
+                    alignment = TextAnchor.MiddleCenter
+                };
+                foreach (var kv in floorTileInstances)
+                {
+                    var tile = kv.Value;
+                    if (tile == null) continue;
+                    var level = GetFloorLevel(tile);
+                    var label = level.HasValue ? FloorLevelToDisplayName(level.Value) : "?";
+                    UnityEditor.Handles.Label(tile.transform.position + Vector3.up * 0.5f, label, style);
+                }
+            }
+#endif
+
+            // 以下仅运行时
             if (!Application.isPlaying) return;
             if (floorTileLayer == null) return;
 
+            // 建造模式: floorTileLayer 可视化
             var cm = FindFirstObjectByType<ConstructionManager>();
             if (cm == null || cm.mode == ConstructionManager.Mode.None) return;
 

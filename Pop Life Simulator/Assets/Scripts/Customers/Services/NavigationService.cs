@@ -20,10 +20,31 @@ namespace PopLife.Customers.Services
         [SerializeField] private AstarPath astarPath;
         [SerializeField] private LayerMask obstacleLayer = -1;
 
+        [Header("Outside Graph")]
+        [Tooltip("场景中预配置的 outside GridGraph 在 AstarPath.data.graphs 中的索引")]
+        [SerializeField] private int outsideGraphIndexInData = 0;
+
+        private GridGraph outsideGraph;
+
         // 每个 FloorTileInstance 对应一个 GridGraph
         private readonly Dictionary<string, GridGraph> tileGraphs = new();
         // Portal NodeLink2 对象列表（用于清理）
         private readonly List<GameObject> portalLinks = new();
+
+        /// <summary> Outside graph 是否可用 </summary>
+        public bool HasOutsideGraph => outsideGraph != null;
+
+        /// <summary> Outside graph 的 GraphMask。缺失时返回空 mask 并报错。 </summary>
+        public GraphMask OutsideGraphMask
+        {
+            get
+            {
+                if (outsideGraph != null)
+                    return GraphMask.FromGraphIndex(outsideGraph.graphIndex);
+                Debug.LogError("[NavigationService] Outside graph missing!");
+                return default;
+            }
+        }
 
         void Awake()
         {
@@ -76,7 +97,20 @@ namespace PopLife.Customers.Services
 #if ASTAR_PATHFINDING_PROJECT
             if (astarPath == null) return;
 
-            // 清理旧 graphs
+            // 获取场景预配置的 outside graph（通过 Inspector 配置的索引）
+            var graphs = astarPath.data.graphs;
+            if (outsideGraphIndexInData >= 0 && outsideGraphIndexInData < graphs.Length
+                && graphs[outsideGraphIndexInData] is GridGraph og)
+            {
+                outsideGraph = og;
+            }
+            else
+            {
+                Debug.LogError($"[NavigationService] Outside graph not found at index {outsideGraphIndexInData}");
+                outsideGraph = null;
+            }
+
+            // 清理旧 interior graphs（不动 outside graph）
             foreach (var kv in tileGraphs)
                 astarPath.data.RemoveGraph(kv.Value);
             tileGraphs.Clear();

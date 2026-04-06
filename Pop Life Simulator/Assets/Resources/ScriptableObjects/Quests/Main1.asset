@@ -30,5 +30,10 @@ MonoBehaviour:
   activationMarker: -1
   completionMarker: 28
   triggerMarkerAfterToast: 1
+  title: Build Your First Shelf
+  description: Your store is empty, try to build the first shelf in your store!
+  successDescription: You gained 100 Fame
+  entryTexts:
+  - Build 1 shelf
   questIcon: {fileID: 0}
   sortPriority: 50

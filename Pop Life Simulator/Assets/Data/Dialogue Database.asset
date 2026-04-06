@@ -153,125 +153,7 @@ MonoBehaviour:
     spritePortrait: {fileID: 0}
     alternatePortraits: []
     spritePortraits: []
-  items:
-  - id: 1
-    fields:
-    - title: Name
-      value: Main/1
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Pictures
-      value: '[]'
-      type: 3
-      typeString: CustomFieldType_Files
-    - title: Description
-      value: Your store is empty, try to build the first shelf in your store!
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Success Description
-      value: You gained 100 Fame
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Failure Description
-      value: 
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: State
-      value: unassigned
-      type: 0
-      typeString: CustomFieldType_QuestState
-    - title: Is Item
-      value: False
-      type: 2
-      typeString: CustomFieldType_Boolean
-    - title: Display Name
-      value: Build Your First Shelf
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Group
-      value: Main
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Trackable
-      value: True
-      type: 2
-      typeString: CustomFieldType_Boolean
-    - title: Track
-      value: True
-      type: 2
-      typeString: CustomFieldType_Boolean
-    - title: Entry Count
-      value: 1
-      type: 1
-      typeString: CustomFieldType_Number
-    - title: Entry 1 State
-      value: unassigned
-      type: 0
-      typeString: 
-    - title: Entry 1
-      value: Build 1 shelf
-      type: 0
-      typeString: 
-  - id: 2
-    fields:
-    - title: Name
-      value: Main/2
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Pictures
-      value: '[]'
-      type: 3
-      typeString: CustomFieldType_Files
-    - title: Description
-      value: "You\u2019ll need more products to draw in customers. Six items shouldn't
-        be difficult.\nYou'll have three days. The local news will advertise for
-        you. Don't let us down"
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Success Description
-      value: 
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Failure Description
-      value: 
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: State
-      value: unassigned
-      type: 0
-      typeString: CustomFieldType_QuestState
-    - title: Is Item
-      value: False
-      type: 2
-      typeString: CustomFieldType_Boolean
-    - title: Trackable
-      value: True
-      type: 2
-      typeString: CustomFieldType_Boolean
-    - title: Track
-      value: True
-      type: 2
-      typeString: CustomFieldType_Boolean
-    - title: Display Name
-      value: Auditor's Request #1
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Group
-      value: Main
-      type: 0
-      typeString: CustomFieldType_Text
-    - title: Entry Count
-      value: 1
-      type: 1
-      typeString: CustomFieldType_Number
-    - title: Entry 1 State
-      value: unassigned
-      type: 0
-      typeString: CustomFieldType_QuestState
-    - title: Entry 1
-      value: Build 6 shelves
-      type: 0
-      typeString: CustomFieldType_Text
+  items: []
   locations: []
   variables:
   - id: 1
@@ -728,8 +610,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 121.48767}
-    canvasZoom: 0.6700003
+    canvasScrollPosition: {x: 95.821724, y: 124.19612}
+    canvasZoom: 0.64000034
   - id: 2
     fields:
     - title: Title
@@ -3000,7 +2882,7 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 263.15613, y: 0}
+    canvasScrollPosition: {x: 7.272766, y: 0}
     canvasZoom: 0.8800001
   - id: 9
     fields:
@@ -4698,7 +4580,7 @@ MonoBehaviour:
       isGroup: 0
       nodeColor: 
       delaySimStatus: 0
-      falseConditionAction: 
+      falseConditionAction: Block
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
@@ -4762,7 +4644,7 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 0}
+    canvasScrollPosition: {x: 8.799988, y: 0}
     canvasZoom: 1
   - id: 13
     fields:

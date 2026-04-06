@@ -28,9 +28,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
         private float startTime;
         private CustomerAnimationController animController;
 
-        // 记录外部图索引，用于最终排除
-        private uint outsideGraphIndex;
-        private bool hasOutsideGraphIndex;
+        // 外部图 GraphMask，用于限制第一阶段寻路 + 进店后排除
+        private GraphMask outsideGraphMask;
 
         protected override string info
         {
@@ -92,22 +91,18 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 aiLerp.speed = customerBlackboard.moveSpeed;
             }
 
-            // 第一阶段：只使用顾客当前所在的图（外部图），避免在重叠区域被 snap 到内部图
-            hasOutsideGraphIndex = false;
+            // 第一阶段：显式获取 outside graph，避免在重叠区域被 snap 到内部图
+            var nav = PopLife.Customers.Services.NavigationService.Instance;
+            if (nav == null || !nav.HasOutsideGraph)
+            {
+                Debug.LogError("[MoveToEntranceAction] Outside graph not available");
+                EndAction(false);
+                return;
+            }
+            outsideGraphMask = nav.OutsideGraphMask;
             if (seeker != null)
             {
-                var nearestInfo = AstarPath.active.GetNearest(agent.transform.position);
-                if (nearestInfo.node != null)
-                {
-                    outsideGraphIndex = nearestInfo.node.GraphIndex;
-                    hasOutsideGraphIndex = true;
-                    seeker.graphMask = GraphMask.FromGraphIndex(outsideGraphIndex);
-                    Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 第一阶段使用图形 {outsideGraphIndex}");
-                }
-                else
-                {
-                    seeker.graphMask = GraphMask.everything;
-                }
+                seeker.graphMask = outsideGraphMask;
             }
 
             // 设置 A* 寻路目标
@@ -207,11 +202,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             aiLerp.isStopped = true;
 
-            // 排除外部图，允许所有内部图（多楼层）
-            if (seeker != null && hasOutsideGraphIndex)
+            // 排除外部图，允许所有内部图
+            if (seeker != null)
             {
-                seeker.graphMask = ~GraphMask.FromGraphIndex(outsideGraphIndex);
-                Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} graphMask 已排除外部图 {outsideGraphIndex}");
+                seeker.graphMask = ~outsideGraphMask;
             }
 
             // 标记已进入商店

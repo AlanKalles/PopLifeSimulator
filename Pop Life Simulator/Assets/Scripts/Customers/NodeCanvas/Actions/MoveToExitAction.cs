@@ -190,7 +190,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 aiLerp.destination = targetTransform.position;
             }
 
-            // 第二阶段：切换到 everything，允许通过 NodeLink2 离开商店
+            // 第二阶段：需要同时看到当前 interior graph + outside graph 才能穿过 NodeLink2
+            // 当前系统只有 interior graphs + outside graph，everything 等价于正确组合
+            // 如果未来新增其他 graph 类型，需改为显式组合
             if (seeker != null)
             {
                 seeker.graphMask = GraphMask.everything;

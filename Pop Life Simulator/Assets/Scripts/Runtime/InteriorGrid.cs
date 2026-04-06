@@ -182,13 +182,19 @@ namespace PopLife.Runtime
         {
             if (footprint == null) return false;
 
+            int minY = int.MaxValue;
             foreach (var offset in footprint)
             {
                 var cell = origin + offset;
                 if (!InBounds(cell)) return false;
                 if (!placeable[cell.x, cell.y]) return false;
                 if (occupied[cell.x, cell.y]) return false;
+                if (cell.y < minY) minY = cell.y;
             }
+
+            // 接地规则：footprint 最底行必须在 y=0（建筑必须站在地面上）
+            if (minY != 0) return false;
+
             return true;
         }
 
@@ -199,13 +205,19 @@ namespace PopLife.Runtime
         {
             if (footprint == null) return false;
 
+            int minY = int.MaxValue;
             foreach (var offset in footprint)
             {
                 var cell = origin + offset;
                 if (!InBounds(cell)) return false;
                 if (!placeable[cell.x, cell.y]) return false;
                 if (occupied[cell.x, cell.y] && occupantId[cell.x, cell.y] != selfId) return false;
+                if (cell.y < minY) minY = cell.y;
             }
+
+            // 接地规则
+            if (minY != 0) return false;
+
             return true;
         }
 

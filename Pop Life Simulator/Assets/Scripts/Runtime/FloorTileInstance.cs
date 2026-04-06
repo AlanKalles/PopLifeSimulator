@@ -23,6 +23,14 @@ namespace PopLife.Runtime
         /// <summary> 获取地板尺寸（从原型） </summary>
         public Vector2Int TileSize => archetype is FloorTileArchetype fta ? fta.TileSize : Vector2Int.one;
 
+        /// <summary> 相对层级（default=0, 上方+1, 下方-1），不可达返回 null </summary>
+        public int? FloorLevel => WorldGrid.Instance?.GetFloorLevel(this);
+
+        /// <summary> 显示名（"1F", "2F", "B1"...），不可达返回 "?" </summary>
+        public string FloorDisplayName => FloorLevel.HasValue
+            ? WorldGrid.FloorLevelToDisplayName(FloorLevel.Value)
+            : "?";
+
         /// <summary> 内部网格，管理货架/设施放置 </summary>
         public InteriorGrid Interior { get; private set; }
 

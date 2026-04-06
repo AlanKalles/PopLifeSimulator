@@ -23,3 +23,14 @@ MonoBehaviour:
   season: 1
   dayInSeason: 5
   durationDays: 3
+  modifierPayload:
+    constructionCostMultiplier: 1
+    upgradeCostMultiplier: 1
+    customerSpawnRateMultiplier: 1
+    customerMoneyBagMultiplier: 1
+    globalFameGainMultiplier: 1
+    categoryPriceModifiers: []
+    categoryFameModifiers: []
+    categoryQuantityModifiers: []
+    shelfAppealModifiers: []
+    bonusInterestCategories: 00000000

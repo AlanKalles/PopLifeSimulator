@@ -30,5 +30,12 @@ MonoBehaviour:
   activationMarker: -1
   completionMarker: -1
   triggerMarkerAfterToast: 0
+  title: Auditor's Request #1
+  description: "You\u2019ll need more products to draw in customers. Six items shouldn't
+    be difficult.\nYou'll have three days. The local news will advertise for you.
+    Don't let us down"
+  successDescription: 
+  entryTexts:
+  - Build 6 shelves
   questIcon: {fileID: 0}
   sortPriority: 50

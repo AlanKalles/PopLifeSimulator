@@ -204,4 +204,4 @@ MonoBehaviour:
   interiorCellSize: 0.5
   leftPortalCells: 00000000
   rightPortalCells: 00000000010000000200000003000000
-  walkableRows: 1
+  walkableRows: 2

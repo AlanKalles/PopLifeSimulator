@@ -8,6 +8,7 @@ namespace PopLife
     /// 光照管理器 - 管理场景中的所有 Light2D 组件
     /// 根据 DayLoopManager 的游戏阶段动态调整光照
     /// </summary>
+    [DefaultExecutionOrder(-100)]
     public class LightingManager : MonoBehaviour
     {
         public static LightingManager Instance { get; private set; }
@@ -32,9 +33,23 @@ namespace PopLife
         [Tooltip("营业结束小时")]
         [SerializeField] private float openHourEnd = 23f;
 
+        [Header("Tile Light Config")]
+        [Tooltip("FloorTile 灯光颜色渐变（跟随营业时间）")]
+        [SerializeField] private Gradient tileLightColorGradient;
+        [Tooltip("FloorTile 灯光基础强度（未启用强度曲线时使用）")]
+        [SerializeField] private float tileLightBaseIntensity = 2.0f;
+        [Tooltip("FloorTile 灯光强度曲线（可选）")]
+        [SerializeField] private AnimationCurve tileLightIntensityCurve = AnimationCurve.Constant(0, 1, 2.0f);
+        [Tooltip("是否使用 FloorTile 灯光强度曲线")]
+        [SerializeField] private bool useTileIntensityCurve = false;
+
         [Header("Advanced Settings")]
         [Tooltip("是否使用强度曲线（关闭则使用固定强度 1.0）")]
         [SerializeField] private bool useIntensityCurve = false;
+
+        // FloorTile 灯光运行时管理（由 FloorTileLighting 自动注册/注销）
+        private readonly List<Light2D> tileLights = new List<Light2D>();
+        private readonly HashSet<Light2D> tileLightSet = new HashSet<Light2D>();
 
         private void Awake()
         {
@@ -79,9 +94,9 @@ namespace PopLife
 
             // 初始化 Gradient（如果为空）
             if (openPhaseColorGradient == null)
-            {
                 InitializeDefaultGradient();
-            }
+            if (tileLightColorGradient == null)
+                InitializeDefaultTileGradient();
 
             // 验证引用
             if (globalLight == null)
@@ -181,19 +196,34 @@ namespace PopLife
         {
             float normalizedTime = GetNormalizedOpenTime();
 
-            // 应用颜色渐变
-            Color targetColor = openPhaseColorGradient.Evaluate(normalizedTime);
-            globalLight.color = targetColor;
+            // 全局光渐变
+            globalLight.color = openPhaseColorGradient.Evaluate(normalizedTime);
+            globalLight.intensity = useIntensityCurve && openPhaseIntensityCurve != null
+                ? openPhaseIntensityCurve.Evaluate(normalizedTime)
+                : 1.0f;
 
-            // 应用强度曲线（可选）
-            if (useIntensityCurve && openPhaseIntensityCurve != null)
+            // tile 灯光渐变：每帧只 Evaluate 一次，缓存颜色/强度
+            if (tileLights.Count > 0)
             {
-                float targetIntensity = openPhaseIntensityCurve.Evaluate(normalizedTime);
-                globalLight.intensity = targetIntensity;
-            }
-            else
-            {
-                globalLight.intensity = 1.0f; // 固定强度
+                Color tileColor = tileLightColorGradient != null
+                    ? tileLightColorGradient.Evaluate(normalizedTime)
+                    : Color.white;
+                float tileIntensity = useTileIntensityCurve && tileLightIntensityCurve != null
+                    ? tileLightIntensityCurve.Evaluate(normalizedTime)
+                    : tileLightBaseIntensity;
+
+                for (int i = tileLights.Count - 1; i >= 0; i--)
+                {
+                    var light = tileLights[i];
+                    if (light == null)
+                    {
+                        tileLights.RemoveAt(i);
+                        tileLightSet.Remove(light);
+                        continue;
+                    }
+                    light.color = tileColor;
+                    light.intensity = tileIntensity;
+                }
             }
         }
 
@@ -208,41 +238,25 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 启用所有 Freeform lights
+        /// 启用所有 Freeform lights 和 Tile lights
         /// </summary>
         private void EnableFreeformLights()
         {
             foreach (var light in freeformLights)
-            {
-                if (light != null)
-                {
-                    light.enabled = true;
-                }
-            }
-
-            if (freeformLights.Count > 0)
-            {
-                Debug.Log($"[LightingManager] Enabled {freeformLights.Count} freeform lights.");
-            }
+                if (light != null) light.enabled = true;
+            foreach (var light in tileLights)
+                if (light != null) light.enabled = true;
         }
 
         /// <summary>
-        /// 禁用所有 Freeform lights
+        /// 禁用所有 Freeform lights 和 Tile lights
         /// </summary>
         private void DisableFreeformLights()
         {
             foreach (var light in freeformLights)
-            {
-                if (light != null)
-                {
-                    light.enabled = false;
-                }
-            }
-
-            if (freeformLights.Count > 0)
-            {
-                Debug.Log($"[LightingManager] Disabled {freeformLights.Count} freeform lights.");
-            }
+                if (light != null) light.enabled = false;
+            foreach (var light in tileLights)
+                if (light != null) light.enabled = false;
         }
 
         #endregion
@@ -309,6 +323,60 @@ namespace PopLife
 
         #endregion
 
+        #region Tile Light Registration
+
+        /// <summary>
+        /// 注册 FloorTile 灯光（由 FloorTileLighting 自动调用）
+        /// </summary>
+        public void RegisterTileLights(List<Light2D> lights)
+        {
+            bool isOpenPhase = DayLoopManager.Instance != null
+                && DayLoopManager.Instance.currentPhase == GamePhase.OpenPhase;
+            float t = isOpenPhase ? GetNormalizedOpenTime() : 0f;
+
+            foreach (var light in lights)
+            {
+                if (light == null || !tileLightSet.Add(light)) continue;
+                tileLights.Add(light);
+
+                if (isOpenPhase)
+                {
+                    light.enabled = true;
+                    ApplyTileLightValues(light, t);
+                }
+                else
+                {
+                    light.enabled = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 注销 FloorTile 灯光（由 FloorTileLighting 自动调用）
+        /// </summary>
+        public void UnregisterTileLights(List<Light2D> lights)
+        {
+            foreach (var light in lights)
+            {
+                if (tileLightSet.Remove(light))
+                    tileLights.Remove(light);
+            }
+        }
+
+        /// <summary>
+        /// 对单个 tile 灯光应用当前渐变值
+        /// </summary>
+        private void ApplyTileLightValues(Light2D light, float normalizedTime)
+        {
+            if (tileLightColorGradient != null)
+                light.color = tileLightColorGradient.Evaluate(normalizedTime);
+            light.intensity = useTileIntensityCurve && tileLightIntensityCurve != null
+                ? tileLightIntensityCurve.Evaluate(normalizedTime)
+                : tileLightBaseIntensity;
+        }
+
+        #endregion
+
         #region Initialization Helpers
 
         /// <summary>
@@ -332,6 +400,28 @@ namespace PopLife
             openPhaseColorGradient.SetKeys(colorKeys, alphaKeys);
 
             Debug.Log("[LightingManager] Initialized default gradient.");
+        }
+
+        /// <summary>
+        /// 初始化默认 tile 灯光渐变（暖白→暖橙→冷蓝，与全局光不同以突出层次）
+        /// </summary>
+        private void InitializeDefaultTileGradient()
+        {
+            tileLightColorGradient = new Gradient();
+
+            var colorKeys = new GradientColorKey[4];
+            colorKeys[0] = new GradientColorKey(new Color(0.8f, 0.95f, 1.0f), 0.0f);  // 12:00 冷白
+            colorKeys[1] = new GradientColorKey(new Color(1.0f, 0.9f, 0.7f), 0.3f);   // ~15:00 暖黄
+            colorKeys[2] = new GradientColorKey(new Color(1.0f, 0.7f, 0.4f), 0.6f);   // ~18:00 暖橙
+            colorKeys[3] = new GradientColorKey(new Color(0.4f, 0.5f, 0.8f), 1.0f);   // 23:00 冷蓝
+
+            var alphaKeys = new GradientAlphaKey[2];
+            alphaKeys[0] = new GradientAlphaKey(1.0f, 0.0f);
+            alphaKeys[1] = new GradientAlphaKey(1.0f, 1.0f);
+
+            tileLightColorGradient.SetKeys(colorKeys, alphaKeys);
+
+            Debug.Log("[LightingManager] Initialized default tile light gradient.");
         }
 
         #endregion
