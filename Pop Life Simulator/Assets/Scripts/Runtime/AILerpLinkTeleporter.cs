@@ -25,6 +25,17 @@ namespace PopLife.Runtime
 
         private NodeLink2 nodeLink;
 
+        // 电梯门引用（方向无关，由 ResolveDoors 根据行进方向判断入口/出口）
+        private ElevatorDoorInstance doorA;
+        private ElevatorDoorInstance doorB;
+
+        /// <summary> 设置电梯门引用，由 ElevatorLinkManager 在创建连接时调用 </summary>
+        public void SetDoors(ElevatorDoorInstance a, ElevatorDoorInstance b)
+        {
+            doorA = a;
+            doorB = b;
+        }
+
         // 全局注册表：通过 NodeLink2 查找对应的 teleporter
         private static readonly Dictionary<NodeLink2, AILerpLinkTeleporter> registry = new();
 
@@ -36,6 +47,8 @@ namespace PopLife.Runtime
             public Vector3 startPosition;
             public Vector3 endPosition;
             public Phase phase;
+            public ElevatorDoorInstance entryDoor;
+            public ElevatorDoorInstance exitDoor;
         }
 
         private readonly Dictionary<Transform, AgentState> trackedAgents = new();
@@ -48,9 +61,12 @@ namespace PopLife.Runtime
 
         void OnDisable()
         {
-            // 恢复所有被隐藏的 agent
+            // 恢复所有被隐藏的 agent 并回收门计数
             foreach (var kvp in trackedAgents)
+            {
                 SetAlphaAll(kvp.Value.sprites, 1f);
+                CleanupDoorTraversals(kvp.Value);
+            }
 
             trackedAgents.Clear();
             registry.Remove(nodeLink);
@@ -75,12 +91,25 @@ namespace PopLife.Runtime
         {
             if (!hideOnTraversal || sprites == null || sprites.Length == 0) return;
 
+            // 根据行进方向确定入口/出口门
+            // 使用 Anchor.position（实际寻路锚点），不是 transform.position（prefab pivot）
+            ElevatorDoorInstance entryDoor = null, exitDoor = null;
+            if (doorA != null && doorB != null)
+            {
+                float distA = (startPos - doorA.Anchor.position).sqrMagnitude;
+                float distB = (startPos - doorB.Anchor.position).sqrMagnitude;
+                entryDoor = distA < distB ? doorA : doorB;
+                exitDoor = distA < distB ? doorB : doorA;
+            }
+
             trackedAgents[agent] = new AgentState
             {
                 sprites = sprites,
                 startPosition = startPos,
                 endPosition = endPos,
-                phase = Phase.Approaching
+                phase = Phase.Approaching,
+                entryDoor = entryDoor,
+                exitDoor = exitDoor
             };
 
             if (debugMode)
@@ -97,6 +126,9 @@ namespace PopLife.Runtime
 
             if (state.phase == Phase.Hidden)
                 SetAlphaAll(state.sprites, 1f);
+
+            // 回收电梯门计数（防止异常退出导致门永久打开）
+            CleanupDoorTraversals(state);
 
             trackedAgents.Remove(agent);
 
@@ -121,6 +153,8 @@ namespace PopLife.Runtime
 
                 if (agent == null)
                 {
+                    // agent 被销毁（如关店超时强制清除），回收门计数
+                    CleanupDoorTraversals(state);
                     toRemove.Add(agent);
                     continue;
                 }
@@ -132,6 +166,9 @@ namespace PopLife.Runtime
                     // 等待 agent 物理到达链接起点才隐藏
                     if ((pos - state.startPosition).sqrMagnitude <= thresholdSqr)
                     {
+                        // 入口门开门
+                        state.entryDoor?.OpenDoor();
+
                         SetAlphaAll(state.sprites, 0f);
                         state.phase = Phase.Hidden;
                         trackedAgents[agent] = state;
@@ -145,8 +182,15 @@ namespace PopLife.Runtime
                     // 等待 agent 物理到达链接终点才恢复
                     if ((pos - state.endPosition).sqrMagnitude <= thresholdSqr)
                     {
+                        // 出口门开门
+                        state.exitDoor?.OpenDoor();
+
                         SetAlphaAll(state.sprites, 1f);
                         toRemove.Add(agent);
+
+                        // 通行完成，通知两端门
+                        state.entryDoor?.NotifyTraversalComplete();
+                        state.exitDoor?.NotifyTraversalComplete();
 
                         if (debugMode)
                             Debug.Log($"[LinkTeleporter] {agent.name} 到达终点，恢复", this);
@@ -156,6 +200,22 @@ namespace PopLife.Runtime
 
             foreach (var key in toRemove)
                 trackedAgents.Remove(key);
+        }
+
+        /// <summary>
+        /// 回收电梯门的 activeTraversals 计数。
+        /// 根据 agent 已经到达的阶段决定通知哪些门。
+        /// </summary>
+        private static void CleanupDoorTraversals(AgentState state)
+        {
+            // Approaching 阶段：还没开过任何门，不需要回收
+            // Hidden 阶段：入口门已 OpenDoor()，需要通知入口门
+            if (state.phase == Phase.Hidden)
+            {
+                state.entryDoor?.NotifyTraversalComplete();
+            }
+            // 注意：正常完成时 entryDoor 和 exitDoor 都在 Update 中已调用
+            // NotifyTraversalComplete，这里只处理异常退出
         }
 
         private static void SetAlphaAll(SpriteRenderer[] renderers, float alpha)

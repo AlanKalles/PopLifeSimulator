@@ -74,7 +74,7 @@ namespace PopLife.Customers.Services
 
         private void InitializeAstar()
         {
-#if ASTAR_PATHFINDING_PROJECT
+
             if (astarPath == null)
             {
                 astarPath = AstarPath.active;
@@ -84,7 +84,7 @@ namespace PopLife.Customers.Services
                     return;
                 }
             }
-#endif
+
         }
 
         // ========== Graph 重建 ==========
@@ -94,7 +94,7 @@ namespace PopLife.Customers.Services
         /// </summary>
         public void RebuildAllGraphs()
         {
-#if ASTAR_PATHFINDING_PROJECT
+
             if (astarPath == null) return;
 
             // 获取场景预配置的 outside graph（通过 Inspector 配置的索引）
@@ -144,12 +144,12 @@ namespace PopLife.Customers.Services
 
             // 创建 Portal NodeLink2
             CreatePortalLinks(wg);
-#endif
+
         }
 
         // ========== 单 Tile Graph 创建 ==========
 
-#if ASTAR_PATHFINDING_PROJECT
+
         private GridGraph CreateGraphForTile(FloorTileInstance tile)
         {
             var interior = tile.Interior;
@@ -169,11 +169,11 @@ namespace PopLife.Customers.Services
 
             return graph;
         }
-#endif
+
 
         // ========== Walkability 同步 ==========
 
-#if ASTAR_PATHFINDING_PROJECT
+
         /// <summary>
         /// 同步单个 GridGraph 的 walkability（基于 InteriorGrid 配置层）
         /// walkable 层在 InteriorGrid 初始化后不可变，仅在 graph 创建时同步一次
@@ -191,11 +191,11 @@ namespace PopLife.Customers.Services
                 graph.GetNodes(n => graph.CalculateConnections((GridNodeBase)n));
             }));
         }
-#endif
+
 
         // ========== Portal NodeLink2 创建 ==========
 
-#if ASTAR_PATHFINDING_PROJECT
+
         /// <summary>
         /// 扫描所有 FloorTile 对，为左右紧贴的 tile 在 portal cell 之间创建 NodeLink2
         /// </summary>
@@ -285,7 +285,7 @@ namespace PopLife.Customers.Services
                 }
             }
         }
-#endif
+
 
         // ========== 路径请求 ==========
 
@@ -293,7 +293,7 @@ namespace PopLife.Customers.Services
         {
             path = new List<Vector3>();
 
-#if ASTAR_PATHFINDING_PROJECT
+
             ABPath abPath = ABPath.Construct(start, end, null);
             AstarPath.StartPath(abPath);
             abPath.BlockUntilCalculated();
@@ -308,16 +308,11 @@ namespace PopLife.Customers.Services
 
             path = abPath.vectorPath;
             return true;
-#else
-            path.Add(start);
-            path.Add(end);
-            return true;
-#endif
         }
 
         public void RequestPathAsync(Vector3 start, Vector3 end, Action<List<Vector3>> callback)
         {
-#if ASTAR_PATHFINDING_PROJECT
+
             ABPath path = ABPath.Construct(start, end, (p) =>
             {
                 if (p.error)
@@ -332,14 +327,11 @@ namespace PopLife.Customers.Services
             });
 
             AstarPath.StartPath(path);
-#else
-            callback?.Invoke(new List<Vector3> { start, end });
-#endif
         }
 
         public bool IsReachable(Vector3 start, Vector3 end)
         {
-#if ASTAR_PATHFINDING_PROJECT
+
             var node1 = astarPath.GetNearest(start).node;
             var node2 = astarPath.GetNearest(end).node;
 
@@ -347,10 +339,6 @@ namespace PopLife.Customers.Services
                 return false;
 
             return PathUtilities.IsPathPossible(node1, node2);
-#else
-            RaycastHit2D hit = Physics2D.Linecast(start, end, obstacleLayer);
-            return hit.collider == null;
-#endif
         }
 
         // ========== 公共 API ==========
@@ -360,10 +348,10 @@ namespace PopLife.Customers.Services
         /// </summary>
         public void RescanNavMesh()
         {
-#if ASTAR_PATHFINDING_PROJECT
+
             RebuildAllGraphs();
             Debug.Log("[NavigationService] 导航网格已重新扫描");
-#endif
+
         }
     }
 }

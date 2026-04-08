@@ -150,6 +150,9 @@ namespace PopLife.Editor
                 case WorldGridAuthoringState.AuthoringMode.EraseInteriorBuilding:
                     HandleEraseInterior(sceneView, wg, state);
                     break;
+                case WorldGridAuthoringState.AuthoringMode.PlaceElevator:
+                    HandlePlaceElevator(sceneView, wg, state);
+                    break;
             }
 
             HandleCancelInput(state);
@@ -345,6 +348,97 @@ namespace PopLife.Editor
             }
 
             DrawInfoLabel(sv, $"Erase Interior | Local: ({localPos.x}, {localPos.y}) | Tile: {tile.name}");
+        }
+
+        // ================================================================
+        //  Elevator — PlaceElevator（自动探测 FloorTile，不需要 Hierarchy 选中）
+        // ================================================================
+
+        private static void HandlePlaceElevator(SceneView sv, WorldGrid wg, WorldGridAuthoringState state)
+        {
+            var snap = GetSnapshot(wg);
+            var mouseWorld = GetMouseWorldPosition();
+            var gridPos = snap.WorldToGrid(mouseWorld);
+
+            // 自动探测鼠标下方的 FloorTile
+            var tile = snap.GetFloorTileAt(gridPos);
+            if (tile == null)
+            {
+                DrawInfoLabel(sv, "Place Elevator | Move mouse over a FloorTile");
+                return;
+            }
+
+            // 获取该 tile 的 interior
+            var interior = GetInterior(tile);
+            if (interior == null) { DrawInfoLabel(sv, "Place Elevator | FloorTile has no interior"); return; }
+
+            var localPos = interior.WorldToLocal(mouseWorld);
+
+            // 加载 ElevatorArchetype
+            var arch = wg.DefaultElevatorArchetype;
+            if (arch == null)
+            {
+                arch = Resources.Load<ElevatorArchetype>("ScriptableObjects/BuildingArchetype/Elevator/ElevatorArchetype");
+            }
+
+            if (Event.current.type == EventType.Repaint)
+            {
+                // 始终显示 interior grid
+                if (!state.showInteriorGrid)
+                    DrawInteriorGridGL(interior);
+
+                // 3×4 footprint 预览
+                if (arch != null)
+                {
+                    var fp = arch.GetRotatedFootprint(0);
+                    bool canPlace = arch.ValidateInteriorPlacement(interior, localPos, 0);
+                    Color previewColor = canPlace ? ColorValid : ColorInvalid;
+                    foreach (var off in fp)
+                        DrawFilledCellHandles(interior.LocalToWorld(localPos + off), interior.CellSize, previewColor);
+                }
+            }
+
+            // 点击放置
+            var e = Event.current;
+            if (e.type == EventType.MouseDown && e.button == 0)
+            {
+                if (arch != null && arch.prefab != null)
+                {
+                    bool canPlace = arch.ValidateInteriorPlacement(interior, localPos, 0);
+                    if (canPlace)
+                        PlaceElevatorInScene(tile, interior, localPos, arch);
+                }
+                e.Use();
+            }
+
+            string floorName = tile.FloorDisplayName;
+            DrawInfoLabel(sv, $"Place Elevator | Local: ({localPos.x}, {localPos.y}) | Tile: {tile.name} ({floorName})");
+        }
+
+        private static void PlaceElevatorInScene(FloorTileInstance tile, InteriorGrid interior,
+            Vector2Int localPos, ElevatorArchetype arch)
+        {
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(arch.prefab, tile.InteriorContainer);
+            go.transform.position = interior.LocalToWorld(localPos);
+            go.transform.rotation = Quaternion.identity;
+
+            var door = go.GetComponent<ElevatorDoorInstance>();
+            if (door != null)
+            {
+                door.gridPosition = localPos;
+                door.rotation = 0;
+                door.hostFloorTileInstanceId = !string.IsNullOrEmpty(tile.instanceId) ? tile.instanceId : tile.name;
+                door.instanceId = System.Guid.NewGuid().ToString();
+                door.archetype = arch;
+
+                // 设置楼层标签
+                door.SetFloorLabel(tile.FloorDisplayName);
+            }
+
+            Undo.RegisterCreatedObjectUndo(go, "Place Elevator Door");
+            EditorUtility.SetDirty(go);
+            EditorSceneManager.MarkSceneDirty(go.scene);
+            InvalidateInterior();
         }
 
         // ================================================================

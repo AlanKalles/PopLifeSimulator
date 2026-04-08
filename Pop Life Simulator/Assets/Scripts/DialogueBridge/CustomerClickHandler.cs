@@ -2,6 +2,7 @@ using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using Sirenix.OdinInspector;
 using PopLife.Services;
+using PopLife.Customers.Runtime;
 
 namespace PopLife.DialogueBridge
 {
@@ -16,6 +17,7 @@ namespace PopLife.DialogueBridge
     /// - Must have CustomerDialogueTrigger component
     /// - Recommended: Set layer to "Customer" for filtered raycasting
     /// </summary>
+    [DefaultExecutionOrder(-50)]
     public class CustomerClickHandler : MonoBehaviour
     {
         #region Serialized Fields
@@ -131,6 +133,13 @@ namespace PopLife.DialogueBridge
 
                 if (trigger != null)
                 {
+                    // 有交互气泡时消费点击，阻止 BuildingInteractionManager 同帧响应
+                    var adapter = hit.collider.GetComponent<CustomerBlackboardAdapter>();
+                    if (adapter != null && adapter.interactionBubbleActive)
+                    {
+                        InputGateService.Instance?.ConsumeClick();
+                    }
+
                     if (debugMode)
                     {
                         Debug.Log($"[CustomerClickHandler] Clicked on: {hit.collider.gameObject.name}");

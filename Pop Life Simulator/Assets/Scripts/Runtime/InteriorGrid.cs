@@ -98,49 +98,44 @@ namespace PopLife.Runtime
         /// </summary>
         private void InitializeLayers(
             int walkableRows,
-            IReadOnlyList<int> portalLeftYs,
-            IReadOnlyList<int> portalRightYs)
+            IReadOnlyList<int> portalLeftCols,
+            IReadOnlyList<int> portalRightCols)
         {
             int w = gridSize.x;
             int h = gridSize.y;
-            bool hasLeftPortal = portalLeftYs != null && portalLeftYs.Count > 0;
-            bool hasRightPortal = portalRightYs != null && portalRightYs.Count > 0;
+
+            // 构建 portal 列集合（从左起第 N 列 / 从右起第 N 列）
+            var portalColumns = new HashSet<int>();
+            if (portalLeftCols != null)
+            {
+                foreach (int col in portalLeftCols)
+                    if (col >= 0 && col < w) portalColumns.Add(col);
+            }
+            if (portalRightCols != null)
+            {
+                foreach (int col in portalRightCols)
+                {
+                    int actualX = w - 1 - col; // 从右起：0=最右列，1=倒数第二列...
+                    if (actualX >= 0 && actualX < w) portalColumns.Add(actualX);
+                }
+            }
 
             for (int x = 0; x < w; x++)
             {
+                bool isPortalCol = portalColumns.Contains(x);
+
                 for (int y = 0; y < h; y++)
                 {
                     // ── walkable ──
-                    // 底部 walkableRows 行全部可行走
+                    // 底部 walkableRows 行可走（所有列，含 portal 列）
                     if (y < walkableRows)
                     {
                         walkable[x, y] = true;
                     }
 
                     // ── placeable ──
-                    // 只有实际配了 portal 的边列才禁止放置建筑
-                    bool isBlockedPortalCol = (x == 0 && hasLeftPortal) || (x == w - 1 && hasRightPortal);
-                    placeable[x, y] = !isBlockedPortalCol;
-                }
-            }
-
-            // 左侧 portal 列额外可行走的 Y 行
-            if (portalLeftYs != null)
-            {
-                foreach (int py in portalLeftYs)
-                {
-                    if (py >= 0 && py < h)
-                        walkable[0, py] = true;
-                }
-            }
-
-            // 右侧 portal 列额外可行走的 Y 行
-            if (portalRightYs != null)
-            {
-                foreach (int py in portalRightYs)
-                {
-                    if (py >= 0 && py < h)
-                        walkable[w - 1, py] = true;
+                    // portal 列不可放置建筑
+                    placeable[x, y] = !isPortalCol;
                 }
             }
         }

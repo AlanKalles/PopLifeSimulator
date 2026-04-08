@@ -24,7 +24,10 @@
       "Bash(find '/d/github/PopLifeSimulator/Pop Life Simulator/Assets/Scenes' -name *.unity)",
       "WebSearch",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''Has floorTileIds:'''', ''''unlockedFloorTileIds'''' in d\\)\")",
-      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Scripts\" -name \"*.cs\" -exec grep -l \"FloorGrid\\\\|FloorManager\" {})"
+      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Scripts\" -name \"*.cs\" -exec grep -l \"FloorGrid\\\\|FloorManager\" {})",
+      "Bash(cd /d \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\")",
+      "Bash(find . -name \"*.cs\" -type f -exec grep -l \"NavigationService\\\\|WorldGrid\" {} \\\\;)",
+      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Scripts\" -name \"*.cs\" -exec grep -l \"OnConversationLine\\\\|OnConversationResponse\\\\|OnDisplayResponse\" {} \\\\;)"
     ],
     "deny": [],
     "ask": []

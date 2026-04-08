@@ -6,8 +6,9 @@ using PopLife.Data;
 namespace PopLife.Runtime
 {
     /// <summary>
-    /// 全局世界网格（单例）—— 只管理 FloorTile 的放置、支撑/堆叠规则和电梯。
+    /// 全局世界网格（单例）—— 管理 FloorTile 的放置、支撑/堆叠规则。
     /// 货架/设施的放置由各 FloorTileInstance.InteriorGrid 管理。
+    /// 电梯连接由 ElevatorLinkManager 自动管理。
     /// </summary>
     public class WorldGrid : MonoBehaviour
     {
@@ -49,22 +50,17 @@ namespace PopLife.Runtime
         private bool floorLevelsDirty = true;
 
         // 电梯
-        [Serializable]
-        public struct ElevatorData
-        {
-            public string startTileId;
-            public Vector2Int startLocalCell;
-            public string endTileId;
-            public Vector2Int endLocalCell;
-            public GameObject go;
-        }
-        private readonly List<ElevatorData> elevators = new();
+        [Header("Elevator")]
+        [SerializeField] private Data.ElevatorArchetype defaultElevatorArchetype;
+        [SerializeField] private ElevatorLinkManager elevatorLinkManager;
+        public Data.ElevatorArchetype DefaultElevatorArchetype => defaultElevatorArchetype;
+        public ElevatorLinkManager ElevatorLinks => elevatorLinkManager;
 
         // ================================================================
         //  事件
         // ================================================================
 
-        /// <summary> 地板结构变化时触发（放置/移除/移动 FloorTile、电梯变化） </summary>
+        /// <summary> 地板结构变化时触发（放置/移除/移动 FloorTile） </summary>
         public event Action OnStructureChanged;
 
         /// <summary> 公共触发点，供外部类调用 </summary>
@@ -214,7 +210,13 @@ namespace PopLife.Runtime
             }
         }
 
-        public IReadOnlyList<ElevatorData> Elevators => elevators;
+        /// <summary> 通过 instanceId 查找 FloorTileInstance </summary>
+        public FloorTileInstance GetFloorTileById(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            floorTileInstances.TryGetValue(id, out var tile);
+            return tile;
+        }
 
         // ================================================================
         //  内部类型
@@ -247,6 +249,10 @@ namespace PopLife.Runtime
             // 注册场景中已有的子物体（FloorTile + interior 建筑）
             // 即使已有预设楼层也需要执行，因为 Phase 2 负责将已有 shelf/facility 注册到 InteriorGrid
             RegisterAllChildBuildings();
+
+            // 通知结构变化，触发 NavigationService.RebuildAllGraphs() 创建 interior GridGraph
+            // 必须在 RegisterAllChildBuildings 之后，此时 Interior 已初始化
+            NotifyStructureChanged();
         }
 
         // ================================================================
@@ -587,7 +593,7 @@ namespace PopLife.Runtime
         {
             if (inst.IsDefault) return false;
             if (inst.HasBuildingsInInterior()) return false;
-            if (HasElevatorOnFloorTile(inst)) return false;
+            if (elevatorLinkManager != null && elevatorLinkManager.HasElevatorOnTile(inst)) return false;
             if (WouldBreakSupport(inst)) return false;
 
             ClearFloorTileCells(inst);
@@ -723,7 +729,7 @@ namespace PopLife.Runtime
         /// <summary> 临时反注册地板（不销毁 GO，用于移动）。有电梯时拒绝。 </summary>
         public bool UnregisterFloorTile(FloorTileInstance inst)
         {
-            if (HasElevatorOnFloorTile(inst)) return false;
+            if (elevatorLinkManager != null && elevatorLinkManager.HasElevatorOnTile(inst)) return false;
             ClearFloorTileCells(inst);
             floorTileInstances.Remove(inst.instanceId);
             InvalidateFloorLevels();
@@ -774,7 +780,7 @@ namespace PopLife.Runtime
                 return false;
 
             // 有电梯时禁止移动
-            if (HasElevatorOnFloorTile(floorInst))
+            if (elevatorLinkManager != null && elevatorLinkManager.HasElevatorOnTile(floorInst))
                 return false;
 
             var fp = floorInst.archetype.GetRotatedFootprint(newRot);
@@ -968,80 +974,7 @@ namespace PopLife.Runtime
             }
         }
 
-        // ================================================================
-        //  电梯
-        // ================================================================
-
-        /// <summary> 在两个 FloorTile 之间放置电梯（使用 tile-local 坐标） </summary>
-        public bool PlaceElevator(FloorTileInstance startTile, Vector2Int startLocal,
-                                   FloorTileInstance endTile, Vector2Int endLocal)
-        {
-            if (startTile == null || endTile == null) return false;
-            if (startTile.Interior == null || endTile.Interior == null) return false;
-            if (startTile.instanceId == endTile.instanceId) return false;
-
-            // Interior 验证：范围内 + 未被建筑占用
-            if (!startTile.Interior.InBounds(startLocal) || startTile.Interior.IsOccupied(startLocal)) return false;
-            if (!endTile.Interior.InBounds(endLocal) || endTile.Interior.IsOccupied(endLocal)) return false;
-
-            // 结构验证: 必须是相邻 FloorTile
-            if (!AreAdjacentFloors(startTile, endTile)) return false;
-
-            // 创建 NodeLink2
-            var startWorld = startTile.Interior.LocalToWorld(startLocal)
-                             + new Vector3(startTile.Interior.CellSize * 0.5f, startTile.Interior.CellSize * 0.5f, 0);
-            var endWorld = endTile.Interior.LocalToWorld(endLocal)
-                           + new Vector3(endTile.Interior.CellSize * 0.5f, endTile.Interior.CellSize * 0.5f, 0);
-
-            var linkGo = new GameObject($"Elevator_{startTile.instanceId}_{endTile.instanceId}");
-            linkGo.transform.SetParent(buildingContainer);
-            linkGo.transform.position = startWorld;
-
-            var link = linkGo.AddComponent<Pathfinding.NodeLink2>();
-            linkGo.AddComponent<AILerpLinkTeleporter>();
-            var endGo = new GameObject("End");
-            endGo.transform.SetParent(linkGo.transform);
-            endGo.transform.position = endWorld;
-            link.end = endGo.transform;
-
-            elevators.Add(new ElevatorData
-            {
-                startTileId = startTile.instanceId,
-                startLocalCell = startLocal,
-                endTileId = endTile.instanceId,
-                endLocalCell = endLocal,
-                go = linkGo
-            });
-            NotifyStructureChanged();
-            return true;
-        }
-
-        /// <summary> 移除与指定 tile+cell 关联的电梯 </summary>
-        public bool RemoveElevator(string tileId, Vector2Int localCell)
-        {
-            for (int i = elevators.Count - 1; i >= 0; i--)
-            {
-                var e = elevators[i];
-                if ((e.startTileId == tileId && e.startLocalCell == localCell) ||
-                    (e.endTileId == tileId && e.endLocalCell == localCell))
-                {
-                    Destroy(e.go);
-                    elevators.RemoveAt(i);
-                    NotifyStructureChanged();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary> 检查地板上是否有电梯端点 </summary>
-        public bool HasElevatorOnFloorTile(FloorTileInstance tile)
-        {
-            string id = tile.instanceId;
-            foreach (var e in elevators)
-                if (e.startTileId == id || e.endTileId == id) return true;
-            return false;
-        }
+        // 旧电梯系统已移至 ElevatorLinkManager（自动连接模式）
 
         // ================================================================
         //  便利遍历（遍历所有 FloorTile 的 InteriorGrid）

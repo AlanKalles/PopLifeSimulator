@@ -159,10 +159,21 @@ namespace PopLife.Editor
             sb.AppendLine($"Total FloorTile instances: {tileCount}");
 
             // 电梯信息
-            sb.AppendLine($"Elevators: {grid.Elevators.Count}");
-            foreach (var e in grid.Elevators)
+            var linkMgr = grid.ElevatorLinks;
+            if (linkMgr != null)
             {
-                sb.AppendLine($"  Elevator: {e.startTileId}[{e.startLocalCell}] -> {e.endTileId}[{e.endLocalCell}]");
+                var links = linkMgr.ActiveLinks;
+                sb.AppendLine($"Elevator Links: {links.Count}");
+                foreach (var link in links)
+                {
+                    string doorAName = link.doorA != null ? link.doorA.instanceId : "null";
+                    string doorBName = link.doorB != null ? link.doorB.instanceId : "null";
+                    sb.AppendLine($"  Link: {doorAName} <-> {doorBName}");
+                }
+            }
+            else
+            {
+                sb.AppendLine("Elevator Links: (no ElevatorLinkManager)");
             }
 
             Debug.Log(sb.ToString());

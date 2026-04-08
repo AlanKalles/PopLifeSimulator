@@ -22,9 +22,9 @@ namespace PopLife.Data
         [SerializeField] private float interiorCellSize = 0.5f;
 
         [Header("Portals")]
-        [Tooltip("左侧通道的 local Y 索引列表（空 = 该侧封闭）")]
+        [Tooltip("从左起哪几列为 portal 通道（0=最左列，1=第二列...）。这些列可行走但不可放置建筑。空 = 左侧无 portal。")]
         [SerializeField] private List<int> leftPortalCells = new();
-        [Tooltip("右侧通道的 local Y 索引列表（空 = 该侧封闭）")]
+        [Tooltip("从右起哪几列为 portal 通道（0=最右列，1=倒数第二列...）。这些列可行走但不可放置建筑。空 = 右侧无 portal。")]
         [SerializeField] private List<int> rightPortalCells = new();
 
         [Header("Customer")]

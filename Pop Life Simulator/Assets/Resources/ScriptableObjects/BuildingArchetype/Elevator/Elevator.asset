@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8dee6b2375c6ff4cbacc77b9b78082e, type: 3}
+  m_Name: Elevator
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ElevatorArchetype
+  archetypeId: Elevator
+  displayName: Elevator
+  icon: {fileID: 0}
+  prefab: {fileID: 7095431941347882750, guid: 553f21fb8cb927a46804eb7742d45684, type: 3}
+  buildCost: 0
+  moveCost: 0
+  destroyRefundRate: 0.8
+  footprintPattern:
+  - {x: 0, y: 0}
+  - {x: 0, y: 1}
+  - {x: 0, y: 2}
+  - {x: 0, y: 3}
+  - {x: 1, y: 0}
+  - {x: 1, y: 1}
+  - {x: 1, y: 2}
+  - {x: 1, y: 3}
+  - {x: 2, y: 0}
+  - {x: 2, y: 1}
+  - {x: 2, y: 2}
+  - {x: 2, y: 3}
+  canRotate: 0
+  levels: []
+  baseCost: 500
+  costPerLevel: 200

@@ -17,7 +17,8 @@ namespace PopLife.Editor
             PlaceFloorTile,
             EraseFloorTile,
             PlaceInteriorBuilding,
-            EraseInteriorBuilding
+            EraseInteriorBuilding,
+            PlaceElevator
         }
 
         public AuthoringMode mode;

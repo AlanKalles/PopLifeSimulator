@@ -226,6 +226,14 @@ namespace PopLife.Editor
             EditorGUILayout.Space(12);
 
             // ================================================================
+            //  Elevator 模式
+            // ================================================================
+            EditorGUILayout.LabelField("Elevator Mode", EditorStyles.boldLabel);
+            DrawModeButton("Place Elevator", WorldGridAuthoringState.AuthoringMode.PlaceElevator, state);
+
+            EditorGUILayout.Space(12);
+
+            // ================================================================
             //  状态显示 & 取消
             // ================================================================
             EditorGUILayout.LabelField("Current State", EditorStyles.boldLabel);

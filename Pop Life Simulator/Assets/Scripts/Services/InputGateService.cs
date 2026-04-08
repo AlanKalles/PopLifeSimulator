@@ -79,6 +79,12 @@ namespace PopLife.Services
             }
         }
 
+        /// <summary>消费本帧点击，同帧后续系统读到 WasClickThisFrame = false</summary>
+        public void ConsumeClick()
+        {
+            wasClick = false;
+        }
+
         private void OnDestroy()
         {
             if (Instance == this)

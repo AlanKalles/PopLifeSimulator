@@ -57,10 +57,9 @@ namespace PopLife.Runtime
         // 当前鼠标所在的 FloorTileInstance（shelf/facility 放置用）
         private FloorTileInstance currentTargetTile;
 
-        // 电梯放置（两次点击）
-        private FloorTileInstance elevatorFirstTile;
-        private Vector2Int elevatorFirstLocalCell;
-        private bool hasElevatorFirstClick;
+        // 电梯放置（单次点击放门，自动连接）
+        [Header("Elevator")]
+        [SerializeField] private ElevatorArchetype elevatorArchetype;
 
         void Awake()
         {
@@ -112,6 +111,7 @@ namespace PopLife.Runtime
             }
             else if (mode == Mode.PlaceElevator)
             {
+                UpdateElevatorPreview();
                 HandleElevatorInput();
             }
             else if (mode == Mode.MoveFloorTile)
@@ -489,7 +489,7 @@ namespace PopLife.Runtime
                         UIManager.Instance.ShowAlert("Cannot move: remove all buildings on this floor tile first.");
                     return;
                 }
-                if (wg.HasElevatorOnFloorTile(fti))
+                if (wg.ElevatorLinks != null && wg.ElevatorLinks.HasElevatorOnTile(fti))
                 {
                     if (UIManager.Instance != null)
                         UIManager.Instance.ShowAlert("Cannot move: remove elevator first.");
@@ -980,7 +980,7 @@ namespace PopLife.Runtime
                                     UIManager.Instance.ShowAlert("Cannot destroy: remove all buildings on this floor tile first.");
                                 return;
                             }
-                            if (wg != null && wg.HasElevatorOnFloorTile(destroyFti))
+                            if (wg != null && wg.ElevatorLinks != null && wg.ElevatorLinks.HasElevatorOnTile(destroyFti))
                             {
                                 if (UIManager.Instance != null)
                                     UIManager.Instance.ShowAlert("Cannot destroy: remove elevator first.");
@@ -1047,10 +1047,16 @@ namespace PopLife.Runtime
             }
             else
             {
+                bool isElevator = bi is ElevatorDoorInstance;
+
                 // 普通建筑拆除：通过宿主 FloorTileInstance 移除
                 var hostTile = FindFloorTileByInstanceId(bi.hostFloorTileInstanceId);
                 hostTile?.RemoveBuilding(bi, refundMoney: true);
                 Destroy(bi.gameObject);
+
+                // 电梯门拆除后重建连接（清除残留 NodeLink2）
+                if (isElevator)
+                    WorldGrid.Instance?.ElevatorLinks?.RebuildAllLinks();
             }
 
             AudioManager.Instance.PlaySound(AudioKeys.BUILDING_DESTROYED);
@@ -1139,7 +1145,7 @@ namespace PopLife.Runtime
                         UIManager.Instance?.ShowAlert("Cannot destroy: remove all buildings on this floor tile first.");
                         return;
                     }
-                    if (wg != null && wg.HasElevatorOnFloorTile(hoveredFloorTile))
+                    if (wg != null && wg.ElevatorLinks != null && wg.ElevatorLinks.HasElevatorOnTile(hoveredFloorTile))
                     {
                         UIManager.Instance?.ShowAlert("Cannot destroy: remove elevator first.");
                         return;
@@ -1211,18 +1217,54 @@ namespace PopLife.Runtime
             }
         }
 
-        // ========== 电梯放置 ==========
+        // ========== 电梯放置（单次点击放门，连接自动重建） ==========
 
         /// <summary>
         /// 进入电梯放置模式（由 UI 调用）
         /// </summary>
         public void BeginPlaceElevator()
         {
-            Cancel(); // 先退出当前模式
+            Cancel();
             mode = Mode.PlaceElevator;
-            hasElevatorFirstClick = false;
-            elevatorFirstTile = null;
-            Debug.Log("Entered Elevator placement mode - Click first cell, then second cell.");
+            // 创建预览
+            var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
+            if (arch != null && arch.prefab != null)
+            {
+                preview = Instantiate(arch.prefab);
+                preview.name = "ElevatorPreview";
+                // 禁用所有非渲染组件
+                foreach (var comp in preview.GetComponents<MonoBehaviour>())
+                    comp.enabled = false;
+                foreach (var col in preview.GetComponentsInChildren<Collider2D>())
+                    col.enabled = false;
+                previewRenderers = preview.GetComponentsInChildren<SpriteRenderer>();
+            }
+        }
+
+        private void UpdateElevatorPreview()
+        {
+            if (preview == null) return;
+            if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
+
+            var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            mouse.z = 0;
+
+            var tile = DetectFloorTileAtWorld(mouse);
+            if (tile?.Interior == null)
+            {
+                preview.SetActive(false);
+                return;
+            }
+
+            var localPos = tile.Interior.WorldToLocal(mouse);
+            var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
+            if (arch == null) { preview.SetActive(false); return; }
+
+            bool canPlace = arch.ValidateInteriorPlacement(tile.Interior, localPos, 0);
+
+            preview.SetActive(true);
+            preview.transform.position = tile.Interior.LocalToWorld(localPos);
+            UpdatePreviewColor(canPlace);
         }
 
         private void HandleElevatorInput()
@@ -1236,90 +1278,64 @@ namespace PopLife.Runtime
             if (!(InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0)))
                 return;
 
-            if (mainCamera == null)
-            {
-                mainCamera = Camera.main;
-                if (mainCamera == null) return;
-            }
+            if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
 
-            // 检测点击位置所在的 FloorTileInstance 和 interior 局部坐标
             var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             mouse.z = 0;
 
             var tile = DetectFloorTileAtWorld(mouse);
             if (tile?.Interior == null)
             {
-                if (UIManager.Instance != null)
-                    UIManager.Instance.ShowAlert("No floor tile here. Click on a floor tile.");
+                UIManager.Instance?.ShowAlert("No floor tile here.");
                 return;
             }
 
-            var localCell = tile.Interior.WorldToLocal(mouse);
-            if (!tile.Interior.InBounds(localCell))
+            var localPos = tile.Interior.WorldToLocal(mouse);
+            var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
+            if (arch == null) return;
+
+            // 校验放置
+            if (!arch.ValidateInteriorPlacement(tile.Interior, localPos, 0))
             {
-                if (UIManager.Instance != null)
-                    UIManager.Instance.ShowAlert("Click inside a floor tile's interior.");
+                UIManager.Instance?.ShowAlert("Cannot place elevator here.");
                 return;
             }
 
-            if (!hasElevatorFirstClick)
+            // 校验费用
+            int floorLevel = tile.FloorLevel ?? 0;
+            int cost = arch.GetPlacementCost(floorLevel);
+            int finalCost = GlobalModifierManager.Instance != null
+                ? Mathf.RoundToInt(cost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                : cost;
+            if (!resourceManager.CanAfford(finalCost, 0))
             {
-                // 第一次点击
-                if (tile.Interior.IsOccupied(localCell))
-                {
-                    if (UIManager.Instance != null)
-                        UIManager.Instance.ShowAlert("Cell occupied by a building. Choose an empty cell.");
-                    return;
-                }
-
-                elevatorFirstTile = tile;
-                elevatorFirstLocalCell = localCell;
-                hasElevatorFirstClick = true;
-                Debug.Log($"Elevator first cell: tile={tile.instanceId}, local={localCell}. Now click the second cell on an adjacent floor.");
+                UIManager.Instance?.ShowAlert("Not enough money.");
+                return;
             }
-            else
+
+            // 放置电梯门
+            var container = tile.InteriorContainer;
+            var go = Instantiate(arch.prefab, tile.Interior.LocalToWorld(localPos), Quaternion.identity, container);
+            var door = go.GetComponent<ElevatorDoorInstance>();
+            if (door == null)
             {
-                // 第二次点击
-                if (tile.instanceId == elevatorFirstTile.instanceId && localCell == elevatorFirstLocalCell)
-                {
-                    Debug.Log("Same cell. Click a different cell.");
-                    return;
-                }
-
-                if (tile.Interior.IsOccupied(localCell))
-                {
-                    if (UIManager.Instance != null)
-                        UIManager.Instance.ShowAlert("Cell occupied. Choose an empty cell.");
-                    hasElevatorFirstClick = false;
-                    return;
-                }
-
-                var wg = WorldGrid.Instance;
-                if (wg == null)
-                {
-                    hasElevatorFirstClick = false;
-                    return;
-                }
-
-                // 尝试两种方向
-                bool placed = wg.PlaceElevator(elevatorFirstTile, elevatorFirstLocalCell, tile, localCell)
-                           || wg.PlaceElevator(tile, localCell, elevatorFirstTile, elevatorFirstLocalCell);
-
-                if (placed)
-                {
-                    AudioManager.Instance?.PlaySound(AudioKeys.BUILDING_PLACED);
-                    OnBuildingPlacedOrDestroyed?.Invoke();
-                    Debug.Log($"Elevator placed: {elevatorFirstTile.instanceId}:{elevatorFirstLocalCell} ↔ {tile.instanceId}:{localCell}");
-                }
-                else
-                {
-                    if (UIManager.Instance != null)
-                        UIManager.Instance.ShowAlert("Invalid: cells must be on adjacent floors, both with floor tiles, both empty.");
-                }
-
-                hasElevatorFirstClick = false;
-                elevatorFirstTile = null;
+                Destroy(go);
+                return;
             }
+
+            door.Initialize(arch, localPos, tile.instanceId);
+            tile.Interior.RegisterBuilding(door, arch.GetRotatedFootprint(0), localPos);
+            door.SetFloorLabel(tile.FloorDisplayName);
+
+            // 扣费
+            resourceManager.SpendMoney(finalCost);
+            AudioManager.Instance?.PlaySound(AudioKeys.BUILDING_PLACED);
+
+            // 重建电梯连接（不需要 RebuildAllGraphs：电梯门只改 occupied 不改 walkable，图已存在）
+            WorldGrid.Instance?.ElevatorLinks?.RebuildAllLinks();
+
+            OnBuildingPlacedOrDestroyed?.Invoke();
+            // 保持 PlaceElevator 模式，可继续放置
         }
 
         public void Cancel()
@@ -1355,9 +1371,7 @@ namespace PopLife.Runtime
             lastMousePositionInMoveFloorTileMode = Vector3.zero;
             lastMousePositionInDestroyFloorTileMode = Vector3.zero;
 
-            // 清理电梯放置状态
-            hasElevatorFirstClick = false;
-            elevatorFirstTile = null;
+            // 电梯预览由通用 preview 字段管理，已在上方清理
 
             // 关闭确认面板（如果正在显示）
             if (UIManager.Instance != null && UIManager.Instance.IsConfirmationShowing())
