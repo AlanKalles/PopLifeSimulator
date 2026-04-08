@@ -45,6 +45,9 @@ TagManager:
   - name: StoreBackgroundLayer
     uniqueID: 3022431455
     locked: 0
+  - name: ElevatorBackgroundLayer
+    uniqueID: 1795607085
+    locked: 0
   - name: ShelfLayer
     uniqueID: 4193448049
     locked: 0
