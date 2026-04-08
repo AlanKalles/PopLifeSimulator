@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2551036000870525135}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0.25, z: 0}
+  m_LocalPosition: {x: 1, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 6424503178218796394}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73,8 +73,8 @@ GameObject:
   - component: {fileID: 7356530822122442819}
   - component: {fileID: 2413471873101197606}
   - component: {fileID: 9004113815522659866}
-  - component: {fileID: 8978377106268264616}
   - component: {fileID: 6580031403189414870}
+  - component: {fileID: 3761117773530672129}
   m_Layer: 6
   m_Name: Leather Queen Lingerie
   m_TagString: Untagged
@@ -174,14 +174,35 @@ MonoBehaviour:
   instanceId: 0
   currentLevel: 1
   gridPosition: {x: 0, y: 0}
-  floorId: 0
+  hostFloorTileInstanceId: 
   rotation: 0
   isOperational: 1
+  editorLockedMove: 0
+  editorLockedDestroy: 0
   currentStock: 0
   maxStock: 0
   todaySales: 0
   currentPrice: 0
---- !u!61 &8978377106268264616
+--- !u!114 &6580031403189414870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6477555939506826541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 497d8d89b03e78343b25c57820b690b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionAnchor: {fileID: 8213174410654469628}
+  queueAnchor: {fileID: 7066649563163381082}
+  queueDirection: {x: -1, y: 0, z: 0}
+  slotSpacing: 0.5
+  queueSlots: []
+  secondsPerCustomer: 1
+  arrivalDistance: 0.8
+--- !u!61 &3761117773530672129
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -215,10 +236,10 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.25, y: 0.75}
+  m_Offset: {x: 0.5, y: 1}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.25, y: 0.125}
+    pivot: {x: 0, y: 0}
     oldSize: {x: 1, y: 2}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
@@ -227,22 +248,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
---- !u!114 &6580031403189414870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6477555939506826541}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 497d8d89b03e78343b25c57820b690b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactionAnchor: {fileID: 8213174410654469628}
-  queueAnchor: {fileID: 7066649563163381082}
-  queueDirection: {x: -1, y: 0, z: 0}
-  slotSpacing: 0.5
-  queueSlots: []
-  secondsPerCustomer: 1
-  arrivalDistance: 0.8

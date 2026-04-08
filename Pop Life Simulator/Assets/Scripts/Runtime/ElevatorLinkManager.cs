@@ -70,6 +70,9 @@ namespace PopLife.Runtime
                     var a = doorEntries[i];
                     var b = doorEntries[j];
 
+                    // 同一 FloorTile 上的门不互连（避免同层横穿）
+                    if (a.tileId == b.tileId) continue;
+
                     if (ShareBranch(tileBranches, a.tileId, b.tileId))
                         CreateLink(a.door, b.door, wg);
                 }

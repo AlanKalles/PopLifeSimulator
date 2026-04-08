@@ -102,18 +102,25 @@ namespace PopLife.Runtime
                 exitDoor = distA < distB ? doorB : doorA;
             }
 
+            // 对电梯 link，用 Anchor 世界坐标替代 LinkNode 坐标
+            // LinkNode.position 可能与实际路径坐标不一致（A* vectorPath 平滑后偏移）
+            Vector3 effectiveStart = startPos;
+            Vector3 effectiveEnd = endPos;
+            if (entryDoor != null) effectiveStart = entryDoor.Anchor.position;
+            if (exitDoor != null) effectiveEnd = exitDoor.Anchor.position;
+
             trackedAgents[agent] = new AgentState
             {
                 sprites = sprites,
-                startPosition = startPos,
-                endPosition = endPos,
+                startPosition = effectiveStart,
+                endPosition = effectiveEnd,
                 phase = Phase.Approaching,
                 entryDoor = entryDoor,
                 exitDoor = exitDoor
             };
 
             if (debugMode)
-                Debug.Log($"[LinkTeleporter] 注册 {agent.name}: {startPos} → {endPos}", this);
+                Debug.Log($"[LinkTeleporter] 注册 {agent.name}: {effectiveStart} → {effectiveEnd}", this);
         }
 
         /// <summary>

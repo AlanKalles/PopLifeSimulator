@@ -550,7 +550,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 23.358398}
+  m_AnchoredPosition: {x: 0, y: 23.358337}
   m_SizeDelta: {x: 223.54, y: 74.4}
   m_Pivot: {x: 0.5, y: 2.49}
 --- !u!114 &21533578
@@ -1820,7 +1820,7 @@ MonoBehaviour:
   - 6
   - 8
   - 12
-  baseCustomersOnFloor: 10
+  baseCustomersOnFloor: 1
   preventSameDayRevisit: 1
   appealPerExtraCustomer: 200
   appealForMaxSpeed: 3000
@@ -2933,7 +2933,7 @@ MonoBehaviour:
   highlightColor: {r: 0.3, g: 0.9, b: 1, a: 1}
   lineWidth: 0.1
   zOffset: -0.1
-  positionOffset: {x: -0.25, y: -0.25}
+  positionOffset: {x: 0, y: 0}
   fadeInDuration: 0.1
   fadeOutDuration: 0.1
   enableDebugLogs: 0
@@ -48575,7 +48575,7 @@ PrefabInstance:
       objectReference: {fileID: -2483764444016197910, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
     - target: {fileID: 1568060411137529001, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -263.87296
+      value: -263.87305
       objectReference: {fileID: 0}
     - target: {fileID: 1682418171592549610, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchorMax.y
@@ -49645,7 +49645,7 @@ PrefabInstance:
       objectReference: {fileID: 1049789533977330042, guid: dadba18ef5bd38547968704bd71a4ada, type: 2}
     - target: {fileID: 7497080385439492761, guid: 81be3b49f2cc0eb44982ecd6cf38f838, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -263.87274
+      value: -263.87277
       objectReference: {fileID: 0}
     - target: {fileID: 7551887745505466259, guid: 81be3b49f2cc0eb44982ecd6cf38f838, type: 3}
       propertyPath: m_AnchorMax.y
