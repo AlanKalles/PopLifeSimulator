@@ -234,6 +234,29 @@ namespace PopLife.Editor
             EditorGUILayout.Space(12);
 
             // ================================================================
+            //  AlanBot 模式
+            // ================================================================
+            EditorGUILayout.LabelField("AlanBot Mode", EditorStyles.boldLabel);
+
+            var newAlanBotPrefab = (GameObject)EditorGUILayout.ObjectField(
+                "AlanBot Prefab", state.alanBotPrefab, typeof(GameObject), false);
+            if (newAlanBotPrefab != state.alanBotPrefab)
+            {
+                state.alanBotPrefab = newAlanBotPrefab;
+                OnStateChanged(state);
+            }
+
+            using (new EditorGUI.DisabledGroupScope(state.alanBotPrefab == null))
+            {
+                DrawModeButton("Place AlanBot", WorldGridAuthoringState.AuthoringMode.PlaceAlanBot, state);
+            }
+
+            if (state.alanBotPrefab == null)
+                EditorGUILayout.HelpBox("Assign AlanBot prefab to enable placement.", MessageType.Info);
+
+            EditorGUILayout.Space(12);
+
+            // ================================================================
             //  状态显示 & 取消
             // ================================================================
             EditorGUILayout.LabelField("Current State", EditorStyles.boldLabel);

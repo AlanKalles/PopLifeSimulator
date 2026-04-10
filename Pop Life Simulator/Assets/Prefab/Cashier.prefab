@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 7370189282645152845}
   - component: {fileID: 2317391761308328036}
   - component: {fileID: 4989136009641450194}
-  - component: {fileID: -6074794458981150526}
   - component: {fileID: -4987465830198121864}
+  - component: {fileID: 8179693337002529074}
   m_Layer: 6
   m_Name: Cashier
   m_TagString: Untagged
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -101519247
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 1c96d18065ae9f343ae887e2d35e37dd, type: 3}
@@ -117,7 +117,26 @@ MonoBehaviour:
   isOperational: 1
   editorLockedMove: 0
   editorLockedDestroy: 0
---- !u!61 &-6074794458981150526
+--- !u!114 &-4987465830198121864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2553700819061216157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 963d4ee68de80e44db97c251ed194c1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionAnchor: {fileID: 2173661573492456090}
+  queueAnchor: {fileID: 6400677625511307067}
+  queueDirection: {x: -1, y: 0, z: 0}
+  slotSpacing: 0.5
+  queueSlots: []
+  secondsPerCustomer: 0.8
+  arrivalDistance: 0.4
+--- !u!61 &8179693337002529074
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -151,7 +170,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.5, y: 0.5}
+  m_Offset: {x: 0.921875, y: 1.078125}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -161,27 +180,8 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 1.84375, y: 2.15625}
   m_EdgeRadius: 0
---- !u!114 &-4987465830198121864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2553700819061216157}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 963d4ee68de80e44db97c251ed194c1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactionAnchor: {fileID: 2173661573492456090}
-  queueAnchor: {fileID: 6400677625511307067}
-  queueDirection: {x: -1, y: 0, z: 0}
-  slotSpacing: 0.5
-  queueSlots: []
-  secondsPerCustomer: 0.8
-  arrivalDistance: 0.4
 --- !u!1 &6010174927108085024
 GameObject:
   m_ObjectHideFlags: 0
@@ -207,7 +207,7 @@ Transform:
   m_GameObject: {fileID: 6010174927108085024}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 0.5, z: 0}
+  m_LocalPosition: {x: 1.75, y: 0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -238,7 +238,7 @@ Transform:
   m_GameObject: {fileID: 9047969058940041288}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
+  m_LocalPosition: {x: 1.25, y: 0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

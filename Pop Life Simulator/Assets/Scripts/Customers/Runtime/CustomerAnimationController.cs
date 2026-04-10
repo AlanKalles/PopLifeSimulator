@@ -102,6 +102,8 @@ namespace PopLife.Customers.Runtime
             };
         }
 
+        private Vector3 bodyPartsContainerOriginPos;
+
         private void CacheOriginPositions()
         {
             if (headRenderer) headOriginPos = headRenderer.transform.localPosition;
@@ -110,6 +112,7 @@ namespace PopLife.Customers.Runtime
             if (rightArmRenderer) rightArmOriginPos = rightArmRenderer.transform.localPosition;
             if (leftFootRenderer) leftFootOriginPos = leftFootRenderer.transform.localPosition;
             if (rightFootRenderer) rightFootOriginPos = rightFootRenderer.transform.localPosition;
+            if (bodyPartsContainer) bodyPartsContainerOriginPos = bodyPartsContainer.localPosition;
         }
 
         /// <summary>
@@ -334,7 +337,7 @@ namespace PopLife.Customers.Runtime
                     .ChainCallback(this, target =>
                     {
                         // 确保容器位置归零
-                        target.bodyPartsContainer.localPosition = Vector3.zero;
+                        target.bodyPartsContainer.localPosition = target.bodyPartsContainerOriginPos;
                         target.isPlayingOneShot = false;
                         target.emojiController?.StopEmoji();
                     });
@@ -479,7 +482,7 @@ namespace PopLife.Customers.Runtime
             if (rightFootRenderer) rightFootRenderer.transform.localPosition = rightFootOriginPos;
 
             // 重置 BodyParts 容器位置（Upset 抖动可能改变了它）
-            if (bodyPartsContainer) bodyPartsContainer.localPosition = Vector3.zero;
+            if (bodyPartsContainer) bodyPartsContainer.localPosition = bodyPartsContainerOriginPos;
         }
     }
 }

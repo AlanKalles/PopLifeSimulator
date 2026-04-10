@@ -106,6 +106,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 waitingForNewPath = false;
             }
 
+            // 电梯穿越中不做到达判断
+            var detector = agent.GetComponent<LinkTraversalDetector>();
+            if (detector != null && detector.IsTraversingElevator) return;
+
             // 兼容 RVO 的距离容忍度检查（优先于 reachedDestination，更可靠）
             var target = assignedQueueSlot.value;
             if (target != null)

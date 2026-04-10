@@ -38,13 +38,13 @@
                 ""
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 11,
+            "loyaltyLevel": 1,
+            "xp": 0,
             "walletCapBase": 100,
-            "visitCount": 1,
+            "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 30,
+            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN004",
                 "IN005"
@@ -187,13 +187,13 @@
                 "G-spot vibrator"
             ],
             "trust": 0,
-            "loyaltyLevel": 0,
-            "xp": 18,
+            "loyaltyLevel": 1,
+            "xp": 0,
             "walletCapBase": 100,
-            "visitCount": 1,
+            "visitCount": 0,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 130,
+            "lifetimeSpent": 0,
             "availableNarrativeIds": [
                 "IN002",
                 "IN004"
@@ -531,13 +531,13 @@
                 ""
             ],
             "trust": 0,
-            "loyaltyLevel": 1,
-            "xp": 0,
+            "loyaltyLevel": 0,
+            "xp": 11,
             "walletCapBase": 100,
-            "visitCount": 0,
+            "visitCount": 1,
             "lastVisitDay": "",
             "lastLeaveReason": "",
-            "lifetimeSpent": 0,
+            "lifetimeSpent": 30,
             "availableNarrativeIds": [],
             "schemaVersion": 1
         },

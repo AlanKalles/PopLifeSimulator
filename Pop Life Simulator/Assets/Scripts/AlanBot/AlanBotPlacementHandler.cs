@@ -9,7 +9,7 @@ namespace PopLife.AlanBot
     /// AlanBot建造阶段拖放
     /// 仅在BuildPhase + ConstructionManager.mode == Move时激活
     /// 使用FloorDetectionService检测鼠标所在地板瓦片
-    /// 拖动时为虚影状态自由跟随鼠标，确认放置后锚定到地面
+    /// 拖动时验证 InteriorGrid walkable cell，吸附到格子中心
     /// </summary>
     public class AlanBotPlacementHandler : MonoBehaviour
     {
@@ -28,7 +28,9 @@ namespace PopLife.AlanBot
 
         private bool isDragging;
         private Vector3 originalPosition;
-        private FloorTileInstance currentTargetTile; // 当前拖动时检测到的地板瓦片
+        private FloorTileInstance currentTargetTile;
+        private bool currentCellWalkable;
+        private Vector2Int currentLocalPos;
 
         private void Awake()
         {
@@ -110,25 +112,47 @@ namespace PopLife.AlanBot
             Vector3 mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             mouse.z = 0f;
 
-            // 使用FloorDetectionService检测鼠标所在地板瓦片
             currentTargetTile = floorDetector?.DetectFloorTileAtMouse();
+            currentCellWalkable = false;
 
-            // 拖动时自由跟随鼠标（X、Y均跟随，不锁定地面）
-            transform.position = mouse;
+            if (currentTargetTile != null && currentTargetTile.Interior != null)
+            {
+                var interior = currentTargetTile.Interior;
+                currentLocalPos = interior.WorldToLocal(mouse);
 
-            // 虚影颜色反馈：有效地板=半透明白，无效=半透明红
-            SetGhostColor(currentTargetTile != null);
+                // 验证：InBounds + IsWalkable + 未被建筑占用
+                currentCellWalkable = interior.InBounds(currentLocalPos)
+                                   && interior.IsWalkable(currentLocalPos)
+                                   && !interior.IsOccupied(currentLocalPos);
+
+                if (currentCellWalkable)
+                {
+                    // 吸附到格子中心
+                    Vector3 snapped = interior.LocalToWorld(currentLocalPos);
+                    float half = interior.CellSize * 0.5f;
+                    transform.position = new Vector3(snapped.x + half, snapped.y + half, 0f);
+                }
+                else
+                {
+                    // 无效位置：自由跟随鼠标，便于拖到其他格子
+                    transform.position = mouse;
+                }
+            }
+            else
+            {
+                transform.position = mouse;
+            }
+
+            SetGhostColor(currentCellWalkable);
         }
 
         private void HandleDragInput()
         {
-            // 左键确认放置
+            // 左键确认放置（仅 walkable 且未占用的格子）
             if (Input.GetMouseButtonDown(0))
             {
-                if (currentTargetTile != null)
-                {
+                if (currentTargetTile != null && currentCellWalkable)
                     ConfirmPlacement();
-                }
                 // 无效位置不做处理，继续拖动
             }
 
@@ -143,16 +167,18 @@ namespace PopLife.AlanBot
         {
             isDragging = false;
 
-            // 确认放置：锚定到目标地板瓦片的地面
-            if (currentTargetTile != null)
+            if (currentTargetTile != null && currentTargetTile.Interior != null)
             {
-                float floorY = GetTileOriginY(currentTargetTile);
-                transform.position = new Vector3(transform.position.x, floorY + controller.GroundYOffset, 0f);
+                var interior = currentTargetTile.Interior;
+                Vector3 snapped = interior.LocalToWorld(currentLocalPos);
+                float half = interior.CellSize * 0.5f;
+
+                // 根节点在 cell 中心
+                transform.position = new Vector3(snapped.x + half, snapped.y + half, 0f);
+                controller.SetHostFloorTile(currentTargetTile, currentLocalPos);
             }
 
-            // 恢复正常显示
             RestoreColor();
-
             floorDetector?.ResetCache();
             controller.OnPlacementComplete();
 
@@ -170,13 +196,10 @@ namespace PopLife.AlanBot
             transform.position = originalPosition;
             controller.isBeingMoved = false;
 
-            // 恢复正常显示
             RestoreColor();
-
             floorDetector?.ResetCache();
 
             // 安全检查：如果取消拖放时已进入营业阶段，恢复行为树
-            // （防止OnStoreOpen在拖放期间触发时isBeingMoved=true导致Resume被跳过）
             if (DayLoopManager.Instance != null &&
                 DayLoopManager.Instance.currentPhase == GamePhase.OpenPhase)
             {
@@ -186,9 +209,6 @@ namespace PopLife.AlanBot
 
         // ─── 虚影 & 颜色 ───
 
-        /// <summary>
-        /// 设置虚影颜色（拖动期间使用）
-        /// </summary>
         private void SetGhostColor(bool isValid)
         {
             if (spriteRenderer == null) return;
@@ -197,23 +217,10 @@ namespace PopLife.AlanBot
             spriteRenderer.color = baseColor;
         }
 
-        /// <summary>
-        /// 恢复正常不透明颜色（放置或取消后）
-        /// </summary>
         private void RestoreColor()
         {
             if (spriteRenderer != null)
                 spriteRenderer.color = Color.white;
-        }
-
-        // ─── 楼层工具 ───
-
-        /// <summary>
-        /// 获取地板瓦片原点的Y坐标（地面高度）
-        /// </summary>
-        private float GetTileOriginY(FloorTileInstance tile)
-        {
-            return tile.transform.position.y;
         }
     }
 }

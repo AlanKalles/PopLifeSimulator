@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using PopLife.Runtime;
 using PopLife.Data;
+using PopLife.AlanBot;
 using System.Collections.Generic;
 
 namespace PopLife.Editor
@@ -152,6 +153,9 @@ namespace PopLife.Editor
                     break;
                 case WorldGridAuthoringState.AuthoringMode.PlaceElevator:
                     HandlePlaceElevator(sceneView, wg, state);
+                    break;
+                case WorldGridAuthoringState.AuthoringMode.PlaceAlanBot:
+                    HandlePlaceAlanBot(sceneView, wg, state);
                     break;
             }
 
@@ -502,6 +506,77 @@ namespace PopLife.Editor
             EditorUtility.SetDirty(go);
             EditorSceneManager.MarkSceneDirty(go.scene);
             InvalidateInterior();
+        }
+
+        // ================================================================
+        //  AlanBot — PlaceAlanBot（自动探测 FloorTile，放置到 walkable cell 中心）
+        // ================================================================
+
+        private static void HandlePlaceAlanBot(SceneView sv, WorldGrid wg, WorldGridAuthoringState state)
+        {
+            var snap = GetSnapshot(wg);
+            var mouseWorld = GetMouseWorldPosition();
+            var gridPos = snap.WorldToGrid(mouseWorld);
+
+            var tile = snap.GetFloorTileAt(gridPos);
+            if (tile == null)
+            {
+                DrawInfoLabel(sv, "Place AlanBot | Move mouse over a FloorTile");
+                return;
+            }
+
+            var interior = GetInterior(tile);
+            if (interior == null) { DrawInfoLabel(sv, "Place AlanBot | FloorTile has no interior"); return; }
+
+            var localPos = interior.WorldToLocal(mouseWorld);
+            bool canPlace = interior.InBounds(localPos)
+                         && interior.IsWalkable(localPos)
+                         && !interior.IsOccupied(localPos);
+
+            if (Event.current.type == EventType.Repaint)
+            {
+                if (!state.showInteriorGrid)
+                    DrawInteriorGridGL(interior);
+
+                // 单格预览
+                Color previewColor = canPlace ? ColorValid : ColorInvalid;
+                DrawFilledCellHandles(interior.LocalToWorld(localPos), interior.CellSize, previewColor);
+            }
+
+            var e = Event.current;
+            if (e.type == EventType.MouseDown && e.button == 0)
+            {
+                if (canPlace && state.alanBotPrefab != null)
+                    PlaceAlanBotInScene(wg, tile, interior, localPos, state);
+                e.Use();
+            }
+
+            DrawInfoLabel(sv, $"Place AlanBot | Local: ({localPos.x}, {localPos.y}) | Tile: {tile.name}");
+        }
+
+        private static void PlaceAlanBotInScene(WorldGrid wg, FloorTileInstance tile,
+            InteriorGrid interior, Vector2Int localPos, WorldGridAuthoringState state)
+        {
+            // 检查场景中是否已有 AlanBot，有则删除（单例）
+            var existing = Object.FindFirstObjectByType<AlanBotController>();
+            if (existing != null)
+            {
+                Undo.DestroyObjectImmediate(existing.gameObject);
+            }
+
+            // cell 中心位置
+            Vector3 snapped = interior.LocalToWorld(localPos);
+            float half = interior.CellSize * 0.5f;
+            Vector3 pos = new Vector3(snapped.x + half, snapped.y + half, 0f);
+
+            // 实例化到 WorldGrid.buildingContainer 下（与 FloorTile 同级）
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(state.alanBotPrefab, wg.buildingContainer);
+            go.transform.position = pos;
+            go.transform.rotation = Quaternion.identity;
+
+            Undo.RegisterCreatedObjectUndo(go, "Place AlanBot");
+            EditorUtility.SetDirty(go);
+            EditorSceneManager.MarkSceneDirty(go.scene);
         }
 
         // ================================================================

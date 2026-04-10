@@ -25,6 +25,9 @@ namespace PopLife.Runtime
         [SerializeField] private float doorOpenDistance = 0.3f;
         [SerializeField] private float doorAnimDuration = 0.4f;
 
+        /// <summary> 门动画时长（供 LinkTraversalDetector 读取） </summary>
+        public float DoorAnimDuration => doorAnimDuration;
+
         // 不 override MaxLevel（archetype.levels=null → 基类返回 0）
         public override int GetMaintenanceFee() => 0;
 
@@ -33,8 +36,19 @@ namespace PopLife.Runtime
         private Sequence openSequence;
         private Sequence closeSequence;
 
+        // 门初始位置（开关门始终从初始位置计算，避免多次调用累积偏移）
+        private float doorLeftInitX;
+        private float doorRightInitX;
+
         // 并发保护：多顾客同时使用同一门时防止动画互相打架
         private int activeTraversals;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if (doorLeft != null) doorLeftInitX = doorLeft.transform.localPosition.x;
+            if (doorRight != null) doorRightInitX = doorRight.transform.localPosition.x;
+        }
 
         /// <summary> 设置楼层标签文字 </summary>
         public void SetFloorLabel(string text)
@@ -52,15 +66,13 @@ namespace PopLife.Runtime
             if (isOpen) return;
             isOpen = true;
 
-            // 停止正在播放的关门动画
             if (closeSequence.isAlive) closeSequence.Stop();
-
             if (doorLeft == null || doorRight == null) return;
 
             openSequence = Sequence.Create()
-                .Group(Tween.LocalPositionX(doorLeft.transform, doorLeft.transform.localPosition.x - doorOpenDistance,
+                .Group(Tween.LocalPositionX(doorLeft.transform, doorLeftInitX - doorOpenDistance,
                     doorAnimDuration, Ease.OutBack))
-                .Group(Tween.LocalPositionX(doorRight.transform, doorRight.transform.localPosition.x + doorOpenDistance,
+                .Group(Tween.LocalPositionX(doorRight.transform, doorRightInitX + doorOpenDistance,
                     doorAnimDuration, Ease.OutBack));
         }
 
@@ -73,15 +85,13 @@ namespace PopLife.Runtime
             if (activeTraversals > 0 || !isOpen) return;
             isOpen = false;
 
-            // 停止正在播放的开门动画
             if (openSequence.isAlive) openSequence.Stop();
-
             if (doorLeft == null || doorRight == null) return;
 
             closeSequence = Sequence.Create()
-                .Group(Tween.LocalPositionX(doorLeft.transform, doorLeft.transform.localPosition.x + doorOpenDistance,
+                .Group(Tween.LocalPositionX(doorLeft.transform, doorLeftInitX,
                     doorAnimDuration, Ease.InBack))
-                .Group(Tween.LocalPositionX(doorRight.transform, doorRight.transform.localPosition.x - doorOpenDistance,
+                .Group(Tween.LocalPositionX(doorRight.transform, doorRightInitX,
                     doorAnimDuration, Ease.InBack));
         }
     }

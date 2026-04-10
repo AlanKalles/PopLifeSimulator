@@ -28,7 +28,13 @@
       "Bash(cd /d \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\")",
       "Bash(find . -name \"*.cs\" -type f -exec grep -l \"NavigationService\\\\|WorldGrid\" {} \\\\;)",
       "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\\\\Scripts\" -name \"*.cs\" -exec grep -l \"OnConversationLine\\\\|OnConversationResponse\\\\|OnDisplayResponse\" {} \\\\;)",
-      "WebFetch(domain:www.arongranberg.com)"
+      "WebFetch(domain:www.arongranberg.com)",
+      "Bash(read guid:*)",
+      "Bash(find . -name '*.cs' -type f -exec grep -l 'guid: __TRACKED_VAR__' '{}' ';')",
+      "Bash(find Scripts -name \"*.cs\" -exec grep -l \"CustomerBlackboardAdapter\\\\|CustomerAnimationController\\\\|LinkTraversalDetector\\\\|AILerp\\\\|Seeker\" {} \\\\;)",
+      "Bash(sed 's/--- !u!114 &.*//')",
+      "Read(//d/github/PopLifeSimulator/Pop Life Simulator/Assets/**)",
+      "Bash(find . -name \"*.cs\" -type f -exec grep -l \"AILerp\\\\|Seeker\\\\|Pathfinding\" {} \\\\;)"
     ],
     "deny": [],
     "ask": []

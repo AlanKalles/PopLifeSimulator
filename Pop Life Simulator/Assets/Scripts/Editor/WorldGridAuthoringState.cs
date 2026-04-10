@@ -18,7 +18,8 @@ namespace PopLife.Editor
             EraseFloorTile,
             PlaceInteriorBuilding,
             EraseInteriorBuilding,
-            PlaceElevator
+            PlaceElevator,
+            PlaceAlanBot
         }
 
         public AuthoringMode mode;
@@ -29,6 +30,9 @@ namespace PopLife.Editor
         // Interior 模式选项
         public bool lockMove;
         public bool lockDestroy;
+
+        // AlanBot 放置
+        public GameObject alanBotPrefab;
 
         // 网格可视化开关（独立于操作模式）
         public bool showWorldGrid;

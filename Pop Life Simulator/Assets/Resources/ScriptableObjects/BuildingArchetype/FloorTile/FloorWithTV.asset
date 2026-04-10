@@ -236,4 +236,4 @@ MonoBehaviour:
   interiorCellSize: 0.5
   leftPortalCells: 
   rightPortalCells: 
-  walkableRows: 2
+  walkableRows: 1

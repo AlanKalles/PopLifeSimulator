@@ -3,6 +3,7 @@ using ParadoxNotion.Design;
 using UnityEngine;
 using Pathfinding;
 using PopLife.Customers.Runtime;
+using PopLife.Runtime;
 
 namespace PopLife.Customers.NodeCanvas.Actions
 {
@@ -115,7 +116,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // 检查超时
+            // 检查超时（不受电梯穿越阻止，避免电梯卡住时 timeout 也被跳过）
             if (Time.time - startTime > timeoutSeconds)
             {
                 Debug.LogWarning($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 移动到出口超时");
@@ -123,6 +124,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 EndAction(false);
                 return;
             }
+
+            // 电梯穿越中不做到达判断
+            var detector = agent.GetComponent<LinkTraversalDetector>();
+            if (detector != null && detector.IsTraversingElevator) return;
 
             // 第一阶段：到达出口内侧
             if (!reachedInside)

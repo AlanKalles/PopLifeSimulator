@@ -188,7 +188,7 @@ namespace PopLife.Customers.Services
                     Vector2Int localPos = interior.WorldToLocal(worldPos);
                     node.Walkable = interior.IsWalkable(localPos);
                 });
-                graph.GetNodes(n => graph.CalculateConnections((GridNodeBase)n));
+                graph.RecalculateAllConnections();
             }));
         }
 
