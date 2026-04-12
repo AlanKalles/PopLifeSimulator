@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
+using PopLife.Data;
 using PopLife.Manager;
 using Sirenix.OdinInspector;
 
@@ -9,13 +10,27 @@ namespace PopLife.DialogueBridge
 {
     /// <summary>
     /// Bridges TutorialMarker events with Dialogue System conversations and Lua scripts.
-    /// Guide 触发由 OperationGuideManager 自处理，Quest 激活由 QuestLogicManager 自处理。
+    /// Guide triggers are handled by OperationGuideManager.
+    /// Quest activation is handled by QuestLogicManager.
     /// </summary>
     public class TutorialMarkerBridge : MonoBehaviour
     {
-        #region Singleton
+        private const string DialogueActionResourcesPath = "ScriptableObjects/DialogueActions";
 
         public static TutorialMarkerBridge Instance { get; private set; }
+
+        [Title("Dialogue Actions")]
+        [InfoBox("Configure DialogueAction assets under Resources/ScriptableObjects/DialogueActions. TutorialMarkerBridge will auto-load them at runtime.")]
+        [SerializeField]
+        [ReadOnly]
+        private int loadedActionCount;
+
+        [Title("Debug")]
+        [SerializeField]
+        private bool debugMode = true;
+
+        private DialogueAction[] allActions = Array.Empty<DialogueAction>();
+        private Dictionary<TutorialMarker, List<DialogueAction>> markerLookup = new();
 
         private void Awake()
         {
@@ -23,72 +38,14 @@ namespace PopLife.DialogueBridge
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
-                BuildMappingDictionary();
+                LoadDialogueActions();
+                BuildLookupTables();
             }
             else
             {
                 Destroy(gameObject);
             }
         }
-
-        #endregion
-
-        #region Serialized Fields
-
-        [Title("Marker to Conversation/Lua Mappings")]
-        [InfoBox("配置 Marker → Conversation / Lua 映射。Guide 和 Quest 触发请直接在各自的 SO 中配置 activationMarker。")]
-        [SerializeField]
-        [ListDrawerSettings(ShowFoldout = true, DraggableItems = true)]
-        private List<MarkerQuestMapping> mappings = new List<MarkerQuestMapping>();
-
-        [Title("Debug")]
-        [SerializeField]
-        private bool debugMode = true;
-
-        #endregion
-
-        #region Private Fields
-
-        private Dictionary<TutorialMarker, MarkerQuestMapping> mappingDictionary;
-
-        #endregion
-
-        #region Data Classes
-
-        /// <summary>
-        /// 简化后的映射：仅处理 marker → conversation / lua
-        /// Guide 触发已由 OperationGuideManager 自处理
-        /// Quest 激活已由 QuestLogicManager 自处理
-        /// </summary>
-        [Serializable]
-        public class MarkerQuestMapping
-        {
-            [Title("Trigger")]
-            [EnumToggleButtons]
-            public TutorialMarker marker;
-
-            [Title("Conversation")]
-            [Tooltip("Conversation to start (leave empty to skip)")]
-            public string conversationToStart;
-
-            [Tooltip("Delay before starting conversation (seconds)")]
-            [ShowIf("@!string.IsNullOrEmpty(conversationToStart)")]
-            [Range(0f, 5f)]
-            public float conversationDelay = 0f;
-
-            [Title("Lua")]
-            [Tooltip("Custom Lua code to execute (optional)")]
-            [TextArea(2, 4)]
-            public string luaScript;
-
-            [Title("Metadata")]
-            [TextArea(1, 2)]
-            public string description;
-        }
-
-        #endregion
-
-        #region Unity Lifecycle
 
         private void OnEnable()
         {
@@ -100,41 +57,66 @@ namespace PopLife.DialogueBridge
             TutorialEventBus.OnMarkerTriggered -= HandleMarkerTriggered;
         }
 
-        #endregion
-
-        #region Core Logic
-
-        /// <summary>
-        /// Build dictionary for fast lookup
-        /// </summary>
-        private void BuildMappingDictionary()
+        private void LoadDialogueActions()
         {
-            mappingDictionary = new Dictionary<TutorialMarker, MarkerQuestMapping>();
+            allActions = Resources.LoadAll<DialogueAction>(DialogueActionResourcesPath) ?? Array.Empty<DialogueAction>();
+            loadedActionCount = allActions.Length;
+        }
 
-            foreach (var mapping in mappings)
+        private void BuildLookupTables()
+        {
+            markerLookup.Clear();
+
+            foreach (var action in allActions)
             {
-                if (!mappingDictionary.ContainsKey(mapping.marker))
+                if (action == null || action.ActivationMarker == TutorialMarker.None)
+                    continue;
+
+                if (!markerLookup.TryGetValue(action.ActivationMarker, out var actions))
                 {
-                    mappingDictionary[mapping.marker] = mapping;
+                    actions = new List<DialogueAction>();
+                    markerLookup[action.ActivationMarker] = actions;
                 }
-                else
+
+                actions.Add(action);
+            }
+
+            foreach (var pair in markerLookup)
+            {
+                pair.Value.Sort(CompareActions);
+
+                for (int i = 1; i < pair.Value.Count; i++)
                 {
-                    Debug.LogWarning($"[TutorialMarkerBridge] Duplicate mapping for marker: {mapping.marker}");
+                    var previous = pair.Value[i - 1];
+                    var current = pair.Value[i];
+                    if (previous.ExecutionOrder == current.ExecutionOrder)
+                    {
+                        Debug.LogWarning(
+                            $"[TutorialMarkerBridge] Duplicate executionOrder {current.ExecutionOrder} on marker {pair.Key}: '{previous.name}' and '{current.name}'.");
+                    }
                 }
             }
 
             if (debugMode)
             {
-                Debug.Log($"[TutorialMarkerBridge] Built mapping dictionary with {mappingDictionary.Count} entries");
+                Debug.Log(
+                    $"[TutorialMarkerBridge] Loaded {allActions.Length} DialogueAction assets. " +
+                    $"SO markers: {markerLookup.Count}.");
             }
         }
 
-        /// <summary>
-        /// Handle TutorialMarker triggered event
-        /// </summary>
+        private static int CompareActions(DialogueAction left, DialogueAction right)
+        {
+            int orderCompare = left.ExecutionOrder.CompareTo(right.ExecutionOrder);
+            if (orderCompare != 0)
+                return orderCompare;
+
+            return string.Compare(left.name, right.name, StringComparison.Ordinal);
+        }
+
         private void HandleMarkerTriggered(TutorialMarker marker)
         {
-            if (!mappingDictionary.TryGetValue(marker, out var mapping))
+            if (!markerLookup.TryGetValue(marker, out var actions) || actions.Count == 0)
             {
                 if (debugMode)
                 {
@@ -148,27 +130,29 @@ namespace PopLife.DialogueBridge
                 Debug.Log($"[TutorialMarkerBridge] Processing marker: {marker}");
             }
 
-            // Execute conversation and lua actions
-            // Guide 触发由 OperationGuideManager 自处理
-            // Quest 激活由 QuestLogicManager 自处理
-            ExecuteLuaAction(mapping);
-            ExecuteConversationAction(mapping);
+            foreach (var action in actions)
+            {
+                ExecuteAction(action);
+            }
         }
 
-        /// <summary>
-        /// Execute custom Lua script
-        /// </summary>
-        private void ExecuteLuaAction(MarkerQuestMapping mapping)
+        private void ExecuteAction(DialogueAction action)
         {
-            if (string.IsNullOrEmpty(mapping.luaScript))
+            ExecuteLuaAction(action.LuaScript);
+            ExecuteConversationAction(action.ConversationToStart, action.ConversationDelay);
+        }
+
+        private void ExecuteLuaAction(string luaScript)
+        {
+            if (string.IsNullOrEmpty(luaScript))
                 return;
 
             try
             {
-                Lua.Run(mapping.luaScript);
+                Lua.Run(luaScript);
                 if (debugMode)
                 {
-                    Debug.Log($"[TutorialMarkerBridge] Executed Lua: {mapping.luaScript}");
+                    Debug.Log($"[TutorialMarkerBridge] Executed Lua: {luaScript}");
                 }
             }
             catch (Exception e)
@@ -177,39 +161,32 @@ namespace PopLife.DialogueBridge
             }
         }
 
-        /// <summary>
-        /// Start conversation if configured
-        /// </summary>
-        private void ExecuteConversationAction(MarkerQuestMapping mapping)
+        private void ExecuteConversationAction(string conversationToStart, float conversationDelay)
         {
-            if (string.IsNullOrEmpty(mapping.conversationToStart))
+            if (string.IsNullOrEmpty(conversationToStart))
                 return;
 
-            // Check if a conversation is already active
             if (DialogueManager.isConversationActive)
             {
                 if (debugMode)
                 {
-                    Debug.Log($"[TutorialMarkerBridge] Conversation already active, queuing: {mapping.conversationToStart}");
+                    Debug.Log($"[TutorialMarkerBridge] Conversation already active, queuing: {conversationToStart}");
                 }
-                // Queue the conversation to start after current one ends
-                DialogueManager.instance.StartCoroutine(StartConversationWhenReady(mapping.conversationToStart));
+
+                DialogueManager.instance.StartCoroutine(StartConversationWhenReady(conversationToStart));
                 return;
             }
 
-            if (mapping.conversationDelay > 0)
+            if (conversationDelay > 0f)
             {
-                DialogueManager.instance.StartCoroutine(StartConversationDelayed(mapping.conversationToStart, mapping.conversationDelay));
+                DialogueManager.instance.StartCoroutine(StartConversationDelayed(conversationToStart, conversationDelay));
             }
             else
             {
-                StartConversation(mapping.conversationToStart);
+                StartConversation(conversationToStart);
             }
         }
 
-        /// <summary>
-        /// Start conversation with delay
-        /// </summary>
         private System.Collections.IEnumerator StartConversationDelayed(string conversationTitle, float delay)
         {
             yield return new WaitForSecondsRealtime(delay);
@@ -220,14 +197,10 @@ namespace PopLife.DialogueBridge
             }
             else
             {
-                // Wait for current conversation to end
                 yield return StartConversationWhenReady(conversationTitle);
             }
         }
 
-        /// <summary>
-        /// Wait for any active conversation to end, then start new one
-        /// </summary>
         private System.Collections.IEnumerator StartConversationWhenReady(string conversationTitle)
         {
             while (DialogueManager.isConversationActive)
@@ -235,14 +208,10 @@ namespace PopLife.DialogueBridge
                 yield return null;
             }
 
-            yield return new WaitForSecondsRealtime(0.1f); // Small delay to ensure clean transition
-
+            yield return new WaitForSecondsRealtime(0.1f);
             StartConversation(conversationTitle);
         }
 
-        /// <summary>
-        /// Actually start the conversation
-        /// </summary>
         private void StartConversation(string conversationTitle)
         {
             if (DialogueManager.ConversationHasValidEntry(conversationTitle))
@@ -258,84 +227,5 @@ namespace PopLife.DialogueBridge
                 Debug.LogWarning($"[TutorialMarkerBridge] Conversation not found or has no valid entry: {conversationTitle}");
             }
         }
-
-        #endregion
-
-        #region Public API
-
-        /// <summary>
-        /// Add or update a mapping at runtime
-        /// </summary>
-        public void AddMapping(TutorialMarker marker, string conversation = null, string lua = null)
-        {
-            var mapping = new MarkerQuestMapping
-            {
-                marker = marker,
-                conversationToStart = conversation,
-                luaScript = lua
-            };
-
-            mappingDictionary[marker] = mapping;
-
-            // Also add to serialized list if not present
-            var existing = mappings.Find(m => m.marker == marker);
-            if (existing != null)
-            {
-                mappings.Remove(existing);
-            }
-            mappings.Add(mapping);
-
-            if (debugMode)
-            {
-                Debug.Log($"[TutorialMarkerBridge] Added/updated mapping for: {marker}");
-            }
-        }
-
-        /// <summary>
-        /// Check if a mapping exists for a marker
-        /// </summary>
-        public bool HasMapping(TutorialMarker marker)
-        {
-            return mappingDictionary != null && mappingDictionary.ContainsKey(marker);
-        }
-
-        /// <summary>
-        /// Get mapping for a marker (returns null if not found)
-        /// </summary>
-        public MarkerQuestMapping GetMapping(TutorialMarker marker)
-        {
-            if (mappingDictionary != null && mappingDictionary.TryGetValue(marker, out var mapping))
-            {
-                return mapping;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Force rebuild mapping dictionary (call after modifying mappings list)
-        /// </summary>
-        [Button("Rebuild Mapping Dictionary")]
-        public void RebuildMappings()
-        {
-            BuildMappingDictionary();
-        }
-
-        #endregion
-
-        #region Editor Helpers
-
-#if UNITY_EDITOR
-        [Button("Print All Mappings")]
-        private void PrintAllMappings()
-        {
-            Debug.Log("=== Tutorial Marker Mappings ===");
-            foreach (var mapping in mappings)
-            {
-                Debug.Log($"{mapping.marker} -> Conv: {mapping.conversationToStart}, Lua: {mapping.luaScript}");
-            }
-        }
-#endif
-
-        #endregion
     }
 }

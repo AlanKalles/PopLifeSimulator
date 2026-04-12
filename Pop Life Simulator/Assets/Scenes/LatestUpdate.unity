@@ -45975,32 +45975,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d56fb54e7927644fbf3a65f3a418794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.DialogueBridge.TutorialMarkerBridge
-  mappings:
-  - marker: 0
-    conversationToStart: Midori/1
-    conversationDelay: 0.1
-    luaScript: 
-    description: 
-  - marker: 27
-    conversationToStart: Midori/2
-    conversationDelay: 0
-    luaScript: 
-    description: 
-  - marker: 15
-    conversationToStart: Auditor/1
-    conversationDelay: 0
-    luaScript: 
-    description: 
-  - marker: 30
-    conversationToStart: Auditor/2
-    conversationDelay: 0
-    luaScript: 
-    description: 
-  - marker: 31
-    conversationToStart: Midori/Lottery
-    conversationDelay: 0
-    luaScript: 
-    description: 
+  loadedActionCount: 0
   debugMode: 1
 --- !u!114 &2013759269
 MonoBehaviour:

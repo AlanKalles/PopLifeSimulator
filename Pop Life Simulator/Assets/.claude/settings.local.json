@@ -34,7 +34,8 @@
       "Bash(find Scripts -name \"*.cs\" -exec grep -l \"CustomerBlackboardAdapter\\\\|CustomerAnimationController\\\\|LinkTraversalDetector\\\\|AILerp\\\\|Seeker\" {} \\\\;)",
       "Bash(sed 's/--- !u!114 &.*//')",
       "Read(//d/github/PopLifeSimulator/Pop Life Simulator/Assets/**)",
-      "Bash(find . -name \"*.cs\" -type f -exec grep -l \"AILerp\\\\|Seeker\\\\|Pathfinding\" {} \\\\;)"
+      "Bash(find . -name \"*.cs\" -type f -exec grep -l \"AILerp\\\\|Seeker\\\\|Pathfinding\" {} \\\\;)",
+      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\" -name \"*.cs\" -exec grep -l \"SetTypewriter\\\\|PerCharacter.*Audio\\\\|PerActor.*Audio\\\\|per-character.*audio\" {} \\\\;)"
     ],
     "deny": [],
     "ask": []
