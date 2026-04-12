@@ -73,8 +73,8 @@ namespace PopLife.Data
             if (interiorGridSize.y < 1) interiorGridSize.y = 1;
             if (interiorCellSize < 0.01f) interiorCellSize = 0.5f;
             if (walkableRows < 0) walkableRows = 0;
-            leftPortalCells?.RemoveAll(y => y < 0 || y >= interiorGridSize.y);
-            rightPortalCells?.RemoveAll(y => y < 0 || y >= interiorGridSize.y);
+            leftPortalCells?.RemoveAll(c => c < 0 || c >= interiorGridSize.x);
+            rightPortalCells?.RemoveAll(c => c < 0 || c >= interiorGridSize.x);
         }
 
         private void GenerateFootprintFromSize()

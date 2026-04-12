@@ -115,7 +115,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1334025207405580894}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: LightGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -240,7 +240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4015649585845487069}
   - component: {fileID: 1222085630070236570}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: 4Foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Intensity: 1.64
   m_LightVolumeIntensity: -0
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: c5b0b2bddbb16c758b4061da2df27a81c373b82cdfa426b4
+  m_ApplyToSortingLayers: c5b0b2bddbb16c758b4061dadfa426b4
   m_LightCookieSprite: {fileID: 21300000, guid: 8cbe75c4ca908254c96de4814113a24c, type: 3}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0

@@ -19,23 +19,27 @@
 ## Prefab 层级结构
 
 ```
-customer (root)
-  ├── BodyParts (空容器)                 ← 翻转时整体 scale.x = ±1
-  │   ├── Body                          ← SpriteRenderer (sortingOrder: 0)
-  │   ├── Head                          ← SpriteRenderer (sortingOrder: 1)
-  │   ├── LeftArm                       ← SpriteRenderer (sortingOrder: -1)
-  │   ├── RightArm                      ← SpriteRenderer (sortingOrder: -1)
-  │   ├── LeftFoot                      ← SpriteRenderer (sortingOrder: -2)
-  │   └── RightFoot                     ← SpriteRenderer (sortingOrder: -2)
-  ├── emoji                             ← SpriteRenderer (sortingOrder: 10)
-  │   └── name                          ← TextMeshPro
+customer (root)                          ← transform.position = A* 寻路位置（脚底）
+  ├── VisualAnchor (容器)                ← localPosition.y 向上偏移，使角色视觉居中
+  │   ├── BodyParts (容器)               ← 翻转时整体 scale.x = ±1
+  │   │   ├── Body                       ← SpriteRenderer (sortingOrder ≥ 1)
+  │   │   ├── Head                       ← SpriteRenderer (sortingOrder ≥ 1)
+  │   │   ├── LeftArm                    ← SpriteRenderer (sortingOrder ≥ 1)
+  │   │   │   └── Hold                   ← SpriteRenderer (篮子，sortingOrder > Body，sprite 初始 null)
+  │   │   ├── RightArm                   ← SpriteRenderer (sortingOrder ≥ 1)
+  │   │   ├── LeftFoot                   ← SpriteRenderer (sortingOrder ≥ 1)
+  │   │   └── RightFoot                  ← SpriteRenderer (sortingOrder ≥ 1)
+  │   └── emoji                          ← SpriteRenderer (sortingOrder ≥ 1)
+  │       └── name                       ← TextMeshPro
   └── [逻辑组件挂在 root 上]
 ```
 
 ### 关键设计
+- **VisualAnchor 容器**：所有视觉元素的父对象。`localPosition.y` 向上偏移，使 root 的 transform.position 作为脚底锚点（对齐 A* walkable 节点中心），sprite 身体在上方。电梯穿越时 `LinkTraversalDetector` 通过 Tween VisualAnchor 的 localPosition 实现进出电梯的微小位移动画，不影响 root transform（避免 AILerp 状态分叉）。
 - **BodyParts 容器**负责方向翻转：`localScale.x = ±1`，一次翻转所有部位
-- **emoji 不在 BodyParts 下**：不随身体翻转，始终朝向玩家
-- **部件间 sortingOrder 固定**在 Prefab 上，不受 sorting layer 切换影响
+- **emoji 在 VisualAnchor 下、BodyParts 外**：不随身体翻转，始终朝向玩家
+- **所有部件 sortingOrder ≥ 1**：确保在电梯 ElevatorBackgroundLayer 中时，顾客渲染在电梯 background sprite（sortingOrder=0）前面，但被门和货架所在的更高 sorting layer 遮挡
+- **部件间 sortingOrder 的相对差值**固定在 Prefab 上，不受 sorting layer 切换影响
 
 ---
 
@@ -196,9 +200,11 @@ breathe = Sin(Time.time * breatheSpeed) × breatheAmount
    ├── Tween.Custom(0→1, 0.85s):                           ← 衰减水平抖动
    │     shake = Sin(t × PI × 8) × (1-t) × 0.03
    │     bodyPartsContainer.localPosition.x += shake
-   └── ChainCallback: 容器归零, isPlayingOneShot = false, StopEmoji()
+   └── ChainCallback: 容器恢复到 bodyPartsContainerOriginPos, isPlayingOneShot = false, StopEmoji()
 4. emojiController.PlayUpset()                               ← emoji 不满帧循环
 ```
+
+> **注意**：Upset 抖动结束后恢复到 `bodyPartsContainerOriginPos`（Awake 时缓存的初始位置），而非 `Vector3.zero`。这样 BodyParts 容器的 Y 偏移不会被重置。`ResetAllParts()` 同理。
 
 ### Think / Interaction（循环）
 ```
@@ -247,19 +253,67 @@ Update 中使用 `frameTimer` 计时，按 `frameInterval` 间隔循环切换 `c
 |------|------|--------|
 | 进店 | `MoveToEntranceAction.OnReachedInside()` | → `animController.SetAllSortingLayer("InsideStoreLayer")` |
 | 出店 | `MoveToExitAction.OnReachedOutsideAnchor()` | → `animController.SetAllSortingLayer("OutsideStoreLayer")` |
+| 电梯进入 | `LinkTraversalDetector` 协程步骤 4 | → 所有渲染器 `sortingLayerName = "ElevatorBackgroundLayer"` |
+| 电梯出口 | `LinkTraversalDetector` 协程步骤 11 | → 恢复原始 `sortingLayerName` |
 
 `SetAllSortingLayer()` 遍历 6 个部件渲染器 + `emojiController.SetSortingLayer()`，统一切换 `sortingLayerName`，不改变各部件的相对 `sortingOrder`。
 
+### ElevatorBackgroundLayer
+- 专用 sorting layer，仅电梯 background sprite 在此层（sortingOrder=0）
+- 顾客进入电梯时切换到此 layer：sortingOrder ≥ 1 在 background 前面，但整个 layer 被更高层（shelf layer 等）遮挡
+- 效果：门关闭后顾客被门遮挡（视觉上"消失"在电梯内）
+
 ---
 
-## NodeLink2 穿越隐身
+## 电梯穿越系统
+
+### 组件
 
 | 组件 | 位置 | 职责 |
 |------|------|------|
-| `LinkTraversalDetector` | customer prefab (root) | `GetComponentsInChildren<SpriteRenderer>(true)` 收集所有渲染器，传递给 teleporter |
-| `AILerpLinkTeleporter` | NodeLink2 物体 | 跟踪 agent 位置，到达起点时 alpha→0 隐藏，到达终点时 alpha→1 恢复 |
+| `LinkTraversalDetector` | customer prefab (root) | 监听路径回调，检测电梯 NodeLink2，接管 AILerp 执行 Teleport 穿越协程 |
+| `AILerpLinkTeleporter` | 电梯 NodeLink2 物体 | 门引用存储（doorA/doorB）、静态注册表、方向判断（ResolveDoors） |
+| `ElevatorDoorInstance` | 电梯门 prefab | 门动画（PrimeTween 开合）+ 并发保护（activeTraversals 计数） |
 
-穿越时所有 6 个部件 + emoji 同时隐藏/显示。
+### 穿越流程（LinkTraversalDetector 协程）
+
+```
+1.  暂停 AILerp (simulateMovement=false)
+2.  入口门开门 + 标记 entryDoorPendingClose
+3.  VisualAnchor 向上 Tween enterOffset（走进电梯，不动 transform）
+4.  切换 sorting layer → ElevatorBackgroundLayer
+5.  入口门关门 + 清除 entryDoorPendingClose
+6.  隐藏 sprite (alpha=0)（此时被门遮挡，视觉无感知）
+7.  AILerp.Teleport(exitAnchor, clearPath: true)
+8.  等待 |楼层差| × waitPerFloor 秒（受 Time.timeScale 影响）
+9.  恢复 alpha=1（出口门关着，被遮挡）
+10. 出口门开门 + 标记 exitDoorPendingClose
+11. 恢复原始 sorting layer
+12. VisualAnchor 恢复到初始 localPosition（走出电梯）
+13. isTraversing = false
+14. 恢复 AILerp (simulateMovement=true, isStopped=false) + SearchPath
+15. 延迟后出口门关门 + 清除 exitDoorPendingClose
+```
+
+### 关键设计
+- **AILerp.Teleport(pos, clearPath: true)**：清除旧路径防止恢复移动后沿旧路径飞行
+- **VisualAnchor Tween 不动 transform**：避免 AILerp 内部状态与 transform.position 分叉
+- **visualAnchorOriginLocalPos 缓存**：Awake 时记录，AbortTraversal/中断时恢复，防止累积偏移
+- **isTraversing 期间 OnPathComplete 直接 return**：防止 autoRepath 触发 AbortTraversal 导致闪现
+- **entryDoorPendingClose / exitDoorPendingClose 独立标志**：OnDestroy 时按标志回收门计数，不依赖 isTraversing
+- **MoveToTargetAction / MoveToExitAction / MoveToEntranceAction** 中检查 `IsTraversingElevator`：穿越中跳过到达判断，但不阻止 timeout
+
+### 可配置参数（LinkTraversalDetector Inspector）
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `enterOffset` | 0.1 | VisualAnchor 进出电梯的上下偏移量（Unity 世界单位） |
+| `waitPerFloor` | 0.5 | 每层楼的等待时间（秒，受 timeScale 影响） |
+| `arrivalThreshold` | 0.3 | 到达入口门触发穿越的距离阈值 |
+| `visualAnchor` | — | Inspector 拖入 customer prefab 的 VisualAnchor 子对象 |
+
+### Portal 穿越（非电梯）
+Portal NodeLink2（水平相邻 FloorTile 间的连接）没有 `AILerpLinkTeleporter` 组件，LinkTraversalDetector 跳过不处理。AILerp 自行沿路径直线走过 portal。
 
 ---
 
@@ -290,8 +344,9 @@ CustomerAgent.Initialize(record, archetype, daySeed)
 
 | NodeCanvas Action | 调用的 API |
 |-------------------|-----------|
-| `PlayPickProductAnimationAction` | `PlayPickProduct()`, `StopCurrentAnimation()` |
-| `PlayCheckoutAnimationAction` | `PlayCheckout()` |
+| `PlayBasketAppearAction` | `PlayBasketAppear()`, `HideBasket()`(中断时) |
+| `PlayPickProductAnimationAction` | `PlayPickProduct()`, `SetBasketFull()`(首次), `StopCurrentAnimation()` |
+| `PlayCheckoutAnimationAction` | `PlayCheckout()`, `HideBasket()`(中断时), `StopCurrentAnimation()` |
 | `PlayUpsetAnimationAction` | `PlayUpset()`, `StopCurrentAnimation()` |
 | `PlayInteractionAnimationAction` | `PlayInteraction()`, `StopLoop()` |
 | `ThinkBeforeNextShoppingAction` | `PlayThink()`, `StopLoop()` |
@@ -308,8 +363,69 @@ CustomerAgent.Initialize(record, archetype, daySeed)
 
 ---
 
+## 篮子系统 (`CustomerAnimationController` 内置)
+
+### 概述
+顾客进店后自动拿出购物篮子，购买商品后篮子变满，结账时篮子动画演出后消失。篮子作为 LeftArm 的子对象 Hold，跟随手臂摆动。
+
+### 系统总开关
+`Awake()` 时检查 4 个引用：`basketRenderer`、`leftArmRenderer`、`basketEmptySprite`、`basketFullSprite`。任一缺失则 `basketSystemEnabled = false`，整套篮子逻辑静默禁用。无论是否启用，都会在 `Awake()` 中清掉 `basketRenderer` 的 prefab 残值。
+
+### 3 个 Helper 方法（收口所有篮子显示变更）
+
+| 方法 | 可见性 | 行为 |
+|------|--------|------|
+| `ShowBasketEmpty()` | private | sprite = empty, alpha = 1, basketVisible = true, basketIsFull = false |
+| `SetBasketFull()` | public | sprite = full, basketIsFull = true |
+| `HideBasket()` | public | sprite = null, alpha = 1, basketVisible = false, basketIsFull = false |
+
+所有方法前置检查 `basketSystemEnabled`，禁用时直接 return。
+
+### 篮子生命周期
+
+```
+进店 MoveToEntranceAction 完成
+  ↓
+PlayBasketAppearAction（停AI → PlayBasketAppear()）
+  LeftArm Z旋转到-10° (0.2s) → ShowBasketEmpty() → LeftArm Z回0° (0.2s)
+  ↓
+Walk/Idle（篮子跟随 LeftArm ±10° 摆动，翻转时随 BodyParts 镜像）
+  ↓
+首次 PlayPickProductAnimationAction 成功 → SetBasketFull()（瞬时切换）
+  ↓
+PlayCheckoutAnimationAction → PlayCheckout()
+  LeftArm上移0.035 (0.25s) → 停顿 → ShowBasketEmpty() →
+  LeftArm回位 (0.25s) → HideBasket() + emoji → emoji播放 (0.67s) → 完成
+```
+
+### 中断安全
+
+`StopCurrentAnimation()` / `ResetAllParts()` **不碰篮子**。中断清理由各 Action 的 `OnStop()` 负责：
+
+| Action | OnStop 中断时 | OnStop 正常完成时 |
+|--------|-------------|-----------------|
+| `PlayBasketAppearAction` | `StopCurrentAnimation()` + `HideBasket()` | 不碰（篮子保留） |
+| `PlayCheckoutAnimationAction` | `StopCurrentAnimation()` + `HideBasket()` | 不碰（Tween 已处理） |
+| 其他 Action | 不碰篮子 | 不碰篮子 |
+
+区分机制：`bool completedNormally` 标记，`EndAction(true)` 前置 true，`OnStop()` 中仅 `!completedNormally` 时清理。
+
+### Sorting Layer 同步
+`basketRenderer` 在 `basketSystemEnabled` 时加入 `allPartRenderers` 数组，`SetAllSortingLayer()` 自动同步。
+
+### Inspector 配置
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `basketRenderer` | SpriteRenderer | Hold 子对象的 SpriteRenderer |
+| `basketEmptySprite` | Sprite | 空篮子精灵 (`shopping_basket.png`) |
+| `basketFullSprite` | Sprite | 满篮子精灵 (`shopping_basket_2.png`) |
+
+---
+
 ## 已知限制与待改进
 
 - **动画幅度为绝对值**：距离参数（footMoveRange, bodyBobAmount 等）是 Unity 世界单位，不会随 sprite 大小自动缩放。不同尺寸的角色可能需要在 Inspector 中单独调节，或后续实现基于 sprite bounds 的自适应比例
 - **翻转时手臂层级**：初始方案固定 sortingOrder（左右手臂均为 -1）。如果翻转后前后手臂层级不对，需在 `UpdateFacing()` 中动态交换 sortingOrder
 - **PrimeTween SpriteRenderer Alpha**：PrimeTween 无直接 `Tween.Alpha(SpriteRenderer)` API，使用 `Tween.Custom` 手动驱动 `color.a`
+- **AILerp 不原生支持 NodeLink2**：电梯穿越完全由 `LinkTraversalDetector` 协程手动管理（暂停 AILerp → Teleport → 恢复）。Portal 穿越因两端距离近由 AILerp 直线走过，视觉可接受

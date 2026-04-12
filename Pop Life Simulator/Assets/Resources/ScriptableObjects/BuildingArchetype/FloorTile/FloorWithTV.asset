@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.FloorTileArchetype
   archetypeId: FloorWithTV
   displayName: Floor with TV
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 973babd5db84cfb4a8a96b6f25f88802, type: 3}
   prefab: {fileID: 580907776669694759, guid: 085bfdb83581eb1499cf51f6e4dc5d7b, type: 3}
   buildCost: 0
   moveCost: 0

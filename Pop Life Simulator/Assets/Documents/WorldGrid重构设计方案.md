@@ -1,7 +1,4 @@
-# 新架构设计方案：世界网格 + 独立 Interior Grid
-
-## 动机
-FloorTile 的 interior（内部可建造/可行走空间）与世界网格不对齐。内外 cell size 相同（0.5），但 interior 起点有偏移。强行用统一网格会导致格子切到墙壁里，顾客飘在空中。
+# 世界网格 + Interior Grid + 电梯系统 设计方案
 
 ## 分层架构
 
@@ -11,34 +8,35 @@ WorldGrid (单例, cellSize=0.5, gridSize 可配置)
 ├── 管 FloorTile 放置位置
 ├── 管 支撑/堆叠规则（底部必须有 FloorTile，一楼除外）
 ├── 管 悬空保护
-├── 管 FloorTile 之间的结构关系
-└── 不管 shelf/电梯/顾客寻路（这些在 interior 层）
+├── 管 FloorTile 之间的结构关系（IsSameFloorNeighbor / IsUpperFloorNeighbor）
+├── 管 楼层层级计算（BFS，default=0，上方+1，下方-1）
+├── 持有 ElevatorLinkManager 和 ElevatorArchetype 引用
+└── 不管 shelf/电梯内部逻辑/顾客寻路（这些在 interior 层）
 ```
 
 ### 第二层：每个 FloorTileInstance 的 interior grid
 ```
 FloorTileInstance.InteriorGrid
-├── cellSize = 0.5（与世界网格相同，默认值）
+├── cellSize = 0.5（与世界网格相同）
 ├── 有自己的 origin offset（相对 FloorTile 锚点的偏移）
 ├── 有自己的 gridSize（interior 的格子数）
-├── 管 shelf 放置
-├── 管 电梯锚点放置
-├── 管 customer walkable
+├── 三层布尔模型：placeable / occupied / walkable
+├── 管 shelf / facility / elevator door 放置
+├── 管 customer walkable（底部 walkableRows 行）
 ├── 有自己的 A* GridGraph（运行时生成）
 └── 通过 NodeLink2 连接到其他 FloorTile 的 interior
 ```
 
 ### Tile 间连接
 ```
-电梯: NodeLink2 连接两个 FloorTileInstance 的 interior graph
-侧边通道: NodeLink2 连接左右紧贴的 FloorTileInstance 的 portal cells
+电梯: ElevatorLinkManager 自动创建 NodeLink2，连接同一结构分支内的电梯门
+Portal: NavigationService 自动创建 NodeLink2，连接左右紧贴的 FloorTile 的 portal cells
 ```
 
 ---
 
-## 关键设计
+## FloorTileArchetype 数据（SO 配置）
 
-### FloorTileArchetype 数据（SO 配置）
 ```
 FloorTileArchetype:
   tileSize (Vector2Int)              — 外部占地格子数（世界网格）
@@ -56,76 +54,143 @@ FloorTileArchetype:
   walkableRows (int = 1)             — 底部几行可行走
 ```
 
-### FloorTileInstance 运行时
-```
-FloorTileInstance:
-  InteriorGrid interiorGrid          — 内部网格数据
-  GridGraph astarGraph               — 运行时 A* graph
+---
 
-  InitializeInterior()               — 创建 interior grid + A* graph
-  PlaceShelfInInterior(arch, pos)    — 在 interior 中放 shelf
-  CanPlaceInInterior(fp, pos)        — 检查可放性
-  GetInteriorWorldPos(localPos)      — 本地坐标 → 世界坐标
-  WorldToInterior(worldPos)          — 世界坐标 → 本地坐标
-```
+## InteriorGrid 数据结构
 
-### InteriorGrid 数据结构
 ```
 InteriorGrid:
   Vector2Int gridSize
   float cellSize
   Vector3 originWorld
 
-  bool[,] occupied
-  string[,] occupantId
-  bool[,] walkable                   — 底部 N 行可走
+  bool[,] placeable         — 可放置建筑的格子（portal 列为 false）
+  bool[,] occupied          — 已被建筑占用的格子
+  bool[,] walkable          — 底部 walkableRows 行 + portal 列
+  string[,] occupantId      — 占用者 instanceId
 
   Dictionary<string, BuildingInstance> buildings
 ```
 
-### Shelf 归属建模
-```
-Shelf 必须记录:
-  hostFloorTileInstanceId (string)   — 所属 FloorTileInstance
-  localInteriorPosition (Vector2Int) — interior 中的本地坐标
+---
 
-运行时通过 hostFloorTileInstanceId 查到 FloorTileInstance → InteriorGrid
-存档时序列化这两个字段
+## 电梯系统
+
+### 架构
+
+| 组件 | 文件 | 职责 |
+|------|------|------|
+| `ElevatorArchetype` | `Scripts/Data/ElevatorArchetype.cs` | SO 数据：3×4 footprint，费用公式，底行 walkable 校验 |
+| `ElevatorDoorInstance` | `Scripts/Runtime/ElevatorDoorInstance.cs` | 门实例：PrimeTween 开合动画，并发保护（activeTraversals 计数），楼层标签 |
+| `ElevatorLinkManager` | `Scripts/Runtime/ElevatorLinkManager.cs` | 自动连接管理器：按结构分支分组，全量重建 NodeLink2 |
+| `AILerpLinkTeleporter` | `Scripts/Runtime/AILerpLinkTeleporter.cs` | 挂在 NodeLink2 上：门引用存储、注册表、方向判断 |
+| `LinkTraversalDetector` | `Scripts/Runtime/LinkTraversalDetector.cs` | 挂在 customer 上：检测电梯 link，接管 AILerp 执行 Teleport 穿越协程 |
+
+### ElevatorDoorInstance
+
+- 继承 `BuildingInstance`，接入 InteriorGrid 占位体系
+- 占 3×4 interior 格子（横3竖4），pivot 左下角
+- `editorLockedMove = true`（不可移动，拆除后重新放置）
+- `MaxLevel = 0`（不可升级），`GetMaintenanceFee() = 0`
+- Prefab 结构：
+  ```
+  ElevatorDoor (ElevatorDoorInstance)
+    ├── Background (SpriteRenderer, ElevatorBackgroundLayer, sortingOrder=0)
+    ├── Frame (SpriteRenderer)
+    ├── DoorLeft (SpriteRenderer)
+    ├── DoorRight (SpriteRenderer)
+    ├── FloorLabel (TextMeshPro, world-space)
+    └── Anchor (空 GameObject, 门口中央底部, 用作 NodeLink2 锚点)
+  ```
+- 门动画：Awake 缓存左右门初始 localPosition.x，开/关门始终从初始位置计算目标（防累积偏移）
+- 并发保护：`activeTraversals` 计数，`OpenDoor()` 时 ++，`NotifyTraversalComplete()` 时 --，归零才关门
+
+### 放置费用
+
+```
+cost = ElevatorArchetype.GetPlacementCost(floorLevel)
+     = baseCost + |floorLevel| × costPerLevel
+```
+运行时收费，Editor 不收费。
+
+### 放置校验
+
+`ElevatorArchetype.ValidateInteriorPlacement()`：
+1. 标准 `CanPlace(footprint, localPos)` — 占位 + 可放置
+2. 底行 3 格必须在 walkable 行 — `IsWalkable(localPos + (x, 0))` for x=0,1,2
+
+### 连接机制：结构分支（branch）自动互通
+
+不依赖坐标对齐。连接完全基于 FloorTile 的结构邻接关系。
+
+**分支定义**：从 root (default floor, 1F) 出发，沿结构树向上遍历。每次遇到分叉（一个超级节点有 2+ 个上层超级节点），每个子超级节点开新 branch。
+
+```
+例：
+      E     F
+       \   /
+        A     B
+         \   /
+          1F
+
+branch 1: {1F, A, E}
+branch 2: {1F, A, F}
+branch 3: {1F, B}
+
+1F 上电梯 → 全互通（属于所有 branch）
+A 上电梯 → 连 branch1 + branch2 内的所有
+E 上电梯 → 只连 branch1 内的
+B 上电梯 → 只连 branch3 内的
 ```
 
-### A* GridGraph（每个 FloorTileInstance 一个）
+**BuildBranchMap 算法**（ElevatorLinkManager）：
+1. Step 1 — 同层连通组件：`IsSameFloorNeighbor` 合并为超级节点
+2. Step 2 — 超级节点间上下邻接图：`IsUpperFloorNeighbor`
+3. Step 3 — 从 root 超级节点 DFS 枚举所有 root-to-leaf 路径
+   - 分叉时：新 branchId + 祖先路径所有超级节点也加入新 branch
+   - 不分叉：继承当前 branch
+
+**连接规则**：
+- 同一 branch 内的门两两直连（直达模型）
+- 同一 FloorTile 上的门不互连（防止同层横穿）
+- NodeLink2 锚点 = 门的 Anchor Transform 世界坐标
+
+### 电梯穿越（LinkTraversalDetector 协程）
+
+AILerp 不原生支持 NodeLink2 穿越。由 LinkTraversalDetector 检测路径中的电梯 link，到达入口时接管 AILerp 控制权。
+
+**完整流程**：
 ```
-运行时创建:
-  graph = AstarPath.active.data.AddGraph(typeof(GridGraph))
-  SetDimensions(interiorGridSize.x, interiorGridSize.y, interiorCellSize)
-  center = interiorWorldOrigin + gridSize/2 偏移
-  rotation = (-90, 0, 0)
-  collision 关闭
-  Scan(graph)
-  程序化设置 walkability
+1.  暂停 AILerp (simulateMovement=false)
+2.  入口门开门
+3.  VisualAnchor 向上 Tween enterOffset（不动 transform）
+4.  切换 sorting layer → ElevatorBackgroundLayer
+5.  入口门关门
+6.  隐藏 sprite (alpha=0)
+7.  AILerp.Teleport(exitAnchor, clearPath: true)
+8.  等待 |楼层差| × waitPerFloor 秒
+9.  恢复 alpha=1
+10. 出口门开门
+11. 恢复原始 sorting layer
+12. VisualAnchor 恢复到初始位置
+13. isTraversing = false
+14. 恢复 AILerp + SearchPath
+15. 延迟后出口门关门
 ```
 
-### 顾客行走模型
-```
-单 FloorTile 内:
-  顾客走 interior 底部 walkableRows 行
-  shelf 不阻挡（顾客要前往 shelf）
+**关键设计**：
+- `Teleport(pos, clearPath: true)` 清旧路径，防止恢复后沿旧路径飞行
+- VisualAnchor Tween 不动 transform，避免 AILerp 状态分叉
+- `visualAnchorOriginLocalPos` 缓存初始位置，AbortTraversal 时恢复，防累积偏移
+- `isTraversing` 期间 `OnPathComplete` 直接 return，防 autoRepath 触发闪现
+- `entryDoorPendingClose` / `exitDoorPendingClose` 独立标志，OnDestroy 按标志回收门计数
+- MoveToTargetAction 等行为树 action 检查 `IsTraversingElevator`，穿越中跳过到达判断但不阻止 timeout
 
-跨 FloorTile:
-  电梯 / 侧边通道 → NodeLink2
-  Agent 用 GraphMask.everything 搜索完整路径
-  A* 自动通过 NodeLink2 跨 graph 寻路
-```
+### RebuildAllLinks 调用时序
 
-### 电梯双层归属
-```
-电梯锚点: interior 层（占 interior grid 格子）
-结构合法性: WorldGrid 层（相邻、楼层关系、不破坏结构）
-放置流程:
-  ① 检查 WorldGrid 结构合法性
-  ② 检查两端 interior 格子可用性
-  ③ 创建 NodeLink2 连接两个 interior graph
-```
+- **运行时放置/拆除**：ConstructionManager → RegisterBuilding/UnregisterBuilding → `ElevatorLinkManager.RebuildAllLinks()`（不需要 RebuildAllGraphs，电梯门不改 walkable 层）
+- **场景加载**：`ElevatorLinkManager.Start()` 兜底调用一次 + 刷新所有门楼层标签
+- **拆除电梯门**：`ExecuteDestroyBuilding` 中检测 `bi is ElevatorDoorInstance` 后调用 `RebuildAllLinks()`
 
 ---
 
@@ -138,112 +203,57 @@ rightPortalCells: List<int>  — 右侧通道 Y 索引
 ```
 
 ### 连接规则
-左右紧贴时:
+左右紧贴时（`leftMaxX + 1 == rightMinX`）：
 1. 左 tile 的 rightPortalCells vs 右 tile 的 leftPortalCells
-2. 世界 Y 坐标重合的格子 → NodeLink2
+2. 世界 Y 坐标重合的格子 → NodeLink2 + NormalTraversalLink 标记
 3. 不重合 → 不连接
 4. 空列表 → 该侧封闭
+
+Portal NodeLink2 没有 AILerpLinkTeleporter，LinkTraversalDetector 跳过不处理。AILerp 自行直线走过。
 
 ---
 
 ## 职责分离
 
-| 职责 | WorldGrid | Interior Grid |
-|------|-----------|---------------|
-| FloorTile 放置位置 | ✅ | |
-| 堆叠/支撑/悬空 | ✅ | |
-| 电梯结构合法性 | ✅ | |
-| Shelf 放置 | | ✅ |
-| 电梯锚点 | | ✅ |
-| 顾客寻路 | | ✅ |
-| A* GridGraph | | ✅ |
-| NodeLink2 | | ✅ |
-
----
-
-## 与当前架构的变化
-
-### 保留
-- WorldGrid 保留结构管理（放置、支撑、悬空）
-- FloorTileArchetype / FloorTileInstance 保留
-- 电梯 NodeLink2 模式保留
-- ConstructionManager Place/Move/Destroy 保留
-
-### 重大变更
-- Shelf 从 WorldGrid.Cell[,] → FloorTileInstance.InteriorGrid
-- 每个 FloorTileInstance 运行时创建 A* GridGraph
-- ConstructionManager 放 shelf 需先确定目标 FloorTile
-- BuildingInstance shelf 用 interior 本地坐标
-
-### 移除
-- FloorManager
-- 统一的 floorTileLayer/interiorLayer
-- 跨楼层移动特殊逻辑
-
-### 改造
-- FloorDetectionService → InteriorDetectionService（检测 FloorTileInstance + local cell）
-
----
-
-## 受影响文件（24 个）
-
-### 核心重写
-| 文件 | 变更 |
-|------|------|
-| `FloorGrid.cs` → `WorldGrid.cs` | 单例 + 仅结构管理 |
-| `FloorTileInstance.cs` | 新增 InteriorGrid + A* graph |
-| `ConstructionManager.cs` | shelf 放置路由到 interior |
-| `NavigationService.cs` | 管理多 graph |
-
-### 适配修改
-| 文件 | 变更 |
-|------|------|
-| `BuildingInstances.cs` | 新增 hostFloorTileInstanceId + localInteriorPosition |
-| `BuildingArchetypes.cs` | ValidatePlacement 参数改 |
-| `FloorTileArchetype.cs` | 新增 interiorOffset/gridSize/portals |
-| `FloorDetectionService.cs` | → InteriorDetectionService |
-| `CustomerContextBuilder.cs` | 坐标转换用 interior |
-| `SortingOrderUtility.cs` | 改用 interior 坐标 |
-| `BuildingHighlighter.cs` | 用 WorldGrid + interior |
-| `AlanBotPlacementHandler.cs` | 同上 |
-| `ShelfListPanel.cs` | 适配 |
-| `ResourceManager.cs` | 遍历建筑方式改变 |
-| `DayLoopManager.cs` | 同上 |
-| `StatsDataManager.cs` | 同上 |
-| `QuestProgressTracker.cs` | 同上 |
-| `ExecuteCheckoutAction.cs` | 同上 |
-| `FloorGridDebugger.cs` | 适配 WorldGrid |
-| `FloorEntryDrawer.cs` | 移除 |
-| `FloorTileArchetypeEditor.cs` | 适配新 interior 模型 |
+| 职责 | WorldGrid | InteriorGrid | ElevatorLinkManager |
+|------|-----------|--------------|---------------------|
+| FloorTile 放置位置 | ✅ | | |
+| 堆叠/支撑/悬空 | ✅ | | |
+| 楼层层级计算 | ✅ | | |
+| Shelf/Facility 放置 | | ✅ | |
+| 电梯门放置（占位） | | ✅ | |
+| 电梯连接（NodeLink2） | | | ✅ |
+| 分支计算 | | | ✅ |
+| 顾客寻路 | | ✅ | |
+| A* GridGraph | | ✅ | |
+| Portal NodeLink2 | | ✅（NavigationService） | |
 
 ---
 
 ## 交互分离：建筑操作 vs 结构操作
 
-### 问题
-FloorTile 和 Shelf 的 Collider 重叠导致 Raycast 命中不确定。
-
-### 方案
-- **FloorTile 不依赖 Collider**，检测走逻辑网格查表（`WorldGrid.WorldToGrid → GetFloorTileAt`）
-- **Shelf/Facility 继续走 Collider Raycast**（`InteractableShelf` layer）
-- **Move/Destroy 拆分**为建筑操作（默认）和结构操作（显式模式）
-
-### ConstructionManager Mode 扩展
+### ConstructionManager Mode
 ```
 Mode { None, Place, Move, Destroy, PlaceElevator, MoveFloorTile, DestroyFloorTile }
 ```
 
-- `Move` / `Destroy`：默认只检测 `InteractableShelf` layer → 操作 shelf/facility
-- `MoveFloorTile` / `DestroyFloorTile`：用 `DetectFloorTileAtWorld()` 逻辑查表 → 操作 FloorTile
-- UI 上用子模式切换（Building / FloorTile tab）提供入口
-- 公共方法：`BeginMoveFloorTile()`, `BeginDestroyFloorTile()`
+| 模式 | 检测方式 | 操作对象 |
+|------|----------|----------|
+| Place | 逻辑查表 → FloorTile → InteriorGrid | Shelf / Facility |
+| PlaceElevator | 逻辑查表 → FloorTile → InteriorGrid | ElevatorDoorInstance |
+| Move / Destroy | Raycast `InteractableShelf` layer | Shelf / Facility（电梯门 editorLockedMove=true 跳过） |
+| MoveFloorTile / DestroyFloorTile | `WorldGrid.WorldToGrid → GetFloorTileAt` | FloorTile |
 
-### FloorDetectionService 改为逻辑查表
-不再依赖 FloorTile 物理 Collider，改为 `WorldGrid.WorldToGrid() → GetFloorTileAt()`。
+### 电梯放置（PlaceElevator 模式）
+- **单击放门**，保持模式可继续放置
+- 预览：3×4 footprint 绿/红色
+- 费用：`baseCost + |floorLevel| × costPerLevel`
+- 放置后自动触发 `ElevatorLinkManager.RebuildAllLinks()`
 
-### FloorTile Prefab
-- **不需要 BoxCollider2D**（不再被 Raycast 检测）
-- Layer 可保留 FloorTile（不碍事），但不用于物理交互
+### 电梯拆除限制
+- 有电梯门的 FloorTile 不能移动/删除（提示 "remove elevator first"）
+- 电梯门不可移动（`editorLockedMove = true`）
+- 电梯门可拆除（Destroy 模式，有退款）
 
 ---
 
@@ -257,53 +267,72 @@ WorldGrid (单例)
     │   ├── (sprite 子物体...)
     │   └── InteriorContainer
     │       ├── ShelfInstance_1
-    │       └── FacilityInstance_Cashier
+    │       ├── FacilityInstance_Cashier
+    │       └── ElevatorDoorInstance_1
     └── FloorTileInstance_B
         └── InteriorContainer
             └── ...
 ```
 
-### 设计原则
-1. Editor 和 Runtime 彻底分开——不在 Editor 里跑运行时建造逻辑
-2. Editor 校验复用运行时规则（IWorldPlaceable / IInteriorPlaceable），但用纯快照（EditorGridSnapshot），不污染真实 WorldGrid
-3. 运行时只做注册，不生成布局
+### Authoring 模式
 
-### Editor Authoring 文件
-| 文件 | 说明 |
-|------|------|
-| `Scripts/Editor/EditorGridSnapshot.cs` | Editor 侧 WorldGrid 纯快照，含 HasSupport 逻辑副本 + BuildEditorInterior() |
-| `Scripts/Editor/WorldGridAuthoringState.cs` | ScriptableSingleton，工具状态持久化 |
-| `Scripts/Editor/WorldGridAuthoringWindow.cs` | EditorWindow（菜单：PopLife/WorldGrid Authoring） |
-| `Scripts/Editor/WorldGridSceneAuthoring.cs` | SceneView GUI 交互 + GL 批量绘制 |
-
-### 模式
-- **PlaceFloorTile**：世界网格可视化 + 点击放 tile（勾选 Mark Default 跳过支撑检查）
-- **EraseFloorTile**：悬停高亮 → 点击删除 tile
-- **PlaceInteriorBuilding**：选中 FloorTileInstance 后显示 interior 网格 + 点击放建筑
-- **EraseInteriorBuilding**：悬停高亮建筑 → 点击删除
-
-### 实例级锁定
-`BuildingInstance` 新增 `editorLockedMove` / `editorLockedDestroy` 字段，Editor 中可勾选 Lock Move / Lock Destroy。运行时 ConstructionManager 在 Move/Destroy 入口检查。
+| 模式 | 需要选中 FloorTile? | 说明 |
+|------|---------------------|------|
+| PlaceFloorTile | 否 | 世界网格放置 |
+| EraseFloorTile | 否 | 世界网格擦除 |
+| PlaceInteriorBuilding | 是（Hierarchy 选中） | 放 shelf/facility |
+| EraseInteriorBuilding | 是 | 擦除 interior 建筑 |
+| PlaceElevator | **否**（自动探测） | 鼠标悬停自动探测 FloorTile |
+| PlaceAlanBot | 否（自动探测） | 放置 AlanBot |
 
 ### 运行时注册流程
 ```
 WorldGrid.Start()
-  → PlacePresetFloors()（如有配置）
+  → PlacePresetFloors()
   → RegisterAllChildBuildings()
       → Phase 1: 注册 FloorTile（标记 floorTileLayer，调 InitializeInterior）
       → Phase 2: 对每个 tile 调 RegisterExistingBuildingsInInterior()
-          → 扫描 tile 子物体（InteriorContainer 下），注册到 InteriorGrid
-  → NavigationService.RebuildAllGraphs()
+  → NotifyStructureChanged()
+      → NavigationService.RebuildAllGraphs()（创建 GridGraph + Portal NodeLink2）
+      → ElevatorLinkManager.RebuildAllLinks()（创建电梯 NodeLink2）
+      → ElevatorLinkManager.RefreshAllDoorLabels()（刷新楼层标签）
 ```
 
 ---
 
+## A* 寻路配置
+
+### GridGraph（每个 FloorTile 一个）
+```
+graph = AstarPath.data.AddGraph(typeof(GridGraph))
+SetDimensions(interiorGridSize.x, interiorGridSize.y, interiorCellSize)
+center = interior.CenterWorld
+rotation = (-90, 0, 0)    // 2D 模式
+collision 全部关闭（程序化 walkability）
+```
+
+### Walkability 同步
+`SyncGraphWalkability()`：遍历 graph 节点，`node.Walkable = interior.IsWalkable(localPos)`，然后 `RecalculateAllConnections()`。
+
+### GraphMask 管理
+
+| 阶段 | graphMask | 说明 |
+|------|-----------|------|
+| 店外行走 | `outsideGraphMask` | 只用 outside graph |
+| 穿越入口 | `GraphMask.everything` | 允许通过入口 NodeLink2 |
+| 店内购物 | `~outsideGraphMask` | 所有 interior graph（含电梯 NodeLink2） |
+| 穿越出口 | `GraphMask.everything` | 允许通过出口 NodeLink2 |
+
+---
+
 ## 已确认事项
-1. WorldGrid gridSize 可配置
-2. interior cellSize 默认等于世界 cellSize（0.5）
-3. shelf 不阻碍顾客寻路（顾客走底部行，要前往 shelf）
-4. 电梯锚点在 interior，结构合法性在 WorldGrid
-5. FloorTile 不需要 BoxCollider2D（交互走逻辑查表）
-6. Move/Destroy 分为建筑模式和结构模式
-7. Interior 建筑放在 FloorTile 的 InteriorContainer 子物体下
-8. 所有建筑 canRotate = false
+1. WorldGrid cellSize = 0.5，InteriorGrid cellSize = 0.5（两者相同）
+2. Shelf 不阻碍顾客寻路（顾客走底部 walkable 行）
+3. 电梯门在 InteriorGrid 中注册，连接由 ElevatorLinkManager 管理
+4. FloorTile 不需要 BoxCollider2D（交互走逻辑查表）
+5. Move/Destroy 分为建筑模式和结构模式
+6. Interior 建筑放在 FloorTile 的 InteriorContainer 子物体下
+7. AILerp 不原生支持 NodeLink2，电梯穿越由 LinkTraversalDetector 协程管理
+8. Portal 穿越由 AILerp 直线走过（两端距离近，视觉可接受）
+9. 电梯门 sortingOrder ≥ 1，background 在 ElevatorBackgroundLayer (order=0)
+10. Customer VisualAnchor 容器使角色脚底对齐 A* 节点中心

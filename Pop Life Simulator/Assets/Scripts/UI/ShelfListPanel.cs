@@ -45,6 +45,8 @@ namespace PopLife.UI
         [Header("Tab 切换")]
         [SerializeField] private Button shelvesTabButton;
         [SerializeField] private Button floorTabButton;
+        [SerializeField] private RectMask2D shelvesTabMask;
+        [SerializeField] private RectMask2D floorTabMask;
 
         [Header("Floor 类别区")]
         [SerializeField] private Transform floorCategoryContainer;
@@ -120,6 +122,9 @@ namespace PopLife.UI
             // 订阅蓝图解锁事件
             BlueprintManager.OnShelfUnlocked += OnShelfBlueprintUnlocked;
             BlueprintManager.OnFloorTileUnlocked += OnFloorTileBlueprintUnlocked;
+
+            // 初始Tab遮罩状态（默认Shelves选中）
+            UpdateTabMasks();
         }
 
         private void Start()
@@ -147,7 +152,9 @@ namespace PopLife.UI
             InitializeShelfItems();
             InitializeFloorCategoryButtons();
 
-            // 默认隐藏 Floor 类别区
+            // 默认：Shelf类别区显示，Floor类别区隐藏
+            if (categoryButtonContainer != null)
+                categoryButtonContainer.gameObject.SetActive(true);
             if (floorCategoryContainer != null)
                 floorCategoryContainer.gameObject.SetActive(false);
 
@@ -420,6 +427,7 @@ namespace PopLife.UI
 
         private void RebuildFloorContent()
         {
+            if (currentTab != PanelTab.Floor) return;
             ClearFloorItems();
             InitializeFloorItems();
         }
@@ -472,8 +480,9 @@ namespace PopLife.UI
                 InitializeFloorItems();
             }
 
-            // Tab 按钮高亮
+            // Tab 按钮高亮 + RectMask2D 切换
             UpdateTabButtonVisuals();
+            UpdateTabMasks();
         }
 
         private void UpdateTabButtonVisuals()
@@ -483,6 +492,17 @@ namespace PopLife.UI
                 shelvesTabButton.interactable = currentTab != PanelTab.Shelves;
             if (floorTabButton != null)
                 floorTabButton.interactable = currentTab != PanelTab.Floor;
+        }
+
+        /// <summary>
+        /// 选中的Tab关闭RectMask2D（完整显示），未选中的开启（遮罩裁剪）
+        /// </summary>
+        private void UpdateTabMasks()
+        {
+            if (shelvesTabMask != null)
+                shelvesTabMask.enabled = currentTab != PanelTab.Shelves;
+            if (floorTabMask != null)
+                floorTabMask.enabled = currentTab != PanelTab.Floor;
         }
 
         #endregion

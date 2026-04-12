@@ -3,7 +3,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using PopLife.Data;
-using PopLife.Runtime;
 
 namespace PopLife.Editor
 {
@@ -36,13 +35,11 @@ namespace PopLife.Editor
         private void OnEnable()
         {
             RefreshArchetypes();
-            // 监听 Selection 变化，刷新 interior 区域可用性
-            Selection.selectionChanged += Repaint;
+            // Interior 模式不再依赖 Hierarchy 选择，无需监听 Selection 变化
         }
 
         private void OnDisable()
         {
-            Selection.selectionChanged -= Repaint;
         }
 
         private void RefreshArchetypes()
@@ -63,7 +60,8 @@ namespace PopLife.Editor
             interiorNames = interiorArchetypes.Select(a =>
             {
                 string prefix = a is ShelfArchetype ? "[Shelf] " :
-                                a is FacilityArchetype ? "[Facility] " : "";
+                                a is FacilityArchetype ? "[Facility] " :
+                                a is ElevatorArchetype ? "[Elevator] " : "";
                 return prefix + (a.displayName ?? a.name);
             }).ToArray();
 
@@ -166,70 +164,50 @@ namespace PopLife.Editor
             // ================================================================
             EditorGUILayout.LabelField("Interior Mode", EditorStyles.boldLabel);
 
-            // 检测是否选中了 FloorTileInstance
-            FloorTileInstance selectedTile = GetSelectedFloorTile();
-            bool hasSelectedTile = selectedTile != null;
+            EditorGUILayout.BeginHorizontal();
+            DrawModeButton("Place Interior", WorldGridAuthoringState.AuthoringMode.PlaceInteriorBuilding, state);
+            DrawModeButton("Erase Interior", WorldGridAuthoringState.AuthoringMode.EraseInteriorBuilding, state);
+            EditorGUILayout.EndHorizontal();
 
-            if (!hasSelectedTile)
+            bool isInteriorPlace = state.mode == WorldGridAuthoringState.AuthoringMode.PlaceInteriorBuilding;
+            using (new EditorGUI.DisabledGroupScope(!isInteriorPlace))
             {
-                EditorGUILayout.HelpBox("Select a FloorTileInstance in the Hierarchy to enable Interior mode.", MessageType.Info);
-            }
-
-            using (new EditorGUI.DisabledGroupScope(!hasSelectedTile))
-            {
-                EditorGUILayout.BeginHorizontal();
-                DrawModeButton("Place Interior", WorldGridAuthoringState.AuthoringMode.PlaceInteriorBuilding, state);
-                DrawModeButton("Erase Interior", WorldGridAuthoringState.AuthoringMode.EraseInteriorBuilding, state);
-                EditorGUILayout.EndHorizontal();
-
-                bool isInteriorPlace = state.mode == WorldGridAuthoringState.AuthoringMode.PlaceInteriorBuilding;
-                using (new EditorGUI.DisabledGroupScope(!isInteriorPlace))
+                if (interiorArchetypes != null && interiorArchetypes.Length > 0)
                 {
-                    if (interiorArchetypes != null && interiorArchetypes.Length > 0)
+                    int newIndex = EditorGUILayout.Popup("Building Archetype", selectedInteriorIndex, interiorNames);
+                    if (newIndex != selectedInteriorIndex || (isInteriorPlace && state.selectedArchetype != interiorArchetypes[newIndex]))
                     {
-                        int newIndex = EditorGUILayout.Popup("Building Archetype", selectedInteriorIndex, interiorNames);
-                        if (newIndex != selectedInteriorIndex || (isInteriorPlace && state.selectedArchetype != interiorArchetypes[newIndex]))
+                        selectedInteriorIndex = newIndex;
+                        if (isInteriorPlace)
                         {
-                            selectedInteriorIndex = newIndex;
-                            if (isInteriorPlace)
-                            {
-                                state.selectedArchetype = interiorArchetypes[selectedInteriorIndex];
-                                OnStateChanged(state);
-                            }
+                            state.selectedArchetype = interiorArchetypes[selectedInteriorIndex];
+                            OnStateChanged(state);
                         }
                     }
-                    else
-                    {
-                        EditorGUILayout.HelpBox("No interior BuildingArchetypes found in Resources.", MessageType.Warning);
-                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("No interior BuildingArchetypes found in Resources.", MessageType.Warning);
+                }
 
-                    // 旋转
-                    DrawRotationButtons(state, isInteriorPlace);
+                // 旋转
+                DrawRotationButtons(state, isInteriorPlace);
 
-                    // 锁定选项
-                    bool newLockMove = EditorGUILayout.Toggle("Lock Move", state.lockMove);
-                    if (newLockMove != state.lockMove)
-                    {
-                        state.lockMove = newLockMove;
-                        OnStateChanged(state);
-                    }
+                // 锁定选项
+                bool newLockMove = EditorGUILayout.Toggle("Lock Move", state.lockMove);
+                if (newLockMove != state.lockMove)
+                {
+                    state.lockMove = newLockMove;
+                    OnStateChanged(state);
+                }
 
-                    bool newLockDestroy = EditorGUILayout.Toggle("Lock Destroy", state.lockDestroy);
-                    if (newLockDestroy != state.lockDestroy)
-                    {
-                        state.lockDestroy = newLockDestroy;
-                        OnStateChanged(state);
-                    }
+                bool newLockDestroy = EditorGUILayout.Toggle("Lock Destroy", state.lockDestroy);
+                if (newLockDestroy != state.lockDestroy)
+                {
+                    state.lockDestroy = newLockDestroy;
+                    OnStateChanged(state);
                 }
             }
-
-            EditorGUILayout.Space(12);
-
-            // ================================================================
-            //  Elevator 模式
-            // ================================================================
-            EditorGUILayout.LabelField("Elevator Mode", EditorStyles.boldLabel);
-            DrawModeButton("Place Elevator", WorldGridAuthoringState.AuthoringMode.PlaceElevator, state);
 
             EditorGUILayout.Space(12);
 
@@ -339,10 +317,5 @@ namespace PopLife.Editor
             Repaint();
         }
 
-        private FloorTileInstance GetSelectedFloorTile()
-        {
-            if (Selection.activeGameObject == null) return null;
-            return Selection.activeGameObject.GetComponent<FloorTileInstance>();
-        }
     }
 }

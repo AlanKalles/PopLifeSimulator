@@ -57,6 +57,11 @@ namespace PopLife.Customers.Runtime
         [Header("移动检测参数")]
         [SerializeField] private float idleThreshold = 0.1f;
 
+        [UnityEngine.Header("篮子")]
+        [SerializeField] private SpriteRenderer basketRenderer;
+        [SerializeField] private Sprite basketEmptySprite;
+        [SerializeField] private Sprite basketFullSprite;
+
         // 组件缓存
         private IAstarAI ai;
 
@@ -73,10 +78,20 @@ namespace PopLife.Customers.Runtime
         private bool isPlayingOneShot;
         private bool isPlayingLoop;
 
+        // 篮子状态
+        private bool basketSystemEnabled;
+        private bool basketIsFull;
+        private bool basketVisible;
+
         /// <summary>
         /// 单次特殊动画是否正在播放（供行为树 Action 轮询等待）
         /// </summary>
         public bool IsPlayingOneShot => isPlayingOneShot;
+
+        /// <summary>
+        /// 篮子是否已切换为满状态（供行为树 Action 判断首次购买）
+        /// </summary>
+        public bool IsBasketFull => basketIsFull;
         private Sequence currentOneShotSequence;
 
         // 所有部件渲染器数组（用于批量操作）
@@ -95,11 +110,37 @@ namespace PopLife.Customers.Runtime
 
             CacheOriginPositions();
 
-            allPartRenderers = new SpriteRenderer[]
+            // 篮子初始化：无条件清 prefab 残值
+            if (basketRenderer != null)
             {
-                headRenderer, bodyRenderer, leftArmRenderer,
-                rightArmRenderer, leftFootRenderer, rightFootRenderer
-            };
+                basketRenderer.sprite = null;
+                basketRenderer.color = Color.white;
+            }
+
+            // 篮子系统总开关：4个引用齐全才启用
+            basketSystemEnabled = basketRenderer != null
+                && leftArmRenderer != null
+                && basketEmptySprite != null
+                && basketFullSprite != null;
+
+            // 构建渲染器数组（篮子启用时加入，参与 sorting layer 同步）
+            if (basketSystemEnabled)
+            {
+                allPartRenderers = new SpriteRenderer[]
+                {
+                    headRenderer, bodyRenderer, leftArmRenderer,
+                    rightArmRenderer, leftFootRenderer, rightFootRenderer,
+                    basketRenderer
+                };
+            }
+            else
+            {
+                allPartRenderers = new SpriteRenderer[]
+                {
+                    headRenderer, bodyRenderer, leftArmRenderer,
+                    rightArmRenderer, leftFootRenderer, rightFootRenderer
+                };
+            }
         }
 
         private Vector3 bodyPartsContainerOriginPos;
@@ -286,8 +327,9 @@ namespace PopLife.Customers.Runtime
         }
 
         /// <summary>
-        /// 播放结账动画（0.67秒）
-        /// emoji 淡入上升
+        /// 播放结账动画
+        /// 有篮子时：LeftArm上移→切空→回位→篮子消失→emoji（~1.4s）
+        /// 无篮子时：纯emoji（0.67s，原有行为）
         /// </summary>
         public void PlayCheckout()
         {
@@ -298,15 +340,46 @@ namespace PopLife.Customers.Runtime
             if (emojiController == null)
                 Debug.LogWarning($"[AnimController] {gameObject.name} PlayCheckout: emojiController is null!");
 
-            currentOneShotSequence = Sequence.Create()
-                .ChainDelay(0.67f)
-                .ChainCallback(this, target =>
-                {
-                    target.isPlayingOneShot = false;
-                    target.emojiController?.StopEmoji();
-                });
-
-            emojiController?.PlayCheckout();
+            if (basketVisible && leftArmRenderer != null && basketRenderer != null)
+            {
+                // 有篮子的完整结账动画
+                currentOneShotSequence = Sequence.Create()
+                    // 0.0-0.25s: LeftArm 上移
+                    .Chain(Tween.LocalPositionY(leftArmRenderer.transform,
+                        leftArmOriginPos.y + 0.035f, 0.25f, Ease.OutQuad))
+                    // 0.25-0.45s: 停顿 → 切空篮子
+                    .ChainDelay(0.2f)
+                    .ChainCallback(this, target => target.ShowBasketEmpty())
+                    // 0.45-0.7s: LeftArm 回位
+                    .Chain(Tween.LocalPositionY(leftArmRenderer.transform,
+                        leftArmOriginPos.y, 0.25f, Ease.InOutQuad))
+                    // 0.7s: 篮子消失 + 触发 emoji
+                    .ChainCallback(this, target =>
+                    {
+                        target.HideBasket();
+                        target.emojiController?.PlayCheckout();
+                    })
+                    // 0.7-1.37s: 等待 emoji 播放
+                    .ChainDelay(0.67f)
+                    // 1.37s: 完成
+                    .ChainCallback(this, target =>
+                    {
+                        target.isPlayingOneShot = false;
+                        target.emojiController?.StopEmoji();
+                    });
+            }
+            else
+            {
+                // 无篮子时回退到原有行为（纯 emoji）
+                currentOneShotSequence = Sequence.Create()
+                    .ChainDelay(0.67f)
+                    .ChainCallback(this, target =>
+                    {
+                        target.isPlayingOneShot = false;
+                        target.emojiController?.StopEmoji();
+                    });
+                emojiController?.PlayCheckout();
+            }
         }
 
         /// <summary>
@@ -420,6 +493,67 @@ namespace PopLife.Customers.Runtime
         /// </summary>
         public void SetCustomerID(string id)
         {
+        }
+
+        // ──────────────────── 篮子系统 ────────────────────
+
+        /// <summary>
+        /// 播放篮子出现动画（~0.5s）
+        /// 停下 → LeftArm Z旋转到-10° → 篮子显示 → LeftArm Z回0°
+        /// </summary>
+        public void PlayBasketAppear()
+        {
+            StopCurrentAnimation();
+            isPlayingOneShot = true;
+
+            // 篮子系统未启用 → 真正的 no-op
+            if (!basketSystemEnabled)
+            {
+                isPlayingOneShot = false;
+                return;
+            }
+
+            currentOneShotSequence = Sequence.Create()
+                .Chain(Tween.LocalRotation(leftArmRenderer.transform,
+                    Quaternion.Euler(0, 0, -10f), 0.2f, Ease.OutQuad))
+                .ChainCallback(this, target => target.ShowBasketEmpty())
+                .Chain(Tween.LocalRotation(leftArmRenderer.transform,
+                    Quaternion.identity, 0.2f, Ease.InOutQuad))
+                .ChainCallback(this, target => target.isPlayingOneShot = false);
+        }
+
+        /// <summary>
+        /// 切换篮子为满状态（首次成功购买时调用）
+        /// </summary>
+        public void SetBasketFull()
+        {
+            if (!basketSystemEnabled || !basketVisible) return;
+            basketRenderer.sprite = basketFullSprite;
+            basketIsFull = true;
+        }
+
+        /// <summary>
+        /// 隐藏篮子并重置状态（结账完成/中断时调用）
+        /// </summary>
+        public void HideBasket()
+        {
+            if (!basketSystemEnabled) return;
+            basketRenderer.sprite = null;
+            basketRenderer.color = Color.white;
+            basketVisible = false;
+            basketIsFull = false;
+        }
+
+        /// <summary>
+        /// 显示空篮子（内部 helper，同时维护视觉和状态）
+        /// </summary>
+        private void ShowBasketEmpty()
+        {
+            if (!basketSystemEnabled) return;
+            basketRenderer.sprite = basketEmptySprite;
+            basketRenderer.color = Color.white;
+            basketVisible = true;
+            basketIsFull = false;
         }
 
         // ──────────────────── 新增 API ────────────────────

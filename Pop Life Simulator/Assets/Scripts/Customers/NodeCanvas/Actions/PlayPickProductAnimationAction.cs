@@ -37,6 +37,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (purchaseSuccess)
             {
                 animController.PlayPickProduct();
+
+                // 首次成功购买 → 篮子切满
+                if (!animController.IsBasketFull)
+                    animController.SetBasketFull();
+
                 // 轮询等待动画系统自行结束，无需手动指定时长
                 waitCoroutine = StartCoroutine(WaitForAnimationComplete());
             }

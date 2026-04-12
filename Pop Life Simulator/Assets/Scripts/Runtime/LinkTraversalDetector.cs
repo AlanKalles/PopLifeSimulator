@@ -129,7 +129,8 @@ namespace PopLife.Runtime
                 return;
             }
 
-            float dist = Vector3.Distance(transform.position, next.entryDoor.Anchor.position);
+            // 水平距离（忽略 Y），避免 walkable 行高度与 Anchor Y 不匹配导致不触发
+            float dist = Mathf.Abs(transform.position.x - next.entryDoor.Anchor.position.x);
             if (dist <= arrivalThreshold)
             {
                 pendingElevatorLinks.Dequeue();

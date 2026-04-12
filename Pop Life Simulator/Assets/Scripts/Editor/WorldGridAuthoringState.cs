@@ -18,7 +18,6 @@ namespace PopLife.Editor
             EraseFloorTile,
             PlaceInteriorBuilding,
             EraseInteriorBuilding,
-            PlaceElevator,
             PlaceAlanBot
         }
 

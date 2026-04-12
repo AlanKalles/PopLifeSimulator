@@ -120,10 +120,13 @@ namespace PopLife.Editor
 
                 if (state.showInteriorGrid)
                 {
-                    var tile = GetSelectedFloorTile();
-                    if (tile != null)
+                    var snapForInterior = GetSnapshot(wg);
+                    var mouseForInterior = GetMouseWorldPosition();
+                    var gridForInterior = snapForInterior.WorldToGrid(mouseForInterior);
+                    var tileForInterior = snapForInterior.GetFloorTileAt(gridForInterior);
+                    if (tileForInterior != null)
                     {
-                        var interior = GetInterior(tile);
+                        var interior = GetInterior(tileForInterior);
                         if (interior != null)
                             DrawInteriorGridGL(interior);
                     }
@@ -151,15 +154,16 @@ namespace PopLife.Editor
                 case WorldGridAuthoringState.AuthoringMode.EraseInteriorBuilding:
                     HandleEraseInterior(sceneView, wg, state);
                     break;
-                case WorldGridAuthoringState.AuthoringMode.PlaceElevator:
-                    HandlePlaceElevator(sceneView, wg, state);
-                    break;
                 case WorldGridAuthoringState.AuthoringMode.PlaceAlanBot:
                     HandlePlaceAlanBot(sceneView, wg, state);
                     break;
             }
 
             HandleCancelInput(state);
+
+            // 操作模式激活时持续请求重绘，确保预览流畅
+            // （不依赖 WorldGridDebugger 选中才触发的 RepaintAll）
+            sceneView.Repaint();
         }
 
         // ================================================================
@@ -260,14 +264,22 @@ namespace PopLife.Editor
 
         private static void HandlePlaceInterior(SceneView sv, WorldGrid wg, WorldGridAuthoringState state)
         {
-            var tile = GetSelectedFloorTile();
-            if (tile == null) { DrawInfoLabel(sv, "Select a FloorTileInstance in Hierarchy"); return; }
+            var snap = GetSnapshot(wg);
+            var mouseWorld = GetMouseWorldPosition();
+            var gridPos = snap.WorldToGrid(mouseWorld);
+
+            // 自动探测鼠标下方的 FloorTile
+            var tile = snap.GetFloorTileAt(gridPos);
+            if (tile == null) { DrawInfoLabel(sv, "Place Interior | Move mouse over a FloorTile"); return; }
 
             var interior = GetInterior(tile);
-            if (interior == null) { DrawInfoLabel(sv, "Cannot build InteriorGrid (check archetype)"); return; }
+            if (interior == null) { DrawInfoLabel(sv, "Place Interior | FloorTile has no interior"); return; }
 
-            var mouseWorld = GetMouseWorldPosition();
             var localPos = interior.WorldToLocal(mouseWorld);
+
+            // Elevator 强制 rotation=0
+            bool isElevator = state.selectedArchetype is ElevatorArchetype;
+            int rotation = isElevator ? 0 : state.rotation;
 
             if (Event.current.type == EventType.Repaint)
             {
@@ -277,9 +289,9 @@ namespace PopLife.Editor
                 // 预览 footprint（少量格子，Handles）
                 if (state.selectedArchetype != null)
                 {
-                    var fp = state.selectedArchetype.GetRotatedFootprint(state.rotation);
+                    var fp = state.selectedArchetype.GetRotatedFootprint(rotation);
                     bool canPlace = state.selectedArchetype is IInteriorPlaceable ip
-                        ? ip.ValidateInteriorPlacement(interior, localPos, state.rotation)
+                        ? ip.ValidateInteriorPlacement(interior, localPos, rotation)
                         : interior.CanPlace(fp, localPos);
 
                     Color previewColor = canPlace ? ColorValid : ColorInvalid;
@@ -293,18 +305,24 @@ namespace PopLife.Editor
             {
                 if (state.selectedArchetype != null && state.selectedArchetype.prefab != null)
                 {
-                    var fp = state.selectedArchetype.GetRotatedFootprint(state.rotation);
+                    var fp = state.selectedArchetype.GetRotatedFootprint(rotation);
                     bool canPlace = state.selectedArchetype is IInteriorPlaceable ip
-                        ? ip.ValidateInteriorPlacement(interior, localPos, state.rotation)
+                        ? ip.ValidateInteriorPlacement(interior, localPos, rotation)
                         : interior.CanPlace(fp, localPos);
 
                     if (canPlace)
-                        PlaceInteriorBuildingInScene(tile, interior, localPos, state);
+                    {
+                        if (isElevator)
+                            PlaceElevatorInScene(tile, interior, localPos, (ElevatorArchetype)state.selectedArchetype);
+                        else
+                            PlaceInteriorBuildingInScene(tile, interior, localPos, state);
+                    }
                 }
                 e.Use();
             }
 
-            DrawInfoLabel(sv, $"Place Interior | Local: ({localPos.x}, {localPos.y}) | Rot: {state.rotation * 90}\u00b0 | Tile: {tile.name}");
+            string rotLabel = isElevator ? "fixed" : $"{rotation * 90}\u00b0";
+            DrawInfoLabel(sv, $"Place Interior | Local: ({localPos.x}, {localPos.y}) | Rot: {rotLabel} | Tile: {tile.name}");
         }
 
         // ================================================================
@@ -313,13 +331,17 @@ namespace PopLife.Editor
 
         private static void HandleEraseInterior(SceneView sv, WorldGrid wg, WorldGridAuthoringState state)
         {
-            var tile = GetSelectedFloorTile();
-            if (tile == null) { DrawInfoLabel(sv, "Select a FloorTileInstance in Hierarchy"); return; }
+            var snap = GetSnapshot(wg);
+            var mouseWorld = GetMouseWorldPosition();
+            var gridPos = snap.WorldToGrid(mouseWorld);
+
+            // 自动探测鼠标下方的 FloorTile
+            var tile = snap.GetFloorTileAt(gridPos);
+            if (tile == null) { DrawInfoLabel(sv, "Erase Interior | Move mouse over a FloorTile"); return; }
 
             var interior = GetInterior(tile);
-            if (interior == null) { DrawInfoLabel(sv, "Cannot build InteriorGrid (check archetype)"); return; }
+            if (interior == null) { DrawInfoLabel(sv, "Erase Interior | FloorTile has no interior"); return; }
 
-            var mouseWorld = GetMouseWorldPosition();
             var localPos = interior.WorldToLocal(mouseWorld);
 
             if (Event.current.type == EventType.Repaint)
@@ -352,71 +374,6 @@ namespace PopLife.Editor
             }
 
             DrawInfoLabel(sv, $"Erase Interior | Local: ({localPos.x}, {localPos.y}) | Tile: {tile.name}");
-        }
-
-        // ================================================================
-        //  Elevator — PlaceElevator（自动探测 FloorTile，不需要 Hierarchy 选中）
-        // ================================================================
-
-        private static void HandlePlaceElevator(SceneView sv, WorldGrid wg, WorldGridAuthoringState state)
-        {
-            var snap = GetSnapshot(wg);
-            var mouseWorld = GetMouseWorldPosition();
-            var gridPos = snap.WorldToGrid(mouseWorld);
-
-            // 自动探测鼠标下方的 FloorTile
-            var tile = snap.GetFloorTileAt(gridPos);
-            if (tile == null)
-            {
-                DrawInfoLabel(sv, "Place Elevator | Move mouse over a FloorTile");
-                return;
-            }
-
-            // 获取该 tile 的 interior
-            var interior = GetInterior(tile);
-            if (interior == null) { DrawInfoLabel(sv, "Place Elevator | FloorTile has no interior"); return; }
-
-            var localPos = interior.WorldToLocal(mouseWorld);
-
-            // 加载 ElevatorArchetype
-            var arch = wg.DefaultElevatorArchetype;
-            if (arch == null)
-            {
-                arch = Resources.Load<ElevatorArchetype>("ScriptableObjects/BuildingArchetype/Elevator/ElevatorArchetype");
-            }
-
-            if (Event.current.type == EventType.Repaint)
-            {
-                // 始终显示 interior grid
-                if (!state.showInteriorGrid)
-                    DrawInteriorGridGL(interior);
-
-                // 3×4 footprint 预览
-                if (arch != null)
-                {
-                    var fp = arch.GetRotatedFootprint(0);
-                    bool canPlace = arch.ValidateInteriorPlacement(interior, localPos, 0);
-                    Color previewColor = canPlace ? ColorValid : ColorInvalid;
-                    foreach (var off in fp)
-                        DrawFilledCellHandles(interior.LocalToWorld(localPos + off), interior.CellSize, previewColor);
-                }
-            }
-
-            // 点击放置
-            var e = Event.current;
-            if (e.type == EventType.MouseDown && e.button == 0)
-            {
-                if (arch != null && arch.prefab != null)
-                {
-                    bool canPlace = arch.ValidateInteriorPlacement(interior, localPos, 0);
-                    if (canPlace)
-                        PlaceElevatorInScene(tile, interior, localPos, arch);
-                }
-                e.Use();
-            }
-
-            string floorName = tile.FloorDisplayName;
-            DrawInfoLabel(sv, $"Place Elevator | Local: ({localPos.x}, {localPos.y}) | Tile: {tile.name} ({floorName})");
         }
 
         private static void PlaceElevatorInScene(FloorTileInstance tile, InteriorGrid interior,
@@ -788,12 +745,6 @@ namespace PopLife.Editor
             if (Mathf.Abs(ray.direction.z) < 0.0001f) return ray.origin;
             float t = -ray.origin.z / ray.direction.z;
             return ray.origin + ray.direction * t;
-        }
-
-        private static FloorTileInstance GetSelectedFloorTile()
-        {
-            if (Selection.activeGameObject == null) return null;
-            return Selection.activeGameObject.GetComponent<FloorTileInstance>();
         }
 
         private static BuildingInstance FindInteriorBuildingAtLocal(FloorTileInstance tile, InteriorGrid interior, Vector2Int localPos)

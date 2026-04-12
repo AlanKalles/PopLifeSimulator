@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.FloorTileArchetype
   archetypeId: ThickWallFloor
   displayName: Thick Wall Floor
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b3e2d8d3bb54dd4498f0dc85c6ded45b, type: 3}
   prefab: {fileID: 4170053674700863041, guid: b44ce9eda86c05d4290e49af72488425, type: 3}
   buildCost: 0
   moveCost: 0
@@ -199,7 +199,7 @@ MonoBehaviour:
   canRotate: 0
   levels: []
   tileSize: {x: 22, y: 8}
-  interiorOffset: {x: 0.3729, y: 0.8308}
+  interiorOffset: {x: 0, y: 0.8308}
   interiorGridSize: {x: 22, y: 5}
   interiorCellSize: 0.5
   leftPortalCells: 00000000

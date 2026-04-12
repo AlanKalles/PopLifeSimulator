@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 61f8376f4f6935943826292e7dc8a731, type: 3}
@@ -262,7 +262,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 48d871db3ccaf884caa09299809f32b1, type: 3}
@@ -375,7 +375,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8873039141117336575}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: LightGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -564,7 +564,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: f891b33d943fd5a4bbf4ae14e0b83e71, type: 3}
@@ -770,7 +770,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 122b9b1f26a41cc448d125d36f92bb88, type: 3}
@@ -1130,8 +1130,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -0.030099988, y: 0.059399962, z: 0}
-    m_Extent: {x: 1.7566, y: 1.2206, z: 0}
+    m_Center: {x: -0.030099988, y: 0.41724998, z: 0}
+    m_Extent: {x: 1.7566, y: 1.57845, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -1144,5 +1144,7 @@ MonoBehaviour:
   m_ShapePath:
   - {x: -1.5082122, y: -0.8802903, z: 0}
   - {x: 1.4463041, y: -0.85818046, z: 0}
-  - {x: 0.8449145, y: 0.9864181, z: 0}
+  - {x: 0.9049295, y: 1.0082418, z: 0}
+  - {x: 0.87859195, y: 1.715033, z: 0}
+  - {x: -0.7909125, y: 1.715033, z: 0}
   - {x: -0.80069405, y: 0.9996841, z: 0}

@@ -390,6 +390,6 @@ MonoBehaviour:
   interiorOffset: {x: 0.5, y: 0.332}
   interiorGridSize: {x: 44, y: 4}
   interiorCellSize: 0.5
-  leftPortalCells: 
+  leftPortalCells: 1200000013000000140000001500000016000000
   rightPortalCells: 
   walkableRows: 1
