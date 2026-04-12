@@ -354,9 +354,15 @@ namespace PopLife.UI
             floorCategoryToggleGroup = floorCategoryContainer.gameObject.AddComponent<FilterToggleGroup>();
             floorCategoryToggleGroup.OnSelectionChanged += OnFloorCategoryChanged;
 
-            // 创建 Floor 和 Elevator 按钮
+            // Floor 类别按钮（有解锁地板时才显示）
             CreateFloorCategoryButton("Floor", "Floor");
-            CreateFloorCategoryButton("Elevator", "Elevator");
+
+            // Elevator 类别按钮（需要蓝图解锁）
+            var unlockedFloorIds = BlueprintManager.Instance?.GetUnlockedFloorTileIds();
+            if (unlockedFloorIds != null && unlockedFloorIds.Contains("Elevator"))
+            {
+                CreateFloorCategoryButton("Elevator", "Elevator");
+            }
 
             floorCategoryToggleGroup.SelectByValue("Floor"); // 默认选中 Floor
         }

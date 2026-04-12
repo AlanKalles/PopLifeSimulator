@@ -30,5 +30,12 @@
     ],
     "unlockedFacilityIds": [
         "F001"
+    ],
+    "unlockedFloorTileIds": [
+        "Elevator",
+        "FloorWithTV",
+        "ThickWallFloor",
+        "ThinWallFloor",
+        "ThinWallFloorWithAwning"
     ]
 }

@@ -20,17 +20,24 @@ namespace PopLife.Editor
         private BlueprintProfile profile;
         private Vector2 shelfScrollPosition;
         private Vector2 facilityScrollPosition;
+        private Vector2 floorTileScrollPosition;
         private Vector2 availableShelfScrollPosition;
         private Vector2 availableFacilityScrollPosition;
+        private Vector2 availableFloorTileScrollPosition;
 
         private string newShelfId = "";
         private string newFacilityId = "";
+        private string newFloorTileId = "";
 
         private List<ShelfArchetype> allShelves = new List<ShelfArchetype>();
         private List<FacilityArchetype> allFacilities = new List<FacilityArchetype>();
+        private List<FloorTileArchetype> allFloorTiles = new List<FloorTileArchetype>();
 
         private bool showAvailableShelves = false;
         private bool showAvailableFacilities = false;
+        private bool showAvailableFloorTiles = false;
+
+        private const string ELEVATOR_ID = "Elevator";
 
         [MenuItem("PopLife/Blueprint Profile Editor")]
         public static void ShowWindow()
@@ -58,22 +65,25 @@ namespace PopLife.Editor
 
             EditorGUILayout.Space(10);
 
-            // 分为左右两栏
+            // 上排：货架 | 设施
             EditorGUILayout.BeginHorizontal();
 
-            // 左栏：货架
             EditorGUILayout.BeginVertical(GUILayout.Width(position.width / 2 - 10));
             DrawShelfSection();
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.Space(10);
 
-            // 右栏：设施
             EditorGUILayout.BeginVertical(GUILayout.Width(position.width / 2 - 10));
             DrawFacilitySection();
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(10);
+
+            // 下排：地板 & 电梯（全宽）
+            DrawFloorTileSection();
 
             EditorGUILayout.Space(10);
 
@@ -264,6 +274,103 @@ namespace PopLife.Editor
             }
         }
 
+        private void DrawFloorTileSection()
+        {
+            EditorGUILayout.LabelField("Floor Tiles & Elevator", EditorStyles.boldLabel);
+
+            // 添加新ID
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Add FloorTile ID:", GUILayout.Width(110));
+            newFloorTileId = EditorGUILayout.TextField(newFloorTileId);
+            if (GUILayout.Button("Add", GUILayout.Width(50)))
+            {
+                if (!string.IsNullOrEmpty(newFloorTileId) && !profile.unlockedFloorTileIds.Contains(newFloorTileId))
+                {
+                    profile.unlockedFloorTileIds.Add(newFloorTileId);
+                    newFloorTileId = "";
+                    GUI.FocusControl(null);
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(5);
+
+            // 已解锁列表
+            EditorGUILayout.LabelField($"Unlocked Floor Tiles ({profile.unlockedFloorTileIds.Count})", EditorStyles.miniBoldLabel);
+
+            floorTileScrollPosition = EditorGUILayout.BeginScrollView(floorTileScrollPosition, GUILayout.Height(120));
+
+            for (int i = profile.unlockedFloorTileIds.Count - 1; i >= 0; i--)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(profile.unlockedFloorTileIds[i], GUILayout.ExpandWidth(true));
+                if (GUILayout.Button("Remove", GUILayout.Width(70)))
+                {
+                    profile.unlockedFloorTileIds.RemoveAt(i);
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndScrollView();
+
+            EditorGUILayout.Space(5);
+
+            // 可用列表（FloorTile SO + Elevator 特殊条目）
+            showAvailableFloorTiles = EditorGUILayout.Foldout(showAvailableFloorTiles,
+                $"Available Floor Tiles & Elevator ({allFloorTiles.Count + 1})");
+            if (showAvailableFloorTiles)
+            {
+                availableFloorTileScrollPosition = EditorGUILayout.BeginScrollView(availableFloorTileScrollPosition, GUILayout.Height(150));
+
+                // Elevator 特殊条目
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    bool elevatorUnlocked = profile.unlockedFloorTileIds.Contains(ELEVATOR_ID);
+                    GUI.color = elevatorUnlocked ? Color.green : Color.white;
+                    EditorGUILayout.LabelField($"Elevator ({ELEVATOR_ID})", GUILayout.ExpandWidth(true));
+                    GUI.color = Color.white;
+
+                    if (!elevatorUnlocked)
+                    {
+                        if (GUILayout.Button("Unlock", GUILayout.Width(70)))
+                        {
+                            profile.UnlockFloorTile(ELEVATOR_ID);
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+                }
+
+                // FloorTile SO 条目
+                foreach (var floorTile in allFloorTiles)
+                {
+                    if (floorTile == null) continue;
+
+                    EditorGUILayout.BeginHorizontal();
+
+                    bool isUnlocked = profile.unlockedFloorTileIds.Contains(floorTile.archetypeId);
+                    GUI.color = isUnlocked ? Color.green : Color.white;
+
+                    EditorGUILayout.LabelField(
+                        $"{floorTile.displayName} ({floorTile.archetypeId}) [{floorTile.TileSize.x}x{floorTile.TileSize.y}]",
+                        GUILayout.ExpandWidth(true));
+
+                    GUI.color = Color.white;
+
+                    if (!isUnlocked)
+                    {
+                        if (GUILayout.Button("Unlock", GUILayout.Width(70)))
+                        {
+                            profile.UnlockFloorTile(floorTile.archetypeId);
+                        }
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                }
+
+                EditorGUILayout.EndScrollView();
+            }
+        }
+
         private void DrawPathInfo()
         {
             EditorGUILayout.HelpBox(
@@ -287,8 +394,13 @@ namespace PopLife.Editor
                 profile = new BlueprintProfile();
                 profile.unlockedShelfIds = new List<string>();
                 profile.unlockedFacilityIds = new List<string>();
+                profile.unlockedFloorTileIds = new List<string>();
                 Debug.LogWarning($"[BlueprintProfileEditor] File not found, created new profile");
             }
+
+            // 确保旧JSON缺失字段时不为null
+            if (profile.unlockedFloorTileIds == null)
+                profile.unlockedFloorTileIds = new List<string>();
         }
 
         private void SaveProfile()
@@ -319,6 +431,7 @@ namespace PopLife.Editor
 
             allShelves.Clear();
             allFacilities.Clear();
+            allFloorTiles.Clear();
 
             foreach (var building in allBuildings)
             {
@@ -330,35 +443,45 @@ namespace PopLife.Editor
                 {
                     allFacilities.Add(facility);
                 }
+                else if (building is FloorTileArchetype floorTile)
+                {
+                    allFloorTiles.Add(floorTile);
+                }
             }
 
-            Debug.Log($"[BlueprintProfileEditor] Scanned {allShelves.Count} shelves and {allFacilities.Count} facilities");
+            Debug.Log($"[BlueprintProfileEditor] Scanned {allShelves.Count} shelves, {allFacilities.Count} facilities, {allFloorTiles.Count} floor tiles");
         }
 
         private void UnlockAll()
         {
-            if (EditorUtility.DisplayDialog("Unlock All", "确定解锁所有货架和设施蓝图吗？", "确定", "取消"))
+            if (EditorUtility.DisplayDialog("Unlock All", "确定解锁所有蓝图吗？", "确定", "取消"))
             {
                 profile.unlockedShelfIds.Clear();
                 profile.unlockedFacilityIds.Clear();
+                profile.unlockedFloorTileIds.Clear();
 
                 foreach (var shelf in allShelves)
                 {
                     if (shelf != null)
-                    {
                         profile.UnlockShelf(shelf.archetypeId);
-                    }
                 }
 
                 foreach (var facility in allFacilities)
                 {
                     if (facility != null)
-                    {
                         profile.UnlockFacility(facility.archetypeId);
-                    }
                 }
 
-                Debug.Log($"[BlueprintProfileEditor] Unlocked all blueprints: {profile.unlockedShelfIds.Count} shelves, {profile.unlockedFacilityIds.Count} facilities");
+                foreach (var floorTile in allFloorTiles)
+                {
+                    if (floorTile != null)
+                        profile.UnlockFloorTile(floorTile.archetypeId);
+                }
+
+                // Elevator 特殊条目
+                profile.UnlockFloorTile(ELEVATOR_ID);
+
+                Debug.Log($"[BlueprintProfileEditor] Unlocked all: {profile.unlockedShelfIds.Count} shelves, {profile.unlockedFacilityIds.Count} facilities, {profile.unlockedFloorTileIds.Count} floor tiles");
             }
         }
 
@@ -368,6 +491,7 @@ namespace PopLife.Editor
             {
                 profile.unlockedShelfIds.Clear();
                 profile.unlockedFacilityIds.Clear();
+                profile.unlockedFloorTileIds.Clear();
                 Debug.Log("[BlueprintProfileEditor] Cleared all unlocked blueprints");
             }
         }
