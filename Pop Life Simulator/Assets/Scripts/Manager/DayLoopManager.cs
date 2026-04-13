@@ -35,6 +35,12 @@ namespace PopLife
         /// </summary>
         public float NightBGMStartHour => nightBGMStartHour;
 
+        /// <summary> 开店时间（供 LightingManager 等外部系统读取） </summary>
+        public float StoreOpenHour => storeOpenHour;
+
+        /// <summary> 关店时间（供 LightingManager 等外部系统读取） </summary>
+        public float StoreCloseHour => storeCloseHour;
+
         [Header("Time Flow")]
         [SerializeField] private float timeScale = 1f; // 时间倍速
         private bool isPaused = false;

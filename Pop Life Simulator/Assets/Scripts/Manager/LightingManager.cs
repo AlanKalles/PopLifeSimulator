@@ -28,10 +28,6 @@ namespace PopLife
         [SerializeField] private Gradient openPhaseColorGradient;
         [Tooltip("营业阶段光照强度曲线 (可选，留空则使用固定强度)")]
         [SerializeField] private AnimationCurve openPhaseIntensityCurve = AnimationCurve.Constant(0, 1, 1.0f);
-        [Tooltip("营业开始小时")]
-        [SerializeField] private float openHourStart = 12f;
-        [Tooltip("营业结束小时")]
-        [SerializeField] private float openHourEnd = 23f;
 
         [Header("Tile Light Config")]
         [Tooltip("FloorTile 灯光颜色渐变（跟随营业时间）")]
@@ -228,12 +224,12 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 计算营业时间段的归一化时间 [0, 1]
+        /// 计算营业时间段的归一化时间 [0, 1]，直接读取 DayLoopManager 的营业时间
         /// </summary>
         private float GetNormalizedOpenTime()
         {
-            float currentHour = DayLoopManager.Instance.currentHour;
-            float normalizedTime = Mathf.InverseLerp(openHourStart, openHourEnd, currentHour);
+            var dlm = DayLoopManager.Instance;
+            float normalizedTime = Mathf.InverseLerp(dlm.StoreOpenHour, dlm.StoreCloseHour, dlm.currentHour);
             return Mathf.Clamp01(normalizedTime);
         }
 

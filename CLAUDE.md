@@ -380,7 +380,7 @@ EffectType {
 - **`DayLoopManager.cs`** (265行) ⭐⭐ **时间与游戏循环核心**
   - **两个阶段**：
     - `BuildPhase`（6:00）：建造阶段，时间暂停
-    - `OpenPhase`（12:00-23:00）：营业阶段，时间流动
+    - `OpenPhase`（11:00-27:00）：营业阶段，时间流动（支持跨日，27:00=次日03:00）
   - 时间流速：现实30秒 = 游戏1天（可配置）
   - **每日结算**：
     - 计算销售额、维护费用、净收入
@@ -540,9 +540,9 @@ EffectType {
 
 ### 时间系统
 - **游戏时间**：现实30秒 = 游戏1天（可配置 `dayDurationInSeconds`）
-- **营业时间**：12:00 - 23:00（`storeOpenHour` - `storeCloseHour`）
-- **建造阶段**：6:00（`buildPhaseStartHour`）
-- **每日结算**：23:00关店后自动触发
+- **营业时间**：11:00 - 27:00（`storeOpenHour` - `storeCloseHour`，支持跨日，27:00=次日03:00）
+- **建造阶段**：6:00（`buildPhaseHour`）
+- **每日结算**：27:00关店后自动触发
   - 计算公式：
     ```
     dailyIncome = dailySales - totalMaintenanceFee

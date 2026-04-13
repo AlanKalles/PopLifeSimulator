@@ -24,7 +24,7 @@ MonoBehaviour:
     title: Moving Buildings
     body: When you enter the MOVE screen, you can left-click any shelf to move it.
       If you right-click while having a shelf selected, it will cancel your actions.
-      If you have noting selected and right-click it will exit the MOVE screen.
+      If you have nothing selected and right-click it will exit the MOVE screen.
   - screenshot: {fileID: 1341084641769212991, guid: 9104e8379d651ad4196f5716061e3a2c, type: 3}
     title: Moving Buildings
     body: Green indicates a place you can place that shelf and Red indicates that
