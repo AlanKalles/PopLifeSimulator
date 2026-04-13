@@ -246,6 +246,8 @@ namespace PopLife.Editor
         }
 
         // ── Right panel: property editor ──────────────────────────────────────
+        private Vector2 propertyScrollRight;   // second scroll for 2-col right column
+
         private void DrawPropertyPanel()
         {
             EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
@@ -280,26 +282,48 @@ namespace PopLife.Editor
                 UnityEditor.Editor.CreateCachedEditor(so, null, ref cachedEditor);
             }
 
-            propertyScroll = EditorGUILayout.BeginScrollView(propertyScroll, GUILayout.ExpandHeight(true));
-
-            if (cachedEditor != null)
-                cachedEditor.OnInspectorGUI();
-
-            // Blueprint stats panel — only for Shelves tab
+            // ── Shelves: 2-column layout (inspector left | blueprint right) ──
             if (currentTab == TabShelves)
             {
-                EditorGUILayout.Space(10);
+                EditorGUILayout.BeginHorizontal();
+
+                // Left column — standard inspector
+                propertyScroll = EditorGUILayout.BeginScrollView(
+                    propertyScroll, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
+                if (cachedEditor != null)
+                    cachedEditor.OnInspectorGUI();
+                EditorGUILayout.EndScrollView();
+
+                // Thin divider between columns
+                Rect divRect = GUILayoutUtility.GetRect(SplitterWidth, SplitterWidth, GUILayout.ExpandHeight(true));
+                EditorGUI.DrawRect(divRect, SplitterColor);
+
+                // Right column — blueprint panel
+                propertyScrollRight = EditorGUILayout.BeginScrollView(
+                    propertyScrollRight, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
                 DrawShelfBlueprintPanel(so);
-            }
+                EditorGUILayout.EndScrollView();
 
-            // Conversation editor — only for Interaction Events tab
-            if (currentTab == TabInteractionEvents)
+                EditorGUILayout.EndHorizontal();
+            }
+            else
             {
-                EditorGUILayout.Space(10);
-                DrawConversationPanel(so);
+                // All other tabs: single scrollable column
+                propertyScroll = EditorGUILayout.BeginScrollView(propertyScroll, GUILayout.ExpandHeight(true));
+
+                if (cachedEditor != null)
+                    cachedEditor.OnInspectorGUI();
+
+                // Conversation editor — only for Interaction Events tab
+                if (currentTab == TabInteractionEvents)
+                {
+                    EditorGUILayout.Space(10);
+                    DrawConversationPanel(so);
+                }
+
+                EditorGUILayout.EndScrollView();
             }
 
-            EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
         }
 
