@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
+using PopLife.Data;
 
 namespace PopLife.Editor
 {
@@ -38,6 +40,7 @@ namespace PopLife.Editor
             "DialogueAction",
         };
 
+        private const int TabShelves = 0;
         private const int TabInteractionEvents = 5;
 
         // ── State ─────────────────────────────────────────────────────────────
@@ -67,6 +70,14 @@ namespace PopLife.Editor
         private static readonly Color CorrectAnswerColor = new Color(0.2f, 0.55f, 0.25f);
 
         private int hoveredIndex = -1;
+
+        // ── Blueprint panel ───────────────────────────────────────────────────
+        private bool blueprintFoldout = true;
+        private static readonly string BlueprintJsonPath =
+            Path.Combine(Application.dataPath, "StreamingAssets", "BlueprintProfile.json");
+        private static readonly Color BlueprintHeaderColor = new Color(0.20f, 0.28f, 0.42f);
+        private static readonly Color UnlockedColor = new Color(0.22f, 0.62f, 0.32f);
+        private static readonly Color LockedColor = new Color(0.55f, 0.22f, 0.22f);
 
         // ── Dialogue Database ─────────────────────────────────────────────────
         private ScriptableObject dialogueDatabase;
@@ -273,6 +284,13 @@ namespace PopLife.Editor
 
             if (cachedEditor != null)
                 cachedEditor.OnInspectorGUI();
+
+            // Blueprint stats panel — only for Shelves tab
+            if (currentTab == TabShelves)
+            {
+                EditorGUILayout.Space(10);
+                DrawShelfBlueprintPanel(so);
+            }
 
             // Conversation editor — only for Interaction Events tab
             if (currentTab == TabInteractionEvents)
@@ -628,6 +646,141 @@ namespace PopLife.Editor
                 string current = userScript.stringValue ?? string.Empty;
                 if (current.Contains("InteractionCorrect"))
                     userScript.stringValue = string.Empty;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // SHELF BLUEPRINT PANEL
+        // ─────────────────────────────────────────────────────────────────────
+
+        private void DrawShelfBlueprintPanel(ScriptableObject so)
+        {
+            ShelfArchetype shelf = so as ShelfArchetype;
+            if (shelf == null) return;
+
+            // Section header
+            Rect headerRect = EditorGUILayout.GetControlRect(false, 22f);
+            EditorGUI.DrawRect(headerRect, BlueprintHeaderColor);
+            Rect foldoutRect = new Rect(headerRect.x + 4, headerRect.y + 3, headerRect.width - 8, 16f);
+            blueprintFoldout = EditorGUI.Foldout(foldoutRect, blueprintFoldout,
+                $"  Blueprint  —  {shelf.name}", true, EditorStyles.foldout);
+
+            if (!blueprintFoldout) return;
+
+            EditorGUILayout.Space(6);
+
+            // ── Unlock status ──
+            BlueprintProfile profile = LoadBlueprintProfile();
+            bool isUnlocked = profile != null && profile.HasShelfBlueprint(shelf.name);
+
+            EditorGUILayout.BeginHorizontal();
+            {
+                EditorGUILayout.LabelField("Unlock Status", GUILayout.Width(110));
+
+                GUI.backgroundColor = isUnlocked ? UnlockedColor : LockedColor;
+                string statusLabel = isUnlocked ? "✓  Unlocked" : "✗  Locked";
+                if (GUILayout.Button(statusLabel, GUILayout.Height(22), GUILayout.Width(120)))
+                {
+                    if (profile != null)
+                    {
+                        if (isUnlocked)
+                            profile.RemoveShelf(shelf.name);
+                        else
+                            profile.UnlockShelf(shelf.name);
+                        SaveBlueprintProfile(profile);
+                    }
+                }
+                GUI.backgroundColor = Color.white;
+
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Open JSON", EditorStyles.miniButton, GUILayout.Width(70)))
+                    UnityEditorInternal.InternalEditorUtility.OpenFileAtLineExternal(BlueprintJsonPath, 1);
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(10);
+
+            // ── Computed stats table ──
+            EditorGUILayout.LabelField("Formula-Computed Stats  (buildCost = " + shelf.buildCost + ")", EditorStyles.boldLabel);
+            EditorGUILayout.Space(2);
+
+            // Header row
+            DrawStatsTableRow("Level", "Upgrade Fame", "Price", "Maint. Fee", "Max Stock", "Appeal", true);
+            DrawStatsTableDivider();
+
+            for (int lvl = 1; lvl <= shelf.MaxLevel; lvl++)
+            {
+                DrawStatsTableRow(
+                    lvl.ToString(),
+                    shelf.GetUpgradeFameCost(lvl).ToString(),
+                    shelf.GetPrice(lvl).ToString(),
+                    shelf.GetMaintenanceFee(lvl).ToString(),
+                    shelf.GetStock(lvl).ToString(),
+                    shelf.GetAppeal(lvl).ToString("0"),
+                    false
+                );
+            }
+
+            EditorGUILayout.Space(4);
+        }
+
+        private static readonly float[] StatsColWidths = { 44f, 100f, 60f, 82f, 76f, 60f };
+
+        private static void DrawStatsTableRow(string level, string fame, string price,
+                                              string maint, string stock, string appeal, bool isHeader)
+        {
+            GUIStyle style = isHeader ? EditorStyles.boldLabel : EditorStyles.label;
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(4);
+            GUILayout.Label(level,  style, GUILayout.Width(StatsColWidths[0]));
+            GUILayout.Label(fame,   style, GUILayout.Width(StatsColWidths[1]));
+            GUILayout.Label(price,  style, GUILayout.Width(StatsColWidths[2]));
+            GUILayout.Label(maint,  style, GUILayout.Width(StatsColWidths[3]));
+            GUILayout.Label(stock,  style, GUILayout.Width(StatsColWidths[4]));
+            GUILayout.Label(appeal, style, GUILayout.Width(StatsColWidths[5]));
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private static void DrawStatsTableDivider()
+        {
+            Rect r = EditorGUILayout.GetControlRect(false, 1f);
+            r.x += 4;
+            r.width -= 8;
+            EditorGUI.DrawRect(r, new Color(0.4f, 0.4f, 0.4f));
+        }
+
+        // ── BlueprintProfile JSON helpers ──────────────────────────────────────
+
+        private static BlueprintProfile LoadBlueprintProfile()
+        {
+            if (!File.Exists(BlueprintJsonPath))
+            {
+                Debug.LogWarning($"[DataBrowser] BlueprintProfile.json not found at: {BlueprintJsonPath}");
+                return null;
+            }
+            try
+            {
+                string json = File.ReadAllText(BlueprintJsonPath);
+                return JsonUtility.FromJson<BlueprintProfile>(json);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[DataBrowser] Failed to load BlueprintProfile: {ex.Message}");
+                return null;
+            }
+        }
+
+        private static void SaveBlueprintProfile(BlueprintProfile profile)
+        {
+            try
+            {
+                string json = JsonUtility.ToJson(profile, true);
+                File.WriteAllText(BlueprintJsonPath, json);
+                AssetDatabase.Refresh();
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[DataBrowser] Failed to save BlueprintProfile: {ex.Message}");
             }
         }
 
