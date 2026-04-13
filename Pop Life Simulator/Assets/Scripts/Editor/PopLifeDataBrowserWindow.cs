@@ -816,11 +816,27 @@ namespace PopLife.Editor
         {
             Event e = Event.current;
             if (e.type != EventType.KeyDown) return;
-            if (e.keyCode != KeyCode.UpArrow && e.keyCode != KeyCode.DownArrow) return;
-            if (filteredIndices.Count == 0) return;
 
             // Don't steal keys while a text field has focus
             if (GUIUtility.keyboardControl != 0) return;
+
+            // ← → : switch tabs
+            if (e.keyCode == KeyCode.LeftArrow || e.keyCode == KeyCode.RightArrow)
+            {
+                int newTab = currentTab + (e.keyCode == KeyCode.RightArrow ? 1 : -1);
+                newTab = Mathf.Clamp(newTab, 0, TabLabels.Length - 1);
+                if (newTab != currentTab)
+                {
+                    currentTab = newTab;
+                    e.Use();
+                    Repaint();
+                }
+                return;
+            }
+
+            // ↑ ↓ : move selection in list
+            if (e.keyCode != KeyCode.UpArrow && e.keyCode != KeyCode.DownArrow) return;
+            if (filteredIndices.Count == 0) return;
 
             int currentPos = filteredIndices.IndexOf(selectedIndex);
 
