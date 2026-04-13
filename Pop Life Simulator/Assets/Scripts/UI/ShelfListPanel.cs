@@ -442,12 +442,14 @@ namespace PopLife.UI
         {
             if (constructionManager != null)
                 constructionManager.SelectArchetypeForPlacement(fta);
+            ClosePanel();
         }
 
         private void OnElevatorSelected()
         {
             if (constructionManager != null)
                 constructionManager.BeginPlaceElevator();
+            ClosePanel();
         }
 
         #endregion
