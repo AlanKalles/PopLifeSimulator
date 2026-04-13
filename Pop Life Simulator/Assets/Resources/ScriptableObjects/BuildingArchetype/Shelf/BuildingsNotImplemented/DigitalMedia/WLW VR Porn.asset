@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: WLW VR Porn
   displayName: WLW VR Porn
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 4973098764042619945, guid: 1683ff5eb5605467d9580248cf5fa722, type: 3}
+  prefab: {fileID: 2553700819061216157, guid: d5ce9aa081ce36c4ea71d8ebc661a26d, type: 3}
   buildCost: 150
   moveCost: 0
   destroyRefundRate: 0.75

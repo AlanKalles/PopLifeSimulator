@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Threesome VR Porn
   displayName: Threesome VR Porn
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 960428890812084120, guid: 632bce7426c5047af92e5b325ce9589e, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: faa734b46acc441d48731cda225c2f31, type: 3}
   buildCost: 210
   moveCost: 0
   destroyRefundRate: 0.75

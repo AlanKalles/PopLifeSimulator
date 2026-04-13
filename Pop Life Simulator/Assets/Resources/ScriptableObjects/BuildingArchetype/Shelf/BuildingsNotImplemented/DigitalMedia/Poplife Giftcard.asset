@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Poplife Giftcard
   displayName: Poplife Giftcard
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: -7388646958885226710, guid: 97480e92a4e1f4cc5afc43389dea0177, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: c3a18378c515048ff8745ee213e11b61, type: 3}
   buildCost: 100
   moveCost: 0
   destroyRefundRate: 0.75

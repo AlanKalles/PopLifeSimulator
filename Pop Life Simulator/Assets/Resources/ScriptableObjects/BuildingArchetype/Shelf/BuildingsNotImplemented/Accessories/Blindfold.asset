@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Blindfold
   displayName: Blindfold
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: 3279996181379298720, guid: c7b345478050b48b5a513c8040ab64ed, type: 3}
+  prefab: {fileID: 2553700819061216157, guid: 18e8352d0bbca4864b07c4f3bc020ec9, type: 3}
   buildCost: 240
   moveCost: 0
   destroyRefundRate: 0.75

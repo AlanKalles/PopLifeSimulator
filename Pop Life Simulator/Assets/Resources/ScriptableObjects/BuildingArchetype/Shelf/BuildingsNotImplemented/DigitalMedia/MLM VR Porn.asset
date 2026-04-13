@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: MLM VR Porn
   displayName: MLM VR Porn
-  icon: {fileID: 0}
-  prefab: {fileID: 0}
+  icon: {fileID: -5201525154883773315, guid: 23f081d614538420ba32c1ac170c18ee, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 5b554213a4fb24fed85c117fbe58852a, type: 3}
   buildCost: 155
   moveCost: 0
   destroyRefundRate: 0.75
