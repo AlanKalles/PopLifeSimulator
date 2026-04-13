@@ -99,6 +99,7 @@ namespace PopLife.Editor
 
         private void OnGUI()
         {
+            HandleKeyboardNavigation();
             DrawTabBar();
             DrawBody();
 
@@ -628,6 +629,60 @@ namespace PopLife.Editor
                 if (current.Contains("InteractionCorrect"))
                     userScript.stringValue = string.Empty;
             }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // KEYBOARD NAVIGATION
+        // ─────────────────────────────────────────────────────────────────────
+
+        private void HandleKeyboardNavigation()
+        {
+            Event e = Event.current;
+            if (e.type != EventType.KeyDown) return;
+            if (e.keyCode != KeyCode.UpArrow && e.keyCode != KeyCode.DownArrow) return;
+            if (filteredIndices.Count == 0) return;
+
+            // Don't steal keys while a text field has focus
+            if (GUIUtility.keyboardControl != 0) return;
+
+            int currentPos = filteredIndices.IndexOf(selectedIndex);
+
+            int newPos;
+            if (e.keyCode == KeyCode.UpArrow)
+                newPos = currentPos <= 0 ? 0 : currentPos - 1;
+            else
+                newPos = currentPos >= filteredIndices.Count - 1 ? filteredIndices.Count - 1 : currentPos + 1;
+
+            // If nothing was selected yet, start at the top/bottom
+            if (currentPos == -1)
+                newPos = e.keyCode == KeyCode.UpArrow ? filteredIndices.Count - 1 : 0;
+
+            if (newPos == currentPos) { e.Use(); return; }
+
+            selectedIndex = filteredIndices[newPos];
+            DestroyEditor();
+            ScrollListToItem(newPos);
+            e.Use();
+            Repaint();
+        }
+
+        private const float RowHeight = 22f;
+
+        /// <summary>Adjusts listScroll so the item at filteredPos is fully visible.</summary>
+        private void ScrollListToItem(int filteredPos)
+        {
+            // Reserve space for the search bar (~22), count label (~18), create button (~34), padding
+            const float listHeaderHeight = 44f;
+            const float listFooterHeight = 36f;
+            float visibleHeight = position.height - listHeaderHeight - listFooterHeight;
+
+            float itemTop = filteredPos * RowHeight;
+            float itemBottom = itemTop + RowHeight;
+
+            if (itemTop < listScroll.y)
+                listScroll.y = itemTop;
+            else if (itemBottom > listScroll.y + visibleHeight)
+                listScroll.y = itemBottom - visibleHeight;
         }
 
         // ─────────────────────────────────────────────────────────────────────
