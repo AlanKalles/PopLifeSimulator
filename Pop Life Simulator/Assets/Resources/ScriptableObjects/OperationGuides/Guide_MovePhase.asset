@@ -18,14 +18,18 @@ MonoBehaviour:
   icon: {fileID: 0}
   sortOrder: 100
   activationMarker: 19
+  closingMarker: -1
   pages:
   - screenshot: {fileID: 7250129316690771573, guid: 11efacdf904127b4fac33c57a75aa48e, type: 3}
     title: Moving Buildings
-    body: In Move phase, left-click any building to move it. Right-click with no
-      selection to return, or right-click while moving a building to cancel.
+    body: When you enter the MOVE screen, you can left-click any shelf to move it.
+      If you right-click while having a shelf selected, it will cancel your actions.
+      If you have noting selected and right-click it will exit the MOVE screen.
   - screenshot: {fileID: 1341084641769212991, guid: 9104e8379d651ad4196f5716061e3a2c, type: 3}
     title: Moving Buildings
-    body: Green indicates a valid location; Red indicates invalid.
+    body: Green indicates a place you can place that shelf and Red indicates that
+      you can not place the shelf there.
   - screenshot: {fileID: 422356891149872371, guid: 1fcf35c11fa46cf41b1554ce2e68935d, type: 3}
     title: Moving alanbot
-    body: You can also move alanbot in the Move mode as the same way you move buildings.
+    body: You can also move AlanBot while on the MOVE screen in the same way you
+      move buildings.

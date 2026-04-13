@@ -6,11 +6,11 @@
   <Project Path="Assembly-CSharp-Editor-firstpass.csproj" />
   <Project Path="AstarPathfindingProjectExamples.csproj" />
   <Project Path="AstarPathfindingProjectEditor.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="ParadoxNotion.csproj" />
   <Project Path="XCharts.Runtime.csproj" />
   <Project Path="XCharts.Editor.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="Drawing.csproj" />
   <Project Path="PrimeTween.Demo.csproj" />
   <Project Path="AstarPackageToolsEditor.csproj" />
