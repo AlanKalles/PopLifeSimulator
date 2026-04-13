@@ -31,9 +31,6 @@ namespace PopLife.DialogueBridge
         [Tooltip("Default conversation if no specific one is found")]
         [SerializeField] private string defaultConversation = "Customer/Generic";
 
-        [Tooltip("Conversation prefix for trait-based conversations")]
-        [SerializeField] private string traitConversationPrefix = "Customer/Trait_";
-
         [Title("Debug")]
         [SerializeField] private bool debugMode = false;
 

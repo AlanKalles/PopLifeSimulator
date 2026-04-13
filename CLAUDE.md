@@ -33,26 +33,26 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
 ```
 ┌─────────────────────────────────────────────────┐
 │             Manager Layer (管理器层)             │
-│    DayLoopManager | FloorManager | UIManager    │
-│         ResourceManager | EffectManager          │
+│  DayLoopManager | CalendarManager | UIManager   │
+│    ResourceManager | EffectManager | etc.        │
 └───────────────────┬─────────────────────────────┘
                     │
 ┌───────────────────▼─────────────────────────────┐
 │           Service Layer (服务层)                │
-│  CommerceService | TraitResolver | QueueService │
+│  CommerceService | QueueService | FameCalculator│
 │  CustomerRepository | NavigationService         │
 └───────────────────┬─────────────────────────────┘
                     │
 ┌───────────────────▼─────────────────────────────┐
 │          Runtime Layer (运行时层)                │
 │  BuildingInstance | ShelfInstance | CustomerAgent│
-│  FloorGrid | ConstructionManager                │
+│  WorldGrid | InteriorGrid | ConstructionManager │
 └───────────────────┬─────────────────────────────┘
                     │
 ┌───────────────────▼─────────────────────────────┐
 │           Data Layer (数据层)                    │
-│  BuildingArchetype | CustomerArchetype | Trait  │
-│  Policy ScriptableObjects                       │
+│  BuildingArchetype | CustomerArchetype           │
+│  Policy ScriptableObjects | BrandData           │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -86,7 +86,7 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
   - `icon` - 品牌图标（可选）
   - 11个品牌：C¥B3R5EX, SoloFans, A R T D S A J I, PopLife, Rough Angel, Good Unicorn, BLUBURRY, Dildo & Chbana, Cucci, Lewis Spitton, LOVXNS
 
-- **`FacilityArchetype.cs`** (34行)
+- **`FacilityArchetype.cs`** (24行)
   - 设施原型（收银台、空调、ATM等）
   - 效果系统 `FacilityEffect[]`：
     - 类型：`EffectType` 枚举
@@ -118,20 +118,19 @@ EffectType {
 **职责**：处理游戏运行时的实例管理和核心逻辑
 
 #### 网格系统（核心）
-- **`FloorGrid.cs`** (421行) ⭐
-  - **2D网格建筑系统**
-  - 数据结构：`Cell[,] grid` 记录占用状态
-  - 放置规则：
-    - 建筑必须至少一格在第一层（y=0）
-    - 第一层被占用的列，整列禁止建造
-    - 支持不规则占地模板和4方向旋转
-  - 功能：世界坐标↔网格坐标转换、碰撞检测、尴尬值热图计算
-  - 关键方法：
-    - `PlaceBuildingTransactional()` - 事务式放置
-    - `IsCellAvailable()` - 检查格子可用性
-    - `RegisterExistingBuilding()` - 注册已有建筑（用于移动）
+- **`WorldGrid.cs`** (1102行) ⭐⭐
+  - **世界结构层网格**（单例 `WorldGrid.Instance`）
+  - 管理 FloorTile 的放置与世界坐标↔网格坐标转换
+  - 放置验证接口：`IWorldPlaceable`
+  - BFS 楼层层级识别（FloorLevel 系统）
 
-- **`ConstructionManager.cs`** (484行) ⭐
+- **`InteriorGrid.cs`** (412行) ⭐
+  - **内部网格系统**（每个 FloorTile 一个）
+  - 管理货架/设施在 FloorTile 内部的放置
+  - 放置验证接口：`IInteriorPlaceable`
+  - Interior 建筑层级：FloorTileInstance → InteriorContainer → Shelf/Facility
+
+- **`ConstructionManager.cs`** (1427行) ⭐
   - **建造交互管理器**
   - 三种模式：`None / Place / Move`
   - 实时预览系统（绿色=可建造，红色=不可）
@@ -146,19 +145,19 @@ EffectType {
     ```
 
 #### 建筑实例
-- **`BuildingInstances.cs`** (104行)
+- **`BuildingInstances.cs`** (162行)
   - 建筑实例基类
   - 序列化系统（`BuildingSaveData`）
   - 升级逻辑（消耗声望解锁下一等级，升级成功后调用 `ConstructionManager.NotifyBuildingChanged()`）
   - 维护费用计算
 
-- **`ShelfInstance.cs`** (128行)
+- **`ShelfInstance.cs`** (145行)
   - 货架运行时状态：库存、销量、价格
   - `TryTakeOne()` - 取货（仅扣库存，不增加金钱）
   - 集成排队系统（`ShelfQueueController`）
   - `GetAppeal()` - 返回当前等级的 appeal 值（公式驱动）
 
-- **`FacilityInstance.cs`** (55行)
+- **`FacilityInstance.cs`** (54行)
   - 设施实例（收银台、空调等）
   - 效果注册/注销到 `EffectManager`
   - 收银台队列管理（`CashierQueueController`）
@@ -171,7 +170,7 @@ EffectType {
 **职责**：完整的顾客AI、数据持久化、行为策略系统
 
 #### 数据层 (`Customers/Data/`)
-- **`CustomerArchetype.cs`** (88行) ⭐
+- **`CustomerArchetype.cs`** (106行) ⭐
   - **顾客原型模板**（ScriptableObject）
   - 基础兴趣数组（6种商品类别）
   - 移动速度、排队容忍度
@@ -182,17 +181,7 @@ EffectType {
   - 时间窗口：`spawnTimeWindow`（如上班族12-22点生成）
   - 默认策略集：`defaultPolicies`（引用BehaviorPolicySet）
 
-- **`Trait.cs`** (29行)
-  - **特质修饰系统**（ScriptableObject）
-  - 属性修正：
-    - 兴趣加成：`interestAdditive[6]`（如 Gay: Condom+1, Lubricant+2）
-    - 兴趣倍率：`interestMultipliers[6]`（如 Asexual: Condom×0）
-    - 钱包/耐心/价格敏感度倍率
-  - 时间倾向：`preferredTimeRanges[]`（如 Night Owl: 20-23点）
-  - 特质权重：`timePreferenceWeight`（时间匹配时增加生成权重）
-  - **已实现40+种特质**：性别、性向、职业、性格、关系状态等
-
-- **`CustomerPolicies.cs`** (68行) ⭐ **策略模式核心**
+- **`CustomerPolicies.cs`** (94行) ⭐ **策略模式核心**
   - 定义6种抽象策略基类：
     ```csharp
     TargetSelectorPolicy    // 选择目标货架
@@ -226,34 +215,34 @@ EffectType {
   - 支持批量解锁/锁定
 
 #### 运行时层 (`Customers/Runtime/`)
-- **`CustomerRecord.cs`** (105行) ⭐
+- **`CustomerRecord.cs`** (44行) ⭐
   - **顾客持久化数据**（JSON序列化）
   - 身份信息：ID、姓名、外貌ID、性取向
-  - 原型与特质引用：`archetypeId`, `traitIds[]`
+  - 原型引用：`archetypeId`
   - 个体化兴趣偏移：`interestPersonalDelta[6]`（使每个顾客独特）
   - 长期属性：信任值、忠诚度、经验值
   - 统计数据：访问次数、消费总额、最后访问原因
   - **最终兴趣计算公式**：
     ```csharp
-    最终兴趣 = (原型基础 + 个体偏移 + Σ特质加成) × Π特质倍率
+    最终兴趣 = 原型基础 + 个体偏移
     ```
 
-- **`CustomerSession.cs`** (34行)
+- **`CustomerSession.cs`** (36行)
   - **单次访问会话数据**
   - 时间戳：进店时间、离店时间、离店原因
   - 消费明细：货架访问列表（`ShelfVisit`）
   - 统计：总消费、排队时间、路径长度
 
-- **`CustomerAgent.cs`** (70行) ⭐
+- **`CustomerAgent.cs`** (145行) ⭐
   - **Unity组件**（挂载在顾客GameObject上）
   - `Initialize(CustomerRecord)` - 初始化入口
-  - 计算最终属性（原型+特质+个体偏移）：
+  - 计算最终属性（原型+个体偏移）：
     - 采样钱袋金额：`Random(walletCap/2, walletCap)`
     - 采样尴尬上限：`embarrassmentCapCurve.Evaluate(loyaltyLevel)`
   - 设置外貌Sprite（从AppearanceDatabase）
   - 触发生成事件：`CustomerEventBus.RaiseCustomerSpawned()`
 
-- **`CustomerBlackboardAdapter.cs`** (73行) ⭐ **NodeCanvas桥接器**
+- **`CustomerBlackboardAdapter.cs`** (100行) ⭐ **NodeCanvas桥接器**
   - **桥接运行时数据到行为树黑板**
   - 会话状态变量：
     - `moneyBag` - 当前钱包余额
@@ -266,7 +255,7 @@ EffectType {
     - `purchasedArchetypes` - 已购买的archetype列表
     - `assignedQueueSlot` - 队列位置引用
 
-- **`CustomerInteraction.cs`** (169行) ⭐ **交互逻辑核心**
+- **`CustomerInteraction.cs`** (220行) ⭐ **交互逻辑核心**
   - `TryPurchase()` - 在货架购买
     ```csharp
     1. 查找targetShelfId对应的ShelfInstance
@@ -284,22 +273,17 @@ EffectType {
     ```
 
 #### 服务层 (`Customers/Services/`)
-- **`CustomerRepository.cs`** (74行)
+- **`CustomerRepository.cs`** (107行)
   - **数据持久化服务**
   - 保存/加载 `StreamingAssets/Customers.json`
   - 使用 `SavePathManager` 管理路径
 
-- **`CommerceService.cs`** (51行)
+- **`CommerceService.cs`** (50行)
   - **软预留机制**（不锁库存，仅返回可买量）
   - `GetAvailableStock()` - 查询可用库存
   - `CommitPurchase()` - 真正扣减库存（在收银台）
 
-- **`TraitResolver.cs`** (36行)
-  - **特质效果计算**
-  - `Compute(traits)` → 返回 `EffectiveStats`
-  - 累乘所有特质的倍率效果
-
-- **`CustomerEventBus.cs`** (32行) ⭐ **事件总线**
+- **`CustomerEventBus.cs`** (33行) ⭐ **事件总线**
   - 事件类型：
     - `OnCustomerSpawned` - 顾客生成
     - `OnCustomerPurchased` - 购买商品
@@ -307,16 +291,15 @@ EffectType {
     - `OnCustomerReachedShelf` - 到达货架
     - `OnCustomerReachedCashier` - 到达收银台
 
-- **`CustomerContextBuilder.cs`** (304行) ⭐ **快照构建器**
+- **`CustomerContextBuilder.cs`** (260行) ⭐ **快照构建器**
   - 将运行时实例转换为策略所需的快照
   - `BuildCustomerContext(adapter)` → `CustomerContext`
   - `BuildShelfSnapshot(shelf)` → `ShelfSnapshot`（含队列长度）
   - 支持多楼层坐标转换
 
-- **`TimeBasedSpawnFilter.cs`** (187行) ⭐ **时间过滤器**
+- **`TimeBasedSpawnFilter.cs`** (114行) ⭐ **时间过滤器**
   - 根据游戏时间筛选符合条件的顾客
   - 硬过滤：检查Archetype的生成时间窗口
-  - 软加成：应用Trait的时间倾向（如夜猫子晚间权重×2）
   - 返回加权顾客列表（`WeightedCustomer[]`）
 
 - **`ShelfQueueController.cs`** (345行) ⭐ **货架排队系统**
@@ -335,13 +318,13 @@ EffectType {
 
 - **`FameCalculator.cs`** ⭐ **声望计算服务**
   - MonoBehaviour单例，Inspector可调参数
-  - **计算公式**：`Fame = (price × priceWeight + appeal × appealWeight) × traitFameMul`
+  - **计算公式**：`Fame = (price × priceWeight + appeal × appealWeight)`
   - 默认参数：`priceWeight=0.05`, `appealWeight=0.08`
   - 顾客每次从货架取货成功时触发计算
   - 详细设计文档：`Assets/Documents/Fame系统设计.md`
 
 #### 生成器 (`Customers/Spawner/`)
-- **`CustomerSpawner.cs`** (625行) ⭐⭐ **顾客生成核心**
+- **`CustomerSpawner.cs`** (805行) ⭐⭐ **顾客生成核心**
   - **手动生成**：通过ID生成指定顾客（调试）
   - **自动生成**：营业时段自动生成
   - 流程：
@@ -353,13 +336,13 @@ EffectType {
     5. 实例化CustomerAgent并初始化
     6. 安排下次生成时间（基础间隔 + 随机抖动）
     ```
-  - 流量控制：场上人数上限、随机间隔
-  - 资源加载：动态加载Archetype和Trait ScriptableObject
+  - 流量控制：场上人数上限（受Store Appeal动态调整）、随机间隔
+  - 资源加载：动态加载Archetype ScriptableObject
 
 #### NodeCanvas集成 (`Customers/NodeCanvas/`)
-**自定义行为树节点**（10个Actions + 1个Condition）
+**自定义行为树节点**（25个Actions + 4个Conditions）
 
-- **Actions**:
+- **Actions**（部分列举）:
   - `SelectTargetShelfAction` - 使用策略选择目标货架
   - `ExecutePurchaseAction` - 逐件购买（循环调用TryPurchase）
   - `ExecuteCheckoutAction` - 结账
@@ -372,12 +355,15 @@ EffectType {
   - `DestroyAgentAction` - 销毁顾客
 
 - **Conditions**:
-  - `IsAtFrontOfQueueCondition` - 判断是否在队首
+  - `CheckIsUpsetCondition` - 检查顾客是否不满
+  - `CheckPendingPaymentCondition` - 检查待结账金额
+  - `CheckStoreClosingCondition` - 检查商店是否关门
+  - `CheckWalletNotEmptyCondition` - 检查钱包是否有余额
 
 ### 4. 管理器层 (Manager Layer) - `Assets/Scripts/Manager/`
 **职责**：全局单例管理器，控制游戏核心系统
 
-- **`DayLoopManager.cs`** (265行) ⭐⭐ **时间与游戏循环核心**
+- **`DayLoopManager.cs`** (661行) ⭐⭐ **时间与游戏循环核心**
   - **两个阶段**：
     - `BuildPhase`（6:00）：建造阶段，时间暂停
     - `OpenPhase`（11:00-27:00）：营业阶段，时间流动（支持跨日，27:00=次日03:00）
@@ -396,13 +382,6 @@ EffectType {
     ```
   - 统计记录：每日销售额、访问人数
 
-- **`FloorManager.cs`** (403行) ⭐ **楼层管理**
-  - 管理多个FloorGrid实例
-  - 楼层激活/停用
-  - 楼层切换（Tab键循环/数字键直达）
-  - 自动分配楼层ID（避免冲突）
-  - 楼层数据校验与清理
-
 - **`ResourceManager.cs`**
   - 金钱和声望管理
   - `AddMoney()`, `SpendMoney()`, `AddFame(int)`, `AddFame(float)`
@@ -412,10 +391,8 @@ EffectType {
     - `OnStoreAppealChanged` 事件 - appeal 变化时广播
     - `RecalculateStoreAppeal()` - 遍历所有楼层货架累加 appeal
     - 订阅 `ConstructionManager.OnBuildingPlacedOrDestroyed`（建造/拆除/移动/升级时触发重算）
-    - 使用 `FindFirstObjectByType<FloorManager>()` 缓存引用（FloorManager 无静态 Instance）
-
-- **`BlueprintManager.cs`** (14行)
-  - 蓝图解锁系统（原型期简化实现）
+- **`BlueprintManager.cs`** (254行)
+  - 蓝图解锁系统
 
 - **`CategoryManager.cs`** (13行)
   - 商品类别升级管理（原型期简化）
@@ -423,7 +400,7 @@ EffectType {
 - **`EffectManager.cs`** (16行)
   - 全局效果管理（设施效果注册/注销）
 
-- **`UIManager.cs`** (57行)
+- **`UIManager.cs`** (363行)
   - UI面板管理
   - 监听结算事件，显示结算面板
 
@@ -465,11 +442,7 @@ EffectType {
 - **工具类**：
   - `SavePathManager.cs` - 保存路径管理（StreamingAssets/persistentDataPath）
 
-### 6. 编辑器扩展 - `Assets/Scripts/Editor/`
-- `FloorGridDebugger.cs` - 网格调试器
-- `FloorEntryDrawer.cs` - 楼层条目属性绘制
-- `InterestArrayPropertyDrawer.cs` - 兴趣数组编辑器
-- `TraitInterestPropertyDrawer.cs` - 特质兴趣编辑器
+### 6. 编辑器扩展 - `Assets/Scripts/Customers/Editor/`
 - `CustomerRecordsEditor.cs` - 顾客记录编辑器
 
 ---
@@ -526,21 +499,19 @@ EffectType {
 ```
 
 ### 属性计算公式
-- **最终兴趣**：`(原型基础 + 个体偏移 + Σ特质加成) × Π特质倍率`
-  - 示例：Gay顾客对Condom的兴趣 = (原型2 + 个体0.5 + Gay特质+1) × 1.0 = 3.5
-- **钱包金额**：`walletCapBase × 原型曲线(忠诚度) × Π特质倍率`
+- **最终兴趣**：`原型基础 + 个体偏移`
+- **钱包金额**：`walletCapBase × 原型曲线(忠诚度)`
   - 实际采样范围：`[钱包容量/2, 钱包容量]`
-- **尴尬上限**：`原型曲线(忠诚度) × Π特质倍率`
-  - 示例：Shy特质会 × 0.8（更容易尴尬）
-- **移动速度**：`原型速度 × Π特质倍率`
-- **排队容忍**：`原型容忍秒数 × Π特质倍率`
-- **Fame贡献**：`(price × 0.05 + appeal × 0.08) × Π特质fameMultiplier`
+- **尴尬上限**：`原型曲线(忠诚度)`
+- **移动速度**：原型速度
+- **排队容忍**：原型容忍秒数
+- **Fame贡献**：`(price × 0.05 + appeal × 0.08)`
   - 每次顾客取货成功时即时计算并增加玩家Fame
   - 详见 `Assets/Documents/Fame系统设计.md`
 
 ### 时间系统
 - **游戏时间**：现实30秒 = 游戏1天（可配置 `dayDurationInSeconds`）
-- **营业时间**：11:00 - 27:00（`storeOpenHour` - `storeCloseHour`，支持跨日，27:00=次日03:00）
+- **营业时间**：12:00 - 23:00（`storeOpenHour` - `storeCloseHour`）
 - **建造阶段**：6:00（`buildPhaseHour`）
 - **每日结算**：27:00关店后自动触发
   - 计算公式：
@@ -668,7 +639,6 @@ PopLife.Runtime                   // 运行时层
 PopLife.Customers.Data            // 顾客数据
 PopLife.Customers.Runtime         // 顾客运行时
 PopLife.Customers.Services        // 顾客服务
-PopLife.Customers.Policies        // 顾客策略
 PopLife.DialogueBridge            // 对话系统桥接
 PopLife.DialogueBridge.UI         // Spotlight UI
 PopLife.DialogueBridge.Sequencer  // 自定义 Sequencer 命令
@@ -683,7 +653,6 @@ Assets/
 │       ├── BuildingArchetype/
 │       ├── Brands/               # 品牌SO资产（11个）
 │       ├── CustomerArchetypes/
-│       ├── Traits/
 │       └── BehaviorPolicies/
 ├── Prefab/                       # 预制体
 │   ├── Customer.prefab
@@ -719,7 +688,7 @@ Assets/
 ## 关键设计模式
 
 ### 1. 原型-实例模式 (Prototype-Instance)
-- **原型**：ScriptableObject（`BuildingArchetype`, `CustomerArchetype`, `Trait`）
+- **原型**：ScriptableObject（`BuildingArchetype`, `CustomerArchetype`, `BrandData`）
 - **实例**：MonoBehaviour（`BuildingInstance`, `CustomerAgent`）
 - **优势**：数据与逻辑分离，支持运行时修改原型影响所有实例
 
@@ -787,15 +756,7 @@ public enum ProductCategory {
 // 5. 更新 AudioKeys.cs 中的建造音效映射（可选）
 ```
 
-### 2. 新增特质
-```csharp
-// 1. 创建 Trait ScriptableObject
-// 2. 配置属性修饰（兴趣加成/倍率）
-// 3. 可选：设置时间倾向（preferredTimeRanges）
-// 4. 添加到顾客的 traitIds 数组
-```
-
-### 3. 自定义策略
+### 2. 自定义策略
 ```csharp
 // 1. 继承对应的 XxxPolicy 基类
 public class MyTargetSelector : TargetSelectorPolicy {
@@ -810,15 +771,7 @@ public class MyTargetSelector : TargetSelectorPolicy {
 // 3. 分配到 CustomerArchetype.defaultPolicies
 ```
 
-### 4. 增加楼层
-```csharp
-// 1. 创建新的 FloorGrid GameObject
-// 2. 设置唯一 floorId
-// 3. 添加到 FloorManager.floors 列表
-// 4. 启用 autoAssignFloorIds（自动分配ID）
-```
-
-### 5. 新增设施效果
+### 4. 新增设施效果
 ```csharp
 // 1. 扩展 EffectType 枚举
 public enum EffectType {
@@ -833,7 +786,7 @@ public enum EffectType {
 // 3. 在 EffectManager 中实现效果逻辑
 ```
 
-### 6. 社交系统（建议）
+### 5. 社交系统（建议）
 - 利用 `CustomerEventBus` 实现顾客间互动
 - 创建 `SocialInteraction` 服务
 - 定义交互策略（如朋友一起购物、情侣同行）
@@ -844,7 +797,7 @@ public enum EffectType {
 
 ### 1. 可视化工具
 - **HeatmapService**：可视化尴尬值分布（网格叠加层）
-- **FloorGridDebugger**：显示网格占用状态和建筑ID
+- **WorldGrid Gizmo**：显示网格占用状态和建筑ID
 - **ShelfQueueController Gizmo**：显示队列位置（Scene视图）
 
 ### 2. 日志系统
@@ -869,7 +822,7 @@ public enum EffectType {
 ### 已实现优化
 1. **对象池思想**：队列位置Transform缓存（`cachedSlotTransforms`）
 2. **缓存机制**：
-   - FloorManager的活跃楼层列表
+   - WorldGrid的网格数据
    - 货架快照批量构建
 3. **延迟结算**：软预留机制避免频繁锁定资源
 4. **事件驱动**：避免轮询检查
@@ -908,18 +861,15 @@ public enum EffectType {
 ## 项目统计
 
 ### 代码规模
-- **C# 脚本**：72个文件
-- **代码行数**：约10,000+行
+- **C# 脚本**：244个文件
 - **ScriptableObject资产**：30+个
-- **自定义NodeCanvas节点**：11个
+- **自定义NodeCanvas节点**：29个（25 Actions + 4 Conditions）
 
 ### 系统分类
-- **数据层**：6个核心文件
-- **运行时层**：8个核心文件
-- **顾客系统**：43个文件（数据11 + 运行时5 + 服务12 + 生成1 + NodeCanvas11 + 编辑器3）
-- **管理器层**：9个管理器
-- **UI层**：6个组件
-- **编辑器扩展**：4个工具
+- **管理器层**：22个管理器
+- **UI层**：56个组件
+- **顾客系统**：含数据、运行时、服务、生成器、NodeCanvas节点
+- **编辑器扩展**：顾客记录编辑器等
 
 ### 技术栈
 - **Unity 6000.3.5f2** (Unity 6)
@@ -943,13 +893,12 @@ ScriptableObject：
 - 建筑原型：Resources/ScriptableObjects/BuildingArchetype/
 - 品牌：Resources/ScriptableObjects/Brands/
 - 顾客原型：Resources/ScriptableObjects/CustomerArchetypes/
-- 特质：Resources/ScriptableObjects/Traits/
 - 策略：Resources/ScriptableObjects/BehaviorPolicies/
 
 关键脚本：
 - 时间管理：Scripts/Manager/DayLoopManager.cs
 - 顾客生成：Scripts/Customers/Spawner/CustomerSpawner.cs
-- 网格系统：Scripts/Runtime/FloorGrid.cs
+- 网格系统：Scripts/Runtime/WorldGrid.cs, Scripts/Runtime/InteriorGrid.cs
 - 建造管理：Scripts/Runtime/ConstructionManager.cs:
 
 说明文档：
@@ -960,7 +909,7 @@ ScriptableObject：
 ```csharp
 DayLoopManager.Instance       // 时间和游戏循环
 ResourceManager.Instance      // 金钱和声望
-FloorManager.Instance         // 楼层管理
+WorldGrid.Instance            // 世界网格
 UIManager.Instance            // UI面板
 CustomerEventBus              // 事件总线（静态）
 ```
@@ -986,5 +935,6 @@ Pop Life Simulator 是一个架构设计优秀、扩展性强的模拟经营游�
 ✅ **数据持久化**：JSON序列化顾客记录
 ✅ **行为树AI**：NodeCanvas深度集成
 ✅ **多设计模式**：原型、策略、事件总线、适配器、快照等
+✅ **双层网格系统**：WorldGrid（世界结构）+ InteriorGrid（内部布局）
 
 项目展现了良好的软件工程实践，代码质量整体较高，适合作为Unity商业项目的参考案例。

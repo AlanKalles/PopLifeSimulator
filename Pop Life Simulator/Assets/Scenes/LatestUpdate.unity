@@ -28713,8 +28713,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  openHourStart: 12
-  openHourEnd: 23
   tileLightColorGradient:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 1}
@@ -49339,7 +49337,7 @@ PrefabInstance:
       objectReference: {fileID: -2483764444016197910, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
     - target: {fileID: 1568060411137529001, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -263.87308
+      value: -263.873
       objectReference: {fileID: 0}
     - target: {fileID: 1682418171592549610, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchorMax.y
