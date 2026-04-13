@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: SoloFans GiftCode
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 80
+  buildCost: 70
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []

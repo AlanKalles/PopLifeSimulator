@@ -35,7 +35,9 @@
       "Bash(sed 's/--- !u!114 &.*//')",
       "Read(//d/github/PopLifeSimulator/Pop Life Simulator/Assets/**)",
       "Bash(find . -name \"*.cs\" -type f -exec grep -l \"AILerp\\\\|Seeker\\\\|Pathfinding\" {} \\\\;)",
-      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\" -name \"*.cs\" -exec grep -l \"SetTypewriter\\\\|PerCharacter.*Audio\\\\|PerActor.*Audio\\\\|per-character.*audio\" {} \\\\;)"
+      "Bash(find \"d:\\\\github\\\\PopLifeSimulator\\\\Pop Life Simulator\\\\Assets\" -name \"*.cs\" -exec grep -l \"SetTypewriter\\\\|PerCharacter.*Audio\\\\|PerActor.*Audio\\\\|per-character.*audio\" {} \\\\;)",
+      "Bash(ls \"Pop Life Simulator/Assets/Resources/ScriptableObjects/BuildingArchetype/\")",
+      "Bash(ls \"Pop Life Simulator/Assets/Resources/ScriptableObjects/BuildingArchetypes/\")"
     ],
     "deny": [],
     "ask": []

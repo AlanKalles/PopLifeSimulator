@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: 1-Step PlanB
   icon: {fileID: 0}
   prefab: {fileID: 0}
-  buildCost: 85
+  buildCost: 79
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
