@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Wand Vibrator
   displayName: Wand Vibrator
-  icon: {fileID: 21300000, guid: d497e0a22d07042c6b40c1a51cd65492, type: 3}
+  icon: {fileID: -5133743911857542770, guid: 9f283f52f5b3545628a18ed1011ec030, type: 3}
   prefab: {fileID: 5659159893351281282, guid: 1da1b78d61f18491d9337a4d246e8e80, type: 3}
   buildCost: 120
   moveCost: 0
