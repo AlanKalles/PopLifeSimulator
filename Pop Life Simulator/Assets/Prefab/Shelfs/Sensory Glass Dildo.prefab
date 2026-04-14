@@ -86,7 +86,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: c605c63a5d9cc784d828ead380d02e7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 83e405a2f65f249d896be3556806254f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionAnchor: {fileID: 2173661573492456090}
   queueAnchor: {fileID: 6400677625511307067}
-  queueDirection: {x: -1, y: 0, z: 0}
+  queueDirection: {x: 1, y: 0, z: 0}
   slotSpacing: 0.5
   queueSlots: []
   secondsPerCustomer: 0.8

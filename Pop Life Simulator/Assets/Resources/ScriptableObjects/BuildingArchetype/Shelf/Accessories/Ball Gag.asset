@@ -14,12 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Ball Gag
   displayName: Ball Gag
-  icon: {fileID: 1655533774407250268, guid: dec558e9d22c844bab94be284ccc3697, type: 3}
+  icon: {fileID: 21300000, guid: dec558e9d22c844bab94be284ccc3697, type: 3}
   prefab: {fileID: 2553700819061216157, guid: cafc22ffb69fa4575b9e84036b2bb53c, type: 3}
   buildCost: 710
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 3}
+  - {x: 1, y: 3}
+  - {x: 0, y: 2}
+  - {x: 1, y: 2}
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 0

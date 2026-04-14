@@ -148,8 +148,10 @@ namespace PopLife.Quest
                 return;
             }
 
-            QuestLog.SetQuestState(questName, QuestState.Active);
+            // 先开启 tracking，再广播 Active 状态，避免 QuestTrackerPanel
+            // 在首次刷新时因为 tracking flag 尚未写入而把新任务过滤掉
             stateStore?.SetTracking(questName, true);
+            QuestLog.SetQuestState(questName, QuestState.Active);
 
             if (debugMode)
                 Debug.Log($"[QuestLogicManager] 激活任务: {questName}");

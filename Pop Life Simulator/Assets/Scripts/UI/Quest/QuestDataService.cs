@@ -218,6 +218,17 @@ namespace PopLife.UI.Quest
                 }
             }
 
+            // 兜底：对话或 Lua 直接 SetQuestState 激活的任务也自动开启 tracking
+            if (state == QuestState.Active && Store != null && !Store.IsTrackingEnabled(questName))
+            {
+                Store.SetTracking(questName, true);
+
+                if (debugMode)
+                {
+                    Debug.Log($"[QuestDataService] 自动开启任务追踪: {questName}");
+                }
+            }
+
             OnTrackedQuestsChanged?.Invoke();
             OnQuestStateChanged?.Invoke();
         }

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Orgy VR Porn
+  m_Name: WLW VR Porn
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Orgy VR Porn
-  displayName: Orgy VR Porn
-  icon: {fileID: -7563885377084106795, guid: b3c01c83d68c04caca6ef840414871e1, type: 3}
-  prefab: {fileID: 9121478431460335272, guid: 68e0443cdcbc246f88de9aa522b4f402, type: 3}
-  buildCost: 730
+  archetypeId: WLW VR Porn
+  displayName: WLW VR Porn
+  icon: {fileID: 21300000, guid: 1683ff5eb5605467d9580248cf5fa722, type: 3}
+  prefab: {fileID: 2553700819061216157, guid: d5ce9aa081ce36c4ea71d8ebc661a26d, type: 3}
+  buildCost: 150
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern: []
@@ -25,6 +25,6 @@ MonoBehaviour:
   category: 2
   brand: {fileID: 11400000, guid: 7af3021b30fe8974eb03fec8fcf902c6, type: 2}
   description: A chip for uploading virtual reality porn to your device at home!
-    This one features orgy porn.
+    This one features WLW porn.
   usageInstruction: Insert the chip into a device of your choosing, download the
     media, and enjoy!

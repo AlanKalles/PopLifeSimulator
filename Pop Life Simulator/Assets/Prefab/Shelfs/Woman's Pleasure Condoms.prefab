@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -2203640040846282862}
   - component: {fileID: -2960149954525875600}
   m_Layer: 6
-  m_Name: WL
+  m_Name: Woman's Pleasure Condoms
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionAnchor: {fileID: 2173661573492456090}
   queueAnchor: {fileID: 6400677625511307067}
-  queueDirection: {x: -1, y: 0, z: 0}
+  queueDirection: {x: 1, y: 0, z: 0}
   slotSpacing: 0.5
   queueSlots: []
   secondsPerCustomer: 1

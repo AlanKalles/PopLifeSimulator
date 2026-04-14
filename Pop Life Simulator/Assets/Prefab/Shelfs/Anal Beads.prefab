@@ -212,7 +212,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionAnchor: {fileID: 7086406622882898591}
   queueAnchor: {fileID: 6623540650981477558}
-  queueDirection: {x: -1, y: 0, z: 0}
+  queueDirection: {x: 1, y: 0, z: 0}
   slotSpacing: 0.5
   queueSlots: []
   secondsPerCustomer: 1

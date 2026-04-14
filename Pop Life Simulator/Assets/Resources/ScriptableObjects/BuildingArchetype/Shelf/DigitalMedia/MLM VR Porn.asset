@@ -10,21 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9203e27ce6418a14b933cee3828314ef, type: 3}
-  m_Name: Threesome VR Porn
+  m_Name: MLM VR Porn
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
-  archetypeId: Threesome VR Porn
-  displayName: Threesome VR Porn
-  icon: {fileID: 960428890812084120, guid: 632bce7426c5047af92e5b325ce9589e, type: 3}
-  prefab: {fileID: 9121478431460335272, guid: faa734b46acc441d48731cda225c2f31, type: 3}
-  buildCost: 210
+  archetypeId: MLM VR Porn
+  displayName: MLM VR Porn
+  icon: {fileID: 21300000, guid: 23f081d614538420ba32c1ac170c18ee, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 5b554213a4fb24fed85c117fbe58852a, type: 3}
+  buildCost: 155
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 3}
+  - {x: 1, y: 3}
+  - {x: 0, y: 2}
+  - {x: 1, y: 2}
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 2
   brand: {fileID: 11400000, guid: 7af3021b30fe8974eb03fec8fcf902c6, type: 2}
   description: A chip for uploading virtual reality porn to your device at home!
-    This one features threesome porn.
+    This one features MLM porn.
   usageInstruction: Insert the chip into a device of your choosing, download the
     media, and enjoy!

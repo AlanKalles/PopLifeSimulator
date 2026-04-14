@@ -147,6 +147,7 @@ namespace PopLife.Runtime
 
         public void BeginPlace(BuildingArchetype arch)
         {
+            ConsumePendingPlacementClick();
             // 资源校验：蓝图检查（直接通过BlueprintManager判断是否已解锁）
             if (!blueprintManager.HasBlueprint(arch.archetypeId))
             {
@@ -1224,6 +1225,7 @@ namespace PopLife.Runtime
         /// </summary>
         public void BeginPlaceElevator()
         {
+            ConsumePendingPlacementClick();
             Cancel();
             mode = Mode.PlaceElevator;
             // 创建预览
@@ -1404,6 +1406,14 @@ namespace PopLife.Runtime
         }
 
         // 根据建筑类型播放对应的建造音效
+        /// <summary>
+        /// Consume the UI click that just entered placement mode so it cannot place in the same frame.
+        /// </summary>
+        private void ConsumePendingPlacementClick()
+        {
+            InputGateService.Instance?.ConsumeClick();
+        }
+
         private void PlayBuildSound(BuildingArchetype archetype)
         {
             if (archetype is ShelfArchetype shelfArchetype)

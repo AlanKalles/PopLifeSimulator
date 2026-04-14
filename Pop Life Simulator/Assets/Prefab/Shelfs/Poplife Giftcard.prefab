@@ -73,8 +73,8 @@ GameObject:
   - component: {fileID: 6886974022041076290}
   - component: {fileID: 3441007812514173137}
   - component: {fileID: 757778026820612121}
-  - component: {fileID: 726155699616091382}
   - component: {fileID: 6348065176380131712}
+  - component: {fileID: 7748772714983361587}
   m_Layer: 6
   m_Name: Poplife Giftcard
   m_TagString: Untagged
@@ -148,7 +148,7 @@ SpriteRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -7388646958885226710, guid: 97480e92a4e1f4cc5afc43389dea0177, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 97480e92a4e1f4cc5afc43389dea0177, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -183,7 +183,26 @@ MonoBehaviour:
   maxStock: 0
   todaySales: 0
   currentPrice: 0
---- !u!61 &726155699616091382
+--- !u!114 &6348065176380131712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9121478431460335272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 497d8d89b03e78343b25c57820b690b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionAnchor: {fileID: 164291020933503772}
+  queueAnchor: {fileID: 9221199980229949556}
+  queueDirection: {x: 1, y: 0, z: 0}
+  slotSpacing: 0.5
+  queueSlots: []
+  secondsPerCustomer: 1
+  arrivalDistance: 0.8
+--- !u!61 &7748772714983361587
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,34 +236,15 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.75, y: 1}
+  m_Offset: {x: 0.5, y: 0.5}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.28, y: 1.28}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 1, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.5, y: 2}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &6348065176380131712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9121478431460335272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 497d8d89b03e78343b25c57820b690b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactionAnchor: {fileID: 164291020933503772}
-  queueAnchor: {fileID: 9221199980229949556}
-  queueDirection: {x: -1, y: 0, z: 0}
-  slotSpacing: 0.5
-  queueSlots: []
-  secondsPerCustomer: 1
-  arrivalDistance: 0.8
