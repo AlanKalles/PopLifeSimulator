@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
   m_Name: Main1
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
-  questName: (Old)Main/1
+  questName: Main/1
   questType: 0
   deadlineDays: 0
   giverName: Midori

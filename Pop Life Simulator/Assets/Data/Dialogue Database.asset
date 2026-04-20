@@ -984,7 +984,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 157.78548
+        x: 156.06134
         y: 240.4571
         width: 160
         height: 30
@@ -1040,8 +1040,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 113.64827, y: 29.757141}
-    canvasZoom: 0.5590005
+    canvasScrollPosition: {x: 111.850555, y: 44.71488}
+    canvasZoom: 0.5800004
   - id: 4
     fields:
     - title: Title
@@ -3848,7 +3848,7 @@ MonoBehaviour:
       isGroup: 0
       nodeColor: 
       delaySimStatus: 0
-      falseConditionAction: Block
+      falseConditionAction: 
       conditionPriority: 2
       outgoingLinks:
       - originConversationID: 11
@@ -4206,8 +4206,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 3.4979901, y: 1.311736}
-    canvasZoom: 0.9984998
+    canvasScrollPosition: {x: 0, y: 0}
+    canvasZoom: 1
   - id: 12
     fields:
     - title: Title
