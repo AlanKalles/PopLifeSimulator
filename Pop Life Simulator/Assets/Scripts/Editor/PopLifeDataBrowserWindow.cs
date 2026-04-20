@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using PopLife.Data;
+using PopLife.UI;
 
 namespace PopLife.Editor
 {
@@ -31,7 +32,7 @@ namespace PopLife.Editor
         {
             "ShelfArchetype",
             "QuestDefinition",
-            "CodexMasterList",
+            "ShelfArchetype",
             "BufferData",
             "SeasonEventData",
             "InteractionEventData",
@@ -41,7 +42,9 @@ namespace PopLife.Editor
         };
 
         private const int TabShelves = 0;
+        private const int TabCodex = 2;
         private const int TabInteractionEvents = 5;
+        private const int TabNewsLibraries = 6;
 
         // ── State ─────────────────────────────────────────────────────────────
         private int currentTab = 0;
@@ -67,9 +70,18 @@ namespace PopLife.Editor
         private static readonly Color SelectedRowColor = new Color(0.22f, 0.48f, 0.72f);
         private static readonly Color HoverRowColor = new Color(0.3f, 0.3f, 0.3f, 0.4f);
         private static readonly Color ConvHeaderColor = new Color(0.18f, 0.35f, 0.22f);
+        private static readonly Color CodexHeaderColor = new Color(0.28f, 0.20f, 0.38f);
         private static readonly Color CorrectAnswerColor = new Color(0.2f, 0.55f, 0.25f);
 
         private int hoveredIndex = -1;
+        private int copiedIndex = -1;
+
+        // ── News Libraries state ───────────────────────────────────────────────
+        private SerializedObject newsLibrarySerializedObject;
+        private int selectedNewsItemIndex = -1;
+        private List<int> filteredNewsIndices = new List<int>();
+        private static readonly Color NewsHeaderColor = new Color(0.22f, 0.30f, 0.22f);
+        private static readonly Color NewsDeleteColor = new Color(1f, 0.45f, 0.45f);
 
         // ── Blueprint panel ───────────────────────────────────────────────────
         private bool blueprintFoldout = true;
@@ -118,6 +130,7 @@ namespace PopLife.Editor
             {
                 prevTab = currentTab;
                 selectedIndex = -1;
+                selectedNewsItemIndex = -1;
                 searchFilter = "";
                 DestroyEditor();
                 LoadAssets();
@@ -157,9 +170,18 @@ namespace PopLife.Editor
         private void DrawBody()
         {
             EditorGUILayout.BeginHorizontal();
-            DrawListPanel();
-            DrawSplitter();
-            DrawPropertyPanel();
+            if (currentTab == TabNewsLibraries)
+            {
+                DrawNewsListPanel();
+                DrawSplitter();
+                DrawNewsPropertyPanel();
+            }
+            else
+            {
+                DrawListPanel();
+                DrawSplitter();
+                DrawPropertyPanel();
+            }
             EditorGUILayout.EndHorizontal();
         }
 
@@ -263,9 +285,25 @@ namespace PopLife.Editor
 
             ScriptableObject so = items[selectedIndex];
 
-            // Header bar
+            // Header bar — editable name field renames the asset on commit
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
-            EditorGUILayout.LabelField(so.name, EditorStyles.boldLabel);
+            EditorGUI.BeginChangeCheck();
+            string editedName = EditorGUILayout.DelayedTextField(so.name, EditorStyles.boldLabel, GUILayout.ExpandWidth(true));
+            if (EditorGUI.EndChangeCheck() && !string.IsNullOrWhiteSpace(editedName) && editedName != so.name)
+            {
+                string assetPath = AssetDatabase.GetAssetPath(so);
+                string error = AssetDatabase.RenameAsset(assetPath, editedName);
+                if (string.IsNullOrEmpty(error))
+                {
+                    AssetDatabase.SaveAssets();
+                    items.Sort((a, b) => string.Compare(a.name, b.name, System.StringComparison.OrdinalIgnoreCase));
+                    RefreshFilter();
+                }
+                else
+                {
+                    Debug.LogWarning($"[DataBrowser] Rename failed: {error}");
+                }
+            }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Select in Project", EditorStyles.toolbarButton, GUILayout.Width(120)))
             {
@@ -305,6 +343,13 @@ namespace PopLife.Editor
                 EditorGUILayout.EndScrollView();
 
                 EditorGUILayout.EndHorizontal();
+            }
+            else if (currentTab == TabCodex)
+            {
+                // Codex tab: focused narrative editor
+                propertyScroll = EditorGUILayout.BeginScrollView(propertyScroll, GUILayout.ExpandHeight(true));
+                DrawCodexNarrativePanel(so);
+                EditorGUILayout.EndScrollView();
             }
             else
             {
@@ -522,6 +567,84 @@ namespace PopLife.Editor
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(4);
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // CODEX NARRATIVE PANEL
+        // ─────────────────────────────────────────────────────────────────────
+
+        private void DrawCodexNarrativePanel(ScriptableObject so)
+        {
+            ShelfArchetype shelf = so as ShelfArchetype;
+            if (shelf == null) return;
+
+            if (cachedEditor == null || cachedEditor.target != so)
+            {
+                DestroyEditor();
+                UnityEditor.Editor.CreateCachedEditor(so, null, ref cachedEditor);
+            }
+
+            SerializedObject serialized = cachedEditor.serializedObject;
+            serialized.Update();
+
+            // Section header
+            Rect headerRect = EditorGUILayout.GetControlRect(false, 22f);
+            EditorGUI.DrawRect(headerRect, CodexHeaderColor);
+            SerializedProperty displayNameProp = serialized.FindProperty("displayName");
+            string displayLabel = displayNameProp != null && !string.IsNullOrEmpty(displayNameProp.stringValue)
+                ? displayNameProp.stringValue
+                : shelf.name;
+            SerializedProperty categoryProp = serialized.FindProperty("category");
+            string categoryLabel = categoryProp != null ? categoryProp.enumDisplayNames[categoryProp.enumValueIndex] : "";
+            Rect headerLabelRect = new Rect(headerRect.x + 8, headerRect.y + 3, headerRect.width - 8, 16f);
+            EditorGUI.LabelField(headerLabelRect, $"  {displayLabel}   [{categoryLabel}]", EditorStyles.whiteLabel);
+
+            EditorGUILayout.Space(10);
+
+            EditorGUI.BeginChangeCheck();
+
+            // Description
+            EditorGUILayout.LabelField("Description", EditorStyles.boldLabel);
+            SerializedProperty descProp = serialized.FindProperty("description");
+            if (descProp != null)
+            {
+                descProp.stringValue = EditorGUILayout.TextArea(descProp.stringValue,
+                    GUILayout.MinHeight(100), GUILayout.ExpandWidth(true));
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("'description' field not found on this asset.", MessageType.Warning);
+            }
+
+            EditorGUILayout.Space(10);
+
+            // Usage Instruction
+            EditorGUILayout.LabelField("Usage Instruction", EditorStyles.boldLabel);
+            SerializedProperty usageProp = serialized.FindProperty("usageInstruction");
+            if (usageProp != null)
+            {
+                usageProp.stringValue = EditorGUILayout.TextArea(usageProp.stringValue,
+                    GUILayout.MinHeight(100), GUILayout.ExpandWidth(true));
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("'usageInstruction' field not found on this asset.", MessageType.Warning);
+            }
+
+            EditorGUILayout.Space(12);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                serialized.ApplyModifiedProperties();
+                EditorUtility.SetDirty(shelf);
+            }
+
+            if (GUILayout.Button("Save", GUILayout.Height(26)))
+            {
+                serialized.ApplyModifiedProperties();
+                EditorUtility.SetDirty(shelf);
+                AssetDatabase.SaveAssets();
+            }
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -820,6 +943,23 @@ namespace PopLife.Editor
             // Don't steal keys while a text field has focus
             if (GUIUtility.keyboardControl != 0) return;
 
+            // Ctrl+C : copy selected asset
+            if (e.control && e.keyCode == KeyCode.C)
+            {
+                copiedIndex = selectedIndex;
+                e.Use();
+                return;
+            }
+
+            // Ctrl+V : paste (duplicate copied asset)
+            if (e.control && e.keyCode == KeyCode.V)
+            {
+                if (copiedIndex >= 0 && copiedIndex < items.Count && items[copiedIndex] != null)
+                    DuplicateAsset(items[copiedIndex]);
+                e.Use();
+                return;
+            }
+
             // ← → : switch tabs
             if (e.keyCode == KeyCode.LeftArrow || e.keyCode == KeyCode.RightArrow)
             {
@@ -834,8 +974,23 @@ namespace PopLife.Editor
                 return;
             }
 
-            // ↑ ↓ : move selection in list
+            // ↑ ↓ : move selection — news items or normal SO list
             if (e.keyCode != KeyCode.UpArrow && e.keyCode != KeyCode.DownArrow) return;
+
+            if (currentTab == TabNewsLibraries)
+            {
+                if (filteredNewsIndices.Count == 0) { e.Use(); return; }
+                int curPos = filteredNewsIndices.IndexOf(selectedNewsItemIndex);
+                int nPos = e.keyCode == KeyCode.UpArrow
+                    ? (curPos <= 0 ? 0 : curPos - 1)
+                    : (curPos >= filteredNewsIndices.Count - 1 ? filteredNewsIndices.Count - 1 : curPos + 1);
+                if (curPos == -1) nPos = e.keyCode == KeyCode.UpArrow ? filteredNewsIndices.Count - 1 : 0;
+                selectedNewsItemIndex = filteredNewsIndices[nPos];
+                e.Use();
+                Repaint();
+                return;
+            }
+
             if (filteredIndices.Count == 0) return;
 
             int currentPos = filteredIndices.IndexOf(selectedIndex);
@@ -905,6 +1060,13 @@ namespace PopLife.Editor
 
             if (selectedIndex >= items.Count)
                 selectedIndex = -1;
+
+            if (currentTab == TabNewsLibraries)
+            {
+                newsLibrarySerializedObject = null;
+                EnsureNewsLibraryLoaded();
+                RefreshNewsFilter();
+            }
         }
 
         private void RefreshFilter()
@@ -969,6 +1131,286 @@ namespace PopLife.Editor
             Repaint();
         }
 
+        private void DuplicateAsset(ScriptableObject source)
+        {
+            string sourcePath = AssetDatabase.GetAssetPath(source);
+            string dir = System.IO.Path.GetDirectoryName(sourcePath);
+            string ext = System.IO.Path.GetExtension(sourcePath);
+            string newPath = AssetDatabase.GenerateUniqueAssetPath(
+                System.IO.Path.Combine(dir, source.name + "_Copy" + ext).Replace('\\', '/'));
+
+            if (!AssetDatabase.CopyAsset(sourcePath, newPath))
+            {
+                Debug.LogWarning($"[DataBrowser] Duplicate failed for: {sourcePath}");
+                return;
+            }
+
+            AssetDatabase.SaveAssets();
+            LoadAssets();
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (AssetDatabase.GetAssetPath(items[i]) == newPath)
+                {
+                    selectedIndex = i;
+                    DestroyEditor();
+                    break;
+                }
+            }
+
+            Repaint();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // NEWS LIBRARY PANEL
+        // ─────────────────────────────────────────────────────────────────────
+
+        private void EnsureNewsLibraryLoaded()
+        {
+            if (newsLibrarySerializedObject != null && newsLibrarySerializedObject.targetObject != null) return;
+
+            string[] guids = AssetDatabase.FindAssets("t:NewsLibrary");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (path.Contains("/ThirdParty/") || path.StartsWith("Packages/")) continue;
+                var lib = AssetDatabase.LoadAssetAtPath<NewsLibrary>(path);
+                if (lib != null)
+                {
+                    newsLibrarySerializedObject = new SerializedObject(lib);
+                    return;
+                }
+            }
+        }
+
+        private void RefreshNewsFilter()
+        {
+            filteredNewsIndices.Clear();
+            EnsureNewsLibraryLoaded();
+            if (newsLibrarySerializedObject == null) return;
+
+            newsLibrarySerializedObject.Update();
+            SerializedProperty prop = newsLibrarySerializedObject.FindProperty("newsTexts");
+            if (prop == null) return;
+
+            for (int i = 0; i < prop.arraySize; i++)
+            {
+                string text = prop.GetArrayElementAtIndex(i).stringValue;
+                if (string.IsNullOrEmpty(searchFilter) ||
+                    text.IndexOf(searchFilter, System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    filteredNewsIndices.Add(i);
+            }
+        }
+
+        private void DrawNewsListPanel()
+        {
+            EnsureNewsLibraryLoaded();
+            newsLibrarySerializedObject?.Update();
+            SerializedProperty newsTextsProp = newsLibrarySerializedObject?.FindProperty("newsTexts");
+            int totalCount = newsTextsProp?.arraySize ?? 0;
+
+            EditorGUILayout.BeginVertical(GUILayout.Width(ListPanelWidth), GUILayout.ExpandHeight(true));
+
+            // Search toolbar
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            GUILayout.Label("Search", GUILayout.Width(45));
+            string newFilter = GUILayout.TextField(searchFilter, EditorStyles.toolbarSearchField);
+            if (newFilter != searchFilter)
+            {
+                searchFilter = newFilter;
+                RefreshNewsFilter();
+                selectedNewsItemIndex = -1;
+            }
+            if (GUILayout.Button("✕", EditorStyles.toolbarButton, GUILayout.Width(20)))
+            {
+                searchFilter = "";
+                RefreshNewsFilter();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.LabelField($"{filteredNewsIndices.Count} / {totalCount} items",
+                EditorStyles.centeredGreyMiniLabel);
+
+            listScroll = EditorGUILayout.BeginScrollView(listScroll, GUILayout.ExpandHeight(true));
+
+            if (newsTextsProp == null)
+            {
+                EditorGUILayout.HelpBox("No NewsLibrary asset found in the project.", MessageType.Warning);
+            }
+            else
+            {
+                hoveredIndex = -1;
+                for (int fi = 0; fi < filteredNewsIndices.Count; fi++)
+                {
+                    int realIndex = filteredNewsIndices[fi];
+                    string text = newsTextsProp.GetArrayElementAtIndex(realIndex).stringValue;
+                    bool isSelected = realIndex == selectedNewsItemIndex;
+
+                    Rect rowRect = EditorGUILayout.GetControlRect(false, 22f);
+                    if (rowRect.Contains(Event.current.mousePosition)) hoveredIndex = fi;
+
+                    if (isSelected)
+                        EditorGUI.DrawRect(rowRect, SelectedRowColor);
+                    else if (hoveredIndex == fi)
+                        EditorGUI.DrawRect(rowRect, HoverRowColor);
+
+                    Rect indexRect = new Rect(rowRect.x + 4, rowRect.y + 4, 28, 15);
+                    Rect labelRect = new Rect(rowRect.x + 36, rowRect.y + 3, rowRect.width - 40, 16);
+
+                    GUI.Label(indexRect, $"#{realIndex + 1}", EditorStyles.miniLabel);
+                    string preview = string.IsNullOrEmpty(text) ? "(empty)" :
+                        text.Length > 48 ? text.Substring(0, 48) + "…" : text;
+                    GUI.Label(labelRect, preview, isSelected ? EditorStyles.whiteLabel : EditorStyles.label);
+
+                    if (Event.current.type == EventType.MouseDown && rowRect.Contains(Event.current.mousePosition))
+                    {
+                        selectedNewsItemIndex = realIndex;
+                        GUI.FocusControl(null);
+                        Event.current.Use();
+                        Repaint();
+                    }
+                }
+            }
+
+            EditorGUILayout.EndScrollView();
+
+            EditorGUILayout.Space(4);
+            if (GUILayout.Button("+ Add News Item", GUILayout.Height(26)))
+                AddNewsItem(newsTextsProp);
+            EditorGUILayout.Space(2);
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawNewsPropertyPanel()
+        {
+            EnsureNewsLibraryLoaded();
+            newsLibrarySerializedObject?.Update();
+            SerializedProperty newsTextsProp = newsLibrarySerializedObject?.FindProperty("newsTexts");
+
+            EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+
+            if (newsTextsProp == null)
+            {
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.LabelField("No NewsLibrary asset found.", EditorStyles.centeredGreyMiniLabel);
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndVertical();
+                return;
+            }
+
+            if (selectedNewsItemIndex < 0 || selectedNewsItemIndex >= newsTextsProp.arraySize)
+            {
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.LabelField("← Select a news item to edit", EditorStyles.centeredGreyMiniLabel);
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndVertical();
+                return;
+            }
+
+            // Header bar
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            Rect headerRect = GUILayoutUtility.GetRect(0, 22f, GUILayout.ExpandWidth(true));
+            EditorGUI.DrawRect(headerRect, NewsHeaderColor);
+            EditorGUI.LabelField(new Rect(headerRect.x + 6, headerRect.y + 3, headerRect.width - 70, 16),
+                $"  News Item #{selectedNewsItemIndex + 1}", EditorStyles.whiteLabel);
+
+            GUI.backgroundColor = NewsDeleteColor;
+            if (GUI.Button(new Rect(headerRect.xMax - 64, headerRect.y + 2, 60, 18), "Delete", EditorStyles.miniButton))
+            {
+                GUI.backgroundColor = Color.white;
+                if (EditorUtility.DisplayDialog("Delete News Item",
+                    $"Delete news item #{selectedNewsItemIndex + 1}?", "Delete", "Cancel"))
+                {
+                    DeleteNewsItem(newsTextsProp, selectedNewsItemIndex);
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.EndVertical();
+                    return;
+                }
+            }
+            GUI.backgroundColor = Color.white;
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(8);
+
+            propertyScroll = EditorGUILayout.BeginScrollView(propertyScroll, GUILayout.ExpandHeight(true));
+
+            SerializedProperty item = newsTextsProp.GetArrayElementAtIndex(selectedNewsItemIndex);
+
+            EditorGUI.BeginChangeCheck();
+            item.stringValue = EditorGUILayout.TextArea(item.stringValue,
+                GUILayout.MinHeight(120), GUILayout.ExpandWidth(true));
+            if (EditorGUI.EndChangeCheck())
+            {
+                newsLibrarySerializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
+            }
+
+            EditorGUILayout.Space(4);
+            EditorGUILayout.LabelField($"Characters: {item.stringValue.Length}", EditorStyles.miniLabel);
+            EditorGUILayout.Space(10);
+
+            // Move up / Move down
+            EditorGUILayout.BeginHorizontal();
+            GUI.enabled = selectedNewsItemIndex > 0;
+            if (GUILayout.Button("▲ Move Up", GUILayout.Height(24)))
+            {
+                newsTextsProp.MoveArrayElement(selectedNewsItemIndex, selectedNewsItemIndex - 1);
+                selectedNewsItemIndex--;
+                newsLibrarySerializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
+                RefreshNewsFilter();
+            }
+            GUI.enabled = selectedNewsItemIndex < newsTextsProp.arraySize - 1;
+            if (GUILayout.Button("▼ Move Down", GUILayout.Height(24)))
+            {
+                newsTextsProp.MoveArrayElement(selectedNewsItemIndex, selectedNewsItemIndex + 1);
+                selectedNewsItemIndex++;
+                newsLibrarySerializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
+                RefreshNewsFilter();
+            }
+            GUI.enabled = true;
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Space(6);
+
+            if (GUILayout.Button("Save", GUILayout.Height(26)))
+            {
+                newsLibrarySerializedObject.ApplyModifiedProperties();
+                EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
+                AssetDatabase.SaveAssets();
+            }
+
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
+        }
+
+        private void AddNewsItem(SerializedProperty newsTextsProp)
+        {
+            if (newsTextsProp == null) return;
+            newsLibrarySerializedObject.Update();
+            newsTextsProp.InsertArrayElementAtIndex(newsTextsProp.arraySize);
+            newsTextsProp.GetArrayElementAtIndex(newsTextsProp.arraySize - 1).stringValue = "";
+            newsLibrarySerializedObject.ApplyModifiedProperties();
+            EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
+            selectedNewsItemIndex = newsTextsProp.arraySize - 1;
+            RefreshNewsFilter();
+            Repaint();
+        }
+
+        private void DeleteNewsItem(SerializedProperty newsTextsProp, int index)
+        {
+            if (newsTextsProp == null || index < 0 || index >= newsTextsProp.arraySize) return;
+            newsLibrarySerializedObject.Update();
+            newsTextsProp.DeleteArrayElementAtIndex(index);
+            newsLibrarySerializedObject.ApplyModifiedProperties();
+            EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
+            selectedNewsItemIndex = -1;
+            RefreshNewsFilter();
+            Repaint();
+        }
+
         // ── Helpers ────────────────────────────────────────────────────────────
         private static System.Type FindType(string typeName)
         {
@@ -999,6 +1441,7 @@ namespace PopLife.Editor
                 dbSerializedObject.Dispose();
                 dbSerializedObject = null;
             }
+            newsLibrarySerializedObject = null;
         }
     }
 }
