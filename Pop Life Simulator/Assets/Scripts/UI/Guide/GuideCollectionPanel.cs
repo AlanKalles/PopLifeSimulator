@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PopLife.Data;
@@ -19,6 +20,7 @@ namespace PopLife.UI.Guide
         private CanvasGroup canvasGroup;
         private bool isShowing;
         private List<GuideCollectionEntry> spawnedEntries = new List<GuideCollectionEntry>();
+        private Action onCloseCallback;
 
         private void Awake()
         {
@@ -57,8 +59,9 @@ namespace PopLife.UI.Guide
         /// <summary>
         /// 显示集合面板
         /// </summary>
-        public void Show()
+        public void Show(Action closeCallback = null)
         {
+            onCloseCallback = closeCallback;
             isShowing = true;
             SetCanvasGroupVisible(true);
             RefreshList();
@@ -73,6 +76,10 @@ namespace PopLife.UI.Guide
 
             isShowing = false;
             SetCanvasGroupVisible(false);
+
+            var callback = onCloseCallback;
+            onCloseCallback = null;
+            callback?.Invoke();
         }
 
         /// <summary>
