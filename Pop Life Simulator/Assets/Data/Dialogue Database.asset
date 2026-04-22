@@ -610,8 +610,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 51.312157}
-    canvasZoom: 0.4900004
+    canvasScrollPosition: {x: 83.80922, y: 99.57732}
+    canvasZoom: 0.6000002
   - id: 2
     fields:
     - title: Title
@@ -3447,11 +3447,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: Can you suck a dildo?
+        value: What are the different between glass and silicone dildos?
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Can you suck a dildo?
+        value: What are the different between glass and silicone dildos?
         type: 0
         typeString: 
       - title: Sequence
@@ -3463,7 +3463,7 @@ MonoBehaviour:
       isGroup: 0
       nodeColor: 
       delaySimStatus: 0
-      falseConditionAction: 
+      falseConditionAction: Block
       conditionPriority: 2
       outgoingLinks:
       - originConversationID: 10
@@ -3514,11 +3514,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: Yes but you should wash it.
+        value: I mean...You have to try them yourself to figure out your preference.
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Yes but you should wash it.
+        value: I mean...You have to try them yourself to figure out your preference.
         type: 0
         typeString: 
       - title: Sequence
@@ -3540,7 +3540,7 @@ MonoBehaviour:
         isConnector: 0
         priority: 2
       conditionsString: 
-      userScript: Variable["InteractionCorrect"] = true
+      userScript: 
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -3569,11 +3569,13 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: No.
+        value: 'Glass dildos are more easily hidden in plain sight if you have guests
+          in your home. '
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: No.
+        value: 'Glass dildos are more easily hidden in plain sight if you have guests
+          in your home. '
         type: 0
         typeString: 
       - title: Sequence
@@ -3624,11 +3626,13 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: Ew why are you asking me?
+        value: If you prefer a colder, smoother, and slippery device, then go with
+          a glass dildo. Silicone is softer and squishier.
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Ew why are you asking me?
+        value: If you prefer a colder, smoother, and slippery device, then go with
+          a glass dildo. Silicone is softer and squishier.
         type: 0
         typeString: 
       - title: Sequence
@@ -3650,7 +3654,7 @@ MonoBehaviour:
         isConnector: 0
         priority: 2
       conditionsString: 
-      userScript: 
+      userScript: Variable["InteractionCorrect"] = true
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -3683,7 +3687,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: That's fucking awesome!
+        value: Woah! Maybe I should try it out.
         type: 0
         typeString: 
       - title: Sequence
@@ -3732,7 +3736,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Oh.... awe...
+        value: Okay...
         type: 0
         typeString: 
       - title: Sequence
@@ -9031,8 +9035,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 259.54544, y: 0}
-    canvasZoom: 0.8800001
+    canvasScrollPosition: {x: 262.8733, y: 3.6692872}
+    canvasZoom: 0.8959999
   - id: 23
     fields:
     - title: Title
