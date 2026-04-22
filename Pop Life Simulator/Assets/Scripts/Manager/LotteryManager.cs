@@ -376,6 +376,19 @@ namespace PopLife
             }
         }
 
+        /// <summary>
+        /// 清除存档并重置内存状态
+        /// 必须同时重置内存数据，否则后续 SaveState 会把陈旧数据写回磁盘
+        /// </summary>
+        public void ClearSaveAndResetState()
+        {
+            saveData = new LotterySaveData();
+            hasAnnouncedToday = false;
+            isDrawDayToday = false;
+            daysUntilDraw = 0;
+            ClearSave();
+        }
+
         #endregion
     }
 }

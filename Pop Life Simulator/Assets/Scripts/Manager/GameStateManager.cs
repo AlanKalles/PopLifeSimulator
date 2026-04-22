@@ -382,6 +382,19 @@ namespace PopLife.Manager
                 }
             }
 
+            // LotteryManager 的 Awake (-40) 早于 GameStateManager (0)，内存已加载旧存档。
+            // 必须同时重置内存与磁盘，否则下一次 SaveState 会把旧数据写回。
+            if (LotteryManager.Instance != null)
+            {
+                LotteryManager.Instance.ClearSaveAndResetState();
+                Debug.Log("[GameState] 已重置 Lottery 存档与内存状态");
+            }
+            else
+            {
+                LotteryManager.ClearSave();
+                Debug.Log("[GameState] LotteryManager 未初始化，仅删除了 Lottery.es3 文件");
+            }
+
             // 2. 重置 Customers.json（清除运行时统计数据，保留身份信息）
             ResetCustomersJson();
 
