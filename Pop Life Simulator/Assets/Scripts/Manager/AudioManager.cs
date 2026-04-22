@@ -118,6 +118,33 @@ namespace PopLife
             return audioConfig != null && audioConfig.HasSound(key);
         }
 
+        /// <summary>
+        /// 播放角色情感音效（对话系统 Emote Sequencer 命令调用）
+        /// </summary>
+        /// <param name="actorName">角色名称（Dialogue Database 中的 Actor Name）</param>
+        /// <param name="emoteType">情感类型（如 "Laugh", "Sigh", "Gasp"）</param>
+        public void PlayEmote(string actorName, string emoteType)
+        {
+            if (audioConfig == null)
+            {
+                Debug.LogWarning($"[AudioManager] AudioConfig 未配置，无法播放情感音效: {actorName}/{emoteType}");
+                return;
+            }
+
+            var entry = audioConfig.GetEmote(actorName, emoteType);
+            if (entry == null)
+            {
+                Debug.LogWarning($"[AudioManager] 未找到情感音效: actor='{actorName}', emote='{emoteType}'");
+                return;
+            }
+
+            var clip = entry.GetRandomClip();
+            if (clip != null && sfxSource != null)
+            {
+                sfxSource.PlayOneShot(clip, masterVolume * sfxVolume * entry.volumeScale);
+            }
+        }
+
         #endregion
 
         #region 背景音乐播放
