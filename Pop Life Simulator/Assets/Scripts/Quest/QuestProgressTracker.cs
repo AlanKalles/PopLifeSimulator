@@ -454,20 +454,40 @@ namespace PopLife.Quest
         }
 
         /// <summary>
-        /// 统计当前货架数量（不含设施，可选按类别过滤）
+        /// 统计当前货架数量（不含设施）
+        /// 过滤优先级（互斥，只走一个分支）：
+        /// 1. useFilterArchetypes=true：按 ShelfArchetype 列表 OR 过滤；列表无效时直接返回 0（不回退到 category）
+        /// 2. 否则 useFilterCategory=true：按 ProductCategory 过滤
+        /// 3. 否则：不过滤
         /// </summary>
         private int CountShelves(QuestCondition cond)
         {
             var wg = WorldGrid.Instance;
             if (wg == null) return 0;
 
+            // 优先级 1: archetype 列表过滤（锁死分支）
+            bool useArchetypeFilter = cond.useFilterArchetypes && HasAnyValidArchetype(cond.filterArchetypes);
+            if (cond.useFilterArchetypes && !useArchetypeFilter)
+                return 0; // 勾选了但列表无效：计数恒 0（防止 fall through 误匹配）
+
             int count = 0;
             foreach (var shelf in wg.AllShelves())
             {
-                if (cond.useFilterCategory)
+                var sa = shelf.archetype as ShelfArchetype;
+                if (sa == null) continue;
+
+                if (useArchetypeFilter)
                 {
-                    if (shelf.archetype is ShelfArchetype sa && sa.category == cond.filterCategory)
-                        count++;
+                    for (int i = 0; i < cond.filterArchetypes.Length; i++)
+                    {
+                        var candidate = cond.filterArchetypes[i];
+                        if (candidate == null) continue; // 跳过空槽
+                        if (candidate == sa) { count++; break; }
+                    }
+                }
+                else if (cond.useFilterCategory)
+                {
+                    if (sa.category == cond.filterCategory) count++;
                 }
                 else
                 {
@@ -476,6 +496,18 @@ namespace PopLife.Quest
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// 判断 ShelfArchetype 列表是否含有任何有效元素
+        /// 无效情况：null 数组 / 长度 0 / 全部元素为 null
+        /// </summary>
+        private static bool HasAnyValidArchetype(ShelfArchetype[] list)
+        {
+            if (list == null || list.Length == 0) return false;
+            for (int i = 0; i < list.Length; i++)
+                if (list[i] != null) return true;
+            return false;
         }
 
         #endregion

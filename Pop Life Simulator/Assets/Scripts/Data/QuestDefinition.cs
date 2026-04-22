@@ -118,6 +118,39 @@ namespace PopLife.Data
         {
             if (conditions != null && entryTexts != null && conditions.Length != entryTexts.Length)
                 Debug.LogWarning($"[QuestDefinition] {name}: conditions({conditions.Length}) 与 entryTexts({entryTexts.Length}) 长度不一致");
+
+            if (conditions == null) return;
+
+            for (int i = 0; i < conditions.Length; i++)
+            {
+                var cond = conditions[i];
+                if (cond == null) continue;
+
+                // scope 语义警告：PlaceShelves/PlaceBuildings 运行时恒为快照语义，scope 字段被忽略
+                bool isBuildingCount = cond.conditionType == QuestConditionType.PlaceShelves
+                                       || cond.conditionType == QuestConditionType.PlaceBuildings;
+                if (isBuildingCount && cond.scope != CountScope.Current)
+                {
+                    Debug.LogWarning($"[QuestDefinition] {name} Entry{i + 1}: {cond.conditionType} 运行时恒为快照语义，scope={cond.scope} 实际会被忽略。建议配成 Current。");
+                }
+
+                // 空 archetype 列表警告：仅对 PlaceShelves + useFilterArchetypes=true 检查
+                if (cond.conditionType == QuestConditionType.PlaceShelves && cond.useFilterArchetypes)
+                {
+                    if (!HasAnyValidShelfArchetype(cond.filterArchetypes))
+                    {
+                        Debug.LogWarning($"[QuestDefinition] {name} Entry{i + 1}: 勾选了 useFilterArchetypes 但 filterArchetypes 无有效元素，该任务永远无法完成。");
+                    }
+                }
+            }
+        }
+
+        private static bool HasAnyValidShelfArchetype(ShelfArchetype[] list)
+        {
+            if (list == null || list.Length == 0) return false;
+            for (int i = 0; i < list.Length; i++)
+                if (list[i] != null) return true;
+            return false;
         }
     }
 }

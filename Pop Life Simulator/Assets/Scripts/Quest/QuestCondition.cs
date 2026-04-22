@@ -53,5 +53,11 @@ namespace PopLife.Quest
 
         [Tooltip("商品类别过滤（启用 useFilterCategory 时有效）")]
         public ProductCategory filterCategory;
+
+        [Tooltip("是否启用具体 ShelfArchetype 过滤（仅 PlaceShelves 使用）。勾选后锁死在 archetype 分支，不会回退到 useFilterCategory")]
+        public bool useFilterArchetypes = false;
+
+        [Tooltip("指定的 ShelfArchetype 列表（拖入 SO），OR 关系。启用 useFilterArchetypes 时有效；列表无效时计数恒 0")]
+        public ShelfArchetype[] filterArchetypes;
     }
 }
