@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfcc2cb3d78f877428f6abb5df9e47a9, type: 3}
+  m_Name: Dildos_002
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.InteractionEventData
+  eventId: Dildos_002
+  useFilterCategory: 1
+  requiredCategory: 3
+  useFilterShelf: 1
+  requiredShelves:
+  - {fileID: 11400000, guid: dc2cf04e956aef24f8f4edb9b09765b4, type: 2}
+  - {fileID: 11400000, guid: 32537223284a8564da8e7bdbc07976fd, type: 2}
+  conversationTitle: Interaction/Dildos_002
+  rewards:
+  - type: 1
+    amount: 20
+    itemId: 
+  bubbleTimeout: 10

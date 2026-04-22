@@ -3447,11 +3447,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: 
+        value: Can you suck a dildo?
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: What are the different between glass and silicone dildos?
+        value: Can you suck a dildo?
         type: 0
         typeString: 
       - title: Sequence
@@ -3514,11 +3514,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: I mean...You have to try them yourself to figure out your preference.
+        value: Yes but you should wash it.
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I mean...You have to try them yourself to figure out your preference.
+        value: Yes but you should wash it.
         type: 0
         typeString: 
       - title: Sequence
@@ -3540,7 +3540,7 @@ MonoBehaviour:
         isConnector: 0
         priority: 2
       conditionsString: 
-      userScript: 
+      userScript: Variable["InteractionCorrect"] = true
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -3569,13 +3569,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: Glass dildos are more easily hidden in plain sight if you have guests
-          in your home.
+        value: No.
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Glass dildos are more easily hidden in plain sight if you have guests
-          in your home.
+        value: No.
         type: 0
         typeString: 
       - title: Sequence
@@ -3626,13 +3624,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: If you prefer a colder, smoother, and slippery device, then go with
-          a glass dildo. Silicone is softer and squishier.
+        value: Ew why are you asking me?
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: If you prefer a colder, smoother, and slippery device, then go with
-          a glass dildo. Silicone is softer and squishier.
+        value: Ew why are you asking me?
         type: 0
         typeString: 
       - title: Sequence
@@ -3654,7 +3650,7 @@ MonoBehaviour:
         isConnector: 0
         priority: 2
       conditionsString: 
-      userScript: Variable["InteractionCorrect"] = true
+      userScript: 
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -3687,7 +3683,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Woah! Maybe I should try it out.
+        value: That's fucking awesome!
         type: 0
         typeString: 
       - title: Sequence
@@ -3736,7 +3732,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Okay...
+        value: Oh.... awe...
         type: 0
         typeString: 
       - title: Sequence
@@ -6089,11 +6085,13 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: 
+        value: How do I know if my sex toy is safe to use in a bath, hot tub, or
+          shower?
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: How do I know if my sex toy is safe to use in a bath, hot tub or shower?
+        value: How do I know if my sex toy is safe to use in a bath, hot tub, or
+          shower?
         type: 0
         typeString: 
       - title: Sequence
@@ -10033,11 +10031,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: 
+        value: What's something suitable for beginners at sex?
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Is it normal to feel embarrassed or unsure?
+        value: What's something suitable for beginners at sex?
         type: 0
         typeString: 
       - title: Sequence
@@ -10100,11 +10098,13 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: No. You are weird.
+        value: 'Well it depends on what you are looking for, but external vibrators
+          are good reguardless of anatonmy. '
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: No. You are weird.
+        value: 'Well it depends on what you are looking for, but external vibrators
+          are good reguardless of anatonmy. '
         type: 0
         typeString: 
       - title: Sequence
@@ -10126,7 +10126,7 @@ MonoBehaviour:
         isConnector: 0
         priority: 2
       conditionsString: 
-      userScript: 
+      userScript: Variable["InteractionCorrect"] = true
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -10155,13 +10155,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: Yes and you are not alone. Sex and self pleasure is often seen as
-          taboo but it is perfectally normal to enjoy sex and self pleasure!
+        value: Dildos are awesome!
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Yes and you are not alone. Sex and self pleasure is often seen as
-          taboo but it is perfectally normal to enjoy sex and self pleasure!
+        value: Dildos are awesome!
         type: 0
         typeString: 
       - title: Sequence
@@ -10183,7 +10181,7 @@ MonoBehaviour:
         isConnector: 0
         priority: 2
       conditionsString: 
-      userScript: Variable["InteractionCorrect"] = true
+      userScript: 
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -10212,11 +10210,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: I never felt embarrassed or unsure so you probally shouldn't either.
+        value: Whatever intrests you!
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I never felt embarrassed or unsure so you probally shouldn't either.
+        value: Whatever intrests you!
         type: 0
         typeString: 
       - title: Sequence
@@ -10271,7 +10269,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Oh thank god. I was worried.
+        value: That's helpful!
         type: 0
         typeString: 
       - title: Sequence
@@ -10320,7 +10318,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Oh.... Uh.... Ok... Sorry for asking...
+        value: Okay...?
         type: 0
         typeString: 
       - title: Sequence
