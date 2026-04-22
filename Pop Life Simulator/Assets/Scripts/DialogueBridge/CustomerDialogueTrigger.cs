@@ -166,7 +166,57 @@ namespace PopLife.DialogueBridge
 
         #endregion
 
+        #region Dialogue System Messages
+
+        /// <summary>
+        /// Pixel Crushers 在对话启动时自动发送此 Unity message 到 conversant 的 GameObject 及其 children。
+        /// 此时 conversation 已 active，可以安全调用 SetActorPortraitSprite。
+        /// Display Name 也在这里覆盖，保证第一个 subtitle 显示时已生效。
+        /// </summary>
+        private void OnConversationStart(Transform actor)
+        {
+            ApplyCustomerIdentityToDialogue();
+        }
+
+        #endregion
+
         #region Private Methods
+
+        /// <summary>
+        /// 把当前顾客的 Display Name 和 portrait 动态覆盖到 "Customer" actor 上。
+        /// 所有顾客共享 "Customer" actor，每次对话开始时覆盖一次。
+        /// Portrait 按 Resources/CustomerPortraits/{customerId}_{name} 加载；
+        /// 找不到时传 null，由 Standard Dialogue UI 按配置隐藏 portrait 格。
+        /// </summary>
+        private void ApplyCustomerIdentityToDialogue()
+        {
+            if (customerRecord == null) return;
+
+            // 1. Display Name — Pixel Crushers UI 优先读 Display Name，fallback 到 actor 主键
+            string displayName = string.IsNullOrEmpty(customerRecord.name)
+                ? "Customer"
+                : customerRecord.name;
+            DialogueLua.SetActorField("Customer", "Display Name", displayName);
+
+            // 2. Portrait — 按 {customerId}_{name} 约定从 Resources 加载
+            Sprite portrait = null;
+            if (!string.IsNullOrEmpty(customerRecord.customerId) && !string.IsNullOrEmpty(customerRecord.name))
+            {
+                string portraitPath = $"CustomerPortraits/{customerRecord.customerId}_{customerRecord.name}";
+                portrait = Resources.Load<Sprite>(portraitPath);
+
+                if (portrait == null && debugMode)
+                {
+                    Debug.Log($"[CustomerDialogueTrigger] Portrait 未找到: {portraitPath}");
+                }
+            }
+
+            // 传 null 时由 Standard Dialogue UI 的 portrait Image 处理（通常配置成自动隐藏）
+            if (DialogueManager.instance != null)
+            {
+                DialogueManager.instance.SetActorPortraitSprite("Customer", portrait);
+            }
+        }
 
         /// <summary>
         /// Sync customer data to Lua variables for use in dialogue conditions
