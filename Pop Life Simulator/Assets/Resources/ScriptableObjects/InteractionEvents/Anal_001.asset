@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfcc2cb3d78f877428f6abb5df9e47a9, type: 3}
+  m_Name: Anal_001
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.InteractionEventData
+  eventId: Anal_001
+  useFilterCategory: 1
+  requiredCategory: 1
+  useFilterShelf: 1
+  requiredShelves:
+  - {fileID: 11400000, guid: 429eb24b772c5f2439529fcffa68635b, type: 2}
+  - {fileID: 11400000, guid: ce19dc52efe94a047b70b1e61c7834fc, type: 2}
+  conversationTitle: Interaction/Anal_001
+  rewards:
+  - type: 1
+    amount: 20
+    itemId: 
+  bubbleTimeout: 10
