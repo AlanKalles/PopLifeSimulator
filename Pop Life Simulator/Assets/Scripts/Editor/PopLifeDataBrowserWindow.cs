@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using PopLife.Data;
 using PopLife.UI;
+using PixelCrushers.DialogueSystem;
 
 namespace PopLife.Editor
 {
@@ -92,7 +93,7 @@ namespace PopLife.Editor
         private static readonly Color LockedColor = new Color(0.55f, 0.22f, 0.22f);
 
         // ── Dialogue Database ─────────────────────────────────────────────────
-        private ScriptableObject dialogueDatabase;
+        private DialogueDatabase dialogueDatabase;
         private SerializedObject dbSerializedObject;
 
         // Foldout state for conversation panel
@@ -656,7 +657,7 @@ namespace PopLife.Editor
             if (dialogueDatabase != null && dbSerializedObject != null) return;
 
             // Try to find the main dialogue database (prefer "Dialogue Database.asset" over auto-backup)
-            string[] guids = AssetDatabase.FindAssets("Dialogue Database t:ScriptableObject");
+            string[] guids = AssetDatabase.FindAssets("Dialogue Database t:DialogueDatabase");
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
@@ -664,7 +665,7 @@ namespace PopLife.Editor
                     continue;
                 if (path.EndsWith("Dialogue Database.asset"))
                 {
-                    dialogueDatabase = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                    dialogueDatabase = AssetDatabase.LoadAssetAtPath<DialogueDatabase>(path);
                     if (dialogueDatabase != null)
                     {
                         dbSerializedObject = new SerializedObject(dialogueDatabase);
@@ -678,7 +679,7 @@ namespace PopLife.Editor
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 if (path.Contains("Auto-Backup") || path.Contains("/Demo/")) continue;
-                dialogueDatabase = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                dialogueDatabase = AssetDatabase.LoadAssetAtPath<DialogueDatabase>(path);
                 if (dialogueDatabase != null)
                 {
                     dbSerializedObject = new SerializedObject(dialogueDatabase);
@@ -1116,6 +1117,9 @@ namespace PopLife.Editor
             AssetDatabase.CreateAsset(newSO, path);
             AssetDatabase.SaveAssets();
 
+            if (currentTab == TabInteractionEvents)
+                AutoCreateInteractionConversation(newSO, path);
+
             LoadAssets();
 
             for (int i = 0; i < items.Count; i++)
@@ -1276,7 +1280,7 @@ namespace PopLife.Editor
 
             EditorGUILayout.Space(4);
             if (GUILayout.Button("+ Add News Item", GUILayout.Height(26)))
-                AddNewsItem(newsTextsProp);
+                AddNewsItem();
             EditorGUILayout.Space(2);
 
             EditorGUILayout.EndVertical();
@@ -1322,7 +1326,7 @@ namespace PopLife.Editor
                 if (EditorUtility.DisplayDialog("Delete News Item",
                     $"Delete news item #{selectedNewsItemIndex + 1}?", "Delete", "Cancel"))
                 {
-                    DeleteNewsItem(newsTextsProp, selectedNewsItemIndex);
+                    DeleteNewsItem(selectedNewsItemIndex);
                     EditorGUILayout.EndHorizontal();
                     EditorGUILayout.EndVertical();
                     return;
@@ -1386,29 +1390,162 @@ namespace PopLife.Editor
             EditorGUILayout.EndVertical();
         }
 
-        private void AddNewsItem(SerializedProperty newsTextsProp)
+        private void AddNewsItem()
         {
-            if (newsTextsProp == null) return;
+            EnsureNewsLibraryLoaded();
+            if (newsLibrarySerializedObject == null) return;
             newsLibrarySerializedObject.Update();
-            newsTextsProp.InsertArrayElementAtIndex(newsTextsProp.arraySize);
-            newsTextsProp.GetArrayElementAtIndex(newsTextsProp.arraySize - 1).stringValue = "";
+            SerializedProperty prop = newsLibrarySerializedObject.FindProperty("newsTexts");
+            if (prop == null) return;
+            prop.InsertArrayElementAtIndex(prop.arraySize);
+            prop.GetArrayElementAtIndex(prop.arraySize - 1).stringValue = "";
             newsLibrarySerializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
-            selectedNewsItemIndex = newsTextsProp.arraySize - 1;
+            selectedNewsItemIndex = prop.arraySize - 1;
             RefreshNewsFilter();
             Repaint();
         }
 
-        private void DeleteNewsItem(SerializedProperty newsTextsProp, int index)
+        private void DeleteNewsItem(int index)
         {
-            if (newsTextsProp == null || index < 0 || index >= newsTextsProp.arraySize) return;
+            EnsureNewsLibraryLoaded();
+            if (newsLibrarySerializedObject == null) return;
             newsLibrarySerializedObject.Update();
-            newsTextsProp.DeleteArrayElementAtIndex(index);
+            SerializedProperty prop = newsLibrarySerializedObject.FindProperty("newsTexts");
+            if (prop == null || index < 0 || index >= prop.arraySize) return;
+            prop.DeleteArrayElementAtIndex(index);
             newsLibrarySerializedObject.ApplyModifiedProperties();
             EditorUtility.SetDirty(newsLibrarySerializedObject.targetObject);
             selectedNewsItemIndex = -1;
             RefreshNewsFilter();
             Repaint();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // INTERACTION EVENT AUTO-CONVERSATION
+        // ─────────────────────────────────────────────────────────────────────
+
+        private const string InteractionConversationPrefix = "Interaction/";
+        private const string InteractionCustomerActor = "Customer";
+        private const string InteractionPlayerActor = "Player";
+
+        private void AutoCreateInteractionConversation(ScriptableObject so, string assetPath)
+        {
+            EnsureDialogueDatabaseLoaded();
+            if (dialogueDatabase == null)
+            {
+                Debug.LogWarning("[DataBrowser] Cannot auto-create conversation: Dialogue Database not found.");
+                return;
+            }
+
+            string assetName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+            string convTitle = InteractionConversationPrefix + assetName;
+
+            // Skip if conversation already exists
+            if (dialogueDatabase.conversations.Exists(c => c.Title == convTitle))
+            {
+                Debug.Log($"[DataBrowser] Conversation '{convTitle}' already exists, skipping.");
+                SetConversationTitle(so, convTitle);
+                return;
+            }
+
+            var template = Template.FromDefault();
+            int customerActorId = EnsureInteractionActor(template, InteractionCustomerActor, false);
+            int playerActorId   = EnsureInteractionActor(template, InteractionPlayerActor,   true);
+            int convId = template.GetNextConversationID(dialogueDatabase);
+
+            var conv = template.CreateConversation(convId, convTitle);
+            conv.ActorID = customerActorId;
+            conv.ConversantID = playerActorId;
+
+            // Entry 0: START
+            var e0 = template.CreateDialogueEntry(0, convId, "START");
+            e0.ActorID = customerActorId;
+            e0.ConversantID = playerActorId;
+            e0.Sequence = "None()";
+            e0.canvasRect = new Rect(50, 50, 160, 30);
+            e0.outgoingLinks.Add(new Link(convId, 0, convId, 1));
+
+            // Entry 1: Question
+            var e1 = template.CreateDialogueEntry(1, convId, "Question");
+            e1.ActorID = customerActorId;
+            e1.ConversantID = playerActorId;
+            e1.DialogueText = "(Enter NPC question here)";
+            e1.canvasRect = new Rect(270, 50, 160, 30);
+
+            // Entry 5: Correct response
+            var e5 = template.CreateDialogueEntry(5, convId, "CorrectResponse");
+            e5.ActorID = customerActorId;
+            e5.ConversantID = playerActorId;
+            e5.DialogueText = "(Enter correct response)";
+            e5.canvasRect = new Rect(710, 20, 160, 30);
+
+            // Entry 6: Incorrect response
+            var e6 = template.CreateDialogueEntry(6, convId, "IncorrectResponse");
+            e6.ActorID = customerActorId;
+            e6.ConversantID = playerActorId;
+            e6.DialogueText = "(Enter incorrect response)";
+            e6.canvasRect = new Rect(710, 100, 160, 30);
+
+            // Entries 2-4: Player answers (Answer1 is correct by default)
+            string[] placeholders = { "(Answer 1)", "(Answer 2)", "(Answer 3)" };
+            for (int i = 0; i < 3; i++)
+            {
+                int entryId = 2 + i;
+                var entry = template.CreateDialogueEntry(entryId, convId, $"Answer{i + 1}");
+                entry.ActorID = playerActorId;
+                entry.ConversantID = customerActorId;
+                entry.MenuText = placeholders[i];
+                entry.DialogueText = placeholders[i];
+                entry.Sequence = "None()";
+                entry.canvasRect = new Rect(490, 10 + i * 50, 160, 30);
+
+                bool isCorrect = (i == 0);
+                if (isCorrect)
+                    entry.userScript = "Variable[\"InteractionCorrect\"] = true";
+
+                entry.outgoingLinks.Add(new Link(convId, entryId, convId, isCorrect ? 5 : 6));
+                e1.outgoingLinks.Add(new Link(convId, 1, convId, entryId));
+                conv.dialogueEntries.Add(entry);
+            }
+
+            conv.dialogueEntries.Insert(0, e0);
+            conv.dialogueEntries.Insert(1, e1);
+            conv.dialogueEntries.Add(e5);
+            conv.dialogueEntries.Add(e6);
+
+            dialogueDatabase.conversations.Add(conv);
+            EditorUtility.SetDirty(dialogueDatabase);
+            AssetDatabase.SaveAssets();
+
+            // Write conversationTitle back onto the SO
+            SetConversationTitle(so, convTitle);
+
+            Debug.Log($"[DataBrowser] Auto-created conversation '{convTitle}' (id={convId})");
+        }
+
+        private static void SetConversationTitle(ScriptableObject so, string title)
+        {
+            var serialized = new SerializedObject(so);
+            var prop = serialized.FindProperty("conversationTitle");
+            if (prop != null)
+            {
+                prop.stringValue = title;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(so);
+            }
+        }
+
+        private int EnsureInteractionActor(Template template, string actorName, bool isPlayer)
+        {
+            var actor = dialogueDatabase.actors.Find(a =>
+                string.Equals(a.Name, actorName, System.StringComparison.OrdinalIgnoreCase));
+            if (actor != null) return actor.id;
+
+            int newId = template.GetNextActorID(dialogueDatabase);
+            var newActor = template.CreateActor(newId, actorName, isPlayer);
+            dialogueDatabase.actors.Add(newActor);
+            return newId;
         }
 
         // ── Helpers ────────────────────────────────────────────────────────────

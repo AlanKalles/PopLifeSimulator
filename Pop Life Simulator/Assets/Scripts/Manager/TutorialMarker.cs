@@ -63,5 +63,24 @@ namespace PopLife.Manager
 
         // Lottery
         LotteryUnlocked,              // 第3天解锁彩票系统
+        
+        a_WelcomeC,
+        a_FirstshelfC,
+        a_FiveshelfC,
+        a_TenshelfC,
+        a_ProtectionC,
+        a_WellnessC,
+        a_BoostC,
+        a_PleasureCondomC,
+        a_InclusivenessC,
+        a_CucciC,
+        a_AwkwardSexC,
+        a_BrandingStrategyC,
+        a_CyberC,
+        a_BDSMC,
+        a_RoughSexC,
+        a_AnalC,
+        a_FirstChildrensDayC,
+
     }
 }

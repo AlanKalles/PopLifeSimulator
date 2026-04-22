@@ -99,6 +99,14 @@ namespace PopLife.Quest
             BuildMarkerLookup();
             TutorialEventBus.OnMarkerTriggered += OnMarkerTriggered;
 
+            // Catch up: activate quests whose marker already fired before we subscribed
+            // (e.g. GameStarted raised by GameStateManager which runs at order 0, before us at order 10)
+            foreach (var kvp in markerToQuest)
+            {
+                if (TutorialEventBus.IsMarkerTriggered(kvp.Key))
+                    ActivateQuest(kvp.Value);
+            }
+
             // 初始扫描已激活的任务
             ScanActiveQuests();
 

@@ -10,54 +10,42 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
-  m_Name: Main1
+  m_Name: First Shelf
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
-  questName: Main/1
+  questName: 
   questType: 0
-  deadlineDays: 0
+  deadlineDays: 100
   giverName: Midori
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
-  - type: 1
-    amount: 100
-    itemId:
+  - type: 0
+    amount: 50
+    itemId: 0
   - type: 2
     amount: 1
-    itemId: Portable Vibrator
+    itemId: Silicone Dildo
   - type: 2
     amount: 1
-    itemId: Lipstick Vibrator
-  - type: 2
-    amount: 1
-    itemId: Pen Vibrator
-  - type: 2
-    amount: 1
-    itemId: Sensory Glass Dildo
-  - type: 2
-    amount: 1
-    itemId: Maid Outfit
+    itemId: Bullet Vibrator
   - type: 3
     amount: 1
-    itemId: C004
+    itemId: Yuta
   - type: 3
     amount: 1
-    itemId: C005
-  - type: 3
-    amount: 1
-    itemId: C006
+    itemId: Celine
   conditions:
-  - conditionType: 6
-    scope: 2
+  - conditionType: 5
+    scope: 0
     targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: -1
-  completionMarker: 28
+  activationMarker: 32
+  completionMarker: 33
   triggerMarkerAfterToast: 1
-  title: Build Your First Shelf
-  description: Your store is empty, try to build the first shelf in your store!
-  successDescription: You gained 100 Fame
-  entryTexts:
-  - Build 1 shelf
+  title: Place a shelf
+  description: Place your first shelf in the store, through *Build panel*.
+  successDescription: You did it! Keep placing different shelves to make your store
+    more appealing and attract more customers.
+  entryTexts: []
   questIcon: {fileID: 0}
   sortPriority: 50

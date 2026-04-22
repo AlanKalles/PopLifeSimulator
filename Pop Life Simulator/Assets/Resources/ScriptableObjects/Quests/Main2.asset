@@ -20,7 +20,31 @@ MonoBehaviour:
   rewards:
   - type: 1
     amount: 100
-    itemId: 
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Fleshlight
+  - type: 2
+    amount: 1
+    itemId: Wireless Vibrator
+  - type: 2
+    amount: 1
+    itemId: Textured Fantasy Dildo
+  - type: 2
+    amount: 1
+    itemId: Poplife Giftcard
+  - type: 2
+    amount: 1
+    itemId: Ribbed Sheath
+  - type: 3
+    amount: 1
+    itemId: C007
+  - type: 3
+    amount: 1
+    itemId: C008
+  - type: 3
+    amount: 1
+    itemId: C009
   conditions:
   - conditionType: 6
     scope: 2
