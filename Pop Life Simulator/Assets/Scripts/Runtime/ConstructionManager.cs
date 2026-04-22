@@ -24,11 +24,14 @@ namespace PopLife.Runtime
         public BuildingInstance selectedInstance;
 
         [Header("预览")]
-        private GameObject preview;
-        private SpriteRenderer[] previewRenderers; // 支持多个SpriteRenderer
+        private GameObject preview;                    // 跟随鼠标的虚影预览
+        private SpriteRenderer[] previewRenderers;
+        private GameObject placedPreview;              // 落点预览（auto-snap 到 interior 底部）
+        private SpriteRenderer[] placedPreviewRenderers;
         private int previewRot; // 0/1/2/3
         private Color validColor = new Color(0.5f, 1f, 0.5f, 0.7f); // 半透明绿色
         private Color invalidColor = new Color(1f, 0.5f, 0.5f, 0.7f); // 半透明红色
+        private const float placedPreviewAlpha = 0.4f; // 落点预览原色+半透明
 
         [Header("引用")]
         public BlueprintManager blueprintManager;// 需由你项目提供
@@ -202,27 +205,45 @@ namespace PopLife.Runtime
         private void CreatePreview(BuildingArchetype arch)
         {
             if (preview) Destroy(preview);
+            if (placedPreview) Destroy(placedPreview);
 
-            // 直接实例化原型的prefab作为预览
+            // —— 虚影预览（跟随鼠标，颜色反映 snap 后落点是否可放置） ——
             preview = Instantiate(arch.prefab);
             preview.name = "Preview_" + arch.archetypeId;
-
-            // 禁用所有可能的游戏逻辑组件，只保留视觉效果
             DisableGameplayComponents(preview);
-
-            // 获取所有的SpriteRenderer（支持多个子对象）
             previewRenderers = preview.GetComponentsInChildren<SpriteRenderer>(true);
-
-            // 设置初始透明度和 sorting layer
             foreach (var renderer in previewRenderers)
             {
-                // 保存原始颜色并设置透明度
                 var originalColor = renderer.color;
                 renderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, 0.7f);
-
-                // 设置 sorting layer 为 FRAME
                 renderer.sortingLayerName = "FRAME";
             }
+
+            // —— placed 预览（原色+半透明，仅在可放置时显示于 snap 落点） ——
+            placedPreview = Instantiate(arch.prefab);
+            placedPreview.name = "PlacedPreview_" + arch.archetypeId;
+            DisableGameplayComponents(placedPreview);
+            placedPreviewRenderers = placedPreview.GetComponentsInChildren<SpriteRenderer>(true);
+            foreach (var renderer in placedPreviewRenderers)
+            {
+                var originalColor = renderer.color;
+                renderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, placedPreviewAlpha);
+                renderer.sortingLayerName = "FRAME";
+            }
+            placedPreview.SetActive(false);
+        }
+
+        private void ShowPlacedPreviewAt(Vector3 worldPos, int rot)
+        {
+            if (placedPreview == null) return;
+            placedPreview.transform.SetPositionAndRotation(worldPos, Quaternion.Euler(0, 0, rot * 90));
+            if (!placedPreview.activeSelf) placedPreview.SetActive(true);
+        }
+
+        private void HidePlacedPreview()
+        {
+            if (placedPreview != null && placedPreview.activeSelf)
+                placedPreview.SetActive(false);
         }
 
         private void DisableGameplayComponents(GameObject obj)
@@ -290,22 +311,29 @@ namespace PopLife.Runtime
             }
             else if (selectedArchetype is Data.IInteriorPlaceable ip)
             {
-                // Shelf/Facility: 检测 FloorTileInstance，通过 IInteriorPlaceable 验证
+                // Shelf/Facility/Elevator: 虚影跟随鼠标，placed 预览吸附到 interior 底部
                 currentTargetTile = DetectFloorTileAtWorld(mouse);
                 if (currentTargetTile?.Interior != null)
                 {
-                    var localPos = currentTargetTile.Interior.WorldToLocal(mouse);
+                    var cursorLocal = currentTargetTile.Interior.WorldToLocal(mouse);
                     preview.transform.SetPositionAndRotation(
-                        currentTargetTile.Interior.LocalToWorld(localPos),
+                        currentTargetTile.Interior.LocalToWorld(cursorLocal),
                         Quaternion.Euler(0, 0, previewRot * 90));
 
-                    canPlace = ip.ValidateInteriorPlacement(currentTargetTile.Interior, localPos, previewRot);
+                    var fp = selectedArchetype.GetRotatedFootprint(previewRot);
+                    var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
+                    canPlace = ip.ValidateInteriorPlacement(currentTargetTile.Interior, snapped, previewRot);
+
+                    if (canPlace)
+                        ShowPlacedPreviewAt(currentTargetTile.Interior.LocalToWorld(snapped), previewRot);
+                    else
+                        HidePlacedPreview();
                 }
                 else
                 {
-                    // 没有地板时，预览直接跟随鼠标（但标记为不可建造）
                     preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
                     canPlace = false;
+                    HidePlacedPreview();
                 }
             }
 
@@ -347,11 +375,13 @@ namespace PopLife.Runtime
                 }
                 else if (selectedArchetype is Data.IInteriorPlaceable)
                 {
-                    // Shelf/Facility: 通过 FloorTileInstance.Interior 放置（IInteriorPlaceable 验证已在预览阶段完成）
+                    // Shelf/Facility/Elevator: 通过 FloorTileInstance.Interior 放置，auto-snap 到底部
                     if (currentTargetTile != null && currentTargetTile.Interior != null)
                     {
-                        var localPos = currentTargetTile.Interior.WorldToLocal(mouse);
-                        inst = currentTargetTile.PlaceBuildingTransactional(selectedArchetype, localPos, previewRot);
+                        var cursorLocal = currentTargetTile.Interior.WorldToLocal(mouse);
+                        var fp = selectedArchetype.GetRotatedFootprint(previewRot);
+                        var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
+                        inst = currentTargetTile.PlaceBuildingTransactional(selectedArchetype, snapped, previewRot);
                     }
                     else
                     {
@@ -573,21 +603,44 @@ namespace PopLife.Runtime
             }
             else
             {
-                // Shelf/Facility: 使用宿主 tile 的 interior
-                var hostTile = FindFloorTileByInstanceId(selectedInstance.hostFloorTileInstanceId);
-                if (hostTile?.Interior != null)
+                // Shelf/Facility: 虚影跟随鼠标，placed 预览吸附到 interior 底部；支持跨楼层
+                var targetTile = DetectFloorTileAtWorld(mouse);
+                var sourceTile = FindFloorTileByInstanceId(selectedInstance.hostFloorTileInstanceId);
+                var previewTile = targetTile ?? sourceTile; // 鼠标不在任何 tile 上时，虚影至少显示在源 tile 内
+
+                if (previewTile?.Interior != null)
                 {
-                    var localPos = hostTile.Interior.WorldToLocal(mouse);
+                    var cursorLocal = previewTile.Interior.WorldToLocal(mouse);
                     preview.transform.SetPositionAndRotation(
-                        hostTile.Interior.LocalToWorld(localPos),
+                        previewTile.Interior.LocalToWorld(cursorLocal),
                         Quaternion.Euler(0, 0, previewRot * 90));
 
                     var fp = selectedInstance.archetype.GetRotatedFootprint(previewRot);
-                    canPlace = hostTile.Interior.CanPlaceAllowSelf(fp, localPos, selectedInstance.instanceId);
+                    bool sameTile = targetTile != null && targetTile == sourceTile;
+                    bool elevatorCrossFloor = selectedInstance is ElevatorDoorInstance && !sameTile;
+
+                    if (targetTile == null || elevatorCrossFloor)
+                    {
+                        canPlace = false;
+                    }
+                    else
+                    {
+                        var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
+                        if (sameTile)
+                            canPlace = targetTile.Interior.CanPlaceAllowSelf(fp, snapped, selectedInstance.instanceId);
+                        else
+                            canPlace = targetTile.Interior.CanPlace(fp, snapped); // 跨楼层：目标不含该货架
+
+                        if (canPlace)
+                            ShowPlacedPreviewAt(targetTile.Interior.LocalToWorld(snapped), previewRot);
+                    }
+
+                    if (!canPlace) HidePlacedPreview();
                 }
                 else
                 {
                     preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
+                    HidePlacedPreview();
                 }
             }
 
@@ -689,12 +742,15 @@ namespace PopLife.Runtime
                     }
                     else
                     {
-                        // Shelf/Facility: 在宿主 tile 的 interior 内移动
-                        var hostTile = FindFloorTileByInstanceId(selectedInstance.hostFloorTileInstanceId);
-                        if (hostTile != null)
+                        // Shelf/Facility: 允许跨 tile 移动，auto-snap 到底部
+                        var sourceTile = FindFloorTileByInstanceId(selectedInstance.hostFloorTileInstanceId);
+                        var targetTile = DetectFloorTileAtWorld(mouse);
+                        if (sourceTile != null && targetTile != null && targetTile.Interior != null)
                         {
-                            var localPos = hostTile.Interior.WorldToLocal(mouse);
-                            moveSuccess = hostTile.MoveBuilding(selectedInstance, localPos, previewRot);
+                            var cursorLocal = targetTile.Interior.WorldToLocal(mouse);
+                            var fp = selectedInstance.archetype.GetRotatedFootprint(previewRot);
+                            var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
+                            moveSuccess = sourceTile.MoveBuildingTo(selectedInstance, targetTile, snapped, previewRot);
                         }
                     }
 
@@ -742,6 +798,8 @@ namespace PopLife.Runtime
             selectedInstance = null;
             if (preview) Destroy(preview);
             previewRenderers = null;
+            if (placedPreview) Destroy(placedPreview);
+            placedPreviewRenderers = null;
 
             hoveredBuildingInMoveMode = null;
             lastMousePositionInMoveMode = Vector3.zero;
@@ -1228,18 +1286,11 @@ namespace PopLife.Runtime
             ConsumePendingPlacementClick();
             Cancel();
             mode = Mode.PlaceElevator;
-            // 创建预览
+            // 创建虚影 + placed 双预览（与普通 Place 走同一路径）
             var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
             if (arch != null && arch.prefab != null)
             {
-                preview = Instantiate(arch.prefab);
-                preview.name = "ElevatorPreview";
-                // 禁用所有非渲染组件
-                foreach (var comp in preview.GetComponents<MonoBehaviour>())
-                    comp.enabled = false;
-                foreach (var col in preview.GetComponentsInChildren<Collider2D>())
-                    col.enabled = false;
-                previewRenderers = preview.GetComponentsInChildren<SpriteRenderer>();
+                CreatePreview(arch);
             }
         }
 
@@ -1255,18 +1306,26 @@ namespace PopLife.Runtime
             if (tile?.Interior == null)
             {
                 preview.SetActive(false);
+                HidePlacedPreview();
                 return;
             }
 
-            var localPos = tile.Interior.WorldToLocal(mouse);
             var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
-            if (arch == null) { preview.SetActive(false); return; }
+            if (arch == null) { preview.SetActive(false); HidePlacedPreview(); return; }
 
-            bool canPlace = arch.ValidateInteriorPlacement(tile.Interior, localPos, 0);
+            var cursorLocal = tile.Interior.WorldToLocal(mouse);
+            var fp = arch.GetRotatedFootprint(0);
+            var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
+            bool canPlace = arch.ValidateInteriorPlacement(tile.Interior, snapped, 0);
 
             preview.SetActive(true);
-            preview.transform.position = tile.Interior.LocalToWorld(localPos);
+            preview.transform.position = tile.Interior.LocalToWorld(cursorLocal);
             UpdatePreviewColor(canPlace);
+
+            if (canPlace)
+                ShowPlacedPreviewAt(tile.Interior.LocalToWorld(snapped), 0);
+            else
+                HidePlacedPreview();
         }
 
         private void HandleElevatorInput()
@@ -1292,12 +1351,15 @@ namespace PopLife.Runtime
                 return;
             }
 
-            var localPos = tile.Interior.WorldToLocal(mouse);
             var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
             if (arch == null) return;
 
+            // auto-snap 到底部
+            var cursorLocal = tile.Interior.WorldToLocal(mouse);
+            var snapped = InteriorGrid.SnapToBottom(cursorLocal, arch.GetRotatedFootprint(0));
+
             // 校验放置
-            if (!arch.ValidateInteriorPlacement(tile.Interior, localPos, 0))
+            if (!arch.ValidateInteriorPlacement(tile.Interior, snapped, 0))
             {
                 UIManager.Instance?.ShowAlert("Cannot place elevator here.");
                 return;
@@ -1317,7 +1379,7 @@ namespace PopLife.Runtime
 
             // 放置电梯门
             var container = tile.InteriorContainer;
-            var go = Instantiate(arch.prefab, tile.Interior.LocalToWorld(localPos), Quaternion.identity, container);
+            var go = Instantiate(arch.prefab, tile.Interior.LocalToWorld(snapped), Quaternion.identity, container);
             var door = go.GetComponent<ElevatorDoorInstance>();
             if (door == null)
             {
@@ -1325,8 +1387,8 @@ namespace PopLife.Runtime
                 return;
             }
 
-            door.Initialize(arch, localPos, tile.instanceId);
-            tile.Interior.RegisterBuilding(door, arch.GetRotatedFootprint(0), localPos);
+            door.Initialize(arch, snapped, tile.instanceId);
+            tile.Interior.RegisterBuilding(door, arch.GetRotatedFootprint(0), snapped);
             door.SetFloorLabel(tile.FloorDisplayName);
 
             // 扣费
@@ -1348,6 +1410,8 @@ namespace PopLife.Runtime
             currentTargetTile = null;
             if (preview) Destroy(preview);
             previewRenderers = null;
+            if (placedPreview) Destroy(placedPreview);
+            placedPreviewRenderers = null;
 
             // 清理Destroy模式的高亮
             if (hoveredBuildingInDestroyMode != null && buildingHighlighter != null)

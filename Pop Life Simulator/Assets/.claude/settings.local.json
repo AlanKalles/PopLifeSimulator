@@ -39,7 +39,10 @@
       "Bash(ls \"Pop Life Simulator/Assets/Resources/ScriptableObjects/BuildingArchetype/\")",
       "Bash(ls \"Pop Life Simulator/Assets/Resources/ScriptableObjects/BuildingArchetypes/\")",
       "Bash(ls -la \"/d/github/PopLifeSimulator/Pop Life Simulator/Assets/Scripts/Data/\"*.cs)",
-      "Bash(ls \"/d/github/PopLifeSimulator/Pop Life Simulator/Assets/Scripts/Data/\"*.cs)"
+      "Bash(ls \"/d/github/PopLifeSimulator/Pop Life Simulator/Assets/Scripts/Data/\"*.cs)",
+      "WebFetch(domain:www.uxtigers.com)",
+      "WebFetch(domain:www.nngroup.com)",
+      "WebFetch(domain:gamedev.net)"
     ],
     "deny": [],
     "ask": []

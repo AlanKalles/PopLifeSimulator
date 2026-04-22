@@ -51,13 +51,14 @@ namespace PopLife.Editor
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "CSV 格式：\n" +
-                "Category, Question, Answer1, Answer2, Answer3, Correct, " +
+                "CSV 格式（首列为忽略的前置列）：\n" +
+                "[忽略], Category, Question, Answer1, Answer2, Answer3, Correct, " +
                 "Correct Response, Incorrect Response, Attached to, Frequency, Reward\n\n" +
                 "• Category: Fleshlights/Dildos/Vibrators/Lingerie/Wellness/General\n" +
-                "• Correct: Ans1/Ans2/Ans3\n" +
+                "• Correct: Ans1/Ans2/Ans3（单正确），或 \"Ans1, Ans2\"（最多 2 个）\n" +
                 "• Attached to: 货架SO名(逗号分隔), Any 或留空=不限\n" +
-                "• Frequency/Reward: 忽略，统一 20 fame",
+                "• Frequency/Reward: 忽略，统一 20 fame\n" +
+                "注：Google Sheets 导出的含逗号单元格会被自动加引号包裹，可正确解析。",
                 MessageType.Info);
 
             EditorGUILayout.Space();
@@ -124,8 +125,9 @@ namespace PopLife.Editor
                 {
                     var row = rows[rowIdx];
 
-                    string category = GetCell(row, 0).Trim();
-                    string question = GetCell(row, 1).Trim();
+                    // 注意：列 0 为忽略的前置列（如 ID/序号/备注），从列 1 开始读取
+                    string category = GetCell(row, 1).Trim();
+                    string question = GetCell(row, 2).Trim();
                     if (string.IsNullOrEmpty(question))
                     {
                         log.AppendLine($"  行{rowIdx + 1}: 跳过（Question为空）");
@@ -139,18 +141,19 @@ namespace PopLife.Editor
                     string eventId = $"{category}_{categoryCounter[category]:D3}";
 
                     // 解析各字段
-                    string answer1 = GetCell(row, 2).Trim();
-                    string answer2 = GetCell(row, 3).Trim();
-                    string answer3 = GetCell(row, 4).Trim();
-                    string correctStr = GetCell(row, 5).Trim(); // "Ans1"/"Ans2"/"Ans3"
-                    string correctResp = GetCell(row, 6).Trim();
-                    string incorrectResp = GetCell(row, 7).Trim();
-                    string attachedTo = GetCell(row, 8).Trim();
+                    string answer1 = GetCell(row, 3).Trim();
+                    string answer2 = GetCell(row, 4).Trim();
+                    string answer3 = GetCell(row, 5).Trim();
+                    string correctStr = GetCell(row, 6).Trim(); // "Ans1"/"Ans2"/"Ans3" 或 "Ans1, Ans2"
+                    string correctResp = GetCell(row, 7).Trim();
+                    string incorrectResp = GetCell(row, 8).Trim();
+                    string attachedTo = GetCell(row, 9).Trim();
 
-                    int correctIndex = ParseCorrectIndex(correctStr);
-                    if (correctIndex < 1 || correctIndex > 3)
+                    var correctIndexes = ParseCorrectIndexes(correctStr);
+                    if (correctIndexes.Count < 1 || correctIndexes.Count > 2
+                        || correctIndexes.Any(i => i < 1 || i > 3))
                     {
-                        log.AppendLine($"  行{rowIdx + 1}: 跳过（Correct 格式错误: '{correctStr}'）");
+                        log.AppendLine($"  行{rowIdx + 1}: 跳过（Correct 格式错误: '{correctStr}'，需 1-2 个且在 Ans1-3 范围）");
                         continue;
                     }
 
@@ -233,7 +236,7 @@ namespace PopLife.Editor
                     CreateConversation(template, convTitle, nextConvId,
                         customerActorId, playerActorId,
                         question, answer1, answer2, answer3,
-                        correctIndex, correctResp, incorrectResp);
+                        correctIndexes, correctResp, incorrectResp);
                     convCreated++;
                     nextConvId++;
                     log.AppendLine($"  [创建对话] {convTitle}");
@@ -311,7 +314,7 @@ namespace PopLife.Editor
         private void CreateConversation(Template template, string title, int convId,
             int customerActorId, int playerActorId,
             string question, string answer1, string answer2, string answer3,
-            int correctIndex, string correctResp, string incorrectResp)
+            List<int> correctIndexes, string correctResp, string incorrectResp)
         {
             var conv = template.CreateConversation(convId, title);
             conv.ActorID = customerActorId;
@@ -351,7 +354,7 @@ namespace PopLife.Editor
             for (int i = 0; i < 3; i++)
             {
                 int entryId = 2 + i;
-                bool isCorrect = (correctIndex == i + 1);
+                bool isCorrect = correctIndexes.Contains(i + 1);
                 var entry = template.CreateDialogueEntry(entryId, convId, $"Answer{i + 1}");
                 entry.ActorID = playerActorId;
                 entry.ConversantID = customerActorId;
@@ -474,17 +477,27 @@ namespace PopLife.Editor
             return (index >= 0 && index < row.Count) ? row[index] : "";
         }
 
-        private static int ParseCorrectIndex(string s)
+        private static List<int> ParseCorrectIndexes(string s)
         {
-            // "Ans1" → 1, "Ans2" → 2, "Ans3" → 3
-            if (string.IsNullOrEmpty(s)) return -1;
-            s = s.Trim();
-            if (s.StartsWith("Ans", StringComparison.OrdinalIgnoreCase) && s.Length > 3)
+            // 支持单值 "Ans1" 或多值 "Ans1, Ans2" / "Ans1;Ans2" / "Ans1&Ans2" / "Ans1+Ans2"
+            // 每段形如 AnsN（N=1/2/3），返回去重排序后的 int 列表
+            var result = new List<int>();
+            if (string.IsNullOrEmpty(s)) return result;
+
+            var tokens = s.Split(new[] { ',', ';', '&', '+' },
+                StringSplitOptions.RemoveEmptyEntries);
+            foreach (var raw in tokens)
             {
-                if (int.TryParse(s.Substring(3), out int idx))
-                    return idx;
+                var t = raw.Trim();
+                if (t.StartsWith("Ans", StringComparison.OrdinalIgnoreCase) && t.Length > 3
+                    && int.TryParse(t.Substring(3), out int idx)
+                    && !result.Contains(idx))
+                {
+                    result.Add(idx);
+                }
             }
-            return -1;
+            result.Sort();
+            return result;
         }
 
         // ══════════════════════════════════════

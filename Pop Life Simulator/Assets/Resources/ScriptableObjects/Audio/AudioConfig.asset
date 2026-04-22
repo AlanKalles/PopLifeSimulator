@@ -78,3 +78,15 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 701c2c3c2a8aad248a1ace0adec6c38f, type: 3}
     loop: 1
     volume: 0.5
+  actorEmotes:
+  - actorName: Midori
+    emotes:
+    - emoteType: Normal
+      clips:
+      - {fileID: 8300000, guid: 9de96f758edf11643891f32d85bc9e98, type: 3}
+      volumeScale: 1
+    - emoteType: Laugh
+      clips:
+      - {fileID: 8300000, guid: 6c19bede6e5279e43bc7756c73104608, type: 3}
+      volumeScale: 1
+  defaultEmotes: []

@@ -194,6 +194,21 @@ namespace PopLife.Runtime
         }
 
         /// <summary>
+        /// 将光标在 interior 内的坐标"吸附"到底部：保留 X，Y 偏移使 footprint 最低格落在 y=0。
+        /// 不做范围/占用校验，仅计算坐标——后续交由 CanPlace/CanPlaceAllowSelf 校验。
+        /// </summary>
+        public static Vector2Int SnapToBottom(Vector2Int cursorLocal, List<Vector2Int> footprint)
+        {
+            int minOffsetY = 0;
+            if (footprint != null)
+            {
+                foreach (var o in footprint)
+                    if (o.y < minOffsetY) minOffsetY = o.y;
+            }
+            return new Vector2Int(cursorLocal.x, -minOffsetY);
+        }
+
+        /// <summary>
         /// 同 CanPlace，但允许被 selfId 占用的格子（用于移动建筑时检测）。
         /// </summary>
         public bool CanPlaceAllowSelf(List<Vector2Int> footprint, Vector2Int origin, string selfId)

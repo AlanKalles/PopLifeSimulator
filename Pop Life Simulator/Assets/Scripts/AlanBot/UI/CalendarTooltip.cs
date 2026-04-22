@@ -109,6 +109,12 @@ namespace PopLife.AlanBot.UI
         public void Hide()
         {
             isShowing = false;
+            if (!gameObject.activeInHierarchy)
+            {
+                // GO已经inactive，无法启动协程，也无需淡出
+                fadeCoroutine = null;
+                return;
+            }
             if (fadeCoroutine != null) StopCoroutine(fadeCoroutine);
             fadeCoroutine = StartCoroutine(FadeOut());
         }

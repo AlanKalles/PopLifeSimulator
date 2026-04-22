@@ -164,6 +164,53 @@ namespace PopLife.Runtime
             return true;
         }
 
+        /// <summary>
+        /// 将 shelf/facility 移动到同一 tile 或跨 tile 的新位置。原子操作，失败自动回滚。
+        /// this = 源 FloorTileInstance（bi.hostFloorTileInstanceId 指向的那个）
+        /// </summary>
+        public bool MoveBuildingTo(BuildingInstance bi, FloorTileInstance targetTile,
+                                   Vector2Int targetLocalPos, int newRot)
+        {
+            if (bi == null || targetTile == null || targetTile.Interior == null) return false;
+            if (bi is FloorTileInstance) return false; // FloorTile 走 WorldGrid.ReregisterFloorTile 路径
+
+            // 同 tile 快速通道：复用既有逻辑
+            if (targetTile == this) return MoveBuilding(bi, targetLocalPos, newRot);
+
+            // 电梯门不允许跨楼层（其 ElevatorLink 绑定依赖 FloorTile 身份）
+            if (bi is ElevatorDoorInstance) return false;
+
+            if (Interior == null) return false;
+
+            var oldPos = bi.gridPosition;
+            var oldRot = bi.rotation;
+            var newFp  = bi.archetype.GetRotatedFootprint(newRot);
+
+            // 1) 从源 Interior 反注册（不变更 bi.gridPosition / rotation）
+            Interior.UnregisterBuilding(bi);
+
+            // 2) 验证目标位置
+            if (!targetTile.Interior.CanPlace(newFp, targetLocalPos))
+            {
+                // 回滚到源
+                Interior.RegisterBuilding(bi, bi.archetype.GetRotatedFootprint(oldRot), oldPos);
+                return false;
+            }
+
+            // 3) 提交：更新数据 → 注册到目标 → reparent → 同步 Transform → 更新排序
+            bi.gridPosition = targetLocalPos;
+            bi.rotation = newRot;
+            bi.hostFloorTileInstanceId = targetTile.instanceId;
+            targetTile.Interior.RegisterBuilding(bi, newFp, targetLocalPos);
+
+            bi.transform.SetParent(targetTile.InteriorContainer, worldPositionStays: false);
+            bi.transform.SetPositionAndRotation(
+                targetTile.Interior.LocalToWorld(targetLocalPos),
+                Quaternion.Euler(0, 0, newRot * 90));
+            bi.UpdateSortingOrder();
+            return true;
+        }
+
         // ── 建筑移除 ─────────────────────────────────────────────
 
         /// <summary>

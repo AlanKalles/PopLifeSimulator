@@ -192,9 +192,15 @@ namespace PopLife.AlanBot
 
         private void OnGuideClicked()
         {
+            var savedCallback = onHideCallback;
+            onHideCallback = null;
+
             Hide();
             if (guideCollectionPanel != null)
-                guideCollectionPanel.Show();
+                guideCollectionPanel.Show(() =>
+                {
+                    Show(savedCallback);
+                });
         }
 
         private void OnCloseClicked()

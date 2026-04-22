@@ -188,6 +188,12 @@ namespace PopLife.UI
         /// </summary>
         public void Hide()
         {
+            if (!gameObject.activeInHierarchy)
+            {
+                // GO已经inactive，无法启动协程，也无需淡出
+                fadeCoroutine = null;
+                return;
+            }
             if (fadeCoroutine != null)
             {
                 StopCoroutine(fadeCoroutine);

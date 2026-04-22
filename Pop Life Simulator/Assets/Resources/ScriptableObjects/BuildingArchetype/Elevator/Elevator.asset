@@ -34,5 +34,5 @@ MonoBehaviour:
   - {x: 2, y: 3}
   canRotate: 0
   levels: []
-  baseCost: 500
-  costPerLevel: 200
+  baseCost: 0
+  costPerLevel: 0

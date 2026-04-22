@@ -16,6 +16,13 @@ namespace PopLife.Data
         [Header("背景音乐配置")]
         [SerializeField] private MusicClipEntry[] musicClips;
 
+        [Header("角色情感音效")]
+        [Tooltip("每个角色的情感/反应语音配置（笑声、叹气、惊讶等）")]
+        [SerializeField] private ActorEmoteSet[] actorEmotes;
+
+        [Tooltip("角色未配置该情感时的全局回退音效")]
+        [SerializeField] private EmoteEntry[] defaultEmotes;
+
         /// <summary>
         /// 根据键随机获取一个音效（支持多个音频的情况）
         /// </summary>
@@ -80,6 +87,44 @@ namespace PopLife.Data
             return null;
         }
 
+        /// <summary>
+        /// 查询角色情感音效条目（含 fallback）
+        /// 查找顺序：
+        ///   1. actorEmotes[actorName][emoteType]
+        ///   2. defaultEmotes[emoteType]
+        ///   3. null（交由调用方处理 warning + 静默）
+        /// </summary>
+        public EmoteEntry GetEmote(string actorName, string emoteType)
+        {
+            if (string.IsNullOrEmpty(emoteType)) return null;
+
+            // 1. 查该角色的专属情感
+            if (!string.IsNullOrEmpty(actorName) && actorEmotes != null)
+            {
+                foreach (var set in actorEmotes)
+                {
+                    if (set == null || set.actorName != actorName || set.emotes == null) continue;
+                    foreach (var emote in set.emotes)
+                    {
+                        if (emote != null && emote.emoteType == emoteType)
+                            return emote;
+                    }
+                }
+            }
+
+            // 2. 回落到全局默认情感池
+            if (defaultEmotes != null)
+            {
+                foreach (var emote in defaultEmotes)
+                {
+                    if (emote != null && emote.emoteType == emoteType)
+                        return emote;
+                }
+            }
+
+            return null;
+        }
+
         [Serializable]
         public class SoundClipEntry
         {
@@ -122,6 +167,62 @@ namespace PopLife.Data
 
                 return null;
             }
+        }
+
+        [Serializable]
+        public class EmoteEntry
+        {
+            [Tooltip("情感类型（如 Laugh, Sigh, Surprise, Gasp）")]
+            public string emoteType;
+
+            [Tooltip("音效文件列表（多个时随机播放）")]
+            public AudioClip[] clips;
+
+            [Range(0f, 2f)]
+            [Tooltip("音量倍率（0-2），默认 1")]
+            public float volumeScale = 1f;
+
+            /// <summary>
+            /// 从 clips 中随机选一个非空 AudioClip（同 SoundClipEntry 的逻辑）
+            /// </summary>
+            public AudioClip GetRandomClip()
+            {
+                if (clips == null || clips.Length == 0)
+                    return null;
+
+                if (clips.Length == 1)
+                    return clips[0];
+
+                int maxAttempts = clips.Length * 2;
+                int attempts = 0;
+
+                while (attempts < maxAttempts)
+                {
+                    int randomIndex = UnityEngine.Random.Range(0, clips.Length);
+                    if (clips[randomIndex] != null)
+                        return clips[randomIndex];
+
+                    attempts++;
+                }
+
+                foreach (var clip in clips)
+                {
+                    if (clip != null)
+                        return clip;
+                }
+
+                return null;
+            }
+        }
+
+        [Serializable]
+        public class ActorEmoteSet
+        {
+            [Tooltip("角色名称（对应 Dialogue Database 里的 Actor Name，即 speakerInfo.nameInDatabase）")]
+            public string actorName;
+
+            [Tooltip("该角色的情感音效列表")]
+            public EmoteEntry[] emotes;
         }
 
         [Serializable]

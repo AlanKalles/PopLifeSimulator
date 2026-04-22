@@ -21,23 +21,23 @@ namespace PopLife.Customers.Spawner
 
         [Header("流量控制")]
         [Tooltip("随机生成间隔选项 (秒)")]
-        public float[] spawnIntervalOptions = { 3f, 5f, 8f, 10f };
+        public float[] spawnIntervalOptions = { 2f, 3f, 4f, 5f };
 
         [Tooltip("场上顾客基础数量上限（appeal 额外加成在此基础上叠加）")]
-        public int baseCustomersOnFloor = 10;
+        public int baseCustomersOnFloor = 5;
 
         [Tooltip("防止顾客在同一天内离店后再次访问")]
         public bool preventSameDayRevisit = false;
 
         [Header("Store Appeal 影响")]
         [Tooltip("每增加多少 appeal 多允许1个顾客同时在场")]
-        [SerializeField] private float appealPerExtraCustomer = 200f;
+        [SerializeField] private float appealPerExtraCustomer = 90f;
 
         [Tooltip("appeal 达到此值时生成间隔降到最短")]
-        [SerializeField] private float appealForMaxSpeed = 3000f;
+        [SerializeField] private float appealForMaxSpeed = 2000f;
 
-        [Tooltip("最短间隔倍率（0.3 = 间隔最短缩到原来的30%）")]
-        [SerializeField] private float minIntervalMultiplier = 0.3f;
+        [Tooltip("最短间隔倍率（0.55 = 间隔最短缩到原来的55%）")]
+        [SerializeField] private float minIntervalMultiplier = 0.55f;
 
         [Header("节奏控制")]
         [Tooltip("开店后延迟多久开始生成第一个顾客 (秒)")]
