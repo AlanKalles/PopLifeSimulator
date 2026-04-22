@@ -34,7 +34,8 @@ namespace PopLife.Quest
         private HashSet<string> rewardedQuests = new();
 
         // marker → questName 查找表（用于 marker 自动激活）
-        private Dictionary<TutorialMarker, string> markerToQuest;
+        // 支持一个 marker 激活多个任务：同一 marker 下的所有 QuestDefinition 都会被激活
+        private Dictionary<TutorialMarker, List<string>> markerToQuests;
 
         // ES3 持久化
         private const string ES3_FILE = "QuestProgress.es3";
@@ -162,31 +163,47 @@ namespace PopLife.Quest
         #region Marker 自动激活
 
         /// <summary>
-        /// 构建 marker → questName 查找表
+        /// 构建 marker → questName 查找表（一对多）
         /// </summary>
         private void BuildMarkerLookup()
         {
-            markerToQuest = new Dictionary<TutorialMarker, string>();
+            markerToQuests = new Dictionary<TutorialMarker, List<string>>();
             var allDefs = Resources.LoadAll<QuestDefinition>("ScriptableObjects/Quests");
 
             foreach (var def in allDefs)
             {
-                if (def.ActivationMarker != TutorialMarker.None)
+                if (def.ActivationMarker == TutorialMarker.None)
+                    continue;
+
+                if (!markerToQuests.TryGetValue(def.ActivationMarker, out var list))
                 {
-                    if (!markerToQuest.TryAdd(def.ActivationMarker, def.QuestName))
-                    {
-                        Debug.LogWarning($"[QuestLogicManager] Duplicate marker {def.ActivationMarker} on quest: {def.QuestName}");
-                    }
+                    list = new List<string>();
+                    markerToQuests[def.ActivationMarker] = list;
+                }
+
+                if (!list.Contains(def.QuestName))
+                    list.Add(def.QuestName);
+            }
+
+            if (debugMode)
+            {
+                foreach (var pair in markerToQuests)
+                {
+                    if (pair.Value.Count > 1)
+                        Debug.Log($"[QuestLogicManager] Marker {pair.Key} maps to {pair.Value.Count} quests: {string.Join(", ", pair.Value)}");
                 }
             }
         }
 
         /// <summary>
-        /// 当 marker 触发时，自动激活对应的任务
+        /// 当 marker 触发时，自动激活所有对应的任务
         /// </summary>
         private void OnMarkerTriggered(TutorialMarker marker)
         {
-            if (markerToQuest != null && markerToQuest.TryGetValue(marker, out var questName))
+            if (markerToQuests == null) return;
+            if (!markerToQuests.TryGetValue(marker, out var questNames) || questNames == null) return;
+
+            foreach (var questName in questNames)
             {
                 ActivateQuest(questName);
             }
