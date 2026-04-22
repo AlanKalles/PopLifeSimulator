@@ -15,10 +15,8 @@ MonoBehaviour:
   eventId: Dildos_003
   useFilterCategory: 1
   requiredCategory: 3
-  useFilterShelf: 1
-  requiredShelves:
-  - {fileID: 11400000, guid: dc2cf04e956aef24f8f4edb9b09765b4, type: 2}
-  - {fileID: 11400000, guid: 32537223284a8564da8e7bdbc07976fd, type: 2}
+  useFilterShelf: 0
+  requiredShelves: []
   conversationTitle: Interaction/Dildos_003
   rewards:
   - type: 1
