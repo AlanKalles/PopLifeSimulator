@@ -1272,7 +1272,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 5
@@ -1496,7 +1496,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 5
@@ -1818,7 +1818,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Happy)
         type: 0
         typeString: 
       conversationID: 6
@@ -1842,7 +1842,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 317.19998
+        x: 318.1756
         y: 150.8
         width: 160
         height: 30
@@ -2882,8 +2882,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 7.272766, y: 0}
-    canvasZoom: 0.8800001
+    canvasScrollPosition: {x: 0, y: 0}
+    canvasZoom: 0.6700003
   - id: 9
     fields:
     - title: Title

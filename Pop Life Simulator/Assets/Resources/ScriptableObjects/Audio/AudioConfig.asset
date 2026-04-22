@@ -89,4 +89,19 @@ MonoBehaviour:
       clips:
       - {fileID: 8300000, guid: 6c19bede6e5279e43bc7756c73104608, type: 3}
       volumeScale: 1
+  - actorName: Auditor
+    emotes:
+    - emoteType: Normal
+      clips:
+      - {fileID: 8300000, guid: 85ba7b7a864b32e48840177ebf956725, type: 3}
+      - {fileID: 8300000, guid: 1e0a15a989a4bd74496a7589d1b11199, type: 3}
+      volumeScale: 1
+    - emoteType: Sad
+      clips:
+      - {fileID: 8300000, guid: 7c4d63a7420f15140bf8a62379536a12, type: 3}
+      volumeScale: 1
+    - emoteType: Happy
+      clips:
+      - {fileID: 8300000, guid: 1706fbb0f2c20d94e8d970e99c96852b, type: 3}
+      volumeScale: 1
   defaultEmotes: []

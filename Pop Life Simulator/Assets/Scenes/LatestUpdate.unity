@@ -13346,6 +13346,7 @@ MonoBehaviour:
   categoryText: {fileID: 2016033985}
   appealText: {fileID: 502425750}
   priceText: {fileID: 416672636}
+  stockFeeText: {fileID: 0}
   maintenanceFeeText: {fileID: 1377800972}
   brandIconImage: {fileID: 0}
   brandNameText: {fileID: 0}
@@ -42445,6 +42446,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1615115558}
     m_Modifications:
+    - target: {fileID: 40136943334648293, guid: 7a2e2f7563378b14686a07a26eda463e, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 40136943334648293, guid: 7a2e2f7563378b14686a07a26eda463e, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 40136943334648293, guid: 7a2e2f7563378b14686a07a26eda463e, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 40136943334648293, guid: 7a2e2f7563378b14686a07a26eda463e, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 40136943334648293, guid: 7a2e2f7563378b14686a07a26eda463e, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 40136943334648293, guid: 7a2e2f7563378b14686a07a26eda463e, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 123275878791043324, guid: 7a2e2f7563378b14686a07a26eda463e, type: 3}
       propertyPath: calendarPanel
       value: 
