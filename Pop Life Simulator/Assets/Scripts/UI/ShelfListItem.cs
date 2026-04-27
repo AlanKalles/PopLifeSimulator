@@ -33,6 +33,8 @@ namespace PopLife.UI
 
         private void Awake()
         {
+            ApplyIconImageSettings();
+
             if (button != null)
             {
                 button.onClick.AddListener(OnButtonClicked);
@@ -53,6 +55,13 @@ namespace PopLife.UI
             outline.enabled = false; // Start disabled
         }
 
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            ApplyIconImageSettings();
+        }
+#endif
+
         /// <summary>
         /// Initialize shelf list item with shelf data
         /// </summary>
@@ -63,9 +72,12 @@ namespace PopLife.UI
             this.tooltip = tooltip;
 
             // Update UI
-            if (iconImage != null && shelf.icon != null)
+            if (iconImage != null)
             {
-                iconImage.sprite = shelf.icon;
+                ApplyIconImageSettings();
+                Sprite iconSprite = GetShelfPrefabSprite(shelf) ?? shelf.icon;
+                iconImage.sprite = iconSprite;
+                iconImage.enabled = iconSprite != null;
             }
 
             UpdateCostDisplay();
@@ -158,6 +170,26 @@ namespace PopLife.UI
         public ShelfArchetype GetShelf()
         {
             return shelf;
+        }
+
+        private static Sprite GetShelfPrefabSprite(ShelfArchetype shelf)
+        {
+            if (shelf == null || shelf.prefab == null) return null;
+
+            var spriteRenderer = shelf.prefab.GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = shelf.prefab.GetComponentInChildren<SpriteRenderer>();
+            }
+
+            return spriteRenderer != null ? spriteRenderer.sprite : null;
+        }
+
+        private void ApplyIconImageSettings()
+        {
+            if (iconImage == null) return;
+
+            iconImage.preserveAspect = true;
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ namespace PopLife.UI.BuildingInteraction
         [SerializeField] private TextMeshProUGUI categoryText;
         [SerializeField] private TextMeshProUGUI levelText;
         [SerializeField] private TextMeshProUGUI priceText;
+        [SerializeField] private TextMeshProUGUI stockFeeText; // 每件补货成本（Restock Cost / unit）
         [SerializeField] private TextMeshProUGUI stockText;
         [FormerlySerializedAs("attractivenessText")]
         [SerializeField] private TextMeshProUGUI appealText;
@@ -48,6 +49,8 @@ namespace PopLife.UI.BuildingInteraction
 
         private void Awake()
         {
+            ApplyIconImageSettings();
+
             // Get or add CanvasGroup
             canvasGroup = GetComponent<CanvasGroup>();
             if (canvasGroup == null)
@@ -75,6 +78,13 @@ namespace PopLife.UI.BuildingInteraction
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            ApplyIconImageSettings();
+        }
+#endif
 
         private void Start()
         {
@@ -156,14 +166,12 @@ namespace PopLife.UI.BuildingInteraction
             }
 
             // Icon
-            if (iconImage != null && building.archetype.icon != null)
+            if (iconImage != null)
             {
-                iconImage.sprite = building.archetype.icon;
-                iconImage.enabled = true;
-            }
-            else if (iconImage != null)
-            {
-                iconImage.enabled = false;
+                ApplyIconImageSettings();
+                Sprite iconSprite = GetBuildingIconSprite(building.archetype);
+                iconImage.sprite = iconSprite;
+                iconImage.enabled = iconSprite != null;
             }
 
             // Name
@@ -222,6 +230,20 @@ namespace PopLife.UI.BuildingInteraction
                 else
                 {
                     priceText.gameObject.SetActive(false);
+                }
+            }
+
+            // Restock Cost per unit (for shelves)
+            if (stockFeeText != null)
+            {
+                if (building is ShelfInstance shelf)
+                {
+                    stockFeeText.text = $"Restock Cost: ${shelf.GetStockFee()}/unit";
+                    stockFeeText.gameObject.SetActive(true);
+                }
+                else
+                {
+                    stockFeeText.gameObject.SetActive(false);
                 }
             }
 
@@ -502,6 +524,36 @@ namespace PopLife.UI.BuildingInteraction
                     }
                 }
             }
+        }
+
+        private static Sprite GetBuildingIconSprite(BuildingArchetype archetype)
+        {
+            if (archetype is ShelfArchetype shelf)
+            {
+                return GetShelfPrefabSprite(shelf) ?? shelf.icon;
+            }
+
+            return archetype != null ? archetype.icon : null;
+        }
+
+        private static Sprite GetShelfPrefabSprite(ShelfArchetype shelf)
+        {
+            if (shelf == null || shelf.prefab == null) return null;
+
+            var spriteRenderer = shelf.prefab.GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = shelf.prefab.GetComponentInChildren<SpriteRenderer>();
+            }
+
+            return spriteRenderer != null ? spriteRenderer.sprite : null;
+        }
+
+        private void ApplyIconImageSettings()
+        {
+            if (iconImage == null) return;
+
+            iconImage.preserveAspect = true;
         }
 
         /// <summary>

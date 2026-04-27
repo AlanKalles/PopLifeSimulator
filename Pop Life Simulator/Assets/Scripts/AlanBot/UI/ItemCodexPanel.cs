@@ -83,6 +83,8 @@ namespace PopLife.AlanBot.UI
         [SerializeField] private TMP_Text buildCostText;
         [SerializeField] private TMP_Text maintenanceFeeText;
         [SerializeField] private TMP_Text sellPriceText;
+        [SerializeField] private TMP_Text stockFeeText; // 新增：每件补货成本
+        [SerializeField] private TMP_Text profitText;   // 新增：每件利润
         [SerializeField] private TMP_Text stockText;
         [SerializeField] private TMP_Text appealText;
 
@@ -618,6 +620,12 @@ namespace PopLife.AlanBot.UI
 
             if (sellPriceText != null)
                 sellPriceText.text = $"${shelf.GetPrice(1)}";
+
+            if (stockFeeText != null)
+                stockFeeText.text = $"${shelf.GetStockFee(1)}";
+
+            if (profitText != null)
+                profitText.text = $"${shelf.GetProfit(1)}";
 
             if (stockText != null)
                 stockText.text = shelf.GetStock(1).ToString();

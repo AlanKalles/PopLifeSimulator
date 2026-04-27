@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections;
+using System.Text;
+using TMPro;
 using PopLife.AlanBot.UI;
 using PopLife.Manager;
 using PopLife.UI.Guide;
@@ -39,8 +41,13 @@ namespace PopLife.AlanBot
         [SerializeField] private float fadeInDuration = 0.2f;
         [SerializeField] private float fadeOutDuration = 0.15f;
 
+        [Header("台词显示")]
+        [SerializeField] private TMP_Text quoteText;
+        [SerializeField] private float typewriterSpeed = 30f; // 字符/秒
+
         private Action onHideCallback;
         private Coroutine fadeCoroutine;
+        private Coroutine typewriterCoroutine;
 
         private void Awake()
         {
@@ -75,6 +82,8 @@ namespace PopLife.AlanBot
         /// </summary>
         public void Show(Action hideCallback = null)
         {
+            CloseShelfListPanelIfOpen();
+
             onHideCallback = hideCallback;
 
             if (panelRoot != null)
@@ -84,6 +93,25 @@ namespace PopLife.AlanBot
                 StopCoroutine(fadeCoroutine);
 
             fadeCoroutine = StartCoroutine(FadeCanvasGroup(0f, 1f, fadeInDuration, true, true));
+
+            // 抽取随机台词并启动打字机（每次 Show 都换新台词）
+            StopTypewriter();
+            string quote = AlanBotQuoteLibrary.GetRandomQuote();
+            if (quoteText != null)
+            {
+                quoteText.text = string.Empty;
+                if (!string.IsNullOrEmpty(quote))
+                    typewriterCoroutine = StartCoroutine(TypewriterRoutine(quote));
+            }
+        }
+
+        private static void CloseShelfListPanelIfOpen()
+        {
+            var shelfListPanel = FindFirstObjectByType<PopLife.UI.ShelfListPanel>();
+            if (shelfListPanel != null && shelfListPanel.IsOpen())
+            {
+                shelfListPanel.ClosePanel();
+            }
         }
 
         /// <summary>
@@ -91,10 +119,45 @@ namespace PopLife.AlanBot
         /// </summary>
         public void Hide()
         {
+            // 停止打字机：保持 quoteText 当前内容，让面板淡出动画自然带走半截字
+            StopTypewriter();
+
             if (fadeCoroutine != null)
                 StopCoroutine(fadeCoroutine);
 
             fadeCoroutine = StartCoroutine(FadeAndHide());
+        }
+
+        private void OnDisable()
+        {
+            // 兜底：场景切换/对象销毁时停止打字机
+            StopTypewriter();
+        }
+
+        private void StopTypewriter()
+        {
+            if (typewriterCoroutine != null)
+            {
+                StopCoroutine(typewriterCoroutine);
+                typewriterCoroutine = null;
+            }
+            // 不修改 quoteText.text —— 保持当前进度
+        }
+
+        private IEnumerator TypewriterRoutine(string fullText)
+        {
+            if (quoteText == null) yield break;
+
+            float charDuration = 1f / Mathf.Max(typewriterSpeed, 1f);
+            var sb = new StringBuilder(fullText.Length);
+            foreach (char c in fullText)
+            {
+                sb.Append(c);
+                quoteText.text = sb.ToString();
+                // 使用 unscaled 时间，与 FadeCanvasGroup 一致，不受 Time.timeScale 影响
+                yield return new WaitForSecondsRealtime(charDuration);
+            }
+            typewriterCoroutine = null;
         }
 
         private IEnumerator FadeAndHide()

@@ -193,6 +193,8 @@ namespace PopLife.UI
         public void Show()
         {
             if (panelRoot == null) return;
+            CloseShelfListPanelIfOpen();
+
             panelRoot.SetActive(true);
             RefreshDisplay();
             if (animator != null)
@@ -221,6 +223,15 @@ namespace PopLife.UI
         public bool IsShowing()
         {
             return panelRoot != null && panelRoot.activeSelf;
+        }
+
+        private static void CloseShelfListPanelIfOpen()
+        {
+            var shelfListPanel = FindFirstObjectByType<ShelfListPanel>();
+            if (shelfListPanel != null && shelfListPanel.IsOpen())
+            {
+                shelfListPanel.ClosePanel();
+            }
         }
 
         private void IncrementDigit(int index)

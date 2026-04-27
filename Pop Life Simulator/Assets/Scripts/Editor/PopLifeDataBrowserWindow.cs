@@ -852,7 +852,7 @@ namespace PopLife.Editor
             EditorGUILayout.Space(2);
 
             // Header row
-            DrawStatsTableRow("Level", "Upgrade Fame", "Price", "Maint. Fee", "Max Stock", "Appeal", true);
+            DrawStatsTableRow("Level", "Upgrade Fame", "Stock Fee", "Profit", "Price", "Maint. Fee", "Max Stock", "Appeal", true);
             DrawStatsTableDivider();
 
             for (int lvl = 1; lvl <= shelf.MaxLevel; lvl++)
@@ -860,6 +860,8 @@ namespace PopLife.Editor
                 DrawStatsTableRow(
                     lvl.ToString(),
                     shelf.GetUpgradeFameCost(lvl).ToString(),
+                    shelf.GetStockFee(lvl).ToString(),
+                    shelf.GetProfit(lvl).ToString(),
                     shelf.GetPrice(lvl).ToString(),
                     shelf.GetMaintenanceFee(lvl).ToString(),
                     shelf.GetStock(lvl).ToString(),
@@ -871,20 +873,22 @@ namespace PopLife.Editor
             EditorGUILayout.Space(4);
         }
 
-        private static readonly float[] StatsColWidths = { 44f, 100f, 60f, 82f, 76f, 60f };
+        private static readonly float[] StatsColWidths = { 44f, 100f, 70f, 60f, 60f, 82f, 76f, 60f };
 
-        private static void DrawStatsTableRow(string level, string fame, string price,
-                                              string maint, string stock, string appeal, bool isHeader)
+        private static void DrawStatsTableRow(string level, string fame, string stockFee, string profit,
+                                              string price, string maint, string stock, string appeal, bool isHeader)
         {
             GUIStyle style = isHeader ? EditorStyles.boldLabel : EditorStyles.label;
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(4);
-            GUILayout.Label(level,  style, GUILayout.Width(StatsColWidths[0]));
-            GUILayout.Label(fame,   style, GUILayout.Width(StatsColWidths[1]));
-            GUILayout.Label(price,  style, GUILayout.Width(StatsColWidths[2]));
-            GUILayout.Label(maint,  style, GUILayout.Width(StatsColWidths[3]));
-            GUILayout.Label(stock,  style, GUILayout.Width(StatsColWidths[4]));
-            GUILayout.Label(appeal, style, GUILayout.Width(StatsColWidths[5]));
+            GUILayout.Label(level,     style, GUILayout.Width(StatsColWidths[0]));
+            GUILayout.Label(fame,      style, GUILayout.Width(StatsColWidths[1]));
+            GUILayout.Label(stockFee,  style, GUILayout.Width(StatsColWidths[2]));
+            GUILayout.Label(profit,    style, GUILayout.Width(StatsColWidths[3]));
+            GUILayout.Label(price,     style, GUILayout.Width(StatsColWidths[4]));
+            GUILayout.Label(maint,     style, GUILayout.Width(StatsColWidths[5]));
+            GUILayout.Label(stock,     style, GUILayout.Width(StatsColWidths[6]));
+            GUILayout.Label(appeal,    style, GUILayout.Width(StatsColWidths[7]));
             EditorGUILayout.EndHorizontal();
         }
 

@@ -8,7 +8,7 @@ namespace PopLife.Runtime
 {
     public class ConstructionManager : MonoBehaviour
     {
-        public enum Mode { None, Place, Move, Destroy, PlaceElevator, MoveFloorTile, DestroyFloorTile }
+        public enum Mode { None, Place, Move, Destroy, MoveFloorTile, DestroyFloorTile }
 
         // 建筑放置、销毁、移动或升级后触发，用于UI刷新和 Store Appeal 重算
         public static event System.Action OnBuildingPlacedOrDestroyed;
@@ -63,6 +63,7 @@ namespace PopLife.Runtime
         // 电梯放置（单次点击放门，自动连接）
         [Header("Elevator")]
         [SerializeField] private ElevatorArchetype elevatorArchetype;
+        public ElevatorArchetype CurrentElevatorArchetype => elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
 
         void Awake()
         {
@@ -112,11 +113,6 @@ namespace PopLife.Runtime
                 UpdateDestroyHover();
                 HandleDestroyInput();
             }
-            else if (mode == Mode.PlaceElevator)
-            {
-                UpdateElevatorPreview();
-                HandleElevatorInput();
-            }
             else if (mode == Mode.MoveFloorTile)
             {
                 if (isMoveDragging)
@@ -152,7 +148,8 @@ namespace PopLife.Runtime
         {
             ConsumePendingPlacementClick();
             // 资源校验：蓝图检查（直接通过BlueprintManager判断是否已解锁）
-            if (!blueprintManager.HasBlueprint(arch.archetypeId))
+            // 电梯绕过蓝图检查（UI 按钮可见即视为允许放置）
+            if (!(arch is ElevatorArchetype) && !blueprintManager.HasBlueprint(arch.archetypeId))
             {
                 if (UIManager.Instance != null)
                 {
@@ -162,9 +159,11 @@ namespace PopLife.Runtime
             }
 
             // 资源校验：金钱和声望检查（应用全局修饰器的建造成本乘数）
+            // 电梯按 floorLevel=0 粗筛（最低楼层成本作为下限），真实扣费在 PlaceBuildingTransactional 按实际楼层算
+            int rawCost = arch is ElevatorArchetype ea ? ea.GetPlacementCost(0) : arch.buildCost;
             int finalBuildCost = GlobalModifierManager.Instance != null
-                ? Mathf.RoundToInt(arch.buildCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
-                : arch.buildCost;
+                ? Mathf.RoundToInt(rawCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                : rawCost;
             if (!resourceManager.CanAfford(finalBuildCost, 0))
             {
                 // 判断具体缺少哪种资源
@@ -352,6 +351,9 @@ namespace PopLife.Runtime
             // 使用 InputGateService 判定纯点击（避免拖拽时误放置建筑）
             if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
             {
+                // UI 守卫：点击落在 UI 上时不放置（防止幽灵放置）
+                if (IsPointerOverUI()) return;
+
                 if (mainCamera == null)
                 {
                     Debug.LogError("ConstructionManager: 无法放置建筑 - 主相机未找到");
@@ -396,9 +398,13 @@ namespace PopLife.Runtime
 
                     if (FloatingTextSpawner.Instance != null)
                     {
-                        int displayCost = GlobalModifierManager.Instance != null
-                            ? Mathf.RoundToInt(selectedArchetype.buildCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                        // 电梯成本按当前楼层算，普通建筑用 buildCost
+                        int rawCost = selectedArchetype is ElevatorArchetype eaCost && currentTargetTile != null
+                            ? eaCost.GetPlacementCost(currentTargetTile.FloorLevel ?? 0)
                             : selectedArchetype.buildCost;
+                        int displayCost = GlobalModifierManager.Instance != null
+                            ? Mathf.RoundToInt(rawCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                            : rawCost;
                         FloatingTextSpawner.Instance.SpawnCostText(
                             inst.transform.position,
                             displayCost
@@ -408,11 +414,27 @@ namespace PopLife.Runtime
                     if (GameStateManager.Instance != null)
                         GameStateManager.Instance.NotifyShelfPlaced();
 
+                    // 电梯门放置后重建电梯连接（FloorTile 拓扑未变，OnStructureChanged 不会触发，需手动调用）
+                    // 楼层标签由 RebuildAllLinks 末尾的 RefreshAllDoorLabels 自动刷新
+                    if (inst is ElevatorDoorInstance)
+                    {
+                        WorldGrid.Instance?.ElevatorLinks?.RebuildAllLinks();
+                    }
+
                     OnBuildingPlacedOrDestroyed?.Invoke();
 
-                    // 地板可以按 Shift 连续放置，货架不可
-                    if (selectedArchetype is ShelfArchetype || !Input.GetKey(KeyCode.LeftShift))
+                    // 连放策略：
+                    //   - Shelf：放完即取消
+                    //   - Elevator：保持模式，可继续放置（隐式连续）
+                    //   - FloorTile/Facility：按住 Shift 才连续，否则取消
+                    if (selectedArchetype is ElevatorArchetype)
+                    {
+                        // 隐式连续放置，不调 Cancel
+                    }
+                    else if (selectedArchetype is ShelfArchetype || !Input.GetKey(KeyCode.LeftShift))
+                    {
                         Cancel();
+                    }
                 }
                 // 注意：放置失败时预览已经是红色，不需要额外弹窗
             }
@@ -674,6 +696,9 @@ namespace PopLife.Runtime
                 // 阶段1：选择建筑（使用 InputGateService 判定纯点击）
                 if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
                 {
+                    // UI 守卫：避免点击面板按钮时误选建筑
+                    if (IsPointerOverUI()) return;
+
                     // 检查相机是否存在
                     if (mainCamera == null)
                     {
@@ -709,6 +734,9 @@ namespace PopLife.Runtime
                 // 点击放置（使用 InputGateService 判定纯点击）
                 if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
                 {
+                    // UI 守卫：避免点击面板按钮时触发移动放置
+                    if (IsPointerOverUI()) return;
+
                     if (mainCamera == null)
                     {
                         Debug.LogError("ConstructionManager: 无法移动建筑 - 主相机未找到");
@@ -866,6 +894,10 @@ namespace PopLife.Runtime
                 // 选择阶段：使用逻辑检测，非 Raycast
                 if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
                 {
+                    // UI 守卫：hoveredFloorTile 由 UpdateMoveFloorTileHover 基于鼠标世界坐标设定，
+                    // 若鼠标悬停在 UI 按钮上且下方有 FloorTile，点 UI 会误触开始拖动
+                    if (IsPointerOverUI()) return;
+
                     if (hoveredFloorTile != null)
                         BeginMoveDragging(hoveredFloorTile);
                 }
@@ -879,6 +911,9 @@ namespace PopLife.Runtime
                 // 点击放置
                 if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
                 {
+                    // UI 守卫：避免点击面板按钮时触发地板放置
+                    if (IsPointerOverUI()) return;
+
                     if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
 
                     var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition); mouse.z = 0;
@@ -996,6 +1031,9 @@ namespace PopLife.Runtime
             // 左键点击建筑（使用 InputGateService 判定纯点击）
             if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
             {
+                // UI 守卫：避免点击面板按钮时触发销毁确认弹窗
+                if (IsPointerOverUI()) return;
+
                 // 检查相机是否存在
                 if (mainCamera == null)
                 {
@@ -1182,6 +1220,10 @@ namespace PopLife.Runtime
 
             if (InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0))
             {
+                // UI 守卫：hoveredFloorTile 由 UpdateDestroyFloorTileHover 基于鼠标世界坐标设定，
+                // 若鼠标悬停在 UI 按钮上且下方有 FloorTile，点 UI 会误触销毁确认弹窗
+                if (IsPointerOverUI()) return;
+
                 if (hoveredFloorTile != null)
                 {
                     var wg = WorldGrid.Instance;
@@ -1276,132 +1318,6 @@ namespace PopLife.Runtime
             }
         }
 
-        // ========== 电梯放置（单次点击放门，连接自动重建） ==========
-
-        /// <summary>
-        /// 进入电梯放置模式（由 UI 调用）
-        /// </summary>
-        public void BeginPlaceElevator()
-        {
-            ConsumePendingPlacementClick();
-            Cancel();
-            mode = Mode.PlaceElevator;
-            // 创建虚影 + placed 双预览（与普通 Place 走同一路径）
-            var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
-            if (arch != null && arch.prefab != null)
-            {
-                CreatePreview(arch);
-            }
-        }
-
-        private void UpdateElevatorPreview()
-        {
-            if (preview == null) return;
-            if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
-
-            var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            mouse.z = 0;
-
-            var tile = DetectFloorTileAtWorld(mouse);
-            if (tile?.Interior == null)
-            {
-                preview.SetActive(false);
-                HidePlacedPreview();
-                return;
-            }
-
-            var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
-            if (arch == null) { preview.SetActive(false); HidePlacedPreview(); return; }
-
-            var cursorLocal = tile.Interior.WorldToLocal(mouse);
-            var fp = arch.GetRotatedFootprint(0);
-            var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
-            bool canPlace = arch.ValidateInteriorPlacement(tile.Interior, snapped, 0);
-
-            preview.SetActive(true);
-            preview.transform.position = tile.Interior.LocalToWorld(cursorLocal);
-            UpdatePreviewColor(canPlace);
-
-            if (canPlace)
-                ShowPlacedPreviewAt(tile.Interior.LocalToWorld(snapped), 0);
-            else
-                HidePlacedPreview();
-        }
-
-        private void HandleElevatorInput()
-        {
-            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
-            {
-                Cancel();
-                return;
-            }
-
-            if (!(InputGateService.Instance != null ? InputGateService.Instance.WasClickThisFrame : Input.GetMouseButtonDown(0)))
-                return;
-
-            if (mainCamera == null) { mainCamera = Camera.main; if (mainCamera == null) return; }
-
-            var mouse = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            mouse.z = 0;
-
-            var tile = DetectFloorTileAtWorld(mouse);
-            if (tile?.Interior == null)
-            {
-                UIManager.Instance?.ShowAlert("No floor tile here.");
-                return;
-            }
-
-            var arch = elevatorArchetype ?? WorldGrid.Instance?.DefaultElevatorArchetype;
-            if (arch == null) return;
-
-            // auto-snap 到底部
-            var cursorLocal = tile.Interior.WorldToLocal(mouse);
-            var snapped = InteriorGrid.SnapToBottom(cursorLocal, arch.GetRotatedFootprint(0));
-
-            // 校验放置
-            if (!arch.ValidateInteriorPlacement(tile.Interior, snapped, 0))
-            {
-                UIManager.Instance?.ShowAlert("Cannot place elevator here.");
-                return;
-            }
-
-            // 校验费用
-            int floorLevel = tile.FloorLevel ?? 0;
-            int cost = arch.GetPlacementCost(floorLevel);
-            int finalCost = GlobalModifierManager.Instance != null
-                ? Mathf.RoundToInt(cost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
-                : cost;
-            if (!resourceManager.CanAfford(finalCost, 0))
-            {
-                UIManager.Instance?.ShowAlert("Not enough money.");
-                return;
-            }
-
-            // 放置电梯门
-            var container = tile.InteriorContainer;
-            var go = Instantiate(arch.prefab, tile.Interior.LocalToWorld(snapped), Quaternion.identity, container);
-            var door = go.GetComponent<ElevatorDoorInstance>();
-            if (door == null)
-            {
-                Destroy(go);
-                return;
-            }
-
-            door.Initialize(arch, snapped, tile.instanceId);
-            tile.Interior.RegisterBuilding(door, arch.GetRotatedFootprint(0), snapped);
-            door.SetFloorLabel(tile.FloorDisplayName);
-
-            // 扣费
-            resourceManager.SpendMoney(finalCost);
-            AudioManager.Instance?.PlaySound(AudioKeys.BUILDING_PLACED);
-
-            // 重建电梯连接（不需要 RebuildAllGraphs：电梯门只改 occupied 不改 walkable，图已存在）
-            WorldGrid.Instance?.ElevatorLinks?.RebuildAllLinks();
-
-            OnBuildingPlacedOrDestroyed?.Invoke();
-            // 保持 PlaceElevator 模式，可继续放置
-        }
-
         public void Cancel()
         {
             mode = Mode.None;
@@ -1476,6 +1392,16 @@ namespace PopLife.Runtime
         private void ConsumePendingPlacementClick()
         {
             InputGateService.Instance?.ConsumeClick();
+        }
+
+        /// <summary>
+        /// 鼠标是否在 UI 上：用于左键点击前的守卫，避免 UI 按钮点击穿透触发世界操作（幽灵放置/误选等）。
+        /// CM 和 EventSystem 都在执行顺序 0，若 CM 在同帧先执行，ConsumeClick 还来不及消费 wasClick。
+        /// </summary>
+        private bool IsPointerOverUI()
+        {
+            var es = UnityEngine.EventSystems.EventSystem.current;
+            return es != null && es.IsPointerOverGameObject();
         }
 
         private void PlayBuildSound(BuildingArchetype archetype)

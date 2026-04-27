@@ -1152,9 +1152,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10.373098, y: 0.9879}
-  m_SizeDelta: {x: -72.1174, y: -51.3714}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -442.32367, y: 0.9878998}
+  m_SizeDelta: {x: -79.3313, y: -51.3714}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &333924254781668361
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1183,7 +1183,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Check check~
+  m_text: I will be here watching the store even you're not here!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
   m_sharedMaterial: {fileID: -2483764444016197910, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
@@ -1210,8 +1210,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 56
-  m_fontSizeBase: 56
+  m_fontSize: 54
+  m_fontSizeBase: 54
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1365,8 +1365,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 301, y: -237}
-  m_SizeDelta: {x: 389, y: 245}
+  m_AnchoredPosition: {x: 247.75, y: -237}
+  m_SizeDelta: {x: 495.5, y: 245}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9136364432524794718
 CanvasRenderer:
@@ -1649,7 +1649,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6927527486489905438}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -1680,6 +1680,8 @@ MonoBehaviour:
   guideCollectionPanel: {fileID: 0}
   fadeInDuration: 0.2
   fadeOutDuration: 0.15
+  quoteText: {fileID: 3545259237902675890}
+  typewriterSpeed: 30
 --- !u!1 &7176405312996020657
 GameObject:
   m_ObjectHideFlags: 0

@@ -842,7 +842,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 2
   m_Viewport: {fileID: 6211762598504230595}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 4141848497453060846}
@@ -2918,7 +2918,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 2
   m_Viewport: {fileID: 3663210608589561579}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 6373694522064555294}
@@ -3488,6 +3488,8 @@ MonoBehaviour:
   buildCostText: {fileID: 3941390908975709746}
   maintenanceFeeText: {fileID: 8161307962832624273}
   sellPriceText: {fileID: 7270187748225964230}
+  stockFeeText: {fileID: 0}
+  profitText: {fileID: 0}
   stockText: {fileID: 4058576755275467482}
   appealText: {fileID: 744040759175928276}
   masterList: {fileID: 11400000, guid: e1d2711b0afab4d438ee7a5b07d86bc0, type: 2}
@@ -7393,7 +7395,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 2
   m_Viewport: {fileID: 6676980697150283828}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}

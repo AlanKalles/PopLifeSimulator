@@ -26,18 +26,25 @@ namespace PopLife.Runtime
         {
             var lv = SA.GetShelfLevel(1);
             maxStock = lv.maxStock;
-            currentStock = maxStock;
+            // 新货架上线时初始库存 = 1，其余由 Restock 面板补充
+            currentStock = 1;
             currentPrice = lv.price;
         }
 
         protected override void OnUpgraded()
         {
             var lv = SA.GetShelfLevel(currentLevel);
+            // 升级只提升上限和单价，currentStock 保持不变（由玩家通过补货面板补足）
             maxStock = lv.maxStock;
             currentPrice = lv.price;
+            // 保险钳制：上限降低的极端情况
+            currentStock = Mathf.Clamp(currentStock, 0, maxStock);
+        }
 
-            // 升级后自动补货
-            Restock();
+        /// <summary>当前等级的每件补货成本（供 UI / 经济系统查询）</summary>
+        public int GetStockFee()
+        {
+            return SA != null ? SA.GetStockFee(currentLevel) : 0;
         }
 
         public float GetAppeal()
@@ -86,10 +93,18 @@ namespace PopLife.Runtime
             return true;
         }
 
+        /// <summary>重置到满库存（遗留接口，仅供调试/作弊使用；日循环和升级不再调用）</summary>
         public void Restock()
         {
             currentStock = maxStock;
             todaySales = 0;
+        }
+
+        /// <summary>增量补货——玩家通过补货面板调用，自动钳制到 maxStock</summary>
+        public void RestockByAmount(int amount)
+        {
+            if (amount <= 0) return;
+            currentStock = Mathf.Min(maxStock, currentStock + amount);
         }
 
         /// <summary>
@@ -127,14 +142,28 @@ namespace PopLife.Runtime
 
         public override void LoadFromSaveData(BuildingSaveData data)
         {
+            // 1. base 先读，currentLevel 从 data.level 初始化
             base.LoadFromSaveData(data);
+
+            // 2. 从 archetype 重算派生值——公式变更后，旧存档里存的 price/maxStock 可能过时，必须用新公式覆盖
+            if (SA != null)
+            {
+                var lv = SA.GetShelfLevel(currentLevel);
+                maxStock = lv.maxStock;
+                currentPrice = lv.price;
+            }
+
+            // 3. 读取 payload 里的库存相关字段
             if (!string.IsNullOrEmpty(data.payloadJson))
             {
                 var p = JsonUtility.FromJson<Payload>(data.payloadJson);
                 currentStock = p.currentStock;
                 todaySales = p.todaySales;
-                currentPrice = p.price;
+                // payload.price 故意忽略——以 archetype 新公式为准
             }
+
+            // 4. 钳制：新公式下的 maxStock 可能比旧存档小
+            currentStock = Mathf.Clamp(currentStock, 0, maxStock);
         }
 
         [Serializable]

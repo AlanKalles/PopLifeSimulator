@@ -110,15 +110,22 @@ namespace PopLife.Runtime
                 if (!Interior.CanPlace(fp, localPos)) return null;
             }
 
-            if (!BlueprintManager.Instance.HasBlueprint(arch.archetypeId)) return null;
+            // 电梯绕过蓝图检查
+            bool isElevator = arch is ElevatorArchetype;
+            if (!isElevator && !BlueprintManager.Instance.HasBlueprint(arch.archetypeId)) return null;
 
-            int finalBuildCost = GlobalModifierManager.Instance != null
-                ? Mathf.RoundToInt(arch.buildCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+            // 电梯按当前 FloorLevel 计算成本
+            int rawCost = arch is ElevatorArchetype ea
+                ? ea.GetPlacementCost(FloorLevel ?? 0)
                 : arch.buildCost;
+            int finalBuildCost = GlobalModifierManager.Instance != null
+                ? Mathf.RoundToInt(rawCost * GlobalModifierManager.Instance.GetConstructionCostMultiplier())
+                : rawCost;
             if (!ResourceManager.Instance.CanAfford(finalBuildCost, 0)) return null;
 
             ResourceManager.Instance.SpendMoney(finalBuildCost);
-            BlueprintManager.Instance.ConsumeBlueprint(arch.archetypeId);
+            if (!isElevator)
+                BlueprintManager.Instance.ConsumeBlueprint(arch.archetypeId);
 
             BuildingInstance inst = null;
             try

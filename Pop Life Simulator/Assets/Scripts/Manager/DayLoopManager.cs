@@ -391,6 +391,14 @@ namespace PopLife
                 return;
             }
 
+            // 补货闸门：必须在本次建造阶段至少成功补货一次才能开店（除非场上没货架）
+            if (RestockManager.Instance != null && !RestockManager.Instance.IsReadyToOpen())
+            {
+                Debug.Log("[DayLoopManager] 尚未补货，打开 RestockPanel 并提示");
+                RestockManager.Instance.RequestOpenWithoutRestock();
+                return;
+            }
+
             // 禁用建造按钮
             if (buildButton != null)
             {
@@ -478,8 +486,7 @@ namespace PopLife
             // 重置状态标志
             hasStoppedSpawning = false;
 
-            // 自动补货所有货架
-            RestockAllShelves();
+            // （旧版在此自动补货，已移除——补货改由 RestockPanel 由玩家手动完成）
 
             // 恢复时间流动（修复第二天时间不计时的bug）
             ResumeTime();
@@ -513,27 +520,6 @@ namespace PopLife
             OnBuildPhaseStart?.Invoke();
 
             Debug.Log($"[DayLoopManager] 进入 Day {currentDay} 建造阶段，时间设为 {buildPhaseHour:F1}:00");
-        }
-
-        /// <summary>
-        /// 自动补货所有货架
-        /// </summary>
-        private void RestockAllShelves()
-        {
-            int restockedCount = 0;
-
-            // 遍历所有货架
-            var wg = Runtime.WorldGrid.Instance;
-            if (wg != null)
-            {
-                foreach (var shelf in wg.AllShelves())
-                {
-                    shelf.Restock();
-                    restockedCount++;
-                }
-            }
-
-            Debug.Log($"[DayLoopManager] 自动补货完成，共补货 {restockedCount} 个货架");
         }
 
         /// <summary>

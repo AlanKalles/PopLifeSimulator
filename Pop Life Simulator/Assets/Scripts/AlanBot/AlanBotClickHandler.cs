@@ -72,6 +72,22 @@ namespace PopLife.AlanBot
         }
 
         /// <summary>
+        /// 外部入口：UI Button 等可调用此方法打开 AlanBot 选择菜单
+        /// 复用与点击 AlanBot 完全一致的交互流程（暂停行为树 + 表情 + 延迟开面板 + 关闭后恢复状态）
+        /// </summary>
+        public void TryOpenMenu()
+        {
+            if (controller == null) return;
+            if (controller.isInteracting) return;
+
+            // 建造模式中禁止触发交互
+            var cm = FindAnyObjectByType<ConstructionManager>();
+            if (cm != null && cm.mode != ConstructionManager.Mode.None) return;
+
+            HandleInteractionRequest();
+        }
+
+        /// <summary>
         /// 根据当前状态决定如何过渡到交互
         /// </summary>
         private void HandleInteractionRequest()

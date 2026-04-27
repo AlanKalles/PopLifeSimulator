@@ -31,6 +31,8 @@ namespace PopLife.UI
 
         void Awake()
         {
+            ApplyIconImageSettings();
+
             if (button != null)
                 button.onClick.AddListener(OnButtonClicked);
 
@@ -45,13 +47,19 @@ namespace PopLife.UI
             outline.enabled = false;
         }
 
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            ApplyIconImageSettings();
+        }
+#endif
+
         public void Initialize(FloorTileArchetype archetype, System.Action<FloorTileArchetype> onSelectCallback)
         {
             this.archetype = archetype;
             this.onSelectCallback = onSelectCallback;
 
-            if (iconImage != null && archetype.icon != null)
-                iconImage.sprite = archetype.icon;
+            SetIcon(archetype != null ? archetype.icon : null);
 
             if (sizeText != null)
                 sizeText.text = $"{archetype.TileSize.x}x{archetype.TileSize.y}";
@@ -62,7 +70,7 @@ namespace PopLife.UI
         /// <summary>
         /// 初始化为电梯放置按钮（无 archetype）
         /// </summary>
-        public void InitializeAsElevator(System.Action onElevatorCallback)
+        public void InitializeAsElevator(ElevatorArchetype elevatorArchetype, System.Action onElevatorCallback)
         {
             this.onElevatorCallback = onElevatorCallback;
             this.isElevatorButton = true;
@@ -73,7 +81,7 @@ namespace PopLife.UI
             if (costText != null)
                 costText.text = ""; // 电梯放置无固定价格
 
-            // TODO: 设置电梯图标
+            SetIcon(elevatorArchetype != null ? elevatorArchetype.icon : null);
         }
 
         public void UpdateCostDisplay()
@@ -114,5 +122,21 @@ namespace PopLife.UI
         }
 
         public FloorTileArchetype GetArchetype() => archetype;
+
+        private void SetIcon(Sprite sprite)
+        {
+            if (iconImage == null) return;
+
+            ApplyIconImageSettings();
+            iconImage.sprite = sprite;
+            iconImage.enabled = sprite != null;
+        }
+
+        private void ApplyIconImageSettings()
+        {
+            if (iconImage == null) return;
+
+            iconImage.preserveAspect = true;
+        }
     }
 }

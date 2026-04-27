@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using PopLife.Data;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace PopLife.UI
 {
@@ -19,12 +20,23 @@ namespace PopLife.UI
         [SerializeField] private TextMeshProUGUI costText;
         [SerializeField] private TextMeshProUGUI categoryText;
         [FormerlySerializedAs("attractivenessText")]
-        [SerializeField] private TextMeshProUGUI appealText;
-        [SerializeField] private TextMeshProUGUI priceText;
-        [SerializeField] private TextMeshProUGUI maintenanceFeeText;
+        [FormerlySerializedAs("appealText")]
+        [SerializeField] private TextMeshProUGUI appealValueText;
+        [FormerlySerializedAs("priceText")]
+        [SerializeField] private TextMeshProUGUI priceValueText;
+        [FormerlySerializedAs("stockFeeText")]
+        [SerializeField] private TextMeshProUGUI stockFeeValueText; // 每件补货成本（可选，Prefab 没配置时跳过）
+        [FormerlySerializedAs("maintenanceFeeText")]
+        [SerializeField] private TextMeshProUGUI maintenanceFeeValueText;
         [SerializeField] private Image brandIconImage;
         [SerializeField] private TextMeshProUGUI brandNameText;
         [SerializeField] private CanvasGroup canvasGroup; // For fade animation
+
+        [Header("Grid Size Display")]
+        [Tooltip("Bind 16 cells from bottom-left to top-right. Index = y * 4 + x, so 0=(0,0), 1=(1,0), 4=(0,1).")]
+        [SerializeField] private Image[] gridSizeCells = new Image[16];
+        [SerializeField] private Color gridEmptyColor = Color.white;
+        [SerializeField] private Color gridOccupiedColor = new Color(0.3f, 0.6f, 1f, 1f);
 
         [Header("Color Settings")]
         [SerializeField] private Color affordableColor = Color.white;
@@ -45,6 +57,7 @@ namespace PopLife.UI
         private void Awake()
         {
             cachedRectTransform = GetComponent<RectTransform>();
+            ApplyIconImageSettings();
 
             // 缓存 Canvas 引用，用于 ScreenPointToLocalPointInRectangle
             var rootCanvas = GetComponentInParent<Canvas>()?.rootCanvas;
@@ -70,6 +83,13 @@ namespace PopLife.UI
             gameObject.SetActive(false);
         }
 
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            ApplyIconImageSettings();
+        }
+#endif
+
         /// <summary>
         /// Show tooltip with shelf information
         /// </summary>
@@ -78,9 +98,14 @@ namespace PopLife.UI
             if (shelf == null) return;
 
             // Update content
-            if (iconImage != null && shelf.icon != null)
+            UpdateGridSizeDisplay(shelf);
+
+            if (iconImage != null)
             {
-                iconImage.sprite = shelf.icon;
+                ApplyIconImageSettings();
+                Sprite iconSprite = GetShelfPrefabSprite(shelf) ?? shelf.icon;
+                iconImage.sprite = iconSprite;
+                iconImage.enabled = iconSprite != null;
             }
 
             if (nameText != null)
@@ -129,21 +154,27 @@ namespace PopLife.UI
             if (shelfLevel != null)
             {
                 // Display appeal
-                if (appealText != null)
+                if (appealValueText != null)
                 {
-                    appealText.text = $"Appeal: {shelfLevel.appeal:F1}";
+                    appealValueText.text = $"{shelfLevel.appeal:F1}";
                 }
 
                 // Display price
-                if (priceText != null)
+                if (priceValueText != null)
                 {
-                    priceText.text = $"Unit Price: ${shelfLevel.price}";
+                    priceValueText.text = $"${shelfLevel.price}";
+                }
+
+                // Display per-unit restock cost
+                if (stockFeeValueText != null)
+                {
+                    stockFeeValueText.text = $"${shelfLevel.stockFee}/unit";
                 }
 
                 // Display maintenance fee
-                if (maintenanceFeeText != null)
+                if (maintenanceFeeValueText != null)
                 {
-                    maintenanceFeeText.text = $"Maintenance: ${shelfLevel.maintenanceFee}/day";
+                    maintenanceFeeValueText.text = $"${shelfLevel.maintenanceFee}/day";
                 }
             }
 
@@ -166,6 +197,45 @@ namespace PopLife.UI
                 StopCoroutine(fadeCoroutine);
             }
             fadeCoroutine = StartCoroutine(FadeIn());
+        }
+
+        private void UpdateGridSizeDisplay(ShelfArchetype shelf)
+        {
+            if (gridSizeCells == null || gridSizeCells.Length == 0) return;
+
+            var occupiedCells = new HashSet<Vector2Int>(shelf.GetRotatedFootprint(0));
+
+            for (int i = 0; i < gridSizeCells.Length; i++)
+            {
+                var cellImage = gridSizeCells[i];
+                if (cellImage == null) continue;
+
+                int x = i % 4;
+                int y = i / 4;
+                cellImage.color = occupiedCells.Contains(new Vector2Int(x, y))
+                    ? gridOccupiedColor
+                    : gridEmptyColor;
+            }
+        }
+
+        private static Sprite GetShelfPrefabSprite(ShelfArchetype shelf)
+        {
+            if (shelf == null || shelf.prefab == null) return null;
+
+            var spriteRenderer = shelf.prefab.GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = shelf.prefab.GetComponentInChildren<SpriteRenderer>();
+            }
+
+            return spriteRenderer != null ? spriteRenderer.sprite : null;
+        }
+
+        private void ApplyIconImageSettings()
+        {
+            if (iconImage == null) return;
+
+            iconImage.preserveAspect = true;
         }
 
         /// <summary>

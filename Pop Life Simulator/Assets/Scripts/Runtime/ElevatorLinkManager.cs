@@ -25,10 +25,28 @@ namespace PopLife.Runtime
 
         private void Start()
         {
-            // 兜底：场景加载后首次重建
+            // 兜底：场景加载后首次重建（RebuildAllLinks 末尾会刷新标签）
             RebuildAllLinks();
-            // 刷新所有电梯门的楼层标签（Editor 放置时 WorldGrid 未初始化，标签可能是 "?"）
-            RefreshAllDoorLabels();
+        }
+
+        private void OnEnable()
+        {
+            // 订阅结构变化事件：新增/移动/删除 FloorTile 会改变 branch 划分和 FloorLevel，
+            // 需要同步重建电梯连接并刷新标签
+            if (WorldGrid.Instance != null)
+                WorldGrid.Instance.OnStructureChanged += HandleStructureChanged;
+        }
+
+        private void OnDisable()
+        {
+            if (WorldGrid.Instance != null)
+                WorldGrid.Instance.OnStructureChanged -= HandleStructureChanged;
+        }
+
+        private void HandleStructureChanged()
+        {
+            // 结构变化可能改变 FloorTile 的分支和电梯连通关系，需要重建 link 和标签。
+            RebuildAllLinks();
         }
 
         /// <summary> 全量重建所有电梯连接 </summary>
@@ -60,9 +78,7 @@ namespace PopLife.Runtime
                 }
             }
 
-            if (doorEntries.Count < 2) return;
-
-            // 4. 对每对门，检查所在 tile 是否共享至少一个 branch
+            // 4. 对每对门，检查所在 tile 是否共享至少一个 branch（少于 2 个门时跳过配对）
             for (int i = 0; i < doorEntries.Count; i++)
             {
                 for (int j = i + 1; j < doorEntries.Count; j++)
@@ -77,6 +93,9 @@ namespace PopLife.Runtime
                         CreateLink(a.door, b.door, wg);
                 }
             }
+
+            // 重建连接后刷新所有电梯门标签（即使只有一个电梯也要刷新其 FloorLevel）
+            RefreshAllDoorLabels();
         }
 
         /// <summary> 检查指定 FloorTile 上是否有 ElevatorDoorInstance </summary>

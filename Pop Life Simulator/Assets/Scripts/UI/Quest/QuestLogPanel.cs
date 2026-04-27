@@ -132,6 +132,8 @@ namespace PopLife.UI.Quest
         /// <param name="closeCallback">关闭时触发的回调（由 CalendarPanel Due Date 路由传入）</param>
         public void Show(string focusQuestName = null, Action closeCallback = null)
         {
+            CloseShelfListPanelIfOpen();
+
             onCloseCallback = closeCallback;
 
             RefreshList();
@@ -166,6 +168,15 @@ namespace PopLife.UI.Quest
         public bool IsShowing()
         {
             return panelRoot != null && panelRoot.activeSelf;
+        }
+
+        private static void CloseShelfListPanelIfOpen()
+        {
+            var shelfListPanel = FindFirstObjectByType<PopLife.UI.ShelfListPanel>();
+            if (shelfListPanel != null && shelfListPanel.IsOpen())
+            {
+                shelfListPanel.ClosePanel();
+            }
         }
 
         #region 左侧列表
@@ -384,6 +395,7 @@ namespace PopLife.UI.Quest
                     if (giverPortrait != null && detail.giverPortrait != null)
                     {
                         giverPortrait.sprite = detail.giverPortrait;
+                        giverPortrait.preserveAspect = true;
                         giverPortrait.enabled = true;
                     }
                     else if (giverPortrait != null)

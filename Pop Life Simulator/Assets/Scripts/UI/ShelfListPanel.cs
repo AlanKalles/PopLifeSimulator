@@ -85,7 +85,7 @@ namespace PopLife.UI
                 closeButton.onClick.AddListener(ClosePanel);
 
             if (openButton != null)
-                openButton.onClick.AddListener(TogglePanel);
+                openButton.onClick.AddListener(OnOpenButtonClicked);
 
             // 缓存 RectTransform 并设置初始位置（屏幕下方隐藏）
             if (panelRoot != null)
@@ -400,8 +400,10 @@ namespace PopLife.UI
                     var item = itemObj.GetComponent<FloorTileListItem>();
                     if (item != null)
                     {
-                        // 用 null archetype 初始化，特殊处理为电梯按钮
-                        item.InitializeAsElevator(OnElevatorSelected);
+                        var elevatorArchetype = constructionManager != null
+                            ? constructionManager.CurrentElevatorArchetype
+                            : WorldGrid.Instance?.DefaultElevatorArchetype;
+                        item.InitializeAsElevator(elevatorArchetype, OnElevatorSelected);
                         floorItemInstances.Add(item);
                     }
                 }
@@ -447,8 +449,10 @@ namespace PopLife.UI
 
         private void OnElevatorSelected()
         {
-            if (constructionManager != null)
-                constructionManager.BeginPlaceElevator();
+            if (constructionManager == null) { ClosePanel(); return; }
+            var arch = constructionManager.CurrentElevatorArchetype;
+            if (arch != null)
+                constructionManager.SelectArchetypeForPlacement(arch);
             ClosePanel();
         }
 
@@ -558,6 +562,18 @@ namespace PopLife.UI
         #endregion
 
         #region Panel Control
+
+        private void OnOpenButtonClicked()
+        {
+            PhaseLockedButton phaseLockedButton = openButton != null
+                ? openButton.GetComponent<PhaseLockedButton>()
+                : null;
+
+            if (phaseLockedButton != null && !phaseLockedButton.IsAllowedNow)
+                return;
+
+            TogglePanel();
+        }
 
         public void OpenPanel()
         {

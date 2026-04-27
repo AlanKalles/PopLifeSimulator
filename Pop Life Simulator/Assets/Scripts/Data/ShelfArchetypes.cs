@@ -26,6 +26,8 @@ namespace PopLife.Data
         public class ShelfLevelData : BuildingLevelData
         {
             public int price = 100;
+            public int stockFee = 0;   // 玩家每件补货成本
+            public int profit = 0;     // 每件利润（price = stockFee + profit）
             public int maxStock = 10;
             public float appeal = 1f;
         }
@@ -37,23 +39,34 @@ namespace PopLife.Data
 
         /// <summary>升级所需声望 = Floor(buildCost * 0.5 + level² * 5)</summary>
         public int GetUpgradeFameCost(int level)
-            => Mathf.FloorToInt(buildCost * 0.5f + Mathf.Pow(level, 2) * 5);
+            => Mathf.FloorToInt(buildCost * 0.5f + Mathf.Pow(level, 2) * 5f);
 
-        /// <summary>商品单价 = Floor(buildCost * 0.1 + level³ * 0.2)</summary>
+        /// <summary>每件补货成本 = Floor(buildCost * 0.05 - 2 + level² * 0.5)</summary>
+        public int GetStockFee(int level)
+            => Mathf.FloorToInt(buildCost * 0.05f - 2f + Mathf.Pow(level, 2) * 0.5f);
+
+        /// <summary>每件利润 = Floor(buildCost * 0.03 + level² * 0.25)</summary>
+        public int GetProfit(int level)
+            => Mathf.FloorToInt(buildCost * 0.03f + Mathf.Pow(level, 2) * 0.25f);
+
+        /// <summary>商品售价 = StockFee + Profit（顾客支付的单价）</summary>
         public int GetPrice(int level)
-            => Mathf.FloorToInt(buildCost * 0.1f + Mathf.Pow(level, 3) * 0.2f);
+            => GetStockFee(level) + GetProfit(level);
 
-        /// <summary>每日维护费 = Floor(buildCost * 0.1 + level² * 0.5 - 5)</summary>
+        /// <summary>每日维护费 = Floor(0.9 × Profit + 3 × √Profit)</summary>
         public int GetMaintenanceFee(int level)
-            => Mathf.FloorToInt(buildCost * 0.1f + Mathf.Pow(level, 2) * 0.5f - 5);
+        {
+            int p = GetProfit(level);
+            return Mathf.FloorToInt(0.9f * p + 3f * Mathf.Sqrt(p));
+        }
 
-        /// <summary>最大库存 = Floor(buildCost * 0.01 + level * 0.9 + 5)</summary>
+        /// <summary>最大库存 = Floor(Max(0, 800 - buildCost) × 0.01 + 5 + level² × 0.5)</summary>
         public int GetStock(int level)
-            => Mathf.FloorToInt(buildCost * 0.01f + level * 0.9f + 5);
+            => Mathf.FloorToInt(Mathf.Max(0, 800 - buildCost) * 0.01f + 5f + Mathf.Pow(level, 2) * 0.5f);
 
-        /// <summary>吸引力 = Floor(buildCost * 0.36 + 4 * level^1.5 + 5)</summary>
+        /// <summary>吸引力 = Floor(buildCost × 0.018 × level + 4 × level^1.5)</summary>
         public float GetAppeal(int level)
-            => Mathf.Floor(buildCost * 0.09f * 4f + 4f * Mathf.Pow(level, 1.5f) + 5);
+            => Mathf.Floor(buildCost * 0.018f * level + 4f * Mathf.Pow(level, 1.5f));
 
         // ── 兼容接口（供 BuildingInstance.TryUpgrade / ShelfInstance 使用）──
 
@@ -69,6 +82,8 @@ namespace PopLife.Data
                 upgradeFameCost = GetUpgradeFameCost(lvl),
                 maintenanceFee = GetMaintenanceFee(lvl),
                 price = GetPrice(lvl),
+                stockFee = GetStockFee(lvl),
+                profit = GetProfit(lvl),
                 maxStock = GetStock(lvl),
                 appeal = GetAppeal(lvl)
             };

@@ -234,18 +234,23 @@ namespace PopLife.Quest
         private void HandleQuestStateChanged()
         {
             string[] activeQuests = stateStore?.GetAllQuests(QuestState.Active);
-            if (activeQuests == null || activeQuests.Length == 0) return;
-
-            foreach (string questName in activeQuests)
+            if (activeQuests != null && activeQuests.Length > 0)
             {
-                if (!tracker.IsTracking(questName))
+                foreach (string questName in activeQuests)
                 {
-                    tracker.StartTracking(questName);
-                    OnQuestActivated?.Invoke(questName);
+                    if (!tracker.IsTracking(questName))
+                    {
+                        tracker.StartTracking(questName);
+                        OnQuestActivated?.Invoke(questName);
 
-                    if (debugMode)
-                        Debug.Log($"[QuestLogicManager] 检测到新激活任务: {questName}");
+                        if (debugMode)
+                            Debug.Log($"[QuestLogicManager] 检测到新激活任务: {questName}");
+                    }
                 }
+
+                // Dialogue/Lua 可以直接把 Entry 设为 success。此路径不会经过
+                // QuestProgressTracker.OnEntryCompleted，所以这里需要补一次整任务完成判定。
+                CheckActiveQuestCompletions(activeQuests);
             }
 
             // 检查外部完成的任务（可能由对话/Lua直接设置为success）
@@ -288,6 +293,9 @@ namespace PopLife.Quest
         /// </summary>
         private void CompleteQuest(string questName)
         {
+            if (QuestLog.GetQuestState(questName) == QuestState.Success)
+                return;
+
             // 先标记已奖励，防止 SetQuestState 同步回调中 CheckExternalCompletions 重复触发
             bool shouldReward = !rewardedQuests.Contains(questName);
             if (shouldReward)
@@ -386,6 +394,23 @@ namespace PopLife.Quest
                 {
                     FailQuest(questName);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 检查 Active 任务是否因为外部 Entry 状态变化而已经满足完成条件。
+        /// </summary>
+        private void CheckActiveQuestCompletions(string[] activeQuests)
+        {
+            if (activeQuests == null || activeQuests.Length == 0) return;
+
+            foreach (string questName in activeQuests)
+            {
+                if (QuestLog.GetQuestState(questName) != QuestState.Active)
+                    continue;
+
+                if (AreAllEntriesComplete(questName))
+                    CompleteQuest(questName);
             }
         }
 
