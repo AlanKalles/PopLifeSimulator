@@ -3,6 +3,8 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using PopLife.Data;
+using PopLife.Manager;
+using PopLife.Quest;
 using PopLife.UI;
 
 namespace PopLife.Editor
@@ -25,6 +27,7 @@ namespace PopLife.Editor
             "News Libraries",
             "Op Guides",
             "Dialogue Actions",
+            "Quest Chains",
         };
 
         // Matching C# type name strings for AssetDatabase.FindAssets
@@ -39,12 +42,14 @@ namespace PopLife.Editor
             "NewsLibrary",
             "OperationGuideData",
             "DialogueAction",
+            "QuestDefinition",
         };
 
         private const int TabShelves = 0;
         private const int TabCodex = 2;
         private const int TabInteractionEvents = 5;
         private const int TabNewsLibraries = 6;
+        private const int TabQuestChains = 9;
 
         // ── State ─────────────────────────────────────────────────────────────
         private int currentTab = 0;
@@ -91,6 +96,42 @@ namespace PopLife.Editor
         private static readonly Color UnlockedColor = new Color(0.22f, 0.62f, 0.32f);
         private static readonly Color LockedColor = new Color(0.55f, 0.22f, 0.22f);
 
+        // ── Quest Chain view ──────────────────────────────────────────────────
+        private class ChainDisplayItem
+        {
+            public bool isHeader;
+            public string label;
+            public ScriptableObject so;
+            public int depth;
+            public int triggerValue; // headers: marker value of this group; quest rows: unused
+        }
+
+        private List<ChainDisplayItem> chainDisplayList = new List<ChainDisplayItem>();
+        private int selectedChainItemIndex = -1;
+        private Vector2 chainListScroll;
+        private Vector2 chainDetailScroll;
+
+        private int chainDragHoverIndex  = -1;
+        private int chainMouseDownIndex  = -1;
+        private SerializedObject chainDetailSO;
+        private ScriptableObject chainDetailTarget;
+
+        private static string[] s_markerNames;
+        private static int[]    s_markerValues;
+
+        private static readonly Color ChainHeaderColor    = new Color(0.15f, 0.22f, 0.38f);
+        private static readonly Color ChainTriggerColor   = new Color(0.22f, 0.18f, 0.35f);
+        private static readonly Color ChainConditionColor = new Color(0.18f, 0.28f, 0.18f);
+        private static readonly Color ChainRewardColor    = new Color(0.30f, 0.24f, 0.10f);
+        private static readonly Color ChainTextColor      = new Color(0.18f, 0.18f, 0.28f);
+        private static readonly Color[] RewardTypeColors  =
+        {
+            new Color(0.95f, 0.78f, 0.20f),  // 0 Money
+            new Color(0.35f, 0.78f, 0.45f),  // 1 Fame
+            new Color(0.40f, 0.65f, 0.95f),  // 2 Blueprint
+            new Color(0.80f, 0.50f, 0.85f),  // 3 Customer
+        };
+
         // ── Dialogue Database ─────────────────────────────────────────────────
         private ScriptableObject dialogueDatabase;
         private SerializedObject dbSerializedObject;
@@ -115,9 +156,10 @@ namespace PopLife.Editor
         private void OnFocus()
         {
             LoadAssets();
-            // Re-sync db serialized object in case the database was saved externally
             if (dbSerializedObject != null)
                 dbSerializedObject.Update();
+            if (chainDetailSO != null)
+                chainDetailSO.Update();
         }
 
         private void OnGUI()
@@ -131,6 +173,8 @@ namespace PopLife.Editor
                 prevTab = currentTab;
                 selectedIndex = -1;
                 selectedNewsItemIndex = -1;
+                selectedChainItemIndex = -1;
+                chainDisplayList.Clear();
                 searchFilter = "";
                 DestroyEditor();
                 LoadAssets();
@@ -175,6 +219,12 @@ namespace PopLife.Editor
                 DrawNewsListPanel();
                 DrawSplitter();
                 DrawNewsPropertyPanel();
+            }
+            else if (currentTab == TabQuestChains)
+            {
+                DrawQuestChainListPanel();
+                DrawSplitter();
+                DrawQuestChainDetailPanel();
             }
             else
             {
@@ -1433,6 +1483,429 @@ namespace PopLife.Editor
             }
         }
 
+        // ─────────────────────────────────────────────────────────────────────
+        // QUEST CHAIN VIEW
+        // ─────────────────────────────────────────────────────────────────────
+
+        private static void EnsureMarkerArrays()
+        {
+            if (s_markerNames != null) return;
+            var rawValues = (int[])System.Enum.GetValues(typeof(TutorialMarker));
+            var rawNames  = System.Enum.GetNames(typeof(TutorialMarker));
+            s_markerValues = rawValues;
+            s_markerNames  = new string[rawNames.Length];
+            for (int i = 0; i < rawNames.Length; i++)
+                s_markerNames[i] = $"{rawNames[i]}  ({rawValues[i]})";
+        }
+
+        private void ReparentQuest(ScriptableObject so, int newActivationMarker)
+        {
+            if (so == null) return;
+            var serial = new SerializedObject(so);
+            serial.Update();
+            serial.FindProperty("activationMarker").intValue = newActivationMarker;
+            serial.ApplyModifiedProperties();
+            EditorUtility.SetDirty(so);
+            AssetDatabase.SaveAssets();
+        }
+
+        private void BuildChainDisplayList()
+        {
+            chainDisplayList.Clear();
+            selectedChainItemIndex = -1;
+
+            var allQuests  = new List<ScriptableObject>();
+            var activation = new Dictionary<ScriptableObject, int>();
+            var completion = new Dictionary<ScriptableObject, int>();
+            var priority   = new Dictionary<ScriptableObject, int>();
+            var titleMap   = new Dictionary<ScriptableObject, string>();
+
+            string[] guids = AssetDatabase.FindAssets("t:QuestDefinition");
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (path.Contains("/ThirdParty/") || path.StartsWith("Packages/")) continue;
+                var so = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                if (so == null) continue;
+
+                var s = new SerializedObject(so);
+                activation[so] = s.FindProperty("activationMarker").intValue;
+                completion[so] = s.FindProperty("completionMarker").intValue;
+                priority[so]   = s.FindProperty("sortPriority").intValue;
+                string t       = s.FindProperty("title").stringValue;
+                titleMap[so]   = string.IsNullOrEmpty(t) ? so.name : t;
+                allQuests.Add(so);
+            }
+
+            // childrenByMarker: completionMarker value → quests activated by it (skip -1 activation)
+            var childrenByMarker = new Dictionary<int, List<ScriptableObject>>();
+            foreach (var so in allQuests)
+            {
+                int act = activation[so];
+                if (act == -1) continue;
+                if (!childrenByMarker.TryGetValue(act, out var lst))
+                    childrenByMarker[act] = lst = new List<ScriptableObject>();
+                lst.Add(so);
+            }
+
+            // allCompletions excludes -1, so quests with activationMarker=-1 are never accidentally hidden
+            var allCompletions = new HashSet<int>();
+            foreach (var so in allQuests)
+            {
+                int c = completion[so];
+                if (c != -1) allCompletions.Add(c);
+            }
+
+            // Roots: non-(-1) activation and not triggered by another quest's completion
+            var rootsByTrigger = new Dictionary<int, List<ScriptableObject>>();
+            foreach (var so in allQuests)
+            {
+                int act = activation[so];
+                if (act == -1) continue;
+                if (!allCompletions.Contains(act))
+                {
+                    if (!rootsByTrigger.TryGetValue(act, out var lst))
+                        rootsByTrigger[act] = lst = new List<ScriptableObject>();
+                    lst.Add(so);
+                }
+            }
+
+            // Sort trigger groups ascending (no -1 here)
+            var sortedTriggers = new List<int>(rootsByTrigger.Keys);
+            sortedTriggers.Sort();
+
+            foreach (int trigger in sortedTriggers)
+            {
+                chainDisplayList.Add(new ChainDisplayItem
+                {
+                    isHeader     = true,
+                    label        = $"⚡  {GetMarkerDisplayName(trigger)}  ({trigger})",
+                    triggerValue = trigger,
+                });
+                var roots = new List<ScriptableObject>(rootsByTrigger[trigger]);
+                roots.Sort((a, b) => priority[a].CompareTo(priority[b]));
+                foreach (var root in roots)
+                    DfsAddChainItem(root, 1, activation, completion, priority, titleMap, childrenByMarker);
+            }
+
+            // No-activation section at the bottom
+            var noAct = new List<ScriptableObject>();
+            foreach (var so in allQuests)
+                if (activation[so] == -1) noAct.Add(so);
+            noAct.Sort((a, b) => priority[a].CompareTo(priority[b]));
+
+            if (noAct.Count > 0)
+            {
+                chainDisplayList.Add(new ChainDisplayItem
+                {
+                    isHeader     = true,
+                    label        = "⬜  No Activation Marker",
+                    triggerValue = -1,
+                });
+                foreach (var so in noAct)
+                    DfsAddChainItem(so, 1, activation, completion, priority, titleMap, childrenByMarker);
+            }
+        }
+
+        private void DfsAddChainItem(ScriptableObject so, int depth,
+            Dictionary<ScriptableObject, int> activation,
+            Dictionary<ScriptableObject, int> completion,
+            Dictionary<ScriptableObject, int> priority,
+            Dictionary<ScriptableObject, string> titleMap,
+            Dictionary<int, List<ScriptableObject>> childrenByMarker)
+        {
+            chainDisplayList.Add(new ChainDisplayItem
+            {
+                isHeader = false,
+                label    = titleMap[so],
+                so       = so,
+                depth    = depth,
+            });
+
+            int comp = completion[so];
+            if (comp >= 0 && childrenByMarker.TryGetValue(comp, out var children))
+            {
+                var sorted = new List<ScriptableObject>(children);
+                sorted.Sort((a, b) => priority[a].CompareTo(priority[b]));
+                foreach (var child in sorted)
+                    DfsAddChainItem(child, depth + 1, activation, completion, priority, titleMap, childrenByMarker);
+            }
+        }
+
+        private void DrawQuestChainListPanel()
+        {
+            if (chainDisplayList.Count == 0) BuildChainDisplayList();
+
+            int questCount = 0;
+            foreach (var item in chainDisplayList) if (!item.isHeader) questCount++;
+
+            EditorGUILayout.BeginVertical(GUILayout.Width(ListPanelWidth), GUILayout.ExpandHeight(true));
+
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            GUILayout.Label($"{questCount} quests", EditorStyles.miniLabel);
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("⟳", EditorStyles.toolbarButton, GUILayout.Width(24)))
+            {
+                BuildChainDisplayList();
+                Repaint();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            chainListScroll = EditorGUILayout.BeginScrollView(chainListScroll, GUILayout.ExpandHeight(true));
+
+            Event e = Event.current;
+
+            if (e.type == EventType.DragExited || e.type == EventType.MouseUp)
+            {
+                chainDragHoverIndex = -1;
+                chainMouseDownIndex = -1;
+            }
+
+            for (int i = 0; i < chainDisplayList.Count; i++)
+            {
+                var item = chainDisplayList[i];
+
+                if (item.isHeader)
+                {
+                    EditorGUILayout.Space(2);
+                    Rect r = EditorGUILayout.GetControlRect(false, 20f);
+
+                    bool isDropTarget = (chainDragHoverIndex == i);
+                    EditorGUI.DrawRect(r, isDropTarget ? new Color(0.15f, 0.45f, 0.15f) : ChainHeaderColor);
+                    EditorGUI.LabelField(new Rect(r.x + 6, r.y + 2, r.width - 8, 16),
+                        item.label, EditorStyles.whiteLabel);
+
+                    if (e.type == EventType.DragUpdated && r.Contains(e.mousePosition)
+                        && DragAndDrop.objectReferences.Length > 0)
+                    {
+                        DragAndDrop.visualMode = DragAndDropVisualMode.Move;
+                        chainDragHoverIndex    = i;
+                        e.Use();
+                        Repaint();
+                    }
+                    if (e.type == EventType.DragPerform && r.Contains(e.mousePosition)
+                        && DragAndDrop.objectReferences.Length > 0)
+                    {
+                        var droppedSO = DragAndDrop.objectReferences[0] as ScriptableObject;
+                        if (droppedSO != null)
+                        {
+                            DragAndDrop.AcceptDrag();
+                            ReparentQuest(droppedSO, item.triggerValue);
+                            chainDragHoverIndex = -1;
+                            BuildChainDisplayList();
+                            Repaint();
+                        }
+                        e.Use();
+                    }
+                }
+                else
+                {
+                    bool isSelected = (i == selectedChainItemIndex);
+                    bool isDropTgt  = (chainDragHoverIndex == i);
+                    Rect rowRect    = EditorGUILayout.GetControlRect(false, 20f);
+
+                    if (isDropTgt)
+                        EditorGUI.DrawRect(rowRect, new Color(0.15f, 0.50f, 0.15f, 0.9f));
+                    else if (isSelected)
+                        EditorGUI.DrawRect(rowRect, SelectedRowColor);
+                    else if (rowRect.Contains(e.mousePosition))
+                        EditorGUI.DrawRect(rowRect, HoverRowColor);
+
+                    float indent   = (item.depth - 1) * 14f + 6f;
+                    string prefix  = item.depth == 1 ? "◉ " : "└ ";
+                    Rect labelRect = new Rect(rowRect.x + indent, rowRect.y + 2, rowRect.width - indent - 4, 16);
+                    GUI.Label(labelRect, prefix + item.label,
+                        isSelected ? EditorStyles.whiteLabel : EditorStyles.label);
+
+                    // Click to select
+                    if (e.type == EventType.MouseDown && rowRect.Contains(e.mousePosition))
+                    {
+                        selectedChainItemIndex = i;
+                        chainMouseDownIndex    = i;
+                        GUI.FocusControl(null);
+                        e.Use();
+                        Repaint();
+                    }
+
+                    // Start drag: fires once when mouse moves after clicking this row
+                    if (e.type == EventType.MouseDrag && chainMouseDownIndex == i && item.so != null)
+                    {
+                        DragAndDrop.PrepareStartDrag();
+                        DragAndDrop.objectReferences = new Object[] { item.so };
+                        DragAndDrop.StartDrag(item.label);
+                        chainMouseDownIndex = -1;
+                        e.Use();
+                    }
+
+                    // Highlight drop target while dragging over this row
+                    if (e.type == EventType.DragUpdated && rowRect.Contains(e.mousePosition)
+                        && DragAndDrop.objectReferences.Length > 0
+                        && DragAndDrop.objectReferences[0] != item.so)
+                    {
+                        DragAndDrop.visualMode = DragAndDropVisualMode.Move;
+                        chainDragHoverIndex    = i;
+                        e.Use();
+                        Repaint();
+                    }
+
+                    // Accept drop: reparent dragged quest under this quest
+                    if (e.type == EventType.DragPerform && rowRect.Contains(e.mousePosition)
+                        && DragAndDrop.objectReferences.Length > 0)
+                    {
+                        var droppedSO = DragAndDrop.objectReferences[0] as ScriptableObject;
+                        if (droppedSO != null && droppedSO != item.so)
+                        {
+                            DragAndDrop.AcceptDrag();
+                            var targetSer = new SerializedObject(item.so);
+                            targetSer.Update();
+                            int targetComp = targetSer.FindProperty("completionMarker").intValue;
+                            ReparentQuest(droppedSO, targetComp);
+                            chainDragHoverIndex = -1;
+                            BuildChainDisplayList();
+                            Repaint();
+                        }
+                        e.Use();
+                    }
+                }
+            }
+
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawQuestChainDetailPanel()
+        {
+            EditorGUILayout.BeginVertical(GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+
+            bool validSelection = selectedChainItemIndex >= 0
+                && selectedChainItemIndex < chainDisplayList.Count
+                && !chainDisplayList[selectedChainItemIndex].isHeader
+                && chainDisplayList[selectedChainItemIndex].so != null;
+
+            if (!validSelection)
+            {
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.LabelField("← Select a quest node to view details",
+                    EditorStyles.centeredGreyMiniLabel);
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndVertical();
+                return;
+            }
+
+            var so = chainDisplayList[selectedChainItemIndex].so;
+            if (chainDetailTarget != so || chainDetailSO == null)
+            {
+                chainDetailSO    = new SerializedObject(so);
+                chainDetailTarget = so;
+            }
+            chainDetailSO.Update();
+            EnsureMarkerArrays();
+
+            // ── Header bar ──
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            var titleProp    = chainDetailSO.FindProperty("title");
+            string dispTitle = string.IsNullOrEmpty(titleProp.stringValue) ? so.name : titleProp.stringValue;
+            GUILayout.Label(dispTitle, EditorStyles.boldLabel);
+            GUILayout.FlexibleSpace();
+            var qtProp = chainDetailSO.FindProperty("questType");
+            var badge  = new GUIStyle(EditorStyles.miniLabel);
+            badge.normal.textColor = qtProp.intValue == 0
+                ? new Color(0.9f, 0.75f, 0.3f) : new Color(0.6f, 0.8f, 0.6f);
+            GUILayout.Label(qtProp.intValue == 0 ? "MAIN" : "SIDE", badge);
+            GUILayout.Space(8);
+            if (GUILayout.Button("Select", EditorStyles.toolbarButton, GUILayout.Width(55)))
+            {
+                Selection.activeObject = so;
+                EditorGUIUtility.PingObject(so);
+            }
+            if (GUILayout.Button("Save & Rebuild", EditorStyles.toolbarButton, GUILayout.Width(95)))
+            {
+                chainDetailSO.ApplyModifiedProperties();
+                EditorUtility.SetDirty(so);
+                AssetDatabase.SaveAssets();
+                BuildChainDisplayList();
+                Repaint();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUI.BeginChangeCheck();
+            chainDetailScroll = EditorGUILayout.BeginScrollView(chainDetailScroll, GUILayout.ExpandHeight(true));
+            EditorGUILayout.Space(6);
+
+            // ── Quest Info ──
+            DrawChainSection("Quest Info", ChainHeaderColor);
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("questName"),    new GUIContent("Quest Name"));
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("title"),        new GUIContent("Title"));
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("giverName"),    new GUIContent("Giver"));
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("questType"),    new GUIContent("Type"));
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("deadlineDays"), new GUIContent("Deadline Days"));
+            var spProp = chainDetailSO.FindProperty("sortPriority");
+            spProp.intValue = EditorGUILayout.IntField("Sort Priority", spProp.intValue);
+            EditorGUILayout.Space(6);
+
+            // ── Trigger Chain ──
+            DrawChainSection("Trigger Chain", ChainTriggerColor);
+            var actProp  = chainDetailSO.FindProperty("activationMarker");
+            var compProp = chainDetailSO.FindProperty("completionMarker");
+            actProp.intValue  = EditorGUILayout.IntPopup(
+                "Activation Marker",  actProp.intValue,  s_markerNames, s_markerValues);
+            compProp.intValue = EditorGUILayout.IntPopup(
+                "Completion Marker", compProp.intValue, s_markerNames, s_markerValues);
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("triggerMarkerAfterToast"),
+                new GUIContent("After Toast"));
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("autoCompleteOnActivation"),
+                new GUIContent("Auto Complete"));
+            EditorGUILayout.Space(6);
+
+            // ── Conditions ──
+            DrawChainSection("Conditions", ChainConditionColor);
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("conditions"),
+                new GUIContent("Conditions"), true);
+            EditorGUILayout.Space(6);
+
+            // ── Rewards ──
+            DrawChainSection("Rewards", ChainRewardColor);
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("rewards"),
+                new GUIContent("Rewards"), true);
+            EditorGUILayout.Space(6);
+
+            // ── Text ──
+            DrawChainSection("Text", ChainTextColor);
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("description"),
+                new GUIContent("Description"));
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("successDescription"),
+                new GUIContent("Success"));
+            EditorGUILayout.PropertyField(chainDetailSO.FindProperty("entryTexts"),
+                new GUIContent("Objectives"), true);
+            EditorGUILayout.Space(16);
+
+            EditorGUILayout.EndScrollView();
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                chainDetailSO.ApplyModifiedProperties();
+                EditorUtility.SetDirty(so);
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private static void DrawChainSection(string label, Color color)
+        {
+            Rect r = EditorGUILayout.GetControlRect(false, 18f);
+            EditorGUI.DrawRect(r, color);
+            EditorGUI.LabelField(new Rect(r.x + 6, r.y + 1, r.width - 8, 16),
+                label, EditorStyles.whiteLabel);
+            EditorGUILayout.Space(2);
+        }
+
+        private static string GetMarkerDisplayName(int value)
+        {
+            if (value == -1) return "None";
+            try { return ((TutorialMarker)value).ToString(); }
+            catch { return $"Marker_{value}"; }
+        }
+
         private void OnDestroy()
         {
             DestroyEditor();
@@ -1441,6 +1914,8 @@ namespace PopLife.Editor
                 dbSerializedObject.Dispose();
                 dbSerializedObject = null;
             }
+            chainDetailSO     = null;
+            chainDetailTarget = null;
             newsLibrarySerializedObject = null;
         }
     }

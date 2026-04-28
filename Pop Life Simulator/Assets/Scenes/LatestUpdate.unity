@@ -17702,7 +17702,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9a89a70f800ce74897efc10cc80253c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  money: 1000
+  money: 0
   fame: 0
   storeAppeal: 0
   totalIncome: 0
@@ -21378,7 +21378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb1da8677d9e15342aec8f26026c1912, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realSecondsPerDay: 100
+  realSecondsPerDay: 80
   buildPhaseHour: 6
   storeOpenHour: 11
   stopSpawningHour: 26
@@ -47464,7 +47464,7 @@ PrefabInstance:
       objectReference: {fileID: -2483764444016197910, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
     - target: {fileID: 1568060411137529001, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -263.87302
+      value: -263.87305
       objectReference: {fileID: 0}
     - target: {fileID: 1682418171592549610, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchorMax.y

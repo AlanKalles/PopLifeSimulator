@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf8e2d5307faa746a9a66646bd6bc61, type: 3}
+  m_Name: ECONOMY RECESSION
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.BufferData
+  bufferId: ECONOMY RECESSION
+  displayName: Economy Recession
+  description: Life gets harder and construction gets more expensive.
+  icon: {fileID: 0}
+  triggerType: 0
+  occurProbability: 0.01
+  hostCost: 0
+  durationDays: 0
+  terminateProbability: 0.5
+  modifierPayload:
+    constructionCostMultiplier: 1.5
+    upgradeCostMultiplier: 1.5
+    customerSpawnRateMultiplier: 0.5
+    customerMoneyBagMultiplier: 0.4
+    globalFameGainMultiplier: 1
+    categoryPriceModifiers: []
+    categoryFameModifiers: []
+    categoryQuantityModifiers: []
+    shelfAppealModifiers: []
+    bonusInterestCategories: 

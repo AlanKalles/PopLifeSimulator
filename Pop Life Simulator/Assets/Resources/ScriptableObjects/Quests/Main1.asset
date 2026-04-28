@@ -18,9 +18,21 @@ MonoBehaviour:
   giverName: Midori
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
-  - type: 1
+  - type: 0
     amount: 100
-    itemId: 
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Silicone Dildo
+  - type: 3
+    amount: 1
+    itemId: Celine
+  - type: 3
+    amount: 1
+    itemId: Aiko
+  - type: 3
+    amount: 1
+    itemId: Flux
   conditions:
   - conditionType: 6
     scope: 2
@@ -36,4 +48,4 @@ MonoBehaviour:
   entryTexts:
   - Build 1 shelf
   questIcon: {fileID: 0}
-  sortPriority: 50
+  sortPriority: 40

@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
+  m_Name: CyberSex
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
+  questName: "C\xA5B3R5EX"
+  questType: 1
+  deadlineDays: 0
+  giverName: Midori
+  giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
+  rewards:
+  - type: 0
+    amount: 100
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: WLW VR Porn
+  - type: 2
+    amount: 1
+    itemId: MLM VR Porn
+  - type: 2
+    amount: 1
+    itemId: Straight VR Porn
+  - type: 3
+    amount: 1
+    itemId: Isabel
+  - type: 3
+    amount: 1
+    itemId: Ana
+  - type: 3
+    amount: 1
+    itemId: ColdMian
+  conditions:
+  - conditionType: 0
+    scope: 0
+    targetValue: 0
+    useFilterCategory: 0
+    filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
+  activationMarker: 80
+  completionMarker: 81
+  triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
+  title: "C\xA5B3R5EX"
+  description: Dive into the digital side of pleasure.
+  successDescription: You gained 100 Money and unlocked the WLW VR Porn blueprint!
+  entryTexts:
+  - Stock digital media products
+  questIcon: {fileID: 0}
+  sortPriority: 110

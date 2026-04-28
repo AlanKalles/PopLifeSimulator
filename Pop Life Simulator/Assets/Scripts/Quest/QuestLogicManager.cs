@@ -156,6 +156,14 @@ namespace PopLife.Quest
 
             if (debugMode)
                 Debug.Log($"[QuestLogicManager] 激活任务: {questName}");
+
+            var def = QuestDataService.Instance?.GetDefinition(questName);
+            if (def != null && def.AutoCompleteOnActivation)
+            {
+                if (debugMode)
+                    Debug.Log($"[QuestLogicManager] 自动完成任务: {questName}");
+                CompleteQuest(questName);
+            }
         }
 
         #endregion

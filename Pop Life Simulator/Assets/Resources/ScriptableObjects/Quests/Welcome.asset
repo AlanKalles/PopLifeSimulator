@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
+  m_Name: Welcome
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
+  questName: Welcome
+  questType: 0
+  deadlineDays: 0
+  giverName: Midori
+  giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
+  rewards:
+  - type: 0
+    amount: 100
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: Latex Condoms
+  - type: 2
+    amount: 1
+    itemId: Darex Natural Lubricant
+  - type: 2
+    amount: 1
+    itemId: 90's Lingerie
+  - type: 3
+    amount: 1
+    itemId: Lucy
+  - type: 3
+    amount: 1
+    itemId: Mei
+  - type: 3
+    amount: 1
+    itemId: Guliana
+  conditions:
+  - conditionType: 0
+    scope: 0
+    targetValue: 0
+    useFilterCategory: 0
+    filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
+  activationMarker: 5
+  completionMarker: 69
+  triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 1
+  title: Welcome to Pop Life!
+  description: Welcome to Pop Life! Let's get your store started.
+  successDescription: You gained 100 Money, unlocked Latex Condoms blueprint, and
+    met new customers!
+  entryTexts:
+  - Get started
+  questIcon: {fileID: 0}
+  sortPriority: 10
