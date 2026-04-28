@@ -33,12 +33,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Isabel
-  - type: 3
-    amount: 1
-    itemId: Ana
-  - type: 3
-    amount: 1
-    itemId: ColdMian
   conditions:
   - conditionType: 0
     scope: 0

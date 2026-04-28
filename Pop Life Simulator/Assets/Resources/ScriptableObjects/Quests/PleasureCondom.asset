@@ -27,12 +27,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Alex
-  - type: 3
-    amount: 1
-    itemId: Bonnie
-  - type: 3
-    amount: 1
-    itemId: Susan
   conditions:
   - conditionType: 6
     scope: 0

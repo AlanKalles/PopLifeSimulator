@@ -24,6 +24,9 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Ball Gag
+  - type: 3
+    amount: 1
+    itemId: Trent
   conditions:
   - conditionType: 2
     scope: 0

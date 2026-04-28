@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 1
     amount: 65
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Rory
   conditions:
   - conditionType: 2
     scope: 1

@@ -33,12 +33,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Lucy
-  - type: 3
-    amount: 1
-    itemId: Mei
-  - type: 3
-    amount: 1
-    itemId: Guliana
   conditions:
   - conditionType: 0
     scope: 0

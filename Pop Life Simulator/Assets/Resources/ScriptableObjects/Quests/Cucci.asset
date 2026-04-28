@@ -30,12 +30,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Jiro
-  - type: 3
-    amount: 1
-    itemId: Melisa
-  - type: 3
-    amount: 1
-    itemId: Trent
   conditions: []
   activationMarker: 71
   completionMarker: 78

@@ -24,6 +24,9 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Blindfold
+  - type: 3
+    amount: 1
+    itemId: ColdMian
   conditions:
   - conditionType: 2
     scope: 1

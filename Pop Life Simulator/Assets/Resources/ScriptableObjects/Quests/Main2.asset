@@ -26,12 +26,6 @@ MonoBehaviour:
     itemId: SoloFans GiftCode
   - type: 3
     amount: 1
-    itemId: Devi
-  - type: 3
-    amount: 1
-    itemId: Bonnie
-  - type: 3
-    amount: 1
     itemId: Alix
   conditions:
   - conditionType: 6

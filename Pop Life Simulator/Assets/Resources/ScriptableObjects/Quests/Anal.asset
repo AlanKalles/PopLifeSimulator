@@ -32,12 +32,6 @@ MonoBehaviour:
     itemId: Anal Vibrator
   - type: 3
     amount: 1
-    itemId: Lucy
-  - type: 3
-    amount: 1
-    itemId: Axel
-  - type: 3
-    amount: 1
     itemId: Johane
   conditions: []
   activationMarker: 72

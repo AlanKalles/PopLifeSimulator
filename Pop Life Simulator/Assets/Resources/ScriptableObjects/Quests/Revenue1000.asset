@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 1
     amount: 125
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Psychic
   conditions:
   - conditionType: 2
     scope: 1

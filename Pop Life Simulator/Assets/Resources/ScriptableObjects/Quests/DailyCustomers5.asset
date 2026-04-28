@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 0
     amount: 75
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Takeshi
   conditions:
   - conditionType: 4
     scope: 1

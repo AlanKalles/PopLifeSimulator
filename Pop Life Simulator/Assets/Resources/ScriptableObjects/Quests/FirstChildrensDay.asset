@@ -30,12 +30,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Guliana
-  - type: 3
-    amount: 1
-    itemId: Hyunwoo
-  - type: 3
-    amount: 1
-    itemId: Ash
   conditions: []
   activationMarker: 86
   completionMarker: 85

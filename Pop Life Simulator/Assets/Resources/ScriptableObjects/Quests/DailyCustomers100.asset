@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 0
     amount: 175
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Eason
   conditions:
   - conditionType: 4
     scope: 1

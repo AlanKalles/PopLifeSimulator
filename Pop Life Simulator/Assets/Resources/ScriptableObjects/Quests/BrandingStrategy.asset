@@ -27,12 +27,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Shawn
-  - type: 3
-    amount: 1
-    itemId: Ashley
-  - type: 3
-    amount: 1
-    itemId: Rory
   conditions: []
   activationMarker: 71
   completionMarker: 80

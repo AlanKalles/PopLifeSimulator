@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 0
     amount: 150
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Josh
   conditions:
   - conditionType: 4
     scope: 1

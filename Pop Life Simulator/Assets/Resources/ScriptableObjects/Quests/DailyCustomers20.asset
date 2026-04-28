@@ -24,6 +24,9 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Glow in the Dark Lubricant
+  - type: 3
+    amount: 1
+    itemId: Blaze
   conditions:
   - conditionType: 4
     scope: 1

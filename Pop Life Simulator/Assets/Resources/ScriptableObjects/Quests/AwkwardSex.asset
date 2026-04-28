@@ -26,13 +26,7 @@ MonoBehaviour:
     itemId: Flower Vibrator
   - type: 3
     amount: 1
-    itemId: Alix
-  - type: 3
-    amount: 1
     itemId: Bianca
-  - type: 3
-    amount: 1
-    itemId: Mirah
   conditions:
   - conditionType: 0
     scope: 0

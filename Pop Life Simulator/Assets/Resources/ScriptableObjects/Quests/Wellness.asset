@@ -27,12 +27,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Ash
-  - type: 3
-    amount: 1
-    itemId: Takeshi
-  - type: 3
-    amount: 1
-    itemId: Riko
   conditions: []
   activationMarker: 70
   completionMarker: 74

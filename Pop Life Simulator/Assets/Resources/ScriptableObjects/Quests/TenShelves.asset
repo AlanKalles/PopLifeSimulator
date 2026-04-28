@@ -30,12 +30,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Hyunwoo
-  - type: 3
-    amount: 1
-    itemId: Naoko
-  - type: 3
-    amount: 1
-    itemId: Aiko
   conditions:
   - conditionType: 6
     scope: 0

@@ -30,12 +30,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Zarah
-  - type: 3
-    amount: 1
-    itemId: Oscar
-  - type: 3
-    amount: 1
-    itemId: Johane
   conditions:
   - conditionType: 6
     scope: 0

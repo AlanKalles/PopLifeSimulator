@@ -24,6 +24,9 @@ MonoBehaviour:
   - type: 1
     amount: 700
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Bonnie
   conditions:
   - conditionType: 5
     scope: 2

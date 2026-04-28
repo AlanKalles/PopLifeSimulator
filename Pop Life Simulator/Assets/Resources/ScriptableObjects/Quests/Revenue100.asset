@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 1
     amount: 80
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Ana
   conditions:
   - conditionType: 2
     scope: 1

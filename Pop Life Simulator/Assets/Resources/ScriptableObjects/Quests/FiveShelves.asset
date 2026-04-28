@@ -32,13 +32,7 @@ MonoBehaviour:
     itemId: Wand Vibrator
   - type: 3
     amount: 1
-    itemId: Devi
-  - type: 3
-    amount: 1
     itemId: Axel
-  - type: 3
-    amount: 1
-    itemId: Jie
   conditions:
   - conditionType: 6
     scope: 0

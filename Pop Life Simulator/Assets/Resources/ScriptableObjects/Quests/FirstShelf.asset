@@ -30,12 +30,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Yuta
-  - type: 3
-    amount: 1
-    itemId: Celine
-  - type: 3
-    amount: 1
-    itemId: Paxton
   conditions:
   - conditionType: 6
     scope: 0

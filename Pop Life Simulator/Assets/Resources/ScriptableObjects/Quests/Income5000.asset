@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 1
     amount: 180
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Mirah
   conditions:
   - conditionType: 2
     scope: 0

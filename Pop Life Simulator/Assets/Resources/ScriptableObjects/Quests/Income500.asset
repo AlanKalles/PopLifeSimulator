@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 1
     amount: 120
     itemId:
+  - type: 3
+    amount: 1
+    itemId: Hannah
   conditions:
   - conditionType: 2
     scope: 0

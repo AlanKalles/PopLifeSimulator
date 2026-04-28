@@ -33,12 +33,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Unc
-  - type: 3
-    amount: 1
-    itemId: Bird
-  - type: 3
-    amount: 1
-    itemId: Psychic
   conditions: []
   activationMarker: 83
   completionMarker: 82

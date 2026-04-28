@@ -27,12 +27,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Celine
-  - type: 3
-    amount: 1
-    itemId: Aiko
-  - type: 3
-    amount: 1
-    itemId: Flux
   conditions:
   - conditionType: 6
     scope: 2

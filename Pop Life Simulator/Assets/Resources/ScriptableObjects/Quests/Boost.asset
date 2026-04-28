@@ -33,12 +33,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Flux
-  - type: 3
-    amount: 1
-    itemId: Blaze
-  - type: 3
-    amount: 1
-    itemId: Josh
   conditions:
   - conditionType: 6
     scope: 0

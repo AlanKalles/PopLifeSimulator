@@ -30,12 +30,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Yukari
-  - type: 3
-    amount: 1
-    itemId: Eason
-  - type: 3
-    amount: 1
-    itemId: Hannah
   conditions:
   - conditionType: 6
     scope: 0

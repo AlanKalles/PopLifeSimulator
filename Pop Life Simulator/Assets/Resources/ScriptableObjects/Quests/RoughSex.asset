@@ -30,12 +30,6 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Jammi
-  - type: 3
-    amount: 1
-    itemId: Mei
-  - type: 3
-    amount: 1
-    itemId: Paxton
   conditions: []
   activationMarker: 72
   completionMarker: 83
