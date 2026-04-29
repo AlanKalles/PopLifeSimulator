@@ -310,33 +310,32 @@ namespace PopLife.Runtime
             }
             else if (selectedArchetype is Data.IInteriorPlaceable ip)
             {
-                // Shelf/Facility/Elevator: 虚影跟随鼠标，placed 预览吸附到 interior 底部
+                // Shelf/Facility/Elevator: 二选一虚影
+                // - 鼠标在 interior 内：仅显示 snap 落点虚影（绿/红）
+                // - 鼠标不在任何 interior：仅显示跟随鼠标虚影（红色）
                 currentTargetTile = DetectFloorTileAtWorld(mouse);
                 if (currentTargetTile?.Interior != null)
                 {
                     var cursorLocal = currentTargetTile.Interior.WorldToLocal(mouse);
-                    preview.transform.SetPositionAndRotation(
-                        currentTargetTile.Interior.LocalToWorld(cursorLocal),
-                        Quaternion.Euler(0, 0, previewRot * 90));
-
                     var fp = selectedArchetype.GetRotatedFootprint(previewRot);
                     var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
                     canPlace = ip.ValidateInteriorPlacement(currentTargetTile.Interior, snapped, previewRot);
 
-                    if (canPlace)
-                        ShowPlacedPreviewAt(currentTargetTile.Interior.LocalToWorld(snapped), previewRot);
-                    else
-                        HidePlacedPreview();
+                    ShowPlacedPreviewAt(currentTargetTile.Interior.LocalToWorld(snapped), previewRot);
+                    UpdatePlacedPreviewColor(canPlace);
+                    HidePreview();
+                    return;
                 }
                 else
                 {
                     preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
                     canPlace = false;
                     HidePlacedPreview();
+                    // 落到下方 ShowPreview + UpdatePreviewColor(false) 走"跟随鼠标 + 红"
                 }
             }
 
-            // 更新所有渲染器的颜色
+            // 更新所有渲染器的颜色（IWorldPlaceable 与 IInteriorPlaceable "interior 外" 路径共用）
             UpdatePreviewColor(canPlace);
 
             // 确保预览可见
@@ -625,48 +624,48 @@ namespace PopLife.Runtime
             }
             else
             {
-                // Shelf/Facility: 虚影跟随鼠标，placed 预览吸附到 interior 底部；支持跨楼层
+                // Shelf/Facility/Elevator: 二选一虚影
+                // - 鼠标在某个 interior 内：仅显示 snap 落点虚影（合法绿色 / 非法或跨楼层电梯红色）
+                // - 鼠标不在任何 interior：仅显示跟随鼠标虚影（红色）
                 var targetTile = DetectFloorTileAtWorld(mouse);
                 var sourceTile = FindFloorTileByInstanceId(selectedInstance.hostFloorTileInstanceId);
-                var previewTile = targetTile ?? sourceTile; // 鼠标不在任何 tile 上时，虚影至少显示在源 tile 内
 
-                if (previewTile?.Interior != null)
+                if (targetTile?.Interior != null)
                 {
-                    var cursorLocal = previewTile.Interior.WorldToLocal(mouse);
-                    preview.transform.SetPositionAndRotation(
-                        previewTile.Interior.LocalToWorld(cursorLocal),
-                        Quaternion.Euler(0, 0, previewRot * 90));
-
+                    var cursorLocal = targetTile.Interior.WorldToLocal(mouse);
                     var fp = selectedInstance.archetype.GetRotatedFootprint(previewRot);
-                    bool sameTile = targetTile != null && targetTile == sourceTile;
+                    bool sameTile = targetTile == sourceTile;
                     bool elevatorCrossFloor = selectedInstance is ElevatorDoorInstance && !sameTile;
+                    var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
 
-                    if (targetTile == null || elevatorCrossFloor)
+                    if (elevatorCrossFloor)
                     {
                         canPlace = false;
                     }
+                    else if (sameTile)
+                    {
+                        canPlace = targetTile.Interior.CanPlaceAllowSelf(fp, snapped, selectedInstance.instanceId);
+                    }
                     else
                     {
-                        var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
-                        if (sameTile)
-                            canPlace = targetTile.Interior.CanPlaceAllowSelf(fp, snapped, selectedInstance.instanceId);
-                        else
-                            canPlace = targetTile.Interior.CanPlace(fp, snapped); // 跨楼层：目标不含该货架
-
-                        if (canPlace)
-                            ShowPlacedPreviewAt(targetTile.Interior.LocalToWorld(snapped), previewRot);
+                        canPlace = targetTile.Interior.CanPlace(fp, snapped); // 跨楼层：目标不含该货架
                     }
 
-                    if (!canPlace) HidePlacedPreview();
+                    ShowPlacedPreviewAt(targetTile.Interior.LocalToWorld(snapped), previewRot);
+                    UpdatePlacedPreviewColor(canPlace);
+                    HidePreview();
+                    return;
                 }
                 else
                 {
                     preview.transform.SetPositionAndRotation(mouse, Quaternion.Euler(0, 0, previewRot * 90));
+                    canPlace = false;
                     HidePlacedPreview();
+                    // 落到下方 ShowPreview + UpdatePreviewColor(false) 走"跟随鼠标 + 红"
                 }
             }
 
-            // 更新所有渲染器的颜色
+            // 更新所有渲染器的颜色（FloorTile 路径与 "interior 外" 路径共用）
             UpdatePreviewColor(canPlace);
 
             // 确保预览可见
@@ -1282,6 +1281,17 @@ namespace PopLife.Runtime
                     // 红色调，表示不可建造
                     renderer.color = invalidColor;
                 }
+            }
+        }
+
+        // 落点预览（snap）染色：合法绿色，非法红色
+        private void UpdatePlacedPreviewColor(bool canPlace)
+        {
+            if (placedPreviewRenderers == null) return;
+            foreach (var renderer in placedPreviewRenderers)
+            {
+                if (renderer == null) continue;
+                renderer.color = canPlace ? validColor : invalidColor;
             }
         }
 
