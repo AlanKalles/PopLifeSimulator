@@ -36,7 +36,12 @@ namespace PopLife.UI.Quest
         private void OnEnable()
         {
             if (QuestDataService.Instance != null)
+            {
                 QuestDataService.Instance.OnTrackedQuestsChanged += RefreshQuests;
+                // 重新启用时立即刷新一次：补上隐藏期间错过的事件
+                // （ConstructionModeOverlay 在 Place/Move/Destroy 模式会临时 SetActive(false)）
+                RefreshQuests();
+            }
 
             if (collapseButton != null)
                 collapseButton.onClick.AddListener(Toggle);
