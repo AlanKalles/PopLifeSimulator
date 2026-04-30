@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3992bcc563d458741a863415dc67327b, type: 3}
-  m_Name: _LotteryUnlock
+  m_Name: 4_FinishRestock
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.DialogueAction
-  activationMarker: 31
+  activationMarker: 33
   executionOrder: 100
-  conversationToStart: Midori/Lottery
+  conversationToStart: Midori/4
   conversationDelay: 0
   luaScript: 
   description: 

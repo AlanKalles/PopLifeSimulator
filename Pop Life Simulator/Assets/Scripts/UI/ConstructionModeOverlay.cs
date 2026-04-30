@@ -31,6 +31,11 @@ namespace PopLife.UI
 
         private ConstructionManager.Mode lastMode = ConstructionManager.Mode.None;
 
+        // 记录进入建造模式前每个 panel 的原始 active 状态，退出时按原状还原
+        // 用 bool[] 与 panelsToHide 等长一一对应，避免 GameObject 作 Dictionary key 的开销
+        private bool[] panelsOriginalActive;
+        private bool isOverlaying;
+
         void Start()
         {
             // 初始状态：隐藏遮罩
@@ -116,18 +121,26 @@ namespace PopLife.UI
                 };
             }
 
-            // 隐藏指定UI面板
-            foreach (GameObject panel in panelsToHide)
+            // 仅在首次进入建造态时记录原始状态——避免 Place→Move→Destroy 等模式互切时把已经隐藏的状态当成"原始状态"覆盖
+            if (!isOverlaying)
             {
-                if (panel != null)
+                CaptureOriginalActiveStates();
+                isOverlaying = true;
+            }
+
+            // 隐藏指定UI面板
+            if (panelsToHide != null)
+            {
+                foreach (GameObject panel in panelsToHide)
                 {
-                    panel.SetActive(false);
+                    if (panel != null)
+                        panel.SetActive(false);
                 }
             }
         }
 
         /// <summary>
-        /// 退出建造模式：隐藏遮罩，恢复所有UI
+        /// 退出建造模式：隐藏遮罩，按记录的原始状态恢复UI
         /// </summary>
         private void ExitConstructionMode()
         {
@@ -137,13 +150,39 @@ namespace PopLife.UI
                 overlayPanel.SetActive(false);
             }
 
-            // 恢复所有UI面板
-            foreach (GameObject panel in panelsToHide)
+            // 恢复 panel 到进入建造模式前的状态（marker 锁定的面板会保持隐藏）
+            if (isOverlaying && panelsToHide != null && panelsOriginalActive != null)
             {
-                if (panel != null)
+                int count = Mathf.Min(panelsToHide.Length, panelsOriginalActive.Length);
+                for (int i = 0; i < count; i++)
                 {
-                    panel.SetActive(true);
+                    GameObject panel = panelsToHide[i];
+                    if (panel != null)
+                        panel.SetActive(panelsOriginalActive[i]);
                 }
+            }
+
+            isOverlaying = false;
+        }
+
+        /// <summary>
+        /// 抓拍当前 panelsToHide 中每个对象的 active 状态，用于退出时还原
+        /// </summary>
+        private void CaptureOriginalActiveStates()
+        {
+            if (panelsToHide == null)
+            {
+                panelsOriginalActive = null;
+                return;
+            }
+
+            if (panelsOriginalActive == null || panelsOriginalActive.Length != panelsToHide.Length)
+                panelsOriginalActive = new bool[panelsToHide.Length];
+
+            for (int i = 0; i < panelsToHide.Length; i++)
+            {
+                GameObject panel = panelsToHide[i];
+                panelsOriginalActive[i] = panel != null && panel.activeSelf;
             }
         }
 

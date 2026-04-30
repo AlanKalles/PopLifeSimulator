@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using PopLife.DialogueBridge;
 using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
@@ -64,6 +65,7 @@ namespace PopLife.Customers.Spawner
         [SerializeField] private bool isSpawning = false;
         [SerializeField] private int visitedTodayCount = 0;
         [SerializeField] private int effectiveMaxCustomers = 0;
+        [SerializeField] private int spawnedTodayCount = 0;
 
         private CustomerRepository repository;
         private bool repositoryLoaded = false;
@@ -130,6 +132,14 @@ namespace PopLife.Customers.Spawner
 
         void Update()
         {
+            if (DialogueGameplayPauseService.IsGameplayPaused)
+            {
+                currentCustomerCount = GetCurrentCustomerCount();
+                visitedTodayCount = visitedTodayCustomerIds.Count;
+                effectiveMaxCustomers = GetEffectiveMaxCustomers();
+                return;
+            }
+
             // 手动生成逻辑
             if (spawnTargetCustomer)
             {
@@ -340,6 +350,7 @@ namespace PopLife.Customers.Spawner
 
             // 3. 清空今日访问记录（新的一天开始）
             visitedTodayCustomerIds.Clear();
+            spawnedTodayCount = 0;
 
             // 4. 缓存当天的 Store Appeal（建造阶段决定当天客流）
             cachedStoreAppeal = ResourceManager.Instance != null
@@ -398,16 +409,29 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
-            // 2. 检查顾客池是否为空
+            // 2. 更新场上顾客ID缓存
+            UpdateActiveCustomerIds();
+
+            // Day 1 教程可强制指定第 3 个自动生成顾客，绕过 SpawnerProfile 解锁池。
+            int upcomingSpawnNumber = spawnedTodayCount + 1;
+            if (TryGetForcedDay1TutorialSpawn(upcomingSpawnNumber, out var forcedCustomer))
+            {
+                if (SpawnCustomer(forcedCustomer))
+                {
+                    spawnedTodayCount++;
+                }
+
+                ScheduleNextSpawn();
+                return;
+            }
+
+            // 3. 检查顾客池是否为空
             if (customerPool.Count == 0)
             {
                 Debug.LogWarning("[CustomerSpawner] 顾客池为空，无法生成");
                 ScheduleNextSpawn();
                 return;
             }
-
-            // 3. 更新场上顾客ID缓存
-            UpdateActiveCustomerIds();
 
             // 4. 检查是否所有顾客池成员都已在场
             if (activeCustomerIds.Count >= customerPool.Count)
@@ -453,7 +477,10 @@ namespace PopLife.Customers.Spawner
             var selectedCustomer = WeightedRandom(eligibleCustomers);
 
             // 10. 生成顾客
-            SpawnCustomer(selectedCustomer);
+            if (SpawnCustomer(selectedCustomer))
+            {
+                spawnedTodayCount++;
+            }
 
             // 11. 安排下次生成时间
             ScheduleNextSpawn();
@@ -523,21 +550,48 @@ namespace PopLife.Customers.Spawner
             return weighted[weighted.Count - 1].record;
         }
 
+        private bool TryGetForcedDay1TutorialSpawn(int upcomingSpawnNumber, out CustomerRecord record)
+        {
+            record = null;
+
+            var tutorialController = Day1InteractionTutorialController.Instance;
+            if (tutorialController == null || !tutorialController.ShouldForceDay1ThirdSpawn(upcomingSpawnNumber))
+            {
+                return false;
+            }
+
+            string customerId = tutorialController.ForcedDay1ThirdSpawnCustomerId.Trim();
+            if (!repositoryLoaded)
+            {
+                LoadCustomerData();
+            }
+
+            record = repository.Get(customerId);
+            if (record == null)
+            {
+                Debug.LogError($"[CustomerSpawner] Day 1 tutorial forced customer '{customerId}' was not found in CustomerRepository. Falling back to normal spawn.");
+                return false;
+            }
+
+            Debug.Log($"[CustomerSpawner] Day 1 tutorial forcing auto-spawn #{upcomingSpawnNumber}: {customerId}");
+            return true;
+        }
+
         /// <summary>
         /// 生成顾客实例（内部方法）
         /// </summary>
-        private void SpawnCustomer(CustomerRecord record)
+        private bool SpawnCustomer(CustomerRecord record)
         {
             if (record == null)
             {
                 Debug.LogError("[CustomerSpawner] 尝试生成空的顾客记录");
-                return;
+                return false;
             }
 
             if (customerPrefab == null)
             {
                 Debug.LogError("[CustomerSpawner] 缺少顾客预制体!");
-                return;
+                return false;
             }
 
             // 随机选择生成点
@@ -554,7 +608,7 @@ namespace PopLife.Customers.Spawner
             if (archetype == null)
             {
                 Debug.LogError($"[CustomerSpawner] 无法为顾客 '{record.name}' 找到原型");
-                return;
+                return false;
             }
 
             // 实例化
@@ -566,7 +620,7 @@ namespace PopLife.Customers.Spawner
             {
                 Debug.LogError("[CustomerSpawner] 顾客预制体缺少 CustomerAgent 组件!");
                 Destroy(go);
-                return;
+                return false;
             }
 
             agent.Initialize(record, archetype, daySeed);
@@ -636,6 +690,7 @@ namespace PopLife.Customers.Spawner
 
             lastSpawnedCustomer = $"{record.customerId}: {record.name}";
             Debug.Log($"[CustomerSpawner] 自动生成顾客: {lastSpawnedCustomer}");
+            return true;
         }
 
         /// <summary>

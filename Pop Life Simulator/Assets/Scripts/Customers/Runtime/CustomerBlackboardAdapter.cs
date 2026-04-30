@@ -58,6 +58,7 @@ namespace PopLife.Customers.Runtime
         public InteractionEventData assignedInteraction;    // 分配的交互事件（null = 无交互）
         public bool interactionUsedToday = false;           // 今日是否已触发过交互
         public bool interactionBubbleActive = false;        // 交互气泡是否正在显示（供点击检测使用）
+        public bool interactionClickAllowed = false;        // 是否允许点击气泡进入交互对话
         public bool interactionDialogueStarted = false;     // 对话是否已开始（由 CustomerDialogueTrigger 设置）
 
         [Header("策略集合（只读引用）")]

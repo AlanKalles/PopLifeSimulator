@@ -93,7 +93,9 @@ namespace PopLife.DialogueBridge
             // ── 交互事件优先级最高 ──
             var adapter = GetComponent<CustomerBlackboardAdapter>();
             if (adapter != null && adapter.interactionBubbleActive
-                && adapter.assignedInteraction != null)
+                && adapter.interactionClickAllowed
+                && adapter.assignedInteraction != null
+                && !DialogueManager.isConversationActive)
             {
                 string conv = adapter.assignedInteraction.ConversationTitle;
                 if (!string.IsNullOrEmpty(conv)

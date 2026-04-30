@@ -3,6 +3,7 @@ using ParadoxNotion.Design;
 using UnityEngine;
 using Pathfinding;
 using PopLife.Customers.Runtime;
+using PopLife.Customers.Services;
 using PopLife.Runtime;
 
 namespace PopLife.Customers.NodeCanvas.Actions
@@ -27,6 +28,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
         private CustomerBlackboardAdapter customerBlackboard;
         private Transform targetTransform;
         private float startTime;
+        private float pauseStartedAt = -1f;
+        private bool aiWasStoppedBeforePause;
         private CustomerAnimationController animController;
 
         // 外部图 GraphMask，用于限制第一阶段寻路 + 进店后排除
@@ -215,6 +218,11 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             // 标记已进入商店
             customerBlackboard.hasEnteredStore = true;
+            var customerAgent = agent.GetComponent<CustomerAgent>();
+            if (customerAgent != null)
+            {
+                CustomerEventBus.RaiseCustomerEnteredStore(customerAgent);
+            }
 
             // 更新黑板的队列位置（用于后续的 MoveToTargetAction）
             customerBlackboard.assignedQueueSlot = targetTransform;
@@ -234,6 +242,30 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (aiLerp != null)
             {
                 aiLerp.isStopped = true;
+            }
+        }
+
+        protected override void OnPause()
+        {
+            pauseStartedAt = Time.time;
+            if (aiLerp != null)
+            {
+                aiWasStoppedBeforePause = aiLerp.isStopped;
+                aiLerp.isStopped = true;
+            }
+        }
+
+        protected override void OnResume()
+        {
+            if (pauseStartedAt >= 0f)
+            {
+                startTime += Time.time - pauseStartedAt;
+                pauseStartedAt = -1f;
+            }
+
+            if (aiLerp != null)
+            {
+                aiLerp.isStopped = aiWasStoppedBeforePause;
             }
         }
     }

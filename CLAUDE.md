@@ -677,6 +677,11 @@ Assets/
   - 复杂逻辑必须添加注释
 - **数据配置**：优先使用 ScriptableObject
 - **序列化**：使用 `[SerializeField]` 而非 public 字段
+- **Enum 维护规约**（特别针对 `TutorialMarker`，但适用于所有被 SO 序列化引用的 enum）：
+  - **禁止给 enum 成员显式赋值**（`= N`），唯一例外是 `None = -1` 这类锚点。
+  - 原因：Unity 把 enum 字段序列化为 int 存进 `.asset` 文件（如 `activationMarker: 30`）。一旦显式与隐式赋值混搭，新加的隐式成员会"前一项+1"，可能撞上其他显式值产生 enum alias（C# 不报错，但 `HashSet`/相等比较把两个 marker 合并 → bug 极隐蔽）。
+  - 新增 marker：直接在末尾追加（自动得到下一个递增 int），不要插入中间位置。
+  - 不要重排现有 marker 的声明顺序——会改 int 值，破坏 `.asset` 中的 `activationMarker:` 数字字段。如必须重排，需同步搜索 `Resources/ScriptableObjects/**/*.asset` 中的引用并手动修正。
 
 ### Git忽略规则
 - `.meta` 文件：Unity 自动生成的元数据（已在.gitignore）

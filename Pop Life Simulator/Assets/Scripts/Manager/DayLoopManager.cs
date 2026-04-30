@@ -44,6 +44,7 @@ namespace PopLife
         [Header("Time Flow")]
         [SerializeField] private float timeScale = 1f; // 时间倍速
         private bool isPaused = false;
+        private int gameplayClockPauseCount = 0;
         private bool hasStoppedSpawning = false; // 防止重复触发停止生成事件
 
         [Header("Calendar")]
@@ -75,6 +76,7 @@ namespace PopLife
         public float currentHour = 6f; // 当前游戏时间（小时）
         public GamePhase currentPhase = GamePhase.BuildPhase;
         public bool isStoreOpen = false;
+        public bool IsGameplayClockPaused => gameplayClockPauseCount > 0;
 
         [Header("Daily Statistics")]
         public float dailyTotalSale = 0f;
@@ -160,6 +162,7 @@ namespace PopLife
         private void Update()
         {
             if (isPaused) return;
+            if (IsGameplayClockPaused) return;
 
             // 建造阶段不计时
             if (currentPhase == GamePhase.BuildPhase)
@@ -546,6 +549,20 @@ namespace PopLife
         {
             isPaused = false;
             Time.timeScale = timeScale; // 恢复到当前倍速
+        }
+
+        /// <summary>
+        /// 暂停游戏内小时推进，但不冻结 Unity Time.timeScale。
+        /// 用于对话期间：UI、音乐、spotlight、动画继续，经营时钟停止。
+        /// </summary>
+        public void PauseGameplayClock()
+        {
+            gameplayClockPauseCount++;
+        }
+
+        public void ResumeGameplayClock()
+        {
+            gameplayClockPauseCount = Mathf.Max(0, gameplayClockPauseCount - 1);
         }
 
         public void SetTimeScale(float scale)

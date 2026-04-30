@@ -1,4 +1,5 @@
 using UnityEngine;
+using PopLife.DialogueBridge;
 
 namespace PopLife.UI
 {
@@ -45,6 +46,9 @@ namespace PopLife.UI
         void Update()
         {
             if (!enableRandomNews || newsLibrary == null || ticker == null)
+                return;
+
+            if (DialogueGameplayPauseService.IsGameplayPaused)
                 return;
 
             // 仅营业阶段

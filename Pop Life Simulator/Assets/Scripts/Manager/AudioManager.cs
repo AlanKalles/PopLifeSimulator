@@ -385,6 +385,14 @@ namespace PopLife
             UpdateVolumes();
         }
 
+        /// <summary>
+        /// 获取当前背景音乐全局音量。
+        /// </summary>
+        public float GetMusicVolume()
+        {
+            return musicVolume;
+        }
+
         private void UpdateVolumes()
         {
             // 更新活跃的音乐播放器音量

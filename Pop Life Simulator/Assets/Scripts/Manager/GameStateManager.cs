@@ -270,6 +270,18 @@ namespace PopLife.Manager
         }
 
         /// <summary>
+        /// 首次顾客问答教程完成时调用。正确、错误、错过都算教程完成，防止全局重复触发。
+        /// </summary>
+        public void NotifyFirstRequestCompleted()
+        {
+            if (!hasCompletedFirstRequest)
+            {
+                hasCompletedFirstRequest = true;
+                Debug.Log("[GameState] First customer request tutorial completed");
+            }
+        }
+
+        /// <summary>
         /// 首次打开日历面板时调用
         /// </summary>
         public void NotifyCalendarOpened()

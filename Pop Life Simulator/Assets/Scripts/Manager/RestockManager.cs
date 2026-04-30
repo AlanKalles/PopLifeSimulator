@@ -25,11 +25,15 @@ namespace PopLife
         // 会话级 flag：本次 BuildPhase 是否已经补过货
         private bool hasRestockedThisSession;
 
+        // 会话级 flag：本次 BuildPhase 玩家是否已点过 Skip Restock，跳过后允许直接开店
+        private bool playerSkippedRestockThisSession;
+
         // 上次补货时场上存在的 shelf id 快照
         private HashSet<string> shelvesKnownAtLastRestock = new HashSet<string>();
 
         private const string ES3_KEY_RESTOCKED = "RestockMgr_HasRestockedThisSession";
         private const string ES3_KEY_KNOWN_IDS = "RestockMgr_ShelvesKnownAtLastRestock";
+        private const string ES3_KEY_SKIPPED = "RestockMgr_SkippedThisSession";
 
         private void Awake()
         {
@@ -73,9 +77,12 @@ namespace PopLife
         //  公共 API
         // ================================================================
 
-        /// <summary>是否可以开店：已补过货 AND 自补货以来没有新 shelf；或者场上压根没 shelf。</summary>
+        /// <summary>是否可以开店：已补过货 AND 自补货以来没有新 shelf；或者场上压根没 shelf；或者玩家本日已 skip。</summary>
         public bool IsReadyToOpen()
         {
+            // 玩家本日主动选择跳过 → 直接放行
+            if (playerSkippedRestockThisSession) return true;
+
             var currentIds = CollectCurrentShelfIds();
 
             // 场上没有任何货架 → 允许开空店
@@ -98,6 +105,13 @@ namespace PopLife
         {
             hasRestockedThisSession = true;
             shelvesKnownAtLastRestock = CollectCurrentShelfIds();
+            SaveToES3();
+        }
+
+        /// <summary>玩家点击 Skip Restock 时调用：本日不再要求补货也允许开店。</summary>
+        public void MarkSkippedRestock()
+        {
+            playerSkippedRestockThisSession = true;
             SaveToES3();
         }
 
@@ -142,6 +156,7 @@ namespace PopLife
         {
             // 新的一天：重置 flag 并重新快照（否则第二天的老货架会被误判成"新货架"）
             hasRestockedThisSession = false;
+            playerSkippedRestockThisSession = false;
             shelvesKnownAtLastRestock = CollectCurrentShelfIds();
             SaveToES3();
         }
@@ -171,6 +186,7 @@ namespace PopLife
         {
             ES3.Save(ES3_KEY_RESTOCKED, hasRestockedThisSession);
             ES3.Save(ES3_KEY_KNOWN_IDS, new List<string>(shelvesKnownAtLastRestock));
+            ES3.Save(ES3_KEY_SKIPPED, playerSkippedRestockThisSession);
         }
 
         // 必须保留在 Start，不要移到 Awake：GameStateManager.ClearAllSaves 在 Awake 阶段删除 ES3 key，
@@ -185,6 +201,9 @@ namespace PopLife
                 var list = ES3.Load<List<string>>(ES3_KEY_KNOWN_IDS);
                 shelvesKnownAtLastRestock = list != null ? new HashSet<string>(list) : new HashSet<string>();
             }
+
+            if (ES3.KeyExists(ES3_KEY_SKIPPED))
+                playerSkippedRestockThisSession = ES3.Load<bool>(ES3_KEY_SKIPPED);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using PopLife.DialogueBridge;
 
 namespace PopLife.UI
 {
@@ -112,6 +113,9 @@ namespace PopLife.UI
                 return;
 
             if (!isScrolling || messageContainer == null || messageText == null)
+                return;
+
+            if (DialogueGameplayPauseService.IsGameplayPaused)
                 return;
 
             // 从右向左移动

@@ -22,6 +22,7 @@ namespace PopLife.UI.Restock
         [SerializeField] private Button minusButton;
         [SerializeField] private Button plusButton;
         [SerializeField] private Button maxButton;
+        [SerializeField] private Button minButton;          // 一键置 0，与 maxButton 镜像
         [SerializeField] private TMP_InputField amountInput;
 
         [Header("Selection")]
@@ -82,6 +83,13 @@ namespace PopLife.UI.Restock
                     OnAmountSetRequested?.Invoke(ShelfInstanceId, cachedRoom);
                 });
 
+            if (minButton != null)
+                minButton.onClick.AddListener(() =>
+                {
+                    PlayPressBounce();
+                    OnAmountSetRequested?.Invoke(ShelfInstanceId, 0);
+                });
+
             if (selectCheckboxButton != null)
                 selectCheckboxButton.onClick.AddListener(() =>
                 {
@@ -121,6 +129,7 @@ namespace PopLife.UI.Restock
             if (minusButton != null) minusButton.interactable = vm.canDecrement;
             if (plusButton != null) plusButton.interactable = vm.canIncrement;
             if (maxButton != null) maxButton.interactable = cachedRoom > 0;
+            if (minButton != null) minButton.interactable = vm.canDecrement;
 
             if (selectCheckboxImage != null)
             {

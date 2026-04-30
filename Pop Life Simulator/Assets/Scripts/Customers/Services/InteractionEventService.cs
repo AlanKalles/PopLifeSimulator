@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using PopLife.Customers.Runtime;
 using PopLife.Data;
 using PopLife.Runtime;
 
@@ -38,6 +39,22 @@ namespace PopLife.Customers.Services
         /// <summary>
         /// 在顾客到达货架队首后调用。掷骰概率 → 筛选匹配当前货架的事件 → 随机返回一个。
         /// 返回 null 表示本次不触发交互。
+        /// </summary>
+        public InteractionEventData TryRollInteraction(CustomerAgent agent, ShelfInstance currentShelf)
+        {
+            var tutorialController = Day1InteractionTutorialController.Instance;
+            if (tutorialController != null
+                && tutorialController.TryResolveInteraction(agent, currentShelf, out var forcedEvent, out var handled)
+                && handled)
+            {
+                return forcedEvent;
+            }
+
+            return TryRollInteraction(currentShelf);
+        }
+
+        /// <summary>
+        /// 旧入口保留给非顾客上下文调用。不会应用 Day 1 专用 override。
         /// </summary>
         public InteractionEventData TryRollInteraction(ShelfInstance currentShelf)
         {

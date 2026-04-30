@@ -210,8 +210,23 @@ namespace PopLife.Manager
         /// </summary>
         public int GetCurrentCustomerCount()
         {
+            if (CustomerPresenceService.Instance != null)
+            {
+                return CustomerPresenceService.Instance.CurrentInsideCount;
+            }
+
             var customers = FindObjectsByType<CustomerAgent>(FindObjectsSortMode.None);
-            return customers.Length;
+            int count = 0;
+            foreach (var customer in customers)
+            {
+                var adapter = customer.GetComponent<CustomerBlackboardAdapter>();
+                if (adapter != null && adapter.hasEnteredStore)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         /// <summary>

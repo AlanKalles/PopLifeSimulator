@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using PrimeTween;
 using PopLife.Data;
+using PopLife.Manager;
 using PopLife.Runtime;
 
 namespace PopLife.UI.Restock
@@ -43,6 +44,7 @@ namespace PopLife.UI.Restock
         [SerializeField] private Button deselectAllButton;
         [SerializeField] private Button toMaxStockButton;
         [SerializeField] private Button toHalfStockButton;
+        [SerializeField] private Button toZeroStockButton;     // 批量把所有已选 shelf 的待补货量清零
 
         [Header("Right: Checkout")]
         [SerializeField] private ScrollRect checkoutScrollRect;
@@ -51,6 +53,7 @@ namespace PopLife.UI.Restock
         [SerializeField] private TMP_Text totalCostText;
         [SerializeField] private TMP_Text moneyFormulaText;         // "$56000 - $500 = $55500"
         [SerializeField] private Button restockButton;
+        [SerializeField] private Button skipRestockButton;          // 跳过补货：关闭面板并允许当日开店
 
         [Header("Not Restocked Prompt")]
         [SerializeField] private NotRestockedPrompt notRestockedPrompt;
@@ -65,6 +68,8 @@ namespace PopLife.UI.Restock
         private readonly Dictionary<string, int> restockAmounts = new();
         private string searchText = "";
         private ProductCategory? selectedCategory = null;  // null = All
+        // 当日玩家已经"操作过"任一 cell（选中/改数量），未补货提示从此不再出现，OnBuildPhaseStart 重置
+        private bool notReadyHintDismissedThisSession;
 
         // 运行时缓存
         private readonly Dictionary<string, RestockShelfCell> cellsByShelfId = new();
@@ -108,7 +113,9 @@ namespace PopLife.UI.Restock
             if (deselectAllButton != null) deselectAllButton.onClick.AddListener(OnDeselectAllClicked);
             if (toMaxStockButton != null) toMaxStockButton.onClick.AddListener(OnToMaxStockClicked);
             if (toHalfStockButton != null) toHalfStockButton.onClick.AddListener(OnToHalfStockClicked);
+            if (toZeroStockButton != null) toZeroStockButton.onClick.AddListener(OnToZeroStockClicked);
             if (restockButton != null) restockButton.onClick.AddListener(OnRestockClicked);
+            if (skipRestockButton != null) skipRestockButton.onClick.AddListener(OnSkipRestockClicked);
             if (filterToggleButton != null) filterToggleButton.onClick.AddListener(ToggleCategoryButtons);
 
             if (searchInput != null)
@@ -623,6 +630,8 @@ namespace PopLife.UI.Restock
 
         private void ToggleSelection(string id)
         {
+            DismissNotReadyHintIfShown();
+
             if (selectedShelfIds.Contains(id)) selectedShelfIds.Remove(id);
             else selectedShelfIds.Add(id);
 
@@ -636,6 +645,8 @@ namespace PopLife.UI.Restock
 
         private void ApplyAmountChange(string id, int desired)
         {
+            DismissNotReadyHintIfShown();
+
             var shelf = FindShelf(id);
             if (shelf == null) return;
             int room = Mathf.Max(0, shelf.maxStock - shelf.currentStock);
@@ -869,6 +880,16 @@ namespace PopLife.UI.Restock
             RefreshRestockButtonAndTotals();
         }
 
+        private void OnToZeroStockClicked()
+        {
+            // 不动 selection，仅清空选中行的待补货量
+            foreach (var id in selectedShelfIds.ToList())
+                restockAmounts.Remove(id);
+            RefreshAllCells();
+            RebuildCheckout(scrollToBottom: false);
+            RefreshRestockButtonAndTotals();
+        }
+
         private void RefreshAllCells()
         {
             foreach (var kv in cellsByShelfId)
@@ -888,6 +909,9 @@ namespace PopLife.UI.Restock
             int total = ComputeTotalCost();
             if (total <= 0 || selectedShelfIds.Count == 0) return;
             if (ResourceManager.Instance == null || !ResourceManager.Instance.CanAfford(total, 0)) return;
+
+            // 首次做出补货决定（Restock 或 Skip 任一）→ 触发教程 marker，后续点击不再重复触发
+            TutorialEventBus.RaiseMarker(TutorialMarker.FirstRestockDecisionMade);
 
             // 1. 扣钱（一次性）
             ResourceManager.Instance.SpendMoney(total);
@@ -929,6 +953,17 @@ namespace PopLife.UI.Restock
             ClosePanel();
         }
 
+        private void OnSkipRestockClicked()
+        {
+            // 首次做出补货决定（Restock 或 Skip 任一）→ 触发教程 marker，后续点击不再重复触发
+            TutorialEventBus.RaiseMarker(TutorialMarker.FirstRestockDecisionMade);
+
+            // 玩家选择当日不补货：标记后关闭面板，DayLoopManager.OpenStore 的 IsReadyToOpen 闸门会因此放行
+            if (RestockManager.Instance != null)
+                RestockManager.Instance.MarkSkippedRestock();
+            ClosePanel();
+        }
+
         // ================================================================
         //  新一天重置 & 提示覆盖层
         // ================================================================
@@ -944,14 +979,25 @@ namespace PopLife.UI.Restock
             if (categoryToggleGroup != null) categoryToggleGroup.SelectAll();
             SetCategoryButtonsVisible(false);
 
+            // 新的一天：未补货提示重新允许显示
+            notReadyHintDismissedThisSession = false;
+
             if (isOpen) RebuildGrid(scrollCheckoutToBottom: false);
         }
 
         private void UpdateNotRestockedPrompt(bool show)
         {
             if (notRestockedPrompt == null) return;
-            if (show) notRestockedPrompt.Show();
+            // 玩家本日已操作过任意 cell → 即便 caller 请求显示也忽略
+            if (show && !notReadyHintDismissedThisSession) notRestockedPrompt.Show();
             else notRestockedPrompt.Hide();
+        }
+
+        private void DismissNotReadyHintIfShown()
+        {
+            if (notReadyHintDismissedThisSession) return;
+            notReadyHintDismissedThisSession = true;
+            if (notRestockedPrompt != null) notRestockedPrompt.Hide();
         }
     }
 }

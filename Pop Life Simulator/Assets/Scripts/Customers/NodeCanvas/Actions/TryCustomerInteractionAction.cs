@@ -5,6 +5,7 @@ using PixelCrushers.DialogueSystem;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
 using PopLife.Data;
+using PopLife.DialogueBridge.UI;
 using PopLife.Quest;
 using PopLife.Runtime;
 using PopLife.UI;
@@ -18,9 +19,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
         // ── 内部状态机 ──
         private enum Phase
         {
+            TutorialSpotlightDelay,
+            TutorialWaitForSpotlight,
+            TutorialWaitForIntro,
             WaitForClick,     // 播放 emoji 动画，等待玩家点击或超时
             WaitForDialogue,  // 等待对话完成
-            HandleResult      // 处理结果，发放奖励
+            HandleResult,     // 处理结果，发放奖励
+            WaitForResultDialogue
         }
 
         [UnityEngine.Header("黑板绑定")]
@@ -29,9 +34,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
         // ── 运行时缓存 ──
         private Phase currentPhase;
         private CustomerBlackboardAdapter adapter;
+        private CustomerAgent customerAgent;
         private CustomerAnimationController animController;
         private InteractionEventData currentEvent;
         private float phaseTimer;
+        private bool isDay1TutorialInteraction;
+        private bool spotlightClosed;
+        private bool resultDialogueStarted;
 
         protected override string info => "Try Customer Interaction";
 
@@ -41,6 +50,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         protected override void OnExecute()
         {
             adapter = agent.GetComponent<CustomerBlackboardAdapter>();
+            customerAgent = agent.GetComponent<CustomerAgent>();
 
             // 今日已触发过 → 立即通过
             if (adapter == null || adapter.interactionUsedToday)
@@ -58,7 +68,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
 
             // 掷骰 + 匹配事件
-            var rolledEvent = InteractionEventService.Instance?.TryRollInteraction(shelf);
+            var rolledEvent = InteractionEventService.Instance?.TryRollInteraction(customerAgent, shelf);
             if (rolledEvent == null)
             {
                 EndAction(true);
@@ -77,10 +87,16 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
+            isDay1TutorialInteraction = Day1InteractionTutorialController.Instance != null
+                && Day1InteractionTutorialController.Instance.IsTutorialInteraction(customerAgent, currentEvent);
+            spotlightClosed = false;
+            resultDialogueStarted = false;
+
             // ── 进入 Phase: WaitForClick ──
-            currentPhase = Phase.WaitForClick;
+            currentPhase = isDay1TutorialInteraction ? Phase.TutorialSpotlightDelay : Phase.WaitForClick;
             phaseTimer = 0f;
             adapter.interactionBubbleActive = true;
+            adapter.interactionClickAllowed = !isDay1TutorialInteraction;
 
             // 播放交互 emoji 循环动画（多帧精灵循环）
             animController.PlayInteraction();
@@ -96,10 +112,59 @@ namespace PopLife.Customers.NodeCanvas.Actions
         {
             switch (currentPhase)
             {
+                case Phase.TutorialSpotlightDelay: UpdateTutorialSpotlightDelay(); break;
+                case Phase.TutorialWaitForSpotlight: UpdateTutorialWaitForSpotlight(); break;
+                case Phase.TutorialWaitForIntro: UpdateTutorialWaitForIntro(); break;
                 case Phase.WaitForClick:    UpdateWaitForClick();    break;
                 case Phase.WaitForDialogue: UpdateWaitForDialogue(); break;
                 case Phase.HandleResult:    HandleResult();          break;
+                case Phase.WaitForResultDialogue: UpdateWaitForResultDialogue(); break;
             }
+        }
+
+        private void UpdateTutorialSpotlightDelay()
+        {
+            var controller = Day1InteractionTutorialController.Instance;
+            float delay = controller != null ? Mathf.Max(0f, controller.SpotlightDelaySeconds) : 0f;
+            phaseTimer += Time.unscaledDeltaTime;
+            if (phaseTimer < delay)
+            {
+                return;
+            }
+
+            ShowTutorialSpotlight();
+            currentPhase = Phase.TutorialWaitForSpotlight;
+        }
+
+        private void UpdateTutorialWaitForSpotlight()
+        {
+            if (!spotlightClosed)
+            {
+                return;
+            }
+
+            var controller = Day1InteractionTutorialController.Instance;
+            if (controller != null && TryStartConversation(controller.MidoriIntroConversation))
+            {
+                currentPhase = Phase.TutorialWaitForIntro;
+                return;
+            }
+
+            phaseTimer = 0f;
+            adapter.interactionClickAllowed = true;
+            currentPhase = Phase.WaitForClick;
+        }
+
+        private void UpdateTutorialWaitForIntro()
+        {
+            if (DialogueManager.isConversationActive)
+            {
+                return;
+            }
+
+            phaseTimer = 0f;
+            adapter.interactionClickAllowed = true;
+            currentPhase = Phase.WaitForClick;
         }
 
         // ── Phase: WaitForClick ──
@@ -113,6 +178,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 // 立即隐藏气泡 + 阻止重复点击
                 animController.StopLoop();
                 adapter.interactionBubbleActive = false;
+                adapter.interactionClickAllowed = false;
 
                 // 初始化对话结果变量（兜底：对话被 ESC 关闭时默认 false）
                 DialogueLua.SetVariable("InteractionCorrect", false);
@@ -125,13 +191,34 @@ namespace PopLife.Customers.NodeCanvas.Actions
             }
 
             // 超时检查
-            if (phaseTimer >= currentEvent.BubbleTimeout)
+            float timeout = GetClickWindowSeconds();
+            if (phaseTimer >= timeout)
             {
                 Debug.Log($"[TryCustomerInteraction] 顾客 {adapter.customerId} " +
-                          $"交互气泡超时（{currentEvent.BubbleTimeout}s）");
+                          $"交互气泡超时（{timeout}s）");
                 animController.StopLoop();
+                adapter.interactionClickAllowed = false;
+                if (isDay1TutorialInteraction)
+                {
+                    StartTutorialResultConversation(Day1InteractionTutorialResult.Missed);
+                    return;
+                }
+
                 CleanupAndEnd();
             }
+        }
+
+        private float GetClickWindowSeconds()
+        {
+            if (!isDay1TutorialInteraction)
+            {
+                return currentEvent.BubbleTimeout;
+            }
+
+            var controller = Day1InteractionTutorialController.Instance;
+            return controller != null && controller.ClickWindowSeconds > 0f
+                ? controller.ClickWindowSeconds
+                : currentEvent.BubbleTimeout;
         }
 
         // ── Phase: WaitForDialogue ──
@@ -189,7 +276,96 @@ namespace PopLife.Customers.NodeCanvas.Actions
                           $"交互未正确回答 (correct={correct})");
             }
 
+            if (isDay1TutorialInteraction)
+            {
+                StartTutorialResultConversation(correct
+                    ? Day1InteractionTutorialResult.Correct
+                    : Day1InteractionTutorialResult.Incorrect);
+                return;
+            }
+
             CleanupAndEnd();
+        }
+
+        private void UpdateWaitForResultDialogue()
+        {
+            if (!resultDialogueStarted || !DialogueManager.isConversationActive)
+            {
+                CleanupAndEnd();
+            }
+        }
+
+        private void ShowTutorialSpotlight()
+        {
+            spotlightClosed = false;
+
+            if (SpotlightManager.Instance == null)
+            {
+                spotlightClosed = true;
+                return;
+            }
+
+            SpotlightManager.Instance.Show(new SpotlightRequest
+            {
+                target = SpotlightTargetSpec.ForWorld(agent.gameObject),
+                text = SpotlightRequest.NullTextSentinel,
+                shape = SpotlightShape.RoundedRectangle,
+                position = TooltipPosition.Auto,
+                mode = InteractionMode.Blocking,
+                onClosed = _ => spotlightClosed = true
+            });
+
+            if (!SpotlightManager.Instance.IsActive)
+            {
+                spotlightClosed = true;
+            }
+        }
+
+        private void StartTutorialResultConversation(Day1InteractionTutorialResult result)
+        {
+            Day1InteractionTutorialController.Instance?.CompleteTutorial(result);
+
+            if (animController != null)
+                animController.StopLoop();
+
+            if (adapter != null)
+            {
+                adapter.interactionBubbleActive = false;
+                adapter.interactionClickAllowed = false;
+                adapter.interactionDialogueStarted = false;
+            }
+
+            var controller = Day1InteractionTutorialController.Instance;
+            if (controller != null && TryStartConversation(controller.MidoriResultConversation))
+            {
+                resultDialogueStarted = true;
+                currentPhase = Phase.WaitForResultDialogue;
+                return;
+            }
+
+            CleanupAndEnd();
+        }
+
+        private static bool TryStartConversation(string conversationTitle)
+        {
+            if (string.IsNullOrEmpty(conversationTitle))
+            {
+                return false;
+            }
+
+            if (DialogueManager.isConversationActive)
+            {
+                return false;
+            }
+
+            if (!DialogueManager.ConversationHasValidEntry(conversationTitle))
+            {
+                Debug.LogWarning($"[TryCustomerInteraction] Conversation not found: {conversationTitle}");
+                return false;
+            }
+
+            DialogueManager.StartConversation(conversationTitle);
+            return true;
         }
 
         // ─────────────────────────────────────────────
@@ -202,6 +378,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             {
                 adapter.assignedInteraction = null;
                 adapter.interactionBubbleActive = false;
+                adapter.interactionClickAllowed = false;
                 adapter.interactionDialogueStarted = false;
                 adapter.interactionUsedToday = true; // 正常完成：消耗今日机会
             }
@@ -222,10 +399,16 @@ namespace PopLife.Customers.NodeCanvas.Actions
             if (animController != null)
                 animController.StopLoop();
 
+            if (isDay1TutorialInteraction && !spotlightClosed && SpotlightManager.Instance != null)
+            {
+                SpotlightManager.Instance.Hide(CloseReason.Manual);
+            }
+
             // 重置标志位（但不标记 interactionUsedToday）
             if (adapter != null)
             {
                 adapter.interactionBubbleActive = false;
+                adapter.interactionClickAllowed = false;
                 adapter.interactionDialogueStarted = false;
                 // 注意：不设 interactionUsedToday = true
                 // 行为树中断（商店关门/顾客愤怒离开）不消耗交互机会
