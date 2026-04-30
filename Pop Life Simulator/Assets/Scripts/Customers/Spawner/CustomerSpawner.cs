@@ -296,6 +296,16 @@ namespace PopLife.Customers.Spawner
         }
 
         /// <summary>
+        /// 清除运行时缓存的 SpawnerProfile 与已生成顾客池，下次访问时从磁盘重新加载。
+        /// GameStateManager 重置存档时调用，避免 Save 时把陈旧解锁列表写回。
+        /// </summary>
+        public void InvalidateProfileCache()
+        {
+            spawnerProfile = null;
+            customerPool.Clear();
+        }
+
+        /// <summary>
         /// 初始化每日顾客池（开店时调用）
         /// </summary>
         private void InitializeDailyPool()

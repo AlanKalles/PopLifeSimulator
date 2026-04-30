@@ -267,9 +267,15 @@ namespace PopLife
         #region 中奖领取
 
         /// <summary>
-        /// 是否有待领取的奖金
+        /// 是否有待领取的奖金（中奖语义：prize > 0）
         /// </summary>
         public bool HasPendingWin() => saveData.pendingPrize > 0;
+
+        /// <summary>
+        /// 是否有待展示的开奖结果（玩家本期买了票，无论中奖与否）
+        /// </summary>
+        public bool HasPendingDrawResult()
+            => saveData.pendingPlayerTicket != null && saveData.pendingPlayerTicket.Length > 0;
 
         public int GetPendingPrize() => saveData.pendingPrize;
         public int GetPendingMatchCount() => saveData.pendingMatchCount;
@@ -277,27 +283,33 @@ namespace PopLife
         public int[] GetLastDrawnNumber() => saveData.lastDrawnNumber;
 
         /// <summary>
-        /// 领取奖金（计入营业收入）
+        /// 确认本期开奖结果（中奖则计入营业收入，未中奖也清理 pending 数据）
         /// </summary>
         public void CollectPrize()
         {
-            if (saveData.pendingPrize <= 0) return;
+            // 没有待展示的结果且无奖金，直接返回
+            if (!HasPendingDrawResult() && saveData.pendingPrize <= 0) return;
 
             int prize = saveData.pendingPrize;
             int matchCount = saveData.pendingMatchCount;
 
-            ResourceManager.Instance?.AddMoney(prize);
-            saveData.totalWinnings += prize;
+            if (prize > 0)
+            {
+                ResourceManager.Instance?.AddMoney(prize);
+                saveData.totalWinnings += prize;
+            }
 
-            // 清零并持久化，防止重复领取
+            // 清零并持久化，防止重复领取/重复展示
             saveData.pendingPrize = 0;
             saveData.pendingMatchCount = 0;
             saveData.pendingPlayerTicket = null;
             SaveState();
 
-            OnPlayerWon?.Invoke(matchCount, prize);
+            // OnPlayerWon 仅在真实中奖时触发，保留事件原语义
+            if (prize > 0)
+                OnPlayerWon?.Invoke(matchCount, prize);
 
-            Debug.Log($"[LotteryManager] 玩家领取奖金: ${prize}（{matchCount}/4 匹配）");
+            Debug.Log($"[LotteryManager] 本期开奖结果已确认（{matchCount}/4 匹配，奖金 ${prize}）");
         }
 
         #endregion

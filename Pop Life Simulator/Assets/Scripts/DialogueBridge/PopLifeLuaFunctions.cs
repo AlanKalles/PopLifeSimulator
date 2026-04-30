@@ -4,6 +4,7 @@ using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PopLife.Manager;
 using PopLife.Customers.Data;
+using PopLife.DialogueBridge.UI;
 
 namespace PopLife.DialogueBridge
 {
@@ -123,6 +124,18 @@ namespace PopLife.DialogueBridge
             Lua.RegisterFunction("PauseGame", this, SymbolExtensions.GetMethodInfo(() => PauseGame()));
             Lua.RegisterFunction("ResumeGame", this, SymbolExtensions.GetMethodInfo(() => ResumeGame()));
 
+            // Spotlight 系统（与 spotlight 渲染层完全解耦：仅此处 PopLifeLuaFunctions 接触 PixelCrushers Lua）
+            Lua.RegisterFunction("ShowSpotlight", this,
+                SymbolExtensions.GetMethodInfo(() => ShowSpotlight(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty)));
+            Lua.RegisterFunction("HideSpotlight", this,
+                SymbolExtensions.GetMethodInfo(() => HideSpotlight()));
+
+            // Dialogue UI 视觉隐藏/恢复（视觉 only，不影响 dialogue 状态机）
+            Lua.RegisterFunction("HideDialogueUI", this,
+                SymbolExtensions.GetMethodInfo(() => HideDialogueUI()));
+            Lua.RegisterFunction("ShowDialogueUI", this,
+                SymbolExtensions.GetMethodInfo(() => ShowDialogueUI()));
+
             Debug.Log("[PopLifeLuaFunctions] All Lua functions registered");
         }
 
@@ -149,6 +162,10 @@ namespace PopLife.DialogueBridge
             Lua.UnregisterFunction("SetQuestEntryStateAfter");
             Lua.UnregisterFunction("PauseGame");
             Lua.UnregisterFunction("ResumeGame");
+            Lua.UnregisterFunction("ShowSpotlight");
+            Lua.UnregisterFunction("HideSpotlight");
+            Lua.UnregisterFunction("HideDialogueUI");
+            Lua.UnregisterFunction("ShowDialogueUI");
 
             Debug.Log("[PopLifeLuaFunctions] All Lua functions unregistered");
         }
@@ -562,6 +579,131 @@ namespace PopLife.DialogueBridge
                     Debug.Log($"[PopLifeLuaFunctions] Executed deferred RaiseMarker: {markerName}");
                 }
             }
+        }
+
+        #endregion
+
+        #region Spotlight Functions
+
+        /// <summary>
+        /// 显示 spotlight + tooltip。Lua 用法：
+        /// <code>
+        /// ShowSpotlight("BuildButton", "Click here to build", "Right", "RoundedRectangle", "passthrough")
+        /// ShowSpotlight("QuestPanel", "Quest list lives here", "Auto", "Rectangle", "blocking")
+        /// ShowSpotlight("BuildButton", "NULL", "Right", "RoundedRectangle", "passthrough")  -- 仅高亮，不显示 tooltip
+        /// </code>
+        ///
+        /// targetId 智能解析：
+        /// <list type="bullet">
+        /// <item>"BuildButton" / "id:BuildButton" → 注册表查找</item>
+        /// <item>"rect:100,200,300,150" → 屏幕像素坐标</item>
+        /// <item>"norm:0.4,0.4,0.2,0.2" → normalized 坐标</item>
+        /// </list>
+        ///
+        /// text 取值：
+        /// <list type="bullet">
+        /// <item>普通字符串 → 显示 tooltip</item>
+        /// <item>"NULL" → 仅 spotlight 不显示 tooltip</item>
+        /// <item>空字符串 → throw（被 catch 后日志报错，spotlight 不显示）</item>
+        /// </list>
+        ///
+        /// 异常处理：核心 SpotlightManager API 对空 text 等会 throw；此 wrapper 吞掉异常仅日志，
+        /// 避免对话流程被参数错误打断。
+        /// </summary>
+        public void ShowSpotlight(string targetId, string text, string position, string shape, string mode)
+        {
+            try
+            {
+                if (SpotlightManager.Instance == null)
+                {
+                    Debug.LogWarning("[PopLifeLuaFunctions] ShowSpotlight: SpotlightManager.Instance is null");
+                    return;
+                }
+
+                // 不在此处替换空 text —— 让核心 API 的 Validate() 抛出 ArgumentException，
+                // 由下方 catch 记录 warning 并 no-op。这样 DialogueDatabase 误填空 text 会被
+                // 明确日志报错，而非显示一个空白 tooltip 掩盖错误。
+                SpotlightManager.Instance.Show(new SpotlightRequest
+                {
+                    target = SpotlightTargetSpec.ParseSmart(targetId),
+                    text = text,
+                    position = ParseTooltipPosition(position),
+                    shape = ParseSpotlightShape(shape),
+                    mode = ParseInteractionMode(mode),
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[PopLifeLuaFunctions] ShowSpotlight failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>关闭 spotlight + tooltip。Lua 用法: HideSpotlight()</summary>
+        public void HideSpotlight()
+        {
+            try
+            {
+                SpotlightManager.Instance?.Hide(CloseReason.Manual);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[PopLifeLuaFunctions] HideSpotlight failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 视觉隐藏 Dialogue UI（CanvasGroup alpha=0 + raycast off）。Lua 用法: HideDialogueUI()
+        /// 不影响 Dialogue System 状态机；由 ShowDialogueUI() 恢复。
+        /// </summary>
+        public void HideDialogueUI()
+        {
+            try
+            {
+                DialogueUIVisibility.Hide();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[PopLifeLuaFunctions] HideDialogueUI failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 恢复 Dialogue UI 到 HideDialogueUI() 之前的状态。Lua 用法: ShowDialogueUI()
+        /// 未 Hide 过则 noop。
+        /// </summary>
+        public void ShowDialogueUI()
+        {
+            try
+            {
+                DialogueUIVisibility.Show();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[PopLifeLuaFunctions] ShowDialogueUI failed: {ex.Message}");
+            }
+        }
+
+        // ============== 参数解析（容错友好，未识别值走默认） ==============
+
+        private static TooltipPosition ParseTooltipPosition(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return TooltipPosition.Auto;
+            if (Enum.TryParse<TooltipPosition>(s, true, out var v)) return v;
+            return TooltipPosition.Auto;
+        }
+
+        private static SpotlightShape ParseSpotlightShape(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return SpotlightShape.RoundedRectangle;
+            if (Enum.TryParse<SpotlightShape>(s, true, out var v)) return v;
+            return SpotlightShape.RoundedRectangle;
+        }
+
+        private static InteractionMode ParseInteractionMode(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return InteractionMode.Passthrough;
+            if (Enum.TryParse<InteractionMode>(s, true, out var v)) return v;
+            return InteractionMode.Passthrough;
         }
 
         #endregion

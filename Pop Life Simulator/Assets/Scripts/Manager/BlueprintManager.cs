@@ -1,6 +1,9 @@
 using UnityEngine;
 using PopLife.Data;
+using PopLife.Utility;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PopLife
 {
@@ -206,6 +209,41 @@ namespace PopLife
         {
             // 如果未来设计为一次性消耗蓝图，在这里实现
             // 当前设计：蓝图永久解锁，不消耗
+        }
+
+        /// <summary>
+        /// 删除运行时蓝图存档（不触碰内存）。GameStateManager 在 Instance 尚未初始化时使用。
+        /// 始终删除 persistentDataPath/BlueprintProfile.json；下次 LoadProfile 会自动从 StreamingAssets 模板复制。
+        /// 不会触碰 StreamingAssets 的设计模板。
+        /// </summary>
+        public static void ClearSaveFile()
+        {
+            try
+            {
+                string path = SavePathManager.GetWritePath("BlueprintProfile.json");
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                    Debug.Log($"[BlueprintManager] 已删除 BlueprintProfile.json: {path}");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[BlueprintManager] 删除 BlueprintProfile.json 失败: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 清除存档并重置内存状态。
+        /// 顺序：先删 persistent 文件 → 再 LoadProfile()，让 GetReadPath 检测到 persistent 缺失，
+        /// 自动从 StreamingAssets 模板复制一份过来。这样内存中的 profile 直接恢复到"游戏初始模板"状态，
+        /// 而不是空 profile（避免重置后玩家看到空蓝图列表）。
+        /// 必须同时重置内存与磁盘，否则后续 UnlockShelf 调用 Save() 会把陈旧数据写回。
+        /// </summary>
+        public void ClearSaveAndResetState()
+        {
+            ClearSaveFile();
+            LoadProfile();
         }
 
         /// <summary>

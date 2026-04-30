@@ -17,8 +17,8 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   sortOrder: 100
-  activationMarker: 1
-  closingMarker: 27
+  activationMarker: -1
+  closingMarker: -1
   pages:
   - screenshot: {fileID: 21300000, guid: 89e7a09192d11f945b3a39c294091b32, type: 3}
     title: Shelf Selection

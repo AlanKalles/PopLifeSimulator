@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PixelCrushers.DialogueSystem.SequencerCommands;
@@ -6,20 +7,13 @@ using PopLife.DialogueBridge.UI;
 namespace PopLife.DialogueBridge.Sequencer
 {
     /// <summary>
-    /// Sequencer command to show spotlight on a world object (3D/2D)
+    /// [DEPRECATED] 已被新系统的 ShowSpotlight 通过注册表统一处理替代。
+    /// 当前的 wrapper 通过 GameObject.Find 查找世界物体（兼容期，性能差）。
     ///
-    /// Usage in Dialogue Editor Sequence field:
-    ///   SpotlightWorld(targetName)
-    ///   SpotlightWorld(targetName, shape)
-    ///
-    /// Parameters:
-    ///   targetName: Name of the world GameObject to highlight
-    ///   shape (optional): Rectangle, Circle, or RoundedRectangle (default: RoundedRectangle)
-    ///
-    /// Examples:
-    ///   SpotlightWorld(Shelf_Lingerie)
-    ///   SpotlightWorld(Cashier, Circle)
+    /// 推荐做法：在世界物体上挂 SpotlightTarget 组件填 ID，然后
+    /// ShowSpotlight("YourId", "你的提示文字", Right) —— 注册表自动识别为世界物体目标。
     /// </summary>
+    [Obsolete("使用 SpotlightTarget 组件 + ShowSpotlight(targetId, text, ...) 替代")]
     public class SequencerCommandSpotlightWorld : SequencerCommand
     {
         public void Awake()
@@ -29,37 +23,41 @@ namespace PopLife.DialogueBridge.Sequencer
 
             if (string.IsNullOrEmpty(targetName))
             {
-                if (DialogueDebug.logWarnings)
-                {
-                    Debug.LogWarning("Sequencer: SpotlightWorld() - missing target name parameter");
-                }
                 Stop();
                 return;
             }
 
-            // Parse shape
             SpotlightShape shape = SpotlightShape.RoundedRectangle;
-            if (!string.IsNullOrEmpty(shapeStr))
+            if (!string.IsNullOrEmpty(shapeStr)) Enum.TryParse(shapeStr, true, out shape);
+
+            if (DialogueDebug.logWarnings)
             {
-                System.Enum.TryParse(shapeStr, true, out shape);
+                Debug.LogWarning(
+                    $"Sequencer: SpotlightWorld({targetName}) [DEPRECATED] - " +
+                    $"请在世界物体挂 SpotlightTarget 组件填 ID，再用 ShowSpotlight(\"{targetName}\", \"<提示文字>\", ...)");
             }
 
-            // Show spotlight on world object
+            // 兼容期 fallback：用 GameObject.Find 查找
+            var go = GameObject.Find(targetName);
+            if (go == null)
+            {
+                Debug.LogWarning($"Sequencer: SpotlightWorld - 找不到 GameObject '{targetName}'");
+                Stop();
+                return;
+            }
+
             if (SpotlightManager.Instance != null)
             {
-                SpotlightManager.Instance.ShowSpotlightOnWorldObjectByName(targetName, shape);
-
-                if (DialogueDebug.logInfo)
+                SpotlightManager.Instance.Show(new SpotlightRequest
                 {
-                    Debug.Log($"Sequencer: SpotlightWorld({targetName}, {shape})");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Sequencer: SpotlightWorld() - SpotlightManager.Instance is null");
+                    target = SpotlightTargetSpec.ForWorld(go),
+                    text = SpotlightRequest.NullTextSentinel,
+                    shape = shape,
+                    position = TooltipPosition.Auto,
+                    mode = InteractionMode.Passthrough,
+                });
             }
 
-            // Command completes immediately (spotlight remains visible)
             Stop();
         }
     }

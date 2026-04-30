@@ -89,6 +89,10 @@ MonoBehaviour:
       clips:
       - {fileID: 8300000, guid: 6c19bede6e5279e43bc7756c73104608, type: 3}
       volumeScale: 1
+    - emoteType: Confused
+      clips:
+      - {fileID: 8300000, guid: eb55882d89d71254080bf9abb9f74ba4, type: 3}
+      volumeScale: 1
   - actorName: Auditor
     emotes:
     - emoteType: Normal

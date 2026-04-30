@@ -265,12 +265,13 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 在结算面板之前检查彩票中奖
-        /// 如果中奖则显示贺喜面板并等待玩家领取
+        /// 在结算面板之前检查彩票开奖结果
+        /// 玩家本期买了票就展示面板（中奖/未中奖均展示），等待玩家点击 Continue/Collect 后继续
         /// </summary>
         private IEnumerator CheckLotteryWinBeforeSettlement()
         {
-            if (LotteryManager.Instance == null || !LotteryManager.Instance.HasPendingWin())
+            // 改用 HasPendingDrawResult：玩家本期买了票就要展示结果（无论中没中奖）
+            if (LotteryManager.Instance == null || !LotteryManager.Instance.HasPendingDrawResult())
             {
                 lotteryWinnings = 0;
                 yield break;
@@ -296,7 +297,7 @@ namespace PopLife
                 yield return null;
 
             lotteryWinnings = prize;
-            Debug.Log($"[DayLoopManager] 彩票奖金 ${prize} 已领取，将在结算中显示");
+            Debug.Log($"[DayLoopManager] 彩票开奖结果已确认（奖金 ${prize}，将在结算中显示）");
         }
 
         /// <summary>

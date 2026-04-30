@@ -1,21 +1,21 @@
-using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 using PrimeTween;
 using Sirenix.OdinInspector;
-using PixelCrushers.DialogueSystem;
 
 namespace PopLife.DialogueBridge.UI
 {
     /// <summary>
-    /// Spotlight/Coach Mark effect manager
-    /// Highlights specific UI elements or world objects during tutorials
+    /// Spotlight + Tooltip 统一控制器。零 Dialogue System 依赖。
     ///
-    /// Supports:
-    /// - UI elements (RectTransform)
-    /// - World objects (GameObject with Renderer)
-    /// - Custom shapes (Rectangle, Circle, RoundedRectangle)
-    /// - Pulse animation
-    /// - Automatic position tracking
+    /// 核心契约：
+    /// <list type="bullet">
+    /// <item>Spotlight 与 Tooltip 一体：Show 必传 text，二者同时显示同时隐藏</item>
+    /// <item>Show 入口若已 active，强制 Hide(Manual) 清理旧状态</item>
+    /// <item>所有关闭路径（Manual / TargetClicked / BackgroundClicked / TargetLost）必经 Hide(reason)</item>
+    /// <item>LateUpdate 检测 rect diff（4 corner 投影）+ 失效检测，自动跟随 + 自动 Hide</item>
+    /// </list>
     /// </summary>
     public class SpotlightManager : MonoBehaviour
     {
@@ -33,7 +33,20 @@ namespace PopLife.DialogueBridge.UI
             else
             {
                 Destroy(gameObject);
+                return;
             }
+
+            if (spotlightCanvas != null && spotlightCanvas.sortingOrder < 1000)
+            {
+                Debug.LogWarning(
+                    $"[SpotlightManager] spotlightCanvas.sortingOrder={spotlightCanvas.sortingOrder}，" +
+                    "建议 ≥ 1000 以确保覆盖游戏 UI");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
         }
 
         #endregion
@@ -41,9 +54,8 @@ namespace PopLife.DialogueBridge.UI
         #region Serialized Fields
 
         [Title("References")]
-        [Required]
-        [SerializeField] private SpotlightPanel spotlightPanel;
-
+        [Required, SerializeField] private SpotlightPanel spotlightPanel;
+        [Required, SerializeField] private SpotlightTooltip tooltip;
         [SerializeField] private Canvas spotlightCanvas;
 
         [Title("Animation Settings")]
@@ -53,937 +65,376 @@ namespace PopLife.DialogueBridge.UI
         [SerializeField] private float pulseDuration = 0.8f;
         [SerializeField] private Ease pulseEase = Ease.InOutSine;
 
-        [Title("Target Tracking")]
-        [Tooltip("If true, spotlight will follow moving targets")]
-        [SerializeField] private bool trackTarget = true;
-
-        [Tooltip("How often to update tracking (seconds)")]
-        [SerializeField] private float trackingInterval = 0.1f;
-
-        [Title("Tooltip")]
-        [SerializeField]
-        private SpotlightTooltip tooltip;
-
-        [SerializeField, Tooltip("Automatically hide dialogue UI when showing tooltip")]
-        private bool autoHideDialogueUI = true;
-
-        [SerializeField, Tooltip("Automatically close tooltip when conversation node changes")]
-        private bool autoCloseOnNodeChange = true;
+        [Title("Layout")]
+        [SerializeField, Tooltip("Spotlight 高亮区域的额外内边距（像素）")]
+        private float defaultPadding = 15f;
 
         [Title("Debug")]
         [SerializeField] private bool debugMode = false;
 
         #endregion
 
-        #region Private Fields
+        #region Runtime State
 
-        private RectTransform currentUITarget;
-        private GameObject currentWorldTarget;
-        private Camera mainCamera;
-        private Coroutine pulseCoroutine;
-        private Coroutine trackingCoroutine;
-        private bool isActive = false;
+        private CanvasGroup panelCanvasGroup;
+        private bool isActive;
+        private SpotlightRequest currentRequest;
+        private ResolvedTarget currentTarget;
+        private Rect lastComputedRect;
+        private int lastScreenW, lastScreenH;
 
-        // Tooltip state
-        private bool isTooltipActive = false;
-        private GameObject cachedDialogueUI;
-        private CanvasGroup cachedDialogueCanvasGroup;
-        private bool weAddedCanvasGroup = false;
-        private bool dialogueUIHiddenByUs = false;
-        private Rect currentSpotlightRect;
+        // Passthrough 模式下的临时订阅（统一由 Hide 清理）
+        private Button subscribedButton;
+        private UnityAction subscribedButtonHandler;
+        private SpotlightTargetClickProxy attachedProxy;
+        private RectTransform raycastModifiedRT;
+        private bool raycastSavedState;
+        private bool didModifyRaycast;
+        private bool targetClickHandled;
 
-        // Continue trigger
-        private ContinueTriggerMode currentTriggerMode = ContinueTriggerMode.ClickAnywhere;
-        private UnityEngine.UI.Button targetButton;
-
-        // 延迟恢复 DialogueUI 的协程引用
-        private Coroutine pendingDialogueRestore;
+        // 动画 tween 引用（Hide 时 Stop）
+        private Tween fadeTween;
+        private Sequence pulseSequence;
 
         #endregion
 
-        #region Unity Lifecycle
-
-        private void OnEnable()
-        {
-            // Subscribe to Dialogue System events
-            if (DialogueManager.instance != null)
-            {
-                DialogueManager.instance.conversationEnded += OnConversationEnded;
-                DialogueManager.instance.conversationLinePrepared += OnConversationLinePrepared;
-            }
-        }
-
-        private void OnDisable()
-        {
-            // Unsubscribe from Dialogue System events
-            if (DialogueManager.instance != null)
-            {
-                DialogueManager.instance.conversationEnded -= OnConversationEnded;
-                DialogueManager.instance.conversationLinePrepared -= OnConversationLinePrepared;
-            }
-        }
-
-        private void Start()
-        {
-            mainCamera = Camera.main;
-
-            if (spotlightPanel != null)
-            {
-                spotlightPanel.gameObject.SetActive(false);
-            }
-
-            if (tooltip != null)
-            {
-                tooltip.gameObject.SetActive(false);
-            }
-        }
-
-        private void OnDestroy()
-        {
-            StopAllCoroutines();
-        }
-
-        private void Update()
-        {
-            if (!isTooltipActive) return;
-
-            switch (currentTriggerMode)
-            {
-                case ContinueTriggerMode.ClickAnywhere:
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        ContinueDialogue();
-                    }
-                    break;
-
-                case ContinueTriggerMode.ClickSpotlight:
-                    if (Input.GetMouseButtonDown(0) && IsClickInsideSpotlight())
-                    {
-                        ContinueDialogue();
-                    }
-                    break;
-
-                case ContinueTriggerMode.ClickButton:
-                    // Button 点击由事件处理，这里不需要额外逻辑
-                    break;
-            }
-        }
-
-        #endregion
-
-        #region Public API - UI Elements
+        #region Public API
 
         /// <summary>
-        /// Show spotlight on a UI element
+        /// 显示 spotlight + tooltip。此为唯一主入口。
         /// </summary>
-        public void ShowSpotlight(RectTransform target, SpotlightShape shape = SpotlightShape.RoundedRectangle)
+        /// <exception cref="System.ArgumentException">text 为空或 target 无效时抛出</exception>
+        public void Show(SpotlightRequest request)
         {
-            if (target == null)
+            request.Validate();
+
+            // 入口防御：彻底清理任何旧状态
+            if (isActive) Hide(CloseReason.Manual);
+
+            // 解析目标（Camera fallback 一次性完成）
+            var resolved = request.target.Resolve(spotlightCanvas);
+            if (!resolved.IsValid)
             {
-                Debug.LogWarning("[SpotlightManager] ShowSpotlight called with null target");
+                // Resolve 失败（注册表查不到 / 无 Camera 等）已 logwarning，静默不显示
                 return;
             }
 
-            currentUITarget = target;
-            currentWorldTarget = null;
-
-            ShowSpotlightInternal(shape);
-
-            if (trackTarget)
-            {
-                StartTracking();
-            }
-
-            if (debugMode)
-            {
-                Debug.Log($"[SpotlightManager] Showing spotlight on UI: {target.name}");
-            }
-        }
-
-        /// <summary>
-        /// Show spotlight on a UI element by name
-        /// Searches entire hierarchy
-        /// </summary>
-        public void ShowSpotlightByName(string targetName, SpotlightShape shape = SpotlightShape.RoundedRectangle)
-        {
-            if (string.IsNullOrEmpty(targetName))
-            {
-                Debug.LogWarning("[SpotlightManager] ShowSpotlightByName called with empty name");
-                return;
-            }
-
-            var target = GameObject.Find(targetName);
-            if (target != null)
-            {
-                var rectTransform = target.GetComponent<RectTransform>();
-                if (rectTransform != null)
-                {
-                    ShowSpotlight(rectTransform, shape);
-                    return;
-                }
-            }
-
-            Debug.LogWarning($"[SpotlightManager] UI target not found: {targetName}");
-        }
-
-        #endregion
-
-        #region Public API - World Objects
-
-        /// <summary>
-        /// Show spotlight on a world object (3D/2D)
-        /// </summary>
-        public void ShowSpotlightOnWorldObject(GameObject target, SpotlightShape shape = SpotlightShape.RoundedRectangle)
-        {
-            if (target == null)
-            {
-                Debug.LogWarning("[SpotlightManager] ShowSpotlightOnWorldObject called with null target");
-                return;
-            }
-
-            currentUITarget = null;
-            currentWorldTarget = target;
-
-            ShowSpotlightInternal(shape);
-
-            if (trackTarget)
-            {
-                StartTracking();
-            }
-
-            if (debugMode)
-            {
-                Debug.Log($"[SpotlightManager] Showing spotlight on world object: {target.name}");
-            }
-        }
-
-        /// <summary>
-        /// Show spotlight on a world object by name
-        /// </summary>
-        public void ShowSpotlightOnWorldObjectByName(string targetName, SpotlightShape shape = SpotlightShape.RoundedRectangle)
-        {
-            if (string.IsNullOrEmpty(targetName))
-            {
-                Debug.LogWarning("[SpotlightManager] ShowSpotlightOnWorldObjectByName called with empty name");
-                return;
-            }
-
-            var target = GameObject.Find(targetName);
-            if (target != null)
-            {
-                ShowSpotlightOnWorldObject(target, shape);
-                return;
-            }
-
-            Debug.LogWarning($"[SpotlightManager] World object not found: {targetName}");
-        }
-
-        #endregion
-
-        #region Public API - Direct Rect
-
-        /// <summary>
-        /// Show spotlight on a specific screen rect
-        /// </summary>
-        /// <param name="screenRect">Target rect in screen coordinates (pixels)</param>
-        /// <param name="shape">Shape of the spotlight cutout</param>
-        public void ShowSpotlightRect(Rect screenRect, SpotlightShape shape = SpotlightShape.RoundedRectangle)
-        {
-            currentUITarget = null;
-            currentWorldTarget = null;
-
-            if (spotlightPanel == null)
-            {
-                Debug.LogError("[SpotlightManager] SpotlightPanel is not assigned!");
-                return;
-            }
-
+            currentRequest = request;
+            currentTarget = resolved;
             isActive = true;
+            targetClickHandled = false;
+
+            EnsurePanelCanvasGroup();
+
+            // 计算初始 rect 并应用
+            var rect = resolved.GetScreenRect();
+            ApplyRect(rect, request.shape);
+            lastComputedRect = rect;
+            lastScreenW = Screen.width;
+            lastScreenH = Screen.height;
+
+            // 模式切换
+            spotlightPanel.SetInteractionMode(request.mode);
+            if (request.mode == InteractionMode.Blocking && spotlightPanel.BlockerHandler != null)
+            {
+                spotlightPanel.BlockerHandler.onClicked = OnBackgroundClicked;
+            }
+            else if (request.mode == InteractionMode.Passthrough)
+            {
+                AttachPassthroughListener(resolved);
+            }
+
+            // 显示 tooltip（IsTextSuppressed 时仅显示 spotlight，tooltip 保持隐藏）
+            if (request.IsTextSuppressed)
+            {
+                if (tooltip != null) tooltip.Hide();
+            }
+            else
+            {
+                // Passthrough 模式下走 ClickButton 智能定位（tooltip 远离按钮，避免遮挡）
+                tooltip.Show(request.text, rect, request.position, request.customOffset,
+                    isClickButton: request.mode == InteractionMode.Passthrough);
+            }
+
+            // Spotlight panel 淡入
             spotlightPanel.gameObject.SetActive(true);
+            fadeTween.Stop();
+            panelCanvasGroup.alpha = 0f;
+            fadeTween = Tween.Alpha(panelCanvasGroup, 1f, fadeInDuration, useUnscaledTime: true);
 
-            // Save current rect for tooltip positioning
-            currentSpotlightRect = screenRect;
+            // 边框脉动动画
+            StartPulseAnimation();
 
-            // Set target directly
-            spotlightPanel.SetTarget(screenRect, shape);
-
-            // Fade in
-            var cg = spotlightPanel.GetComponent<CanvasGroup>();
-            if (cg != null)
-            {
-                cg.alpha = 0f;
-                Tween.Alpha(cg, 1f, fadeInDuration, useUnscaledTime: true);
-            }
-
-            // Start pulse animation
-            StartPulse();
-
-            if (debugMode)
-            {
-                Debug.Log($"[SpotlightManager] Showing spotlight on rect: {screenRect}");
-            }
+            if (debugMode) Debug.Log($"[SpotlightManager] Show: target={resolved.kind}, mode={request.mode}, rect={rect}");
         }
 
         /// <summary>
-        /// Show spotlight on a specific screen rect (convenience overload)
+        /// 关闭 spotlight + tooltip，统一清理所有监听与动画。
         /// </summary>
-        public void ShowSpotlightRect(float x, float y, float width, float height, SpotlightShape shape = SpotlightShape.RoundedRectangle)
-        {
-            ShowSpotlightRect(new Rect(x, y, width, height), shape);
-        }
-
-        #endregion
-
-        #region Public API - General
-
-        /// <summary>
-        /// Hide the spotlight
-        /// </summary>
-        [Button("Hide Spotlight")]
-        public void HideSpotlight()
+        public void Hide(CloseReason reason = CloseReason.Manual)
         {
             if (!isActive) return;
 
-            StopTracking();
-            StopPulse();
+            if (debugMode) Debug.Log($"[SpotlightManager] Hide: reason={reason}");
 
-            isActive = false;
-            currentUITarget = null;
-            currentWorldTarget = null;
+            // 1. 解除 Passthrough 监听（无论何种关闭路径都走这里）
+            DetachPassthroughListener();
 
-            // Fade out
-            var cg = spotlightPanel.GetComponent<CanvasGroup>();
-            if (cg != null)
+            // 2. 解除 Blocking 监听
+            if (spotlightPanel != null && spotlightPanel.BlockerHandler != null)
             {
-                Tween.Alpha(cg, 0f, fadeOutDuration, useUnscaledTime: true)
-                    .OnComplete(() => {
-                        spotlightPanel.gameObject.SetActive(false);
+                spotlightPanel.BlockerHandler.onClicked = null;
+            }
+
+            // 3. 停止脉动并淡出
+            if (pulseSequence.isAlive) pulseSequence.Stop();
+            if (spotlightPanel != null && spotlightPanel.HighlightBorder != null)
+            {
+                spotlightPanel.HighlightBorder.localScale = Vector3.one;
+            }
+
+            fadeTween.Stop();
+            if (panelCanvasGroup != null)
+            {
+                fadeTween = Tween.Alpha(panelCanvasGroup, 0f, fadeOutDuration, useUnscaledTime: true)
+                    .OnComplete(() =>
+                    {
+                        if (spotlightPanel != null) spotlightPanel.gameObject.SetActive(false);
                     });
             }
-            else
-            {
-                spotlightPanel.gameObject.SetActive(false);
-            }
 
-            if (debugMode)
-            {
-                Debug.Log("[SpotlightManager] Spotlight hidden");
-            }
+            // 4. tooltip 淡出
+            if (tooltip != null) tooltip.Hide();
+
+            // 5. 触发回调（捕获本地副本，回调中可能再次 Show）
+            var cb = currentRequest.onClosed;
+
+            // 6. 重置状态
+            isActive = false;
+            currentTarget = ResolvedTarget.Empty;
+            currentRequest = default;
+            targetClickHandled = false;
+
+            // 7. 调用回调（最后，确保 isActive=false 已生效）
+            cb?.Invoke(reason);
         }
 
-        /// <summary>
-        /// Check if spotlight is currently active
-        /// </summary>
+        /// <summary>当前是否有活跃的 spotlight</summary>
         public bool IsActive => isActive;
 
-        /// <summary>
-        /// Check if tooltip is currently active
-        /// </summary>
-        public bool IsTooltipActive => isTooltipActive;
+        /// <summary>Spotlight 视觉淡出耗时。Sequencer 合成命令用它避免在遮罩淡出中途恢复 Dialogue UI。</summary>
+        public float FadeOutDuration => fadeOutDuration;
 
         #endregion
 
-        #region Public API - Tooltip
+        #region Convenience Overloads
 
-        /// <summary>
-        /// Show tooltip with content from current dialogue node
-        /// </summary>
-        /// <param name="position">Position relative to spotlight</param>
-        /// <param name="customOffset">Custom offset for Custom position mode (normalized 0-1)</param>
-        /// <param name="triggerMode">How to trigger continue dialogue</param>
-        public void ShowTooltipFromDialogue(TooltipPosition position, Vector2? customOffset = null,
-            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere,
-            Vector2? clickButtonOffset = null)
+        public void Show(string targetId, string text,
+            TooltipPosition position = TooltipPosition.Auto,
+            SpotlightShape shape = SpotlightShape.RoundedRectangle,
+            InteractionMode mode = InteractionMode.Passthrough)
         {
-            if (tooltip == null)
+            Show(new SpotlightRequest
             {
-                Debug.LogError("[SpotlightManager] SpotlightTooltip is not assigned!");
-                return;
-            }
-
-            // Get current dialogue text
-            var state = DialogueManager.currentConversationState;
-            string text = state?.subtitle?.formattedText?.text ?? "";
-
-            if (string.IsNullOrEmpty(text))
-            {
-                Debug.LogWarning("[SpotlightManager] No dialogue text available for tooltip");
-                return;
-            }
-
-            // Auto-hide dialogue UI if enabled and conversation is active
-            if (autoHideDialogueUI && DialogueManager.isConversationActive)
-            {
-                HideDialogueUI();
-            }
-
-            // Ensure tooltip is under the spotlight canvas
-            EnsureTooltipUnderSpotlightCanvas();
-
-            // Set trigger mode
-            currentTriggerMode = triggerMode;
-
-            // Setup button trigger if needed
-            if (triggerMode == ContinueTriggerMode.ClickButton)
-            {
-                SetupButtonTrigger();
-            }
-
-            // Show tooltip
-            isTooltipActive = true;
-            tooltip.Show(text, currentSpotlightRect, position, customOffset,
-                triggerMode == ContinueTriggerMode.ClickButton, clickButtonOffset);
-
-            if (debugMode)
-            {
-                Debug.Log($"[SpotlightManager] Showing tooltip: {position}, trigger: {triggerMode}, text: {text.Substring(0, Mathf.Min(50, text.Length))}...");
-            }
+                target = SpotlightTargetSpec.ById(targetId),
+                text = text, position = position, shape = shape, mode = mode,
+            });
         }
 
-        /// <summary>
-        /// Show tooltip with custom text
-        /// </summary>
-        /// <param name="text">Text content to display</param>
-        /// <param name="position">Position relative to spotlight</param>
-        /// <param name="customOffset">Custom offset for Custom position mode (normalized 0-1)</param>
-        /// <param name="triggerMode">How to trigger continue dialogue</param>
-        public void ShowTooltip(string text, TooltipPosition position, Vector2? customOffset = null,
-            ContinueTriggerMode triggerMode = ContinueTriggerMode.ClickAnywhere,
-            Vector2? clickButtonOffset = null)
+        public void Show(RectTransform target, string text,
+            TooltipPosition position = TooltipPosition.Auto,
+            SpotlightShape shape = SpotlightShape.RoundedRectangle,
+            InteractionMode mode = InteractionMode.Passthrough)
         {
-            if (tooltip == null)
+            Show(new SpotlightRequest
             {
-                Debug.LogError("[SpotlightManager] SpotlightTooltip is not assigned!");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(text))
-            {
-                Debug.LogWarning("[SpotlightManager] ShowTooltip called with empty text");
-                return;
-            }
-
-            // Auto-hide dialogue UI if enabled and conversation is active
-            if (autoHideDialogueUI && DialogueManager.isConversationActive)
-            {
-                HideDialogueUI();
-            }
-
-            // Ensure tooltip is under the spotlight canvas
-            EnsureTooltipUnderSpotlightCanvas();
-
-            // Set trigger mode
-            currentTriggerMode = triggerMode;
-
-            // Setup button trigger if needed
-            if (triggerMode == ContinueTriggerMode.ClickButton)
-            {
-                SetupButtonTrigger();
-            }
-
-            // Show tooltip
-            isTooltipActive = true;
-            tooltip.Show(text, currentSpotlightRect, position, customOffset,
-                triggerMode == ContinueTriggerMode.ClickButton, clickButtonOffset);
-
-            if (debugMode)
-            {
-                Debug.Log($"[SpotlightManager] Showing tooltip: {position}, trigger: {triggerMode}");
-            }
+                target = SpotlightTargetSpec.ForRect(target),
+                text = text, position = position, shape = shape, mode = mode,
+            });
         }
 
-        /// <summary>
-        /// Hide the tooltip and restore dialogue UI
-        /// </summary>
-        [Button("Hide Tooltip")]
-        public void HideTooltip()
+        public void Show(Rect screenRect, string text,
+            TooltipPosition position = TooltipPosition.Auto,
+            SpotlightShape shape = SpotlightShape.RoundedRectangle,
+            InteractionMode mode = InteractionMode.Passthrough)
         {
-            if (!isTooltipActive) return;
-
-            isTooltipActive = false;
-
-            // Cleanup button trigger
-            CleanupButtonTrigger();
-
-            // Reset trigger mode
-            currentTriggerMode = ContinueTriggerMode.ClickAnywhere;
-
-            if (tooltip != null)
+            Show(new SpotlightRequest
             {
-                tooltip.Hide();
-            }
-
-            // Restore dialogue UI only if conversation is still active
-            if (autoHideDialogueUI && DialogueManager.isConversationActive)
-            {
-                ShowDialogueUI();
-            }
-
-            if (debugMode)
-            {
-                Debug.Log("[SpotlightManager] Tooltip hidden");
-            }
-        }
-
-        /// <summary>
-        /// Get the current spotlight screen rect (for tooltip positioning)
-        /// </summary>
-        public Rect GetCurrentSpotlightRect()
-        {
-            return currentSpotlightRect;
-        }
-
-        /// <summary>
-        /// Ensure tooltip is parented under the spotlight canvas for correct rendering
-        /// </summary>
-        private void EnsureTooltipUnderSpotlightCanvas()
-        {
-            if (tooltip == null || spotlightCanvas == null) return;
-
-            // Check if tooltip is already under spotlight canvas
-            if (tooltip.transform.parent == spotlightCanvas.transform) return;
-
-            // Reparent tooltip to spotlight canvas
-            tooltip.transform.SetParent(spotlightCanvas.transform, false);
-
-            // Set as last sibling to render on top
-            tooltip.transform.SetAsLastSibling();
-
-            if (debugMode)
-            {
-                Debug.Log("[SpotlightManager] Tooltip reparented to spotlight canvas");
-            }
+                target = SpotlightTargetSpec.ForScreenRect(screenRect),
+                text = text, position = position, shape = shape, mode = mode,
+            });
         }
 
         #endregion
 
-        #region Dialogue UI Control
+        #region LateUpdate Tracking
 
-        private void HideDialogueUI()
+        private void LateUpdate()
         {
-            // Find and cache the Dialogue System UI
-            if (cachedDialogueUI == null)
+            if (!isActive) return;
+
+            // 失效检测优先
+            if (currentTarget.IsLost())
             {
-                cachedDialogueUI = DialogueManager.displaySettings?.dialogueUI;
-            }
-
-            if (cachedDialogueUI != null)
-            {
-                // 使用 CanvasGroup 隐藏而非 SetActive(false)，
-                // 保持 GameObject active 让 Dialogue System 内部状态管理正常运作，
-                // 避免跨 conversation 跳转时 UI 初始化失败
-                cachedDialogueCanvasGroup = cachedDialogueUI.GetComponent<CanvasGroup>();
-                if (cachedDialogueCanvasGroup == null)
-                {
-                    cachedDialogueCanvasGroup = cachedDialogueUI.AddComponent<CanvasGroup>();
-                    weAddedCanvasGroup = true;
-                }
-
-                cachedDialogueCanvasGroup.alpha = 0f;
-                cachedDialogueCanvasGroup.blocksRaycasts = false;
-                cachedDialogueCanvasGroup.interactable = false;
-                dialogueUIHiddenByUs = true;
-
-                if (debugMode)
-                {
-                    Debug.Log("[SpotlightManager] Dialogue UI hidden (via CanvasGroup)");
-                }
-            }
-        }
-
-        private void ShowDialogueUI()
-        {
-            if (dialogueUIHiddenByUs && cachedDialogueCanvasGroup != null)
-            {
-                cachedDialogueCanvasGroup.alpha = 1f;
-                cachedDialogueCanvasGroup.blocksRaycasts = true;
-                cachedDialogueCanvasGroup.interactable = true;
-                dialogueUIHiddenByUs = false;
-
-                // 如果 CanvasGroup 是我们添加的，恢复后移除，
-                // 避免干扰 Dialogue System 的原有隐藏机制（SetActive）
-                if (weAddedCanvasGroup)
-                {
-                    Destroy(cachedDialogueCanvasGroup);
-                    cachedDialogueCanvasGroup = null;
-                    weAddedCanvasGroup = false;
-                }
-
-                if (debugMode)
-                {
-                    Debug.Log("[SpotlightManager] Dialogue UI restored (via CanvasGroup)");
-                }
-            }
-        }
-
-        #endregion
-
-        #region Dialogue Continue
-
-        /// <summary>
-        /// 继续对话 - 模拟点击 continue button
-        /// </summary>
-        private void ContinueDialogue()
-        {
-            if (!DialogueManager.isConversationActive) return;
-
-            // 不在此处恢复 DialogueUI：
-            // HideDialogueUI 使用 CanvasGroup（alpha=0）而非 SetActive(false)，
-            // GameObject 仍然 active，OnContinue 内部的 Coroutine 不受影响。
-            // 若在此处立即 ShowDialogueUI()，当 conversation 即将结束或下一节点
-            // 也使用 tooltip 时，dialogue panel 会短暂闪现后消失。
-            // DialogueUI 的恢复交由 HideTooltip() 或 OnConversationEnded() 处理。
-
-            // 调用 Dialogue System 的 OnContinue 来继续对话
-            if (DialogueManager.standardDialogueUI != null)
-            {
-                DialogueManager.standardDialogueUI.OnContinue();
-
-                if (debugMode)
-                {
-                    Debug.Log("[SpotlightManager] Dialogue continued via click");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 检测点击是否在 spotlight 区域内
-        /// </summary>
-        private bool IsClickInsideSpotlight()
-        {
-            Vector2 mousePos = Input.mousePosition;
-            return currentSpotlightRect.Contains(mousePos);
-        }
-
-        /// <summary>
-        /// 设置 Button 触发器
-        /// </summary>
-        private void SetupButtonTrigger()
-        {
-            // 清理旧的订阅
-            CleanupButtonTrigger();
-
-            // 从 currentUITarget 获取 Button 组件
-            if (currentUITarget != null)
-            {
-                targetButton = currentUITarget.GetComponent<UnityEngine.UI.Button>();
-                if (targetButton != null)
-                {
-                    targetButton.onClick.AddListener(OnTargetButtonClicked);
-
-                    if (debugMode)
-                    {
-                        Debug.Log($"[SpotlightManager] Button trigger setup on: {targetButton.name}");
-                    }
-                }
-                else if (debugMode)
-                {
-                    Debug.LogWarning("[SpotlightManager] ClickButton mode but target has no Button component");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 清理 Button 触发器
-        /// </summary>
-        private void CleanupButtonTrigger()
-        {
-            if (targetButton != null)
-            {
-                targetButton.onClick.RemoveListener(OnTargetButtonClicked);
-                targetButton = null;
-            }
-        }
-
-        /// <summary>
-        /// Button 点击事件处理（用于 ClickButton 模式）
-        /// </summary>
-        private void OnTargetButtonClicked()
-        {
-            if (isTooltipActive && currentTriggerMode == ContinueTriggerMode.ClickButton)
-            {
-                ContinueDialogue();
-            }
-        }
-
-        #endregion
-
-        #region Dialogue System Event Handlers
-
-        /// <summary>
-        /// Called when conversation node changes - auto close tooltip and spotlight
-        /// </summary>
-        private void OnConversationLinePrepared(Subtitle subtitle)
-        {
-            if (autoCloseOnNodeChange && (isTooltipActive || isActive))
-            {
-                HideTooltip();
-                HideSpotlight();
-
-                if (debugMode)
-                {
-                    Debug.Log("[SpotlightManager] Tooltip and spotlight auto-closed on node change");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called when conversation ends - cleanup spotlight and tooltip
-        /// </summary>
-        private void OnConversationEnded(Transform actor)
-        {
-            if (isTooltipActive || isActive)
-            {
-                HideTooltip();
-                HideSpotlight();
-
-                if (debugMode)
-                {
-                    Debug.Log("[SpotlightManager] Spotlight and tooltip auto-closed on conversation end");
-                }
-            }
-
-            // 对话结束时 isConversationActive 已经是 false，
-            // HideTooltip 内部的条件守卫会跳过 ShowDialogueUI()，
-            // 必须在这里恢复被我们隐藏的 Dialogue UI（CanvasGroup 状态）。
-            // 延迟一帧，确保 Dialogue System 自身的 UI 关闭逻辑已完成，
-            // 避免恢复 alpha=1 时 subtitle panel 尚未完全隐藏导致闪现。
-            if (dialogueUIHiddenByUs && autoHideDialogueUI)
-            {
-                if (pendingDialogueRestore != null) StopCoroutine(pendingDialogueRestore);
-                pendingDialogueRestore = StartCoroutine(DelayedRestoreDialogueUI());
-            }
-        }
-
-        /// <summary>
-        /// 延迟一帧恢复 DialogueUI 的 CanvasGroup 状态，
-        /// 避免在 Dialogue System 自身 UI 关闭动画期间恢复 alpha 导致闪现。
-        /// </summary>
-        private IEnumerator DelayedRestoreDialogueUI()
-        {
-            yield return null;
-
-            // 确认仍然需要恢复（tooltip 没有被重新激活）
-            if (!isTooltipActive && dialogueUIHiddenByUs)
-            {
-                ShowDialogueUI();
-            }
-
-            pendingDialogueRestore = null;
-        }
-
-        #endregion
-
-        #region Internal Methods
-
-        private void ShowSpotlightInternal(SpotlightShape shape)
-        {
-            if (spotlightPanel == null)
-            {
-                Debug.LogError("[SpotlightManager] SpotlightPanel is not assigned!");
+                Hide(CloseReason.TargetLost);
                 return;
             }
 
-            isActive = true;
-            spotlightPanel.gameObject.SetActive(true);
+            var newRect = currentTarget.GetScreenRect();
+            bool screenChanged = Screen.width != lastScreenW || Screen.height != lastScreenH;
+            bool rectChanged = !ApproxEquals(newRect, lastComputedRect, epsilon: 0.5f);
 
-            // Update spotlight position
-            UpdateSpotlightPosition(shape);
-
-            // Fade in
-            var cg = spotlightPanel.GetComponent<CanvasGroup>();
-            if (cg != null)
+            if (screenChanged || rectChanged)
             {
-                cg.alpha = 0f;
-                Tween.Alpha(cg, 1f, fadeInDuration, useUnscaledTime: true);
-            }
-
-            // Start pulse animation
-            StartPulse();
-        }
-
-        private void UpdateSpotlightPosition(SpotlightShape shape)
-        {
-            if (spotlightPanel == null) return;
-
-            Rect screenRect;
-
-            if (currentUITarget != null)
-            {
-                screenRect = GetUIElementScreenRect(currentUITarget);
-            }
-            else if (currentWorldTarget != null)
-            {
-                screenRect = GetWorldObjectScreenRect(currentWorldTarget);
-            }
-            else
-            {
-                return;
-            }
-
-            // Save current rect for tooltip positioning
-            currentSpotlightRect = screenRect;
-
-            spotlightPanel.SetTarget(screenRect, shape);
-        }
-
-        /// <summary>
-        /// Get screen rect for UI element
-        /// </summary>
-        private Rect GetUIElementScreenRect(RectTransform rectTransform)
-        {
-            Vector3[] corners = new Vector3[4];
-            rectTransform.GetWorldCorners(corners);
-
-            // Convert to screen coordinates
-            Canvas canvas = rectTransform.GetComponentInParent<Canvas>();
-            Camera cam = canvas?.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas?.worldCamera ?? mainCamera;
-
-            Vector2 min = RectTransformUtility.WorldToScreenPoint(cam, corners[0]);
-            Vector2 max = RectTransformUtility.WorldToScreenPoint(cam, corners[2]);
-
-            return new Rect(min.x, min.y, max.x - min.x, max.y - min.y);
-        }
-
-        /// <summary>
-        /// Get screen rect for world object
-        /// </summary>
-        private Rect GetWorldObjectScreenRect(GameObject target)
-        {
-            if (mainCamera == null)
-            {
-                mainCamera = Camera.main;
-            }
-
-            // Try to get bounds from renderer
-            Renderer renderer = target.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                Bounds bounds = renderer.bounds;
-
-                // Get all 8 corners of the bounding box
-                Vector3[] worldCorners = new Vector3[8];
-                worldCorners[0] = new Vector3(bounds.min.x, bounds.min.y, bounds.min.z);
-                worldCorners[1] = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
-                worldCorners[2] = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
-                worldCorners[3] = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z);
-                worldCorners[4] = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
-                worldCorners[5] = new Vector3(bounds.max.x, bounds.min.y, bounds.max.z);
-                worldCorners[6] = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z);
-                worldCorners[7] = new Vector3(bounds.max.x, bounds.max.y, bounds.max.z);
-
-                // Convert to screen space and find min/max
-                Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
-                Vector2 max = new Vector2(float.MinValue, float.MinValue);
-
-                foreach (var corner in worldCorners)
+                ApplyRect(newRect, currentRequest.shape);
+                // 与初次 Show 保持一致：text 被抑制时不更新 tooltip；否则走 ClickButton 智能定位
+                if (!currentRequest.IsTextSuppressed)
                 {
-                    Vector2 screenPoint = mainCamera.WorldToScreenPoint(corner);
-                    min = Vector2.Min(min, screenPoint);
-                    max = Vector2.Max(max, screenPoint);
+                    tooltip.Show(currentRequest.text, newRect, currentRequest.position, currentRequest.customOffset,
+                        isClickButton: currentRequest.mode == InteractionMode.Passthrough);
                 }
-
-                return new Rect(min.x, min.y, max.x - min.x, max.y - min.y);
+                lastComputedRect = newRect;
+                lastScreenW = Screen.width;
+                lastScreenH = Screen.height;
             }
+        }
 
-            // Fallback: use transform position
-            Vector2 center = mainCamera.WorldToScreenPoint(target.transform.position);
-            float size = 100f; // Default size
-            return new Rect(center.x - size / 2, center.y - size / 2, size, size);
+        private static bool ApproxEquals(Rect a, Rect b, float epsilon)
+        {
+            return Mathf.Abs(a.x - b.x) < epsilon
+                && Mathf.Abs(a.y - b.y) < epsilon
+                && Mathf.Abs(a.width - b.width) < epsilon
+                && Mathf.Abs(a.height - b.height) < epsilon;
         }
 
         #endregion
 
-        #region Animation
+        #region Rendering Helpers
 
-        private void StartPulse()
+        private void EnsurePanelCanvasGroup()
         {
-            if (pulseCoroutine != null)
+            if (panelCanvasGroup == null)
             {
-                StopCoroutine(pulseCoroutine);
-            }
-            pulseCoroutine = StartCoroutine(PulseAnimation());
-        }
-
-        private void StopPulse()
-        {
-            if (pulseCoroutine != null)
-            {
-                StopCoroutine(pulseCoroutine);
-                pulseCoroutine = null;
+                panelCanvasGroup = spotlightPanel.GetComponent<CanvasGroup>();
+                if (panelCanvasGroup == null)
+                {
+                    panelCanvasGroup = spotlightPanel.gameObject.AddComponent<CanvasGroup>();
+                }
             }
         }
 
-        private IEnumerator PulseAnimation()
+        private void ApplyRect(Rect rect, SpotlightShape shape)
         {
-            if (spotlightPanel.HighlightBorder == null) yield break;
+            // padding 来自 SpotlightPanel 内部，不在此处重复加
+            spotlightPanel.SetTarget(rect, shape);
+        }
 
+        private void StartPulseAnimation()
+        {
+            if (spotlightPanel == null || spotlightPanel.HighlightBorder == null) return;
+
+            if (pulseSequence.isAlive) pulseSequence.Stop();
             var border = spotlightPanel.HighlightBorder;
+            border.localScale = Vector3.one;
 
-            while (isActive)
-            {
-                // Scale up
-                yield return Tween.Scale(border, Vector3.one * pulseScale, pulseDuration / 2, pulseEase, useUnscaledTime: true)
-                    .ToYieldInstruction();
-
-                // Scale down
-                yield return Tween.Scale(border, Vector3.one, pulseDuration / 2, pulseEase, useUnscaledTime: true)
-                    .ToYieldInstruction();
-            }
+            // 无限循环 yoyo：放大 → 缩回。
+            // 注意：PrimeTween 中 Sequence 控制所有子 tween 的 useUnscaledTime，
+            // 必须把 useUnscaledTime 设到 Sequence.Create 上，子 Tween 不能再传（否则报错）
+            float halfDuration = pulseDuration * 0.5f;
+            pulseSequence = Sequence.Create(cycles: -1, useUnscaledTime: true)
+                .Chain(Tween.Scale(border, Vector3.one * pulseScale, halfDuration, pulseEase))
+                .Chain(Tween.Scale(border, Vector3.one, halfDuration, pulseEase));
         }
 
         #endregion
 
-        #region Target Tracking
+        #region Passthrough Listener Management
 
-        private void StartTracking()
+        private void AttachPassthroughListener(ResolvedTarget resolved)
         {
-            if (trackingCoroutine != null)
+            // 仅 UI 路径（World 物体目标的 Passthrough 暂不支持点击穿透）
+            if (resolved.kind != ResolvedTarget.Kind.UI) return;
+            var rt = resolved.rectTransform;
+            if (rt == null) return;
+
+            // 路径 A：目标是 Button — 仅订阅 onClick，最稳
+            var btn = rt.GetComponent<Button>();
+            if (btn != null)
             {
-                StopCoroutine(trackingCoroutine);
+                subscribedButton = btn;
+                subscribedButtonHandler = OnTargetClicked;
+                btn.onClick.AddListener(subscribedButtonHandler);
+                return;
             }
-            trackingCoroutine = StartCoroutine(TrackTargetCoroutine());
+
+            // 路径 B：非 Button — 临时挂 ClickProxy
+            // 是否需要打开 raycastTarget：尊重 SpotlightTarget.ensureRaycastTarget 配置
+            bool ensureRaycast = true;
+            if (resolved.targetComponent != null)
+            {
+                ensureRaycast = resolved.targetComponent.EnsureRaycastTarget;
+            }
+            if (ensureRaycast)
+            {
+                EnsureRaycastTarget(rt);
+            }
+
+            attachedProxy = rt.gameObject.AddComponent<SpotlightTargetClickProxy>();
+            attachedProxy.onClicked = OnTargetClicked;
         }
 
-        private void StopTracking()
+        private void DetachPassthroughListener()
         {
-            if (trackingCoroutine != null)
+            if (subscribedButton != null && subscribedButtonHandler != null)
             {
-                StopCoroutine(trackingCoroutine);
-                trackingCoroutine = null;
+                subscribedButton.onClick.RemoveListener(subscribedButtonHandler);
+                subscribedButton = null;
+                subscribedButtonHandler = null;
             }
+            if (attachedProxy != null)
+            {
+                Destroy(attachedProxy);
+                attachedProxy = null;
+            }
+            if (didModifyRaycast && raycastModifiedRT != null)
+            {
+                var graphic = raycastModifiedRT.GetComponent<Graphic>();
+                if (graphic != null) graphic.raycastTarget = raycastSavedState;
+            }
+            raycastModifiedRT = null;
+            didModifyRaycast = false;
         }
 
-        private IEnumerator TrackTargetCoroutine()
+        private void EnsureRaycastTarget(RectTransform rt)
         {
-            var wait = new WaitForSecondsRealtime(trackingInterval);
+            var graphic = rt.GetComponent<Graphic>();
+            if (graphic == null) return;
+            if (graphic.raycastTarget) return;   // 已是 true，无需修改
 
-            while (isActive && (currentUITarget != null || currentWorldTarget != null))
-            {
-                UpdateSpotlightPosition(spotlightPanel.CurrentShape);
-                yield return wait;
-            }
+            raycastSavedState = graphic.raycastTarget;
+            raycastModifiedRT = rt;
+            didModifyRaycast = true;
+            graphic.raycastTarget = true;
         }
 
         #endregion
 
-        #region Editor Helpers
+        #region Click Callbacks
 
-#if UNITY_EDITOR
-        [Button("Test UI Spotlight")]
-        private void TestUISpotlight()
+        private void OnTargetClicked()
         {
-            var canvas = FindAnyObjectByType<Canvas>();
-            if (canvas != null)
-            {
-                var firstButton = canvas.GetComponentInChildren<UnityEngine.UI.Button>();
-                if (firstButton != null)
-                {
-                    ShowSpotlight(firstButton.GetComponent<RectTransform>());
-                }
-            }
+            if (targetClickHandled) return;
+            targetClickHandled = true;
+
+            // 先触发用户回调（在 Hide 之前，玩家逻辑可能依赖 currentRequest）
+            currentRequest.onTargetClicked?.Invoke();
+            Hide(CloseReason.TargetClicked);
         }
-#endif
+
+        private void OnBackgroundClicked()
+        {
+            Hide(CloseReason.BackgroundClicked);
+        }
 
         #endregion
     }
@@ -996,15 +447,5 @@ namespace PopLife.DialogueBridge.UI
         Rectangle,
         Circle,
         RoundedRectangle
-    }
-
-    /// <summary>
-    /// Tooltip 模式下继续对话的触发方式
-    /// </summary>
-    public enum ContinueTriggerMode
-    {
-        ClickAnywhere,    // 点击屏幕任意位置
-        ClickSpotlight,   // 点击 spotlight 高亮区域
-        ClickButton       // 点击目标 Button
     }
 }

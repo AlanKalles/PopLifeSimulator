@@ -45,12 +45,18 @@ namespace PopLife.DialogueBridge.UI
         [SerializeField] private Image leftMask;
         [SerializeField] private Image rightMask;
 
+        [Title("Blocking Mode")]
+        [InfoBox("Blocking 模式下覆盖整个屏幕，吞掉所有点击。留空则运行时自动创建。")]
+        [SerializeField] private Image fullscreenBlocker;
+
         #endregion
 
         #region Properties
 
         public RectTransform HighlightBorder => highlightBorder;
         public SpotlightShape CurrentShape { get; private set; } = SpotlightShape.RoundedRectangle;
+        public InteractionMode CurrentMode { get; private set; } = InteractionMode.Passthrough;
+        public SpotlightBlockerInputHandler BlockerHandler { get; private set; }
 
         #endregion
 
@@ -59,6 +65,7 @@ namespace PopLife.DialogueBridge.UI
         private RectTransform rectTransform;
         private Canvas parentCanvas;
         private bool useShaderMask;
+        private SpotlightCutoutRaycastFilter cutoutFilter;
 
         // Shader property IDs
         private static readonly int CutoutRectID = Shader.PropertyToID("_CutoutRect");
@@ -85,6 +92,42 @@ namespace PopLife.DialogueBridge.UI
             {
                 SetupShaderBasedMask();
             }
+
+            // 确保有 fullscreen blocker（Blocking 模式使用），无则运行时创建
+            EnsureFullscreenBlocker();
+        }
+
+        private void EnsureFullscreenBlocker()
+        {
+            if (fullscreenBlocker == null)
+            {
+                var go = new GameObject("FullscreenBlocker");
+                go.transform.SetParent(transform, false);
+
+                var rt = go.AddComponent<RectTransform>();
+                // 拉伸覆盖父容器（spotlight panel 应当撑满整个 canvas）
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.one;
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
+
+                fullscreenBlocker = go.AddComponent<Image>();
+                fullscreenBlocker.color = new Color(0, 0, 0, 0);  // 完全透明（视觉由 mask 提供）
+                fullscreenBlocker.raycastTarget = true;
+            }
+
+            // 确保位于子节点末尾（最上层），覆盖 cutout 视觉之上以拦截 raycast
+            fullscreenBlocker.transform.SetAsLastSibling();
+
+            // 挂上点击监听器
+            BlockerHandler = fullscreenBlocker.GetComponent<SpotlightBlockerInputHandler>();
+            if (BlockerHandler == null)
+            {
+                BlockerHandler = fullscreenBlocker.gameObject.AddComponent<SpotlightBlockerInputHandler>();
+            }
+
+            // 默认 disabled，由 SetInteractionMode 启用
+            fullscreenBlocker.gameObject.SetActive(false);
         }
 
         #endregion
@@ -113,6 +156,15 @@ namespace PopLife.DialogueBridge.UI
                 // Create instance of material to avoid modifying the original
                 maskImage.material = new Material(spotlightMaterial);
                 maskImage.color = overlayColor;
+
+                // Shader 模式下 maskImage 是全屏 Image，raycastTarget=true 会吞掉 cutout 内点击。
+                // 挂 ICanvasRaycastFilter 让 cutout 内 raycast 穿透到目标按钮。
+                cutoutFilter = maskImage.GetComponent<SpotlightCutoutRaycastFilter>();
+                if (cutoutFilter == null)
+                {
+                    cutoutFilter = maskImage.gameObject.AddComponent<SpotlightCutoutRaycastFilter>();
+                }
+                maskImage.raycastTarget = true;   // 必须保持 true，filter 才会被调用
             }
 
             // Hide UI-based masks
@@ -145,6 +197,22 @@ namespace PopLife.DialogueBridge.UI
         #region Public Methods
 
         /// <summary>
+        /// 切换交互模式：
+        /// <list type="bullet">
+        /// <item><see cref="InteractionMode.Passthrough"/>：cutout 区域穿透点击，4 边缘 mask 拦截外部</item>
+        /// <item><see cref="InteractionMode.Blocking"/>：fullscreen blocker 启用，吞掉所有点击；通过 BlockerHandler.onClicked 回调通知</item>
+        /// </list>
+        /// </summary>
+        public void SetInteractionMode(InteractionMode mode)
+        {
+            CurrentMode = mode;
+            if (fullscreenBlocker != null)
+            {
+                fullscreenBlocker.gameObject.SetActive(mode == InteractionMode.Blocking);
+            }
+        }
+
+        /// <summary>
         /// Set the spotlight target area
         /// </summary>
         /// <param name="screenRect">Target rect in screen coordinates</param>
@@ -164,6 +232,8 @@ namespace PopLife.DialogueBridge.UI
             if (useShaderMask)
             {
                 UpdateShaderMask(paddedRect, shape);
+                // 同步更新 raycast filter 的 cutout 区域，让 cutout 内点击穿透到目标
+                if (cutoutFilter != null) cutoutFilter.SetCutout(paddedRect);
             }
             else
             {

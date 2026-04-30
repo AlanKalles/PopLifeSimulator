@@ -1,6 +1,8 @@
 using UnityEngine;
 using PopLife;
 using PopLife.Utility;
+using PopLife.Customers.Data;
+using PopLife.Customers.Spawner;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -382,6 +384,31 @@ namespace PopLife.Manager
                 }
             }
 
+            // 1b. 清除存放在默认 ES3 文件 (SaveFile.es3) 里的若干 key
+            // 这些系统的 Manager 加载发生在 Start 而非 Awake（CalendarManager / RestockManager 都是执行顺序 -50 但 Load 在 Start），
+            // 而 ClearAllSaves 在 Awake 阶段调用，所以删除 key 总是早于 Load，无需额外清内存。
+            // 用 DeleteKey 而非 DeleteFile，避免误删默认 ES3 文件里其它系统的 key。
+            string[] es3Keys = {
+                "CalendarActiveBuffers",
+                "RestockMgr_HasRestockedThisSession",
+                "RestockMgr_ShelvesKnownAtLastRestock"
+            };
+            foreach (var key in es3Keys)
+            {
+                try
+                {
+                    if (ES3.KeyExists(key))
+                    {
+                        ES3.DeleteKey(key);
+                        Debug.Log($"[GameState] 已删除 ES3 key: {key}");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"[GameState] 删除 ES3 key {key} 失败: {e.Message}");
+                }
+            }
+
             // LotteryManager 的 Awake (-40) 早于 GameStateManager (0)，内存已加载旧存档。
             // 必须同时重置内存与磁盘，否则下一次 SaveState 会把旧数据写回。
             if (LotteryManager.Instance != null)
@@ -398,7 +425,35 @@ namespace PopLife.Manager
             // 2. 重置 Customers.json（清除运行时统计数据，保留身份信息）
             ResetCustomersJson();
 
-            // 3. 重置 Dialogue System 数据（Lua变量和Quest状态）
+            // 3. 重置 BlueprintProfile（蓝图解锁状态）
+            // 与 Lottery 同款"内存陷阱"：BlueprintManager.Awake 与 GameStateManager.Awake 都在执行顺序 0，
+            // 若 BlueprintManager 先于 GameStateManager 执行，已经把旧档读进内存，必须同时重置内存与磁盘。
+            if (BlueprintManager.Instance != null)
+            {
+                BlueprintManager.Instance.ClearSaveAndResetState();
+                Debug.Log("[GameState] 已重置 BlueprintProfile 存档与内存状态");
+            }
+            else
+            {
+                BlueprintManager.ClearSaveFile();
+                Debug.Log("[GameState] BlueprintManager 未初始化，仅删除了 BlueprintProfile.json 文件");
+            }
+
+            // 4. 重置 SpawnerProfile（顾客解锁池）
+            // SpawnerProfile 不是单例，由 CustomerSpawner 缓存，需同时清缓存与磁盘
+            SpawnerProfile.ClearSaveFile();
+            var spawner = FindFirstObjectByType<CustomerSpawner>();
+            if (spawner != null)
+            {
+                spawner.InvalidateProfileCache();
+                Debug.Log("[GameState] 已删除 SpawnerProfile.json 并清空 CustomerSpawner 缓存");
+            }
+            else
+            {
+                Debug.Log("[GameState] CustomerSpawner 未在场景中找到，仅删除了 SpawnerProfile.json 文件");
+            }
+
+            // 5. 重置 Dialogue System 数据（Lua变量和Quest状态）
             try
             {
                 PixelCrushers.DialogueSystem.PersistentDataManager.Reset();
@@ -409,7 +464,7 @@ namespace PopLife.Manager
                 Debug.LogWarning($"[GameState] 重置 Dialogue System 失败: {e.Message}");
             }
 
-            // 4. 重置教程状态
+            // 6. 重置教程状态
             ResetTutorialStates();
 
             Debug.Log("[GameState] ========== 存档清除完成 ==========");

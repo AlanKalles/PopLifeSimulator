@@ -26,10 +26,10 @@ namespace PopLife.DialogueBridge.UI
         private TextMeshProUGUI textTMP;
 
         [Title("Layout Settings")]
-        [SerializeField, Tooltip("Distance between tooltip and spotlight")]
+        [SerializeField, Tooltip("Distance between tooltip and spotlight (canvas local units)")]
         private float margin = 20f;
 
-        [SerializeField, Tooltip("Minimum distance from screen edges")]
+        [SerializeField, Tooltip("Minimum distance from canvas edges (canvas local units)")]
         private float screenPadding = 10f;
 
         [SerializeField, Tooltip("Maximum width for the tooltip")]
@@ -138,9 +138,10 @@ namespace PopLife.DialogueBridge.UI
             Canvas.ForceUpdateCanvases();
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 
-            // Calculate and apply position
-            Vector2 tooltipPos = CalculatePosition(spotlightRect, position, customOffset, isClickButton, clickButtonOffset);
-            SetScreenPosition(tooltipPos);
+            // Calculate and apply position in parent canvas local coordinates.
+            Rect localSpotlightRect = ScreenRectToParentLocalRect(spotlightRect);
+            Vector2 tooltipPos = CalculatePosition(localSpotlightRect, position, customOffset, isClickButton, clickButtonOffset);
+            SetLocalPosition(tooltipPos);
 
             // Fade in
             currentTween.Stop();
@@ -225,23 +226,26 @@ namespace PopLife.DialogueBridge.UI
                     break;
 
                 case TooltipPosition.Custom:
+                {
+                    Rect bounds = GetParentLocalBounds();
                     if (customOffset.HasValue)
                     {
                         result = new Vector2(
-                            customOffset.Value.x * Screen.width,
-                            customOffset.Value.y * Screen.height
+                            bounds.xMin + customOffset.Value.x * bounds.width,
+                            bounds.yMin + customOffset.Value.y * bounds.height
                         );
                     }
                     else
                     {
                         // Fallback to center if no offset provided
                         result = new Vector2(
-                            Screen.width / 2 - tooltipSize.x / 2,
-                            Screen.height / 2 - tooltipSize.y / 2
+                            bounds.center.x - tooltipSize.x / 2,
+                            bounds.center.y - tooltipSize.y / 2
                         );
                     }
                     arrowDir = ArrowDirection.None;
                     break;
+                }
 
                 default:
                     result = Vector2.zero;
@@ -251,17 +255,19 @@ namespace PopLife.DialogueBridge.UI
             // Apply arrow direction
             SetArrowDirection(arrowDir);
 
-            // Clamp to screen bounds
-            return ClampToScreen(result, tooltipSize);
+            // Clamp to parent canvas bounds.
+            return ClampToParent(result, tooltipSize);
         }
 
         private (Vector2, ArrowDirection) CalculateAutoPosition(Rect spotlightRect, Vector2 tooltipSize)
         {
+            Rect bounds = GetParentLocalBounds();
+
             // Calculate available space in each direction
-            float spaceLeft = spotlightRect.x;
-            float spaceRight = Screen.width - spotlightRect.xMax;
-            float spaceTop = Screen.height - spotlightRect.yMax;
-            float spaceBottom = spotlightRect.y;
+            float spaceLeft = spotlightRect.xMin - bounds.xMin;
+            float spaceRight = bounds.xMax - spotlightRect.xMax;
+            float spaceTop = bounds.yMax - spotlightRect.yMax;
+            float spaceBottom = spotlightRect.yMin - bounds.yMin;
 
             // Find the direction with the most space
             float maxSpace = Mathf.Max(spaceLeft, spaceRight, spaceTop, spaceBottom);
@@ -306,20 +312,21 @@ namespace PopLife.DialogueBridge.UI
         private (Vector2, ArrowDirection) CalculateClickButtonAutoPosition(
             Rect spotlightRect, Vector2 tooltipSize, Vector2 offset)
         {
-            float screenCenterX = Screen.width / 2f;
-            float screenCenterY = Screen.height / 2f;
+            Rect bounds = GetParentLocalBounds();
+            float canvasCenterX = bounds.center.x;
+            float canvasCenterY = bounds.center.y;
 
             // --- 水平候选 ---
             float hSpace;
             Vector2 hPos;
             ArrowDirection hArrow;
 
-            if (spotlightRect.center.x < screenCenterX)
+            if (spotlightRect.center.x < canvasCenterX)
             {
                 // 按钮在左半屏 → tooltip 放按钮左侧（tooltip.xMax ≤ button.x - offset.x）
-                hSpace = spotlightRect.x - margin - offset.x;
+                hSpace = spotlightRect.xMin - bounds.xMin - margin - offset.x;
                 hPos = new Vector2(
-                    spotlightRect.x - tooltipSize.x - margin - offset.x,
+                    spotlightRect.xMin - tooltipSize.x - margin - offset.x,
                     spotlightRect.center.y - tooltipSize.y / 2
                 );
                 hArrow = ArrowDirection.Right;
@@ -327,7 +334,7 @@ namespace PopLife.DialogueBridge.UI
             else
             {
                 // 按钮在右半屏 → tooltip 放按钮右侧（tooltip.x ≥ button.xMax + offset.x）
-                hSpace = Screen.width - spotlightRect.xMax - margin - offset.x;
+                hSpace = bounds.xMax - spotlightRect.xMax - margin - offset.x;
                 hPos = new Vector2(
                     spotlightRect.xMax + margin + offset.x,
                     spotlightRect.center.y - tooltipSize.y / 2
@@ -340,10 +347,10 @@ namespace PopLife.DialogueBridge.UI
             Vector2 vPos;
             ArrowDirection vArrow;
 
-            if (spotlightRect.center.y > screenCenterY)
+            if (spotlightRect.center.y > canvasCenterY)
             {
                 // 按钮在上半屏 → tooltip 放按钮上方（tooltip.y ≥ button.yMax + offset.y）
-                vSpace = Screen.height - spotlightRect.yMax - margin - offset.y;
+                vSpace = bounds.yMax - spotlightRect.yMax - margin - offset.y;
                 vPos = new Vector2(
                     spotlightRect.center.x - tooltipSize.x / 2,
                     spotlightRect.yMax + margin + offset.y
@@ -353,10 +360,10 @@ namespace PopLife.DialogueBridge.UI
             else
             {
                 // 按钮在下半屏 → tooltip 放按钮下方（tooltip.yMax ≤ button.y - offset.y）
-                vSpace = spotlightRect.y - margin - offset.y;
+                vSpace = spotlightRect.yMin - bounds.yMin - margin - offset.y;
                 vPos = new Vector2(
                     spotlightRect.center.x - tooltipSize.x / 2,
-                    spotlightRect.y - tooltipSize.y - margin - offset.y
+                    spotlightRect.yMin - tooltipSize.y - margin - offset.y
                 );
                 vArrow = ArrowDirection.Up;
             }
@@ -374,16 +381,20 @@ namespace PopLife.DialogueBridge.UI
             if (hFits) return (hPos, hArrow);
             if (vFits) return (vPos, vArrow);
 
-            // 都放不下，选空间较大的方向（ClampToScreen 会保证不超出屏幕）
+            // 都放不下，选空间较大的方向（ClampToParent 会保证不超出父 Canvas）
             return hSpace >= vSpace ? (hPos, hArrow) : (vPos, vArrow);
         }
 
-        private Vector2 ClampToScreen(Vector2 position, Vector2 size)
+        private Vector2 ClampToParent(Vector2 position, Vector2 size)
         {
-            float minX = screenPadding;
-            float maxX = Screen.width - size.x - screenPadding;
-            float minY = screenPadding;
-            float maxY = Screen.height - size.y - screenPadding;
+            Rect bounds = GetParentLocalBounds();
+            float minX = bounds.xMin + screenPadding;
+            float maxX = bounds.xMax - size.x - screenPadding;
+            float minY = bounds.yMin + screenPadding;
+            float maxY = bounds.yMax - size.y - screenPadding;
+
+            if (maxX < minX) maxX = minX;
+            if (maxY < minY) maxY = minY;
 
             return new Vector2(
                 Mathf.Clamp(position.x, minX, maxX),
@@ -411,19 +422,40 @@ namespace PopLife.DialogueBridge.UI
             return size;
         }
 
-        private void SetScreenPosition(Vector2 screenPosition)
+        private Rect ScreenRectToParentLocalRect(Rect screenRect)
+        {
+            if (parentRectTransform == null) return screenRect;
+
+            Vector2 bottomLeftScreen = new Vector2(screenRect.xMin, screenRect.yMin);
+            Vector2 topRightScreen = new Vector2(screenRect.xMax, screenRect.yMax);
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRectTransform, bottomLeftScreen, cachedCamera, out Vector2 bottomLeftLocal);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRectTransform, topRightScreen, cachedCamera, out Vector2 topRightLocal);
+
+            return Rect.MinMaxRect(
+                Mathf.Min(bottomLeftLocal.x, topRightLocal.x),
+                Mathf.Min(bottomLeftLocal.y, topRightLocal.y),
+                Mathf.Max(bottomLeftLocal.x, topRightLocal.x),
+                Mathf.Max(bottomLeftLocal.y, topRightLocal.y));
+        }
+
+        private Rect GetParentLocalBounds()
+        {
+            if (parentRectTransform != null) return parentRectTransform.rect;
+            return new Rect(0f, 0f, Screen.width, Screen.height);
+        }
+
+        private void SetLocalPosition(Vector2 localBottomLeft)
         {
             if (parentRectTransform == null) return;
 
-            // screenPosition 是 tooltip 左下角的屏幕坐标，偏移到 pivot 位置
+            // localBottomLeft 是 tooltip 左下角在父 RectTransform local 坐标中的位置，偏移到 pivot 位置。
             Vector2 tooltipSize = GetTooltipSize();
-            Vector2 pivotScreen = screenPosition + tooltipSize * rectTransform.pivot;
+            Vector2 pivotLocal = localBottomLeft + tooltipSize * rectTransform.pivot;
 
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                parentRectTransform, pivotScreen, cachedCamera, out Vector2 localPoint))
-            {
-                rectTransform.localPosition = localPoint;
-            }
+            rectTransform.localPosition = new Vector3(pivotLocal.x, pivotLocal.y, rectTransform.localPosition.z);
         }
 
         #endregion

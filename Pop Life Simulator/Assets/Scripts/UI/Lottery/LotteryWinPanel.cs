@@ -17,16 +17,22 @@ namespace PopLife.UI
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private GameObject blockingPanel;
 
-        [Header("Content")]
+        [Header("Content (Common - 两态共用)")]
         [SerializeField] private TextMeshProUGUI titleText;
         [SerializeField] private TextMeshProUGUI matchInfoText;
         [SerializeField] private TextMeshProUGUI drawnNumberText;
         [SerializeField] private TextMeshProUGUI yourNumberText;
+
+        [Header("Win State (中奖独有)")]
+        [SerializeField] private GameObject winStateRoot;
         [SerializeField] private TextMeshProUGUI prizeAmountText;
-        [SerializeField] private TextMeshProUGUI prizeNameText;
+
+        [Header("Lose State (未中奖独有)")]
+        [SerializeField] private GameObject loseStateRoot;
 
         [Header("Buttons")]
         [SerializeField] private Button collectButton;
+        [SerializeField] private TextMeshProUGUI collectButtonLabel;
 
         private Action onCollected;
         private CanvasGroup canvasGroup;
@@ -50,34 +56,57 @@ namespace PopLife.UI
         }
 
         /// <summary>
-        /// 显示中奖贺喜面板
+        /// 显示开奖结果面板（中奖/未中奖均会调用）
+        /// prizeAmount > 0 表示中奖，激活 winStateRoot；否则激活 loseStateRoot
         /// </summary>
         public void Show(int[] drawnNumber, int[] playerTicket, int matchCount, int prizeAmount, Action onCollectedCallback)
         {
             onCollected = onCollectedCallback;
+            bool isWin = prizeAmount > 0;
 
-            if (titleText != null)
-                titleText.text = matchCount >= 4 ? "JACKPOT!" : "CONGRATULATIONS!";
-
+            // 通用区块（两态共用）：中奖用感叹号，未中奖用句号
             if (matchInfoText != null)
-                matchInfoText.text = $"You matched {matchCount} out of {drawnNumber.Length} numbers!";
-
-            if (prizeNameText != null && LotteryManager.Instance != null)
-                prizeNameText.text = LotteryManager.Instance.GetConfig().GetPrizeName(matchCount);
-
-            if (prizeAmountText != null)
-                prizeAmountText.text = $"${prizeAmount:N0}";
-
+            {
+                string punctuation = isWin ? "!" : ".";
+                matchInfoText.text = $"You matched {matchCount} out of {drawnNumber.Length} numbers{punctuation}";
+            }
             if (drawnNumberText != null)
                 drawnNumberText.text = BuildColoredNumber(drawnNumber, playerTicket);
             if (yourNumberText != null)
                 yourNumberText.text = BuildColoredNumber(playerTicket, drawnNumber);
 
+            // 标题（共用，根据匹配数差异化文案）
+            if (titleText != null)
+            {
+                titleText.text = matchCount switch
+                {
+                    4 => "Jackpot!!!",
+                    3 => "2nd Prize",
+                    2 => "3rd Prize",
+                    _ => "BETTER LUCK NEXT TIME"
+                };
+            }
+
+            // 状态分支：切换中奖/未中奖独有视觉
+            if (winStateRoot != null) winStateRoot.SetActive(isWin);
+            if (loseStateRoot != null) loseStateRoot.SetActive(!isWin);
+
+            // 中奖独有内容：奖金额度
+            if (isWin && prizeAmountText != null)
+                prizeAmountText.text = $"${prizeAmount:N0}";
+
+            // 按钮文案：中奖 "Collect" / 未中奖 "Continue"
+            if (collectButtonLabel != null)
+                collectButtonLabel.text = isWin ? "Collect" : "Continue";
+
+            // 显示
             SetCanvasGroupVisible(true);
             if (panelRoot != null) panelRoot.SetActive(true);
             if (blockingPanel != null) blockingPanel.SetActive(true);
 
-            AudioManager.Instance?.PlaySound(AudioKeys.LOTTERY_WIN);
+            // 音效：仅中奖时播放
+            if (isWin)
+                AudioManager.Instance?.PlaySound(AudioKeys.LOTTERY_WIN);
         }
 
         /// <summary>

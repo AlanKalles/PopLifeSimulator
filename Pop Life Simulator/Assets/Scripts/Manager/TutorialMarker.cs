@@ -56,12 +56,13 @@ namespace PopLife.Manager
         BottomButton,
         AlreadyKnowShelfSelectionPanel,
         PointOverShelf,
-        Alanbot,
+        CallAlanBot = 29,             // 解锁 AlanBot 本体 + AlanBot Button
+        CallRestock = 32,             // 解锁 Restock Button
 
         // Day-based
-        Day5Auditor1stQuestDDL,       // 第5天开始时触发（审计员首个任务DDL）
+        Day5Auditor1stQuestDDL = 30,  // 第5天开始时触发（审计员首个任务DDL）
 
         // Lottery
-        LotteryUnlocked,              // 第3天解锁彩票系统
+        LotteryUnlocked = 31,         // 第3天解锁彩票系统
     }
 }

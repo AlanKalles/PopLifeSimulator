@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3992bcc563d458741a863415dc67327b, type: 3}
-  m_Name: 2_AlreadyKnowShelfSelectionPanel
+  m_Name: _Auditor1stMissionDDL
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.DialogueAction
-  activationMarker: 27
+  activationMarker: 30
   executionOrder: 100
-  conversationToStart: Midori/2
+  conversationToStart: Auditor/2
   conversationDelay: 0
   luaScript: 
   description: 

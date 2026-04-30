@@ -31,6 +31,11 @@ namespace PopLife.UI
         private System.Action<ShelfArchetype> onSelectCallback;
         private ShelfTooltip tooltip;
 
+        // 标记当前 item 是否处于悬停状态。OnPointerExit 不一定能在所有路径上触发
+        // （按钮 mid-hover 变 disabled、GameObject 被 SetActive(false)、被销毁等），
+        // 这里作为兜底依据让 OnDisable / OnDestroy 知道是否需要主动收起 tooltip
+        private bool isHovered = false;
+
         private void Awake()
         {
             ApplyIconImageSettings();
@@ -109,6 +114,8 @@ namespace PopLife.UI
             // 已放置的货架按钮不显示高亮和tooltip
             if (button != null && !button.interactable) return;
 
+            isHovered = true;
+
             // Enable outline highlight
             if (outline != null)
             {
@@ -141,7 +148,10 @@ namespace PopLife.UI
         /// </summary>
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (button != null && !button.interactable) return;
+            // 注意：这里不再检查 button.interactable。
+            // 如果在悬停过程中按钮变成 disabled（例如刚放置完该 shelf 触发 RefreshItemDisplays
+            // → SetPlacementDisabled(true)），早退会导致 tooltip 永远拿不到 Hide 信号。
+            isHovered = false;
 
             // Disable outline highlight
             if (outline != null)
@@ -209,12 +219,26 @@ namespace PopLife.UI
         }
 
         /// <summary>
+        /// item 被 SetActive(false) 关闭（例如 ApplyFilters 过滤掉，使被悬停的 item
+        /// 不会再触发 OnPointerExit）时主动收起 tooltip
+        /// </summary>
+        private void OnDisable()
+        {
+            if (!isHovered) return;
+
+            isHovered = false;
+            if (outline != null) outline.enabled = false;
+            if (tooltip != null) tooltip.HideImmediate();
+        }
+
+        /// <summary>
         /// Cleanup when destroyed
         /// </summary>
         private void OnDestroy()
         {
-            // Hide tooltip if this item is destroyed while hovered
-            if (tooltip != null)
+            // 仅当本 item 处于悬停状态时才收起 tooltip，避免 ClearItemList 时
+            // 对每个被销毁的 item 都重复调用一次 HideImmediate
+            if (isHovered && tooltip != null)
             {
                 tooltip.HideImmediate();
             }

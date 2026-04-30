@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PixelCrushers.DialogueSystem.SequencerCommands;
@@ -6,35 +7,26 @@ using PopLife.DialogueBridge.UI;
 namespace PopLife.DialogueBridge.Sequencer
 {
     /// <summary>
-    /// Sequencer command to hide the spotlight tooltip
+    /// [DEPRECATED] 新系统中 spotlight 与 tooltip 不可分离，关闭 tooltip = 关闭 spotlight。
+    /// 转发到 SpotlightOff() 行为。
     ///
-    /// Usage in Dialogue Editor Sequence field:
-    ///   SpotlightTooltipOff()
-    ///
-    /// Note: This will also restore the dialogue UI if it was hidden by SpotlightTooltip
+    /// 设计师应改用 SpotlightOff()。
     /// </summary>
+    [Obsolete("使用 SpotlightOff() 替代")]
     public class SequencerCommandSpotlightTooltipOff : SequencerCommand
     {
         public void Awake()
         {
+            if (DialogueDebug.logWarnings)
+            {
+                Debug.LogWarning("Sequencer: SpotlightTooltipOff() [DEPRECATED] - 请改用 SpotlightOff()");
+            }
+
             if (SpotlightManager.Instance != null)
             {
-                SpotlightManager.Instance.HideTooltip();
-
-                if (DialogueDebug.logInfo)
-                {
-                    Debug.Log("Sequencer: SpotlightTooltipOff()");
-                }
-            }
-            else
-            {
-                if (DialogueDebug.logWarnings)
-                {
-                    Debug.LogWarning("Sequencer: SpotlightTooltipOff() - SpotlightManager.Instance is null");
-                }
+                SpotlightManager.Instance.Hide(CloseReason.Manual);
             }
 
-            // Command completes immediately
             Stop();
         }
     }

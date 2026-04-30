@@ -6,13 +6,10 @@ using PopLife.DialogueBridge.UI;
 namespace PopLife.DialogueBridge.Sequencer
 {
     /// <summary>
-    /// Sequencer command to hide the spotlight
+    /// 关闭 spotlight + tooltip。在新系统中仍是合法、推荐的命令（语义不变）。
     ///
-    /// Usage in Dialogue Editor Sequence field:
-    ///   SpotlightOff()
-    ///
-    /// Example:
-    ///   Spotlight(BuildButton); Delay(2); SpotlightOff()
+    /// 用法：SpotlightOff()
+    /// 等同于 Lua: HideSpotlight()
     /// </summary>
     public class SequencerCommandSpotlightOff : SequencerCommand
     {
@@ -20,7 +17,7 @@ namespace PopLife.DialogueBridge.Sequencer
         {
             if (SpotlightManager.Instance != null)
             {
-                SpotlightManager.Instance.HideSpotlight();
+                SpotlightManager.Instance.Hide(CloseReason.Manual);
 
                 if (DialogueDebug.logInfo)
                 {

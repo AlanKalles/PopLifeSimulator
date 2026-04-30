@@ -7,10 +7,9 @@ using PopLife.Utility;
 namespace PopLife.Customers.Data
 {
     /// <summary>
-    /// 运行时可编辑的解锁customer配置
-    /// 存储位置:
-    /// - 编辑器: Assets/StreamingAssets/SpawnerProfile.json
-    /// - 运行时: persistentDataPath/SpawnerProfile.json
+    /// 解锁顾客配置
+    /// - 模板（只读）：Assets/StreamingAssets/SpawnerProfile.json，由 SpawnerProfileEditor 维护，进 git
+    /// - 运行时存档：persistentDataPath/SpawnerProfile.json，首次读取自动从模板复制
     /// </summary>
     [Serializable]
     public class SpawnerProfile
@@ -132,6 +131,29 @@ namespace PopLife.Customers.Data
         {
             unlockedCustomerIds.Clear();
             Debug.Log("[SpawnerProfile] Cleared all unlocked customers");
+        }
+
+        /// <summary>
+        /// 删除运行时存档（GameStateManager 重置流程使用）。
+        /// 始终删除 persistentDataPath/SpawnerProfile.json；下次 Load 会自动从 StreamingAssets 模板复制。
+        /// 不会触碰 StreamingAssets 的设计模板。
+        /// 注意：调用方需同时清空 CustomerSpawner 等模块的缓存，否则下次 Save 会把旧数据写回。
+        /// </summary>
+        public static void ClearSaveFile()
+        {
+            try
+            {
+                string path = SavePathManager.GetWritePath("SpawnerProfile.json");
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                    Debug.Log($"[SpawnerProfile] 已删除 SpawnerProfile.json: {path}");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[SpawnerProfile] 删除 SpawnerProfile.json 失败: {e.Message}");
+            }
         }
     }
 }

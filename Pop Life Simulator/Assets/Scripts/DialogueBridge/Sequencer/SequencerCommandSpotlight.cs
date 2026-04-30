@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PixelCrushers.DialogueSystem.SequencerCommands;
@@ -6,20 +7,16 @@ using PopLife.DialogueBridge.UI;
 namespace PopLife.DialogueBridge.Sequencer
 {
     /// <summary>
-    /// Sequencer command to show spotlight on a UI element
+    /// [DEPRECATED] 已被 ShowSpotlight(targetId, text, [position], [shape], [mode]) 替代。
+    /// 第一轮兼容期保留为 thin wrapper，转发到新 SpotlightManager.Show() 接口。
     ///
-    /// Usage in Dialogue Editor Sequence field:
-    ///   Spotlight(targetName)
-    ///   Spotlight(targetName, shape)
+    /// 兼容期 wrapper 用 NullTextSentinel ("NULL")，仅显示 spotlight 不显示 tooltip；
+    /// 提醒设计师迁移到新 ShowSpotlight 命令并补充实际 tooltip 文本。
     ///
-    /// Parameters:
-    ///   targetName: Name of the UI GameObject to highlight
-    ///   shape (optional): Rectangle, Circle, or RoundedRectangle (default: RoundedRectangle)
-    ///
-    /// Examples:
-    ///   Spotlight(BuildButton)
-    ///   Spotlight(MoneyDisplay, Circle)
+    /// 旧用法：Spotlight(BuildButton) / Spotlight(BuildButton, Circle)
+    /// 新用法：ShowSpotlight(BuildButton, "Click here to build", Right)
     /// </summary>
+    [Obsolete("使用 ShowSpotlight(targetId, text, position, shape, mode) 替代。tooltip 文本必填。")]
     public class SequencerCommandSpotlight : SequencerCommand
     {
         public void Awake()
@@ -37,29 +34,30 @@ namespace PopLife.DialogueBridge.Sequencer
                 return;
             }
 
-            // Parse shape
             SpotlightShape shape = SpotlightShape.RoundedRectangle;
             if (!string.IsNullOrEmpty(shapeStr))
             {
-                System.Enum.TryParse(shapeStr, true, out shape);
+                Enum.TryParse(shapeStr, true, out shape);
             }
 
-            // Show spotlight
+            if (DialogueDebug.logWarnings)
+            {
+                Debug.LogWarning(
+                    $"Sequencer: Spotlight({targetName}) [DEPRECATED] - 请迁移到 ShowSpotlight(\"{targetName}\", \"<你的提示文字>\", Right)");
+            }
+
             if (SpotlightManager.Instance != null)
             {
-                SpotlightManager.Instance.ShowSpotlightByName(targetName, shape);
-
-                if (DialogueDebug.logInfo)
+                SpotlightManager.Instance.Show(new SpotlightRequest
                 {
-                    Debug.Log($"Sequencer: Spotlight({targetName}, {shape})");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Sequencer: Spotlight() - SpotlightManager.Instance is null");
+                    target = SpotlightTargetSpec.ById(targetName),
+                    text = SpotlightRequest.NullTextSentinel,  // 旧命令无 tooltip 文本，先仅显示高亮
+                    shape = shape,
+                    position = TooltipPosition.Auto,
+                    mode = InteractionMode.Passthrough,
+                });
             }
 
-            // Command completes immediately (spotlight remains visible)
             Stop();
         }
     }

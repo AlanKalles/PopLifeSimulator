@@ -7,10 +7,9 @@ using PopLife.Utility;
 namespace PopLife.Data
 {
     /// <summary>
-    /// 运行时可编辑的建筑蓝图解锁配置
-    /// 存储位置:
-    /// - 编辑器: Assets/StreamingAssets/BlueprintProfile.json
-    /// - 运行时: persistentDataPath/BlueprintProfile.json
+    /// 建筑蓝图解锁配置
+    /// - 模板（只读）：Assets/StreamingAssets/BlueprintProfile.json，由 BlueprintProfileEditor / PopLifeDataBrowserWindow 维护，进 git
+    /// - 运行时存档：persistentDataPath/BlueprintProfile.json，首次读取自动从模板复制
     /// </summary>
     [Serializable]
     public class BlueprintProfile

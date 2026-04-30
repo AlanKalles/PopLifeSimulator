@@ -17,8 +17,8 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   sortOrder: 100
-  activationMarker: 28
-  closingMarker: 25
+  activationMarker: -1
+  closingMarker: -1
   pages:
   - screenshot: {fileID: 21300000, guid: 69b9ee361d556e845b1bc389040c84ef, type: 3}
     title: Blue Frame

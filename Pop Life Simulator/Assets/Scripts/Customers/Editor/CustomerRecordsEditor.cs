@@ -40,10 +40,6 @@ namespace PopLife.Customers.Editor
                 : Path.Combine(Application.persistentDataPath, "Customers.json");
         }
 
-        // 保持旧的静态方法以兼容性（默认使用 StreamingAssets）
-        private static string DefaultReadPath => SavePathManager.GetReadPath("Customers.json");
-        private static string DefaultWritePath => SavePathManager.GetWritePath("Customers.json");
-
         private CustomerRecord editingRecord;
         private SerializedObject serializedRecord;
 

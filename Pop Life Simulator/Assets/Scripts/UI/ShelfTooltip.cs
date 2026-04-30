@@ -91,6 +91,24 @@ namespace PopLife.UI
 #endif
 
         /// <summary>
+        /// 防御性兜底：若 GameObject 被父级 SetActive(false) 关闭
+        /// （绕过了 Hide / HideImmediate），停止协程并把 alpha 归零，
+        /// 避免下次 SetActive(true) 时残留旧的 alpha 或 fade 状态
+        /// </summary>
+        private void OnDisable()
+        {
+            if (fadeCoroutine != null)
+            {
+                StopCoroutine(fadeCoroutine);
+                fadeCoroutine = null;
+            }
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 0f;
+            }
+        }
+
+        /// <summary>
         /// Show tooltip with shelf information
         /// </summary>
         public void Show(ShelfArchetype shelf, Vector3 position)

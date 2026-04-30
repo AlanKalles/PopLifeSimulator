@@ -20,21 +20,38 @@ Assets/Scripts/DialogueBridge/
 ├── CustomerClickHandler.cs      # 玩家点击顾客检测
 ├── DialogueTriggerHelper.cs     # 静态工具类
 ├── UI/
-│   ├── SpotlightManager.cs      # Spotlight 管理器
-│   ├── SpotlightPanel.cs        # Spotlight 遮罩面板
-│   ├── SpotlightTooltip.cs      # Spotlight 提示框组件
-│   ├── TooltipPosition.cs       # 提示框位置枚举
-│   └── UIFreezeManager.cs       # UI 面板冻结管理器
+│   ├── SpotlightManager.cs              # Spotlight + Tooltip 统一控制器（零 DS 依赖）
+│   ├── SpotlightPanel.cs                # Spotlight 遮罩面板（mask + raycast filter + blocker）
+│   ├── SpotlightTooltip.cs              # Spotlight 提示框（参数注入，独立定位算法）
+│   ├── SpotlightRequest.cs              # spotlight 显示请求结构 + NullTextSentinel
+│   ├── SpotlightCutoutRaycastFilter.cs  # shader 模式下 cutout 区域 raycast 穿透
+│   ├── SpotlightBlockerInputHandler.cs  # Blocking 模式全屏点击监听
+│   ├── DialogueUIVisibility.cs          # 对话 UI 视觉隐藏/恢复（CanvasGroup 三件套）
+│   ├── TooltipPosition.cs               # 提示框位置枚举
+│   └── UIFreezeManager.cs               # 游戏 UI 面板冻结管理器
+├── Targeting/
+│   ├── SpotlightTarget.cs            # 注册组件（spotlightId/priority/ensureRaycastTarget）
+│   ├── SpotlightTargetRegistry.cs    # 多实例安全的字符串 ID 注册表
+│   ├── SpotlightTargetSpec.cs        # 不可变规格 + ResolvedTarget
+│   ├── SpotlightTargetClickProxy.cs  # Passthrough 非 Button 目标的临时点击监听
+│   └── SpotlightTypes.cs             # InteractionMode + CloseReason 枚举
 └── Sequencer/
-    ├── SequencerCommandSpotlight.cs           # Spotlight(uiName)
-    ├── SequencerCommandSpotlightWorld.cs      # SpotlightWorld(objectName)
-    ├── SequencerCommandSpotlightRect.cs       # SpotlightRect(x,y,w,h) 像素坐标
-    ├── SequencerCommandSpotlightNormalized.cs # SpotlightNormalized(x,y,w,h) 百分比坐标
-    ├── SequencerCommandSpotlightOff.cs        # SpotlightOff()
-    ├── SequencerCommandSpotlightTooltip.cs    # SpotlightTooltip(position) 显示提示框
-    ├── SequencerCommandSpotlightTooltipOff.cs # SpotlightTooltipOff() 隐藏提示框
-    ├── SequencerCommandFreezeUI.cs            # FreezeUI(panelName) 冻结UI面板
-    ├── SequencerCommandUnfreezeUI.cs          # UnfreezeUI(panelName) 解冻UI面板
+    ├── SpotlightSequencerHelpers.cs                       # 共享参数解析 + TryShow
+    ├── SequencerCommandShowSpotlight.cs                   # ShowSpotlight(...) fire-and-forget
+    ├── SequencerCommandShowSpotlightAndWait.cs            # ShowSpotlightAndWait(...) 等关闭再 Stop
+    ├── SequencerCommandSpotlightOff.cs                    # SpotlightOff() 关闭 spotlight
+    ├── SequencerCommandHideDialogueUI.cs                  # HideDialogueUI()
+    ├── SequencerCommandShowDialogueUI.cs                  # ShowDialogueUI()
+    ├── SequencerCommandShowSpotlightAndContinue.cs        # 场景 1 合成（隐藏UI+spotlight+恢复UI+OnContinue）
+    ├── SequencerCommandShowSpotlightThenConversation.cs   # 场景 2 合成（spotlight+QueueConversation）
+    ├── SequencerCommandSpotlight.cs           # [Obsolete] 旧 Spotlight(uiName)
+    ├── SequencerCommandSpotlightWorld.cs      # [Obsolete] 旧 SpotlightWorld(objectName)
+    ├── SequencerCommandSpotlightRect.cs       # [Obsolete] 旧 SpotlightRect(x,y,w,h)
+    ├── SequencerCommandSpotlightNormalized.cs # [Obsolete] 旧 SpotlightNormalized(x,y,w,h)
+    ├── SequencerCommandSpotlightTooltip.cs    # [Obsolete] 旧 SpotlightTooltip(position)
+    ├── SequencerCommandSpotlightTooltipOff.cs # [Obsolete] 旧 SpotlightTooltipOff()
+    ├── SequencerCommandFreezeUI.cs            # FreezeUI(panelName) 冻结游戏 UI 面板
+    ├── SequencerCommandUnfreezeUI.cs          # UnfreezeUI(panelName) 解冻游戏 UI 面板
     ├── SequencerCommandGiveReward.cs          # GiveReward(type, value)
     └── SequencerCommandRaiseMarker.cs         # RaiseMarker(markerName)
 ```
@@ -79,6 +96,14 @@ Variable["Hour"] = GetCurrentHour()      -- 获取当前小时
 ```lua
 PauseGame()   -- 暂停游戏
 ResumeGame()  -- 恢复游戏
+```
+
+**Spotlight & Dialogue UI 函数（详见第 4 节）：**
+```lua
+ShowSpotlight("BuildButton", "Click here", "Right", "RoundedRectangle", "passthrough")
+HideSpotlight()
+HideDialogueUI()  -- CanvasGroup 视觉隐藏对话 UI（保存原状态）
+ShowDialogueUI()  -- 恢复对话 UI 到 Hide 之前的状态
 ```
 
 ### 设置
@@ -156,265 +181,190 @@ Variable["GamePhase"] == "BuildPhase"
 
 ---
 
-## 4. Spotlight 系统
+## 4. Spotlight 系统（重制版）
 
 ### 功能
-创建聚焦效果，高亮显示 UI 元素或场景物体。
+高亮 UI 元素或场景物体，配套显示 tooltip 文本。**Spotlight 与 Tooltip 一体化**——一次调用必同时存在。
 
-### 支持的目标类型
-- **UI 元素**：任何带有 RectTransform 的 UI 对象
-- **场景物体**：任何带有 Renderer 的 2D/3D 对象
+### 核心特性
+- **零 Dialogue System 耦合**：核心代码独立，对话仅通过 Lua/Sequencer 桥接调用
+- **多种目标类型**：注册表 ID、RectTransform 直传、World GameObject、屏幕像素 Rect、normalized Rect
+- **两种交互模式**：Passthrough（必须点目标） / Blocking（点屏幕任意位置关闭）
+- **分辨率自适应**：rect diff 检测，屏幕变化自动跟随
+- **目标失效自动 Hide**：注册表移除或 GameObject 销毁触发 `CloseReason.TargetLost`
 
 ### 支持的形状
 - `Rectangle` - 矩形
 - `Circle` - 圆形
 - `RoundedRectangle` - 圆角矩形（默认）
 
-### 在 Dialogue Editor 中使用 Sequencer 命令
+### 交互模式
 
-#### 按 GameObject 名称聚焦
-```
-// 显示 UI 元素聚焦
-Spotlight(BuildButton)
-Spotlight(MoneyDisplay, Circle)
+| 模式 | 行为 | 适用 |
+|------|------|------|
+| `Passthrough`（默认）| 高亮区域可点击穿透到目标按钮；外部 mask 拦截但**不**关闭 spotlight | 强制教学（"必须点这个按钮"）|
+| `Blocking` | 屏幕任意位置点击都关闭；下方 UI 完全无法交互 | 概念展示（"看一眼就行"）|
 
-// 显示场景物体聚焦
-SpotlightWorld(Shelf_Lingerie)
-SpotlightWorld(Cashier, RoundedRectangle)
-```
+### 目标识别
 
-#### 按屏幕坐标聚焦（像素）
-```
-// SpotlightRect(x, y, width, height[, shape])
-// 坐标系：左下角为 (0,0)
-SpotlightRect(100, 200, 300, 150)
-SpotlightRect(100, 200, 300, 150, Circle)
-```
+**注册表路径**（推荐）：在需要被字符串 ID 调用的 prefab/GameObject 挂 `SpotlightTarget` 组件，填 `spotlightId`。运行时 `OnEnable` 自动注册，多实例同 ID 按 `priority` 选择。
 
-#### 按屏幕百分比聚焦（推荐，适配不同分辨率）
-```
-// SpotlightNormalized(x, y, width, height[, shape])
-// 坐标范围 0-1：x(0=左,1=右), y(0=底,1=顶)
-SpotlightNormalized(0.4, 0.4, 0.2, 0.2)              // 屏幕中心
-SpotlightNormalized(0, 0.85, 0.2, 0.1)               // 左上角
-SpotlightNormalized(0.35, 0.35, 0.3, 0.3, Circle)    // 中心圆形
-```
+**直传路径**（C# 代码）：直接传 RectTransform / GameObject / Rect，绕过注册表。
 
-**常用位置参考（SpotlightNormalized）：**
-| 位置 | 参数 |
+**智能字符串解析**（Sequencer/Lua）：
+- `"BuildButton"` 或 `"id:BuildButton"` → 注册表查找
+- `"rect:100,200,300,150"` → 屏幕像素坐标
+- `"norm:0.4,0.4,0.2,0.2"` → normalized 坐标 (0..1)
+
+### Lua 函数（4 个）
+
+| 函数 | 含义 |
 |------|------|
-| 屏幕中心 | `0.4, 0.4, 0.2, 0.2` |
-| 左上角 | `0, 0.85, 0.2, 0.1` |
-| 右上角 | `0.8, 0.85, 0.2, 0.1` |
-| 左下角 | `0, 0.05, 0.2, 0.1` |
-| 右下角 | `0.8, 0.05, 0.2, 0.1` |
+| `ShowSpotlight(targetId, text, position, shape, mode)` | 异步显示 spotlight，不等待关闭 |
+| `HideSpotlight()` | 关闭 spotlight |
+| `HideDialogueUI()` | 视觉隐藏 Dialogue UI（CanvasGroup alpha=0 + raycast off）|
+| `ShowDialogueUI()` | 恢复 Dialogue UI 到 Hide 之前的原状态 |
 
-#### 隐藏聚焦
+**用法示例**：
+```lua
+ShowSpotlight("BuildButton", "Click here to build", "Right", "RoundedRectangle", "passthrough")
+ShowSpotlight("rect:760,440,400,200", "Center area", "Auto", "Circle", "blocking")
+ShowSpotlight("BuildButton", "NULL", "Right", "RoundedRectangle", "passthrough")  -- 仅高亮无 tooltip
+HideSpotlight()
+```
+
+text 取值：
+- 普通字符串 → 显示 tooltip
+- `"NULL"` → 仅 spotlight 不显示 tooltip
+- 空字符串 `""` → 报 warning 不显示
+
+### Sequencer 命令（7 个）
+
+#### 基础 spotlight（3 个）
+
+```
+ShowSpotlight(target, text, position, shape, mode)
+```
+显示后**立即结束**（fire-and-forget），对话照常推进。Spotlight 异步存在直到玩家关闭或调 `SpotlightOff()`。
+
+```
+required ShowSpotlightAndWait(target, text, position, shape, mode); Continue()
+```
+显示后**等 spotlight 关闭才结束**。配合 `Continue()` 让对话节点关闭瞬间自动推进。节点保留 dialogue UI 可见。
+
 ```
 SpotlightOff()
 ```
+关闭 spotlight。等同 Lua `HideSpotlight()`。
 
-#### 组合使用
-```
-Spotlight(BuildButton); Delay(3); SpotlightOff()
-SpotlightNormalized(0.4, 0.4, 0.2, 0.2); Delay(2); SpotlightOff()
-```
+#### Dialogue UI 控制（2 个）
 
-### 在代码中使用
+```
+HideDialogueUI()
+ShowDialogueUI()
+```
+独立细粒度命令。**注意 Sequencer 命令是并行执行**，不能简单写
+`HideDialogueUI(); ShowSpotlightAndWait(...); ShowDialogueUI()` —— 三个会同时启动，
+ShowDialogueUI 不会等 spotlight 关。如需此时序请用合成命令 `ShowSpotlightAndContinue`。
+
+#### 合成教程命令（2 个，**自包含完整时序**）
+
+```
+ShowSpotlightAndContinue(target, text, position, shape, mode)
+```
+**场景 1**：隐藏 Dialogue UI → 显示 spotlight → 等关闭 → 推进对话 → 恢复 Dialogue UI。
+
+**关键时序**（避免视觉闪烁）：spotlight 关闭后**先**调 OnContinue 推进，**等一帧**让 dialogue system 切到下一节点并渲染 subtitle，**再**恢复 dialogue UI alpha。否则 alpha 恢复时 dialogue UI 仍显示旧节点状态，玩家会看到一帧旧内容闪现。
+
+⚠️ **设计师必读**：
+- **不要追加 `Continue()`** — 命令内部已自包含 OnContinue 调用
+- **节点必须无 auto-continue** — 否则节点 subtitle 渲染完会自动推进，spotlight 等关闭逻辑失效
+- **节点应是空节点**（DialogueText 留空）—— 命令进入即 Hide UI，节点对话文本会被吞。推荐用法：`node2 → [空节点放此命令] → node3`
+
+```
+ShowSpotlightThenConversation(target, text, position, shape, mode, nextConversation)
+```
+**场景 2**：spotlight 异步显示 → 玩家正常 Continue 推进当前对话至结束 → spotlight 关闭后 `QueueConversation(nextConv)` 启动新对话。
+
+边界保障：玩家先关 spotlight 再点 Continue → `QueueConversation` 协程等当前对话结束后才启动新对话（不会抢启动）。
+
+### 推荐用法速查
+
+| 教程场景 | 推荐 Sequence 写法 |
+|---------|-------------------|
+| 节点中显示 spotlight、对话照常推进 | `ShowSpotlight(target, text, position)` |
+| 节点中等 spotlight 关再推进（保留对话 UI 可见） | `required ShowSpotlightAndWait(target, text, position); Continue()` |
+| 节点中隐藏对话 UI + spotlight + 关后恢复 + 推进 | `ShowSpotlightAndContinue(target, text, position)` *（不要外接 Continue()）* |
+| 最后 node：spotlight 关后启动新对话 | `ShowSpotlightThenConversation(target, text, position, shape, mode, NextConversation)` |
+| 关闭 spotlight | `SpotlightOff()` |
+| 独立隐藏/恢复对话 UI（高级用法） | `HideDialogueUI()` / `ShowDialogueUI()` |
+
+### 常用位置（normalized 坐标参考）
+
+| 位置 | 参数 |
+|------|------|
+| 屏幕中心 | `norm:0.4,0.4,0.2,0.2` |
+| 左上角 | `norm:0,0.85,0.2,0.1` |
+| 右上角 | `norm:0.8,0.85,0.2,0.1` |
+| 左下角 | `norm:0,0.05,0.2,0.1` |
+| 右下角 | `norm:0.8,0.05,0.2,0.1` |
+
+### 在代码中使用（C#）
 
 ```csharp
-// 显示 UI 聚焦
-SpotlightManager.Instance.ShowSpotlight(myRectTransform, SpotlightShape.RoundedRectangle);
+using PopLife.DialogueBridge.UI;
 
-// 显示场景物体聚焦
-SpotlightManager.Instance.ShowSpotlightOnWorldObject(myGameObject);
+// 直传 RectTransform
+SpotlightManager.Instance.Show(myRectTransform, "Click here", TooltipPosition.Right);
 
-// 按名称显示
-SpotlightManager.Instance.ShowSpotlightByName("BuildButton");
-SpotlightManager.Instance.ShowSpotlightOnWorldObjectByName("Shelf_Lingerie");
+// 注册表 ID
+SpotlightManager.Instance.Show("BuildButton", "Click to build", TooltipPosition.Auto);
 
-// 按像素坐标显示
-SpotlightManager.Instance.ShowSpotlightRect(100, 200, 300, 150);
-SpotlightManager.Instance.ShowSpotlightRect(new Rect(100, 200, 300, 150), SpotlightShape.Circle);
+// SpotlightRequest 完整控制
+SpotlightManager.Instance.Show(new SpotlightRequest {
+    target = SpotlightTargetSpec.ById("BuildButton"),
+    text = "Click to build",
+    position = TooltipPosition.Right,
+    shape = SpotlightShape.RoundedRectangle,
+    mode = InteractionMode.Passthrough,
+    onTargetClicked = () => Debug.Log("Player clicked!"),
+    onClosed = reason => Debug.Log($"Closed: {reason}"),
+});
 
-// 隐藏
-SpotlightManager.Instance.HideSpotlight();
+// 关闭
+SpotlightManager.Instance.Hide();
 ```
 
-### 设置
-1. 创建 Spotlight UI 预制体：
-   - Canvas (Screen Space - Overlay)
-     - SpotlightPanel (带 SpotlightPanel 组件)
-       - MaskImage (全屏遮罩)
-       - HighlightBorder (高亮边框)
-2. 在 `DialogueBridgeManager` 上添加 `SpotlightManager` 组件
-3. 将 SpotlightPanel 引用拖到 Inspector
+### 设置（场景搭建）
+
+1. **SpotlightManager 物体**：在场景里有 SpotlightManager 单例，Inspector 配置：
+   - SpotlightPanel 引用
+   - SpotlightTooltip 引用
+   - Spotlight Canvas（Screen Space Overlay，sortingOrder ≥ 1000）
+   - 动画参数（fadeIn/Out duration、pulse scale 等）
+2. **SpotlightTarget 组件**：在需要被 ID 调用的 UI prefab 上挂载
+   - 填 `spotlightId`
+   - 多实例同 ID 时设 `priority`
+   - 非 Button 目标可勾选 `ensureRaycastTarget`
 
 ---
 
-## 4.1 SpotlightTooltip - 提示框系统
+## 4.1 兼容期 [Obsolete] 命令（迁移期保留）
 
-### 功能
-在 Spotlight 高亮区域旁边显示提示文字，自动读取当前对话节点的 Dialogue Text。
+### 旧 → 新对话节点 Sequence 迁移
 
-### 特性
-- **位置控制**：支持 Auto/Left/Right/Top/Bottom/Custom 六种定位方式
-- **自动隐藏原对话框**：显示 Tooltip 时自动隐藏 Dialogue System 的对话框 UI
-- **自动清理**：
-  - 节点切换时自动关闭 Tooltip（需重新调用 SpotlightTooltip 显示）
-  - 对话结束时自动关闭 Tooltip 和 Spotlight
-- **样式自定义**：支持自定义背景图片和箭头图片
+| 旧写法 | 新写法 |
+|--------|--------|
+| `Spotlight(BuildButton)` | `ShowSpotlight(BuildButton, "你的提示文字", Right)` |
+| `Spotlight(BuildButton); SpotlightTooltip(Right, ClickButton)` | `required ShowSpotlightAndWait(BuildButton, "提示", Right); Continue()` |
+| `SpotlightWorld(Cashier)` | `ShowSpotlight(Cashier, "提示", Right)`（先在 Cashier 物体挂 SpotlightTarget）|
+| `SpotlightRect(100, 200, 300, 150)` | `ShowSpotlight("rect:100,200,300,150", "提示", Auto)` |
+| `SpotlightNormalized(0.4, 0.4, 0.2, 0.2)` | `ShowSpotlight("norm:0.4,0.4,0.2,0.2", "提示", Auto)` |
+| `SpotlightTooltipOff()` | `SpotlightOff()` |
+| `SpotlightOff()` | 不变 |
 
-### 位置说明
-
-| 位置 | 说明 |
-|------|------|
-| `Auto` | 自动选择空间最大的方向（推荐） |
-| `Left` | Spotlight 左侧，箭头指向右 |
-| `Right` | Spotlight 右侧，箭头指向左 |
-| `Top` | Spotlight 上方，箭头指向下 |
-| `Bottom` | Spotlight 下方，箭头指向上 |
-| `Custom` | 自定义屏幕位置（归一化坐标 0-1），不显示箭头 |
-
-### 在 Dialogue Editor 中使用 Sequencer 命令
-
-**参数格式：**
-```
-SpotlightTooltip(position[, triggerMode][, customX, customY])
-```
-
-| 参数 | 值 | 说明 |
-|------|-----|------|
-| `position` | `Auto` `Left` `Right` `Top` `Bottom` `Custom` | Tooltip 位置 |
-| `triggerMode` | `ClickAnywhere` `ClickSpotlight` `ClickButton` | 继续对话的触发方式（可选，默认 `ClickAnywhere`） |
-| `customX, customY` | 0-1 浮点数 | 仅 `Custom` 位置时使用 |
-
-**基本用法：**
-```
-// 先显示 Spotlight，再显示 Tooltip（默认点击任意位置继续）
-Spotlight(BuildButton); SpotlightTooltip(Right)
-SpotlightNormalized(0.4, 0.4, 0.2, 0.2); SpotlightTooltip(Auto)
-
-// 指定位置
-SpotlightTooltip(Left)     // 左侧
-SpotlightTooltip(Right)    // 右侧
-SpotlightTooltip(Top)      // 上方
-SpotlightTooltip(Bottom)   // 下方
-SpotlightTooltip(Auto)     // 自动选择
-
-// 自定义位置（归一化坐标）
-SpotlightTooltip(Custom, 0.7, 0.5)  // 屏幕 70% 宽度, 50% 高度处
-```
-
-**指定继续对话的触发方式（ContinueTriggerMode）：**
-```
-// ClickAnywhere - 点击屏幕任意位置继续（默认）
-Spotlight(BuildButton); SpotlightTooltip(Right)
-Spotlight(BuildButton); SpotlightTooltip(Right, ClickAnywhere)
-
-// ClickSpotlight - 仅点击高亮区域才继续
-Spotlight(MoneyDisplay); SpotlightTooltip(Right, ClickSpotlight)
-
-// ClickButton - 仅点击目标 Button 才继续（目标须为带 Button 组件的 UI）
-Spotlight(BuildButton); SpotlightTooltip(Right, ClickButton)
-
-// Custom 位置 + 触发方式
-SpotlightTooltip(Custom, ClickSpotlight, 0.7, 0.5)
-```
-
-**手动关闭 / 完整示例：**
-```
-// 手动关闭 Tooltip
-SpotlightTooltipOff()
-
-// 完整示例：显示→等待→关闭
-Spotlight(ShelfButton); SpotlightTooltip(Right); Delay(3); SpotlightTooltipOff(); SpotlightOff()
-```
-
-### ContinueTriggerMode 详细说明
-
-Tooltip 显示时会隐藏原 Dialogue UI（含 Continue Button），需要替代方式让玩家继续对话：
-
-| 模式 | 行为 | 适用场景 |
-|------|------|---------|
-| `ClickAnywhere` | 点击屏幕任意位置继续对话 | 通用提示，快速跳过 |
-| `ClickSpotlight` | 仅点击 Spotlight 高亮区域内才继续 | 引导玩家注意特定区域 |
-| `ClickButton` | 仅点击目标 Button 才继续 | 要求玩家点击指定按钮（如"开始建造"按钮） |
-
-**ClickButton 注意事项：**
-- Spotlight 目标必须是通过 `Spotlight(uiName)` 指定的 UI 元素
-- 该 UI 元素必须有 `UnityEngine.UI.Button` 组件
-- 如果目标无 Button 组件，会在 Debug 模式下输出警告
-
-### 自动清理机制
-
-| 场景 | Tooltip 行为 | 对话框 UI 行为 | Spotlight 行为 | Button 订阅 |
-|------|-------------|---------------|---------------|------------|
-| 手动 `SpotlightTooltipOff()` | 隐藏 | 恢复显示 | 保持不变 | 自动清理 |
-| **节点切换** | **自动隐藏** | **自动恢复** | **自动隐藏** | 自动清理 |
-| 对话结束 (End) | 自动隐藏 | 自然消失 | 自动隐藏 | 自动清理 |
-
-**典型使用流程：**
-```
-节点1: Spotlight(A); SpotlightTooltip(Right)  → 显示高亮A + Tooltip
-       [用户点击继续]
-节点2: (Tooltip 自动关闭, 对话框恢复)           → 正常显示对话框
-       Spotlight(B); SpotlightTooltip(Left)   → 显示高亮B + 新Tooltip
-       [用户点击继续]
-节点3: SpotlightOff()                          → 关闭所有效果
-```
-
-### 在代码中使用
-
-```csharp
-// 显示 Tooltip（从当前对话节点读取文本，默认 ClickAnywhere）
-SpotlightManager.Instance.ShowTooltipFromDialogue(TooltipPosition.Right);
-
-// 指定触发方式
-SpotlightManager.Instance.ShowTooltipFromDialogue(
-    TooltipPosition.Right, null, ContinueTriggerMode.ClickSpotlight);
-
-// ClickButton 模式（需先调用 ShowSpotlight 指定 UI 目标）
-SpotlightManager.Instance.ShowSpotlightByName("BuildButton");
-SpotlightManager.Instance.ShowTooltipFromDialogue(
-    TooltipPosition.Right, null, ContinueTriggerMode.ClickButton);
-
-// 自定义位置 + 触发方式
-SpotlightManager.Instance.ShowTooltipFromDialogue(
-    TooltipPosition.Custom, new Vector2(0.7f, 0.5f), ContinueTriggerMode.ClickAnywhere);
-
-// 显示 Tooltip（自定义文本）
-SpotlightManager.Instance.ShowTooltip("This is a hint!", TooltipPosition.Auto);
-
-// 隐藏 Tooltip
-SpotlightManager.Instance.HideTooltip();
-
-// 检查状态
-bool isActive = SpotlightManager.Instance.IsTooltipActive;
-```
-
-### 设置
-
-1. 创建 SpotlightTooltip UI 预制体：
-   ```
-   SpotlightTooltip (RectTransform + CanvasGroup)
-   ├── Background (Image)        ← 自定义 9-slice 背景图
-   ├── Arrow (Image)             ← 箭头图片（可选）
-   └── Content
-       └── Text (TextMeshProUGUI)
-   ```
-
-2. 添加 `SpotlightTooltip` 组件到预制体
-
-3. 在 `SpotlightManager` 的 Inspector 中：
-   - 将 SpotlightTooltip 预制体拖到 `Tooltip` 字段
-   - 配置 `Auto Hide Dialogue UI`（默认开启）
-   - 配置 `Auto Close On Node Change`（默认开启）
-
-4. 配置 SpotlightTooltip 组件：
-   - 设置背景图片（建议 9-slice 格式）
-   - 设置箭头图片
-   - 调整间距（margin）和最大宽度（maxWidth）
+### 兼容期行为
+旧命令仍可执行，但会输出 `[DEPRECATED]` warning。占位 tooltip 文本为 `"NULL"`（不显示 tooltip 仅高亮），提示设计师补全实际文本。资产全部迁移完成后将删除 obsolete wrapper。
 
 ---
 

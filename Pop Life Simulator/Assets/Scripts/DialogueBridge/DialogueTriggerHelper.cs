@@ -126,60 +126,72 @@ namespace PopLife.DialogueBridge
         #region Spotlight + Dialogue
 
         /// <summary>
-        /// Show spotlight on a UI element and start a conversation
+        /// [DEPRECATED] 旧 helper：spotlight 自动隐藏 DialogueUI 的状态机已移除。
+        /// 新系统中 spotlight 与对话 UI 解耦，无需此种"配套调用"。
+        ///
+        /// 推荐做法：在对话节点 Sequence 字段写
+        /// <c>required ShowSpotlight(targetId, "提示文字", Right); Continue()</c>
+        /// 让 spotlight 与对话节点同步推进。
         /// </summary>
+        [System.Obsolete("使用对话节点 Sequence 字段中的 ShowSpotlight(...) 命令替代")]
         public static void ShowSpotlightAndTalk(string conversationTitle, RectTransform spotlightTarget,
             SpotlightShape shape = SpotlightShape.RoundedRectangle)
         {
             if (SpotlightManager.Instance != null && spotlightTarget != null)
             {
-                SpotlightManager.Instance.ShowSpotlight(spotlightTarget, shape);
+                SpotlightManager.Instance.Show(spotlightTarget, SpotlightRequest.NullTextSentinel,
+                    TooltipPosition.Auto, shape, InteractionMode.Passthrough);
             }
-
             StartConversation(conversationTitle);
         }
 
-        /// <summary>
-        /// Show spotlight on a world object and start a conversation
-        /// </summary>
+        [System.Obsolete("使用对话节点 Sequence 字段中的 ShowSpotlight(...) 命令替代")]
         public static void ShowSpotlightWorldAndTalk(string conversationTitle, GameObject spotlightTarget,
             SpotlightShape shape = SpotlightShape.RoundedRectangle)
         {
             if (SpotlightManager.Instance != null && spotlightTarget != null)
             {
-                SpotlightManager.Instance.ShowSpotlightOnWorldObject(spotlightTarget, shape);
+                SpotlightManager.Instance.Show(new SpotlightRequest
+                {
+                    target = SpotlightTargetSpec.ForWorld(spotlightTarget),
+                    text = SpotlightRequest.NullTextSentinel, shape = shape,
+                    position = TooltipPosition.Auto, mode = InteractionMode.Passthrough,
+                });
             }
-
             StartConversation(conversationTitle);
         }
 
-        /// <summary>
-        /// Show spotlight by name and start a conversation
-        /// </summary>
+        [System.Obsolete("使用对话节点 Sequence 字段中的 ShowSpotlight(...) 命令替代")]
         public static void ShowSpotlightByNameAndTalk(string conversationTitle, string targetName,
             SpotlightShape shape = SpotlightShape.RoundedRectangle, bool isWorldObject = false)
         {
-            if (SpotlightManager.Instance != null)
+            if (SpotlightManager.Instance != null && !string.IsNullOrEmpty(targetName))
             {
                 if (isWorldObject)
                 {
-                    SpotlightManager.Instance.ShowSpotlightOnWorldObjectByName(targetName, shape);
+                    var go = GameObject.Find(targetName);
+                    if (go != null)
+                    {
+                        SpotlightManager.Instance.Show(new SpotlightRequest
+                        {
+                            target = SpotlightTargetSpec.ForWorld(go),
+                            text = SpotlightRequest.NullTextSentinel, shape = shape,
+                            position = TooltipPosition.Auto, mode = InteractionMode.Passthrough,
+                        });
+                    }
                 }
                 else
                 {
-                    SpotlightManager.Instance.ShowSpotlightByName(targetName, shape);
+                    SpotlightManager.Instance.Show(targetName, SpotlightRequest.NullTextSentinel,
+                        TooltipPosition.Auto, shape, InteractionMode.Passthrough);
                 }
             }
-
             StartConversation(conversationTitle);
         }
 
-        /// <summary>
-        /// Hide spotlight
-        /// </summary>
         public static void HideSpotlight()
         {
-            SpotlightManager.Instance?.HideSpotlight();
+            SpotlightManager.Instance?.Hide(CloseReason.Manual);
         }
 
         #endregion

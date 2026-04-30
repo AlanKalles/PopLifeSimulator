@@ -173,6 +173,8 @@ namespace PopLife
             ES3.Save(ES3_KEY_KNOWN_IDS, new List<string>(shelvesKnownAtLastRestock));
         }
 
+        // 必须保留在 Start，不要移到 Awake：GameStateManager.ClearAllSaves 在 Awake 阶段删除 ES3 key，
+        // 依赖此函数总是晚于 ClearAllSaves 才执行。如果改成在 Awake 加载，clearSaveOnStart 时会读到陈旧 key。
         private void LoadFromES3()
         {
             if (ES3.KeyExists(ES3_KEY_RESTOCKED))

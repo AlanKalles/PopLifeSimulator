@@ -27,8 +27,10 @@ MonoBehaviour:
     targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: -1
-  completionMarker: 28
+  completionMarker: 27
   triggerMarkerAfterToast: 1
   title: Build Your First Shelf
   description: Your store is empty, try to build the first shelf in your store!
