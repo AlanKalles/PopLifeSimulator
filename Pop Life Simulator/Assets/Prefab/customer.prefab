@@ -888,6 +888,7 @@ MonoBehaviour:
   assignedInteraction: {fileID: 0}
   interactionUsedToday: 0
   interactionBubbleActive: 0
+  interactionClickAllowed: 0
   interactionDialogueStarted: 0
   policies: {fileID: 0}
   ncBlackboard: {fileID: 3176050706865594096}
@@ -1304,7 +1305,6 @@ MonoBehaviour:
   canTriggerDialogue: 1
   dialogueCooldown: 10
   defaultConversation: Customer/Generic
-  traitConversationPrefix: Customer/Trait_
   debugMode: 0
 --- !u!114 &2758768933392045805
 MonoBehaviour:

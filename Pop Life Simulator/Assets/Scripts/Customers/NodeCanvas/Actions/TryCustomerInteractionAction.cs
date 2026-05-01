@@ -180,9 +180,6 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 adapter.interactionBubbleActive = false;
                 adapter.interactionClickAllowed = false;
 
-                // 初始化对话结果变量（兜底：对话被 ESC 关闭时默认 false）
-                DialogueLua.SetVariable("InteractionCorrect", false);
-
                 // ── 进入 Phase: WaitForDialogue ──
                 currentPhase = Phase.WaitForDialogue;
 

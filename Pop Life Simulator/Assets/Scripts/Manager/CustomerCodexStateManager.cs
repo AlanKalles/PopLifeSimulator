@@ -45,6 +45,17 @@ namespace PopLife
             LoadState();
         }
 
+        // 兜底：如果场景里忘了挂载这个管理器，AfterSceneLoad 自动建一个，避免顾客图鉴 Mark All As Seen 静默失败
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void EnsureInstanceExists()
+        {
+            if (Instance != null) return;
+
+            var go = new GameObject(nameof(CustomerCodexStateManager));
+            go.AddComponent<CustomerCodexStateManager>();
+            Debug.LogWarning($"[{nameof(CustomerCodexStateManager)}] 场景未挂载该组件，已在运行时自动创建。建议手动添加到场景以便持久化配置。");
+        }
+
         #region ES3 持久化
 
         private void LoadState()
@@ -110,18 +121,25 @@ namespace PopLife
             var profile = SpawnerProfile.Load();
             if (profile == null) return;
 
-            bool changed = false;
+            // 收集本次新增的 ID，事件需要在 SaveState 后逐个广播
+            List<string> newlySeenIds = null;
 
             foreach (var id in profile.unlockedCustomerIds)
             {
                 if (seenCustomerIds.Add(id))
-                    changed = true;
+                {
+                    newlySeenIds ??= new List<string>();
+                    newlySeenIds.Add(id);
+                }
             }
 
-            if (changed)
-            {
-                SaveState();
-            }
+            if (newlySeenIds == null) return;
+
+            SaveState();
+
+            // 广播事件，与 MarkCustomerAsSeen 行为一致，方便外部订阅者刷新
+            foreach (var id in newlySeenIds)
+                OnCustomerSeen?.Invoke(id);
         }
 
         /// <summary>

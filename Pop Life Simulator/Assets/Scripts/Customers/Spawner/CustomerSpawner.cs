@@ -197,6 +197,12 @@ namespace PopLife.Customers.Spawner
                 return;
             }
 
+            if (IsReservedDay1TutorialCustomerId(customerId))
+            {
+                Debug.LogWarning($"[CustomerSpawner] Day 1 tutorial customer '{customerId}' is reserved for the forced 3rd spawn and cannot be spawned manually today.");
+                return;
+            }
+
             if (!repositoryLoaded)
             {
                 Debug.LogWarning("CustomerSpawner: 正在加载顾客数据，请稍后...");
@@ -335,6 +341,11 @@ namespace PopLife.Customers.Spawner
             customerPool.Clear();
             foreach (var customerId in profile.unlockedCustomerIds)
             {
+                if (IsReservedDay1TutorialCustomerId(customerId))
+                {
+                    continue;
+                }
+
                 var record = repository.Get(customerId);
                 if (record != null)
                 {
@@ -456,6 +467,7 @@ namespace PopLife.Customers.Spawner
 
             // 7. 过滤掉已在场的顾客
             eligibleCustomers.RemoveAll(wc => activeCustomerIds.Contains(wc.record.customerId));
+            eligibleCustomers.RemoveAll(wc => IsReservedDay1TutorialCustomerId(wc.record.customerId));
 
             // 8. 如果启用了防止同日重复访问，过滤掉今天已访问过的顾客
             if (preventSameDayRevisit)
@@ -575,6 +587,12 @@ namespace PopLife.Customers.Spawner
 
             Debug.Log($"[CustomerSpawner] Day 1 tutorial forcing auto-spawn #{upcomingSpawnNumber}: {customerId}");
             return true;
+        }
+
+        private bool IsReservedDay1TutorialCustomerId(string customerId)
+        {
+            return Day1InteractionTutorialController.Instance != null
+                && Day1InteractionTutorialController.Instance.IsDay1ForcedSpawnCustomerIdReserved(customerId);
         }
 
         /// <summary>

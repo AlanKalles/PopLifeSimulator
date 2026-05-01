@@ -46,6 +46,17 @@ namespace PopLife
             LoadState();
         }
 
+        // 兜底：若场景未挂载，AfterSceneLoad 自动建一个，避免 Mark All As Seen / 蓝图解锁事件静默失效
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void EnsureInstanceExists()
+        {
+            if (Instance != null) return;
+
+            var go = new GameObject(nameof(CodexStateManager));
+            go.AddComponent<CodexStateManager>();
+            Debug.LogWarning($"[{nameof(CodexStateManager)}] 场景未挂载该组件，已在运行时自动创建。建议手动添加到场景以便持久化配置。");
+        }
+
         private void OnEnable()
         {
             // 订阅蓝图解锁事件（即使UI关闭也要监听）
@@ -135,18 +146,26 @@ namespace PopLife
             if (BlueprintManager.Instance == null) return;
 
             var unlockedIds = BlueprintManager.Instance.GetUnlockedShelfIds();
-            bool changed = false;
+
+            // 收集本次新增的 ID，事件需要在 SaveState 后逐个广播
+            List<string> newlySeenIds = null;
 
             foreach (var id in unlockedIds)
             {
                 if (seenShelfIds.Add(id))
-                    changed = true;
+                {
+                    newlySeenIds ??= new List<string>();
+                    newlySeenIds.Add(id);
+                }
             }
 
-            if (changed)
-            {
-                SaveState();
-            }
+            if (newlySeenIds == null) return;
+
+            SaveState();
+
+            // 广播事件，与 MarkShelfAsSeen 行为一致，方便外部订阅者刷新
+            foreach (var id in newlySeenIds)
+                OnShelfSeen?.Invoke(id);
         }
 
         /// <summary>

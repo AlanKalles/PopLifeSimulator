@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using PopLife.Data;
 
@@ -9,6 +10,9 @@ namespace PopLife
     public class BGMController : MonoBehaviour
     {
         public static BGMController Instance;
+
+        public event Action<float> OnDayBGMTransitionStarted;
+        public event Action<float> OnNightBGMTransitionStarted;
 
         [Header("BGM Keys")]
         [SerializeField] private string dayBGMKey = AudioKeys.BGM_SHOP;
@@ -85,6 +89,7 @@ namespace PopLife
             isNightBGM = true;
             hasTransitionedToNight = true;
             AudioManager.Instance?.CrossfadeToMusic(nightBGMKey, normalCrossfadeDuration);
+            OnNightBGMTransitionStarted?.Invoke(normalCrossfadeDuration);
             Debug.Log($"[BGMController] 切换到夜晚BGM，过渡时长: {normalCrossfadeDuration}s");
         }
 
@@ -96,6 +101,7 @@ namespace PopLife
             isNightBGM = false;
             hasTransitionedToNight = false;
             AudioManager.Instance?.CrossfadeToMusic(dayBGMKey, quickCrossfadeDuration);
+            OnDayBGMTransitionStarted?.Invoke(quickCrossfadeDuration);
             Debug.Log($"[BGMController] 切换到白天BGM，过渡时长: {quickCrossfadeDuration}s");
         }
 
@@ -116,6 +122,8 @@ namespace PopLife
             {
                 AudioManager.Instance?.CrossfadeToMusic(dayBGMKey, normalCrossfadeDuration);
             }
+
+            OnDayBGMTransitionStarted?.Invoke(instant ? 0f : normalCrossfadeDuration);
         }
 
         /// <summary>

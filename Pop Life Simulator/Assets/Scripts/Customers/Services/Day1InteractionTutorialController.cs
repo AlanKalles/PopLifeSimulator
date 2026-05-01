@@ -155,6 +155,27 @@ namespace PopLife.Customers.Services
                 && !HasCompletedFirstRequest();
         }
 
+        public bool IsDay1ForcedSpawnCustomerIdReserved(string customerId)
+        {
+            if (string.IsNullOrWhiteSpace(customerId)
+                || string.IsNullOrWhiteSpace(forcedDay1ThirdSpawnCustomerId)
+                || DayLoopManager.Instance == null
+                || DayLoopManager.Instance.currentDay != 1)
+            {
+                return false;
+            }
+
+            if (customerId != forcedDay1ThirdSpawnCustomerId.Trim())
+            {
+                return false;
+            }
+
+            // Day 1 before the tutorial completes: reserve this ID for spawn #3 only.
+            // After completion: keep it reserved for the rest of Day 1 so it cannot
+            // appear again through the normal pool or manual spawn.
+            return !HasCompletedFirstRequest() || state.HasForcedCustomer;
+        }
+
         public void CompleteTutorial(Day1InteractionTutorialResult result)
         {
             state.MarkCompleted();

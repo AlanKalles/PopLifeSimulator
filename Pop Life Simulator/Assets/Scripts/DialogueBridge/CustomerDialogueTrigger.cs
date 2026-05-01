@@ -1,5 +1,6 @@
 using UnityEngine;
 using PixelCrushers.DialogueSystem;
+using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 using Sirenix.OdinInspector;
 
@@ -103,6 +104,9 @@ namespace PopLife.DialogueBridge
                 {
                     SyncCustomerDataToLua();
                     DialogueLua.SetVariable("InteractionCorrect", false);
+                    // Display Name 必须在 StartConversation 之前覆盖，
+                    // 否则 ConversationModel 会用 actor 数据库默认名缓存 CharacterInfo.Name
+                    ApplyCustomerNameOverride();
                     lastDialogueTime = Time.time;
                     adapter.interactionDialogueStarted = true;
                     DialogueManager.StartConversation(conv, null, transform);
@@ -150,6 +154,10 @@ namespace PopLife.DialogueBridge
             // Update cooldown
             lastDialogueTime = Time.time;
 
+            // Display Name 必须在 StartConversation 之前覆盖，
+            // 否则 ConversationModel 会用 actor 数据库默认名缓存 CharacterInfo.Name
+            ApplyCustomerNameOverride();
+
             // Start conversation with this customer as the conversant
             DialogueManager.StartConversation(conversationTitle, null, transform);
 
@@ -172,12 +180,13 @@ namespace PopLife.DialogueBridge
 
         /// <summary>
         /// Pixel Crushers 在对话启动时自动发送此 Unity message 到 conversant 的 GameObject 及其 children。
-        /// 此时 conversation 已 active，可以安全调用 SetActorPortraitSprite。
-        /// Display Name 也在这里覆盖，保证第一个 subtitle 显示时已生效。
+        /// 此时 conversation 已 active，可以安全调用 SetActorPortraitSprite 推到 UI。
+        /// Display Name 不在这里改：CharacterInfo.Name 在 ConversationModel 构建时就已被缓存
+        /// （CharacterInfo.cs:107），太晚了。Display Name 的覆盖发生在 StartConversation 之前。
         /// </summary>
         private void OnConversationStart(Transform actor)
         {
-            ApplyCustomerIdentityToDialogue();
+            ApplyCustomerPortraitOverride();
         }
 
         #endregion
@@ -185,39 +194,39 @@ namespace PopLife.DialogueBridge
         #region Private Methods
 
         /// <summary>
-        /// 把当前顾客的 Display Name 和 portrait 动态覆盖到 "Customer" actor 上。
-        /// 所有顾客共享 "Customer" actor，每次对话开始时覆盖一次。
-        /// Portrait 按 Resources/CustomerPortraits/{customerId}_{name} 加载；
-        /// 找不到时传 null，由 Standard Dialogue UI 按配置隐藏 portrait 格。
+        /// 把当前顾客的 Display Name 写到 "Customer" actor 的 Lua 字段上。
+        /// 必须在 DialogueManager.StartConversation 之前调用，否则 ConversationModel
+        /// 会缓存 CharacterInfo.Name 为数据库默认 "Customer"，后续修改不会生效。
         /// </summary>
-        private void ApplyCustomerIdentityToDialogue()
+        private void ApplyCustomerNameOverride()
         {
             if (customerRecord == null) return;
 
-            // 1. Display Name — Pixel Crushers UI 优先读 Display Name，fallback 到 actor 主键
             string displayName = string.IsNullOrEmpty(customerRecord.name)
                 ? "Customer"
                 : customerRecord.name;
             DialogueLua.SetActorField("Customer", "Display Name", displayName);
 
-            // 2. Portrait — 按 {customerId}_{name} 约定从 Resources 加载
-            Sprite portrait = null;
-            if (!string.IsNullOrEmpty(customerRecord.customerId) && !string.IsNullOrEmpty(customerRecord.name))
-            {
-                string portraitPath = $"CustomerPortraits/{customerRecord.customerId}_{customerRecord.name}";
-                portrait = Resources.Load<Sprite>(portraitPath);
+            if (debugMode)
+                Debug.Log($"[CustomerDialogueTrigger] Display Name 覆盖为: {displayName}");
+        }
 
-                if (portrait == null && debugMode)
-                {
-                    Debug.Log($"[CustomerDialogueTrigger] Portrait 未找到: {portraitPath}");
-                }
-            }
+        /// <summary>
+        /// 把当前顾客的 portrait 推到对话 UI。需要 conversation 已 active，所以从 OnConversationStart 调用。
+        /// 复用 CustomerPortraitLoader：文件夹索引 + 4 字符 ID 匹配 + archetype.portrait fallback。
+        /// </summary>
+        private void ApplyCustomerPortraitOverride()
+        {
+            if (customerRecord == null || DialogueManager.instance == null) return;
+
+            CustomerArchetype archetype = customerAgent != null ? customerAgent.cachedArchetype : null;
+            Sprite portrait = CustomerPortraitLoader.LoadPortrait(customerRecord.customerId, archetype);
+
+            if (portrait == null && debugMode)
+                Debug.Log($"[CustomerDialogueTrigger] Portrait 未找到: {customerRecord.customerId}");
 
             // 传 null 时由 Standard Dialogue UI 的 portrait Image 处理（通常配置成自动隐藏）
-            if (DialogueManager.instance != null)
-            {
-                DialogueManager.instance.SetActorPortraitSprite("Customer", portrait);
-            }
+            DialogueManager.instance.SetActorPortraitSprite("Customer", portrait);
         }
 
         /// <summary>

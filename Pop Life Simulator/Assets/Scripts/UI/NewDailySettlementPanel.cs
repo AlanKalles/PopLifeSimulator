@@ -688,14 +688,18 @@ namespace PopLife.UI
             // 隐藏面板
             gameObject.SetActive(false);
 
-            // 切换到白天BGM
-            BGMController.Instance?.TransitionToDayBGM();
-
             // 重新加载蓝图配置
             BlueprintManager.Instance?.ReloadProfile();
 
             // 通知 DayLoopManager 进入下一天的建造阶段
-            DayLoopManager.Instance?.AdvanceToNextDay();
+            var dayLoopManager = DayLoopManager.Instance;
+            dayLoopManager?.AdvanceToNextDay();
+
+            // 成功进入下一天建造阶段后，再切换回白天BGM并触发背景回白天
+            if (dayLoopManager != null && dayLoopManager.currentPhase == GamePhase.BuildPhase)
+            {
+                BGMController.Instance?.TransitionToDayBGM();
+            }
         }
 
         #endregion

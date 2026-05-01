@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a8b8c7fdf24dbfa45804776cb23a231d
+guid: 7d10c8288ffbfbc49b33815cd95fd335
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7010658339461232777
-    second: ai companion bg_0
+      213: -7176643470337538610
+    second: Small UI BOX_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -52,7 +52,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 13, y: 12, z: 12, w: 12}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ai companion bg_0
+      name: Small UI BOX_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 1139
-        height: 786
+        height: 463
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 77788c2626325be90800000000000000
-      internalID: -7010658339461232777
+      spriteID: ec587e689c0776c90800000000000000
+      internalID: -7176643470337538610
       vertices: []
       indices: 
       edges: []
@@ -139,7 +139,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ai companion bg_0: -7010658339461232777
+      Small UI BOX_0: -7176643470337538610
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
