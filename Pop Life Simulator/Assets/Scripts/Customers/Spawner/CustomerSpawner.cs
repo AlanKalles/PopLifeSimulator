@@ -428,6 +428,7 @@ namespace PopLife.Customers.Spawner
             {
                 if (SpawnCustomer(forcedCustomer, true))
                 {
+                    Day1InteractionTutorialController.Instance?.MarkForcedDay1CustomerSpawned(forcedCustomer.customerId);
                     spawnedTodayCount++;
                 }
 

@@ -1,7 +1,7 @@
 namespace PopLife.Customers.Services
 {
     /// <summary>
-    /// Day 1 专用 interaction 的纯状态：只锁定当天第三个进店顾客。
+    /// Day 1 专用 interaction 的纯状态：锁定当天第三个自动生成顾客。
     /// </summary>
     public class Day1InteractionTutorialState
     {
@@ -13,6 +13,15 @@ namespace PopLife.Customers.Services
         public bool IsCompleted { get; private set; }
         public bool HasForcedCustomer => !string.IsNullOrEmpty(forcedCustomerId);
         public string ForcedCustomerId => forcedCustomerId;
+
+        public bool RecordForcedCustomerSpawned(string customerId, int day, bool alreadyCompleted)
+        {
+            if (day != 1 || alreadyCompleted || IsCompleted || string.IsNullOrEmpty(customerId) || HasForcedCustomer)
+                return false;
+
+            forcedCustomerId = customerId;
+            return true;
+        }
 
         public bool RecordCustomerEntered(string customerId, int day, bool alreadyCompleted)
         {

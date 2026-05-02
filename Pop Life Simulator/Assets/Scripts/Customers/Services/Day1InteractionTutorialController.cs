@@ -9,7 +9,7 @@ using UnityEngine;
 namespace PopLife.Customers.Services
 {
     /// <summary>
-    /// Day 1 专用顾客问答教程：只在第三个进店顾客身上强制触发一次。
+    /// Day 1 专用顾客问答教程：只在第三个自动生成顾客身上强制触发一次。
     /// </summary>
     public class Day1InteractionTutorialController : MonoBehaviour
     {
@@ -83,11 +83,18 @@ namespace PopLife.Customers.Services
             if (agent == null) return;
             if (agent.bb != null && agent.bb.visitPurpose != CustomerVisitPurpose.PlayerStore) return;
 
-            int day = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 0;
-            bool forced = state.RecordCustomerEntered(agent.customerID, day, HasCompletedFirstRequest());
-            if (forced)
+            if (state.IsForcedCustomer(agent.customerID))
             {
-                Debug.Log($"[Day1InteractionTutorial] 第三个进店顾客已锁定: {agent.customerID}");
+                Debug.Log($"[Day1InteractionTutorial] 教程顾客已进入 PlayerStore: {agent.customerID}");
+            }
+            else if (string.IsNullOrWhiteSpace(forcedDay1ThirdSpawnCustomerId))
+            {
+                int day = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 0;
+                bool forced = state.RecordCustomerEntered(agent.customerID, day, HasCompletedFirstRequest());
+                if (forced)
+                {
+                    Debug.Log($"[Day1InteractionTutorial] 第三个进店顾客已锁定: {agent.customerID}");
+                }
             }
 
             RefreshDebugState();
@@ -155,6 +162,19 @@ namespace PopLife.Customers.Services
                 && DayLoopManager.Instance != null
                 && DayLoopManager.Instance.currentDay == 1
                 && !HasCompletedFirstRequest();
+        }
+
+        public bool MarkForcedDay1CustomerSpawned(string customerId)
+        {
+            int day = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 0;
+            bool marked = state.RecordForcedCustomerSpawned(customerId, day, HasCompletedFirstRequest());
+            if (marked)
+            {
+                Debug.Log($"[Day1InteractionTutorial] 第三个自动生成顾客已锁定: {customerId}");
+            }
+
+            RefreshDebugState();
+            return marked;
         }
 
         public bool IsDay1ForcedSpawnCustomerIdReserved(string customerId)
