@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PopLife.Customers.Data;
 using PopLife.Data;
+using PopLife.Runtime;
 
 
 namespace PopLife.Customers.Runtime
@@ -46,6 +47,13 @@ namespace PopLife.Customers.Runtime
         public Transform entranceOutsideAnchor; // 商店入口外部锚点（街道侧）
         public Transform entranceInsideAnchor;  // 商店入口内部锚点（商店一楼侧）
         public bool hasEnteredStore = false;    // 是否已进入商店（用于区分入店/离店状态）
+
+        [Header("Store routing")]
+        public CustomerVisitPurpose visitPurpose = CustomerVisitPurpose.PlayerStore;
+        public string destinationStoreId = StoreIds.PlayerStore;
+        public ShopZone assignedZone;
+        public Transform clubTrackingPoint;
+        public float clubStayDuration;
 
         [Header("商店状态")]
         public bool isClosingTime = false; // 商店是否闭店
@@ -95,6 +103,10 @@ namespace PopLife.Customers.Runtime
                 ncBlackboard.SetVariableValue("moneyBag", moneyBag);
                 ncBlackboard.SetVariableValue("purchaseQuantity", 0); // 初始化为0
                 ncBlackboard.SetVariableValue("isClosingTime", isClosingTime); // 初始化闭店状态
+                ncBlackboard.SetVariableValue("isClubGoer", visitPurpose == CustomerVisitPurpose.Club);
+                ncBlackboard.SetVariableValue("destinationStoreId", destinationStoreId);
+                ncBlackboard.SetVariableValue("clubTrackingPoint", clubTrackingPoint);
+                ncBlackboard.SetVariableValue("clubStayDuration", clubStayDuration);
             }
 #endif
         }

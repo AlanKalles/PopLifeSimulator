@@ -4,6 +4,7 @@ using UnityEngine;
 using Pathfinding;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
+using PopLife.Customers.Data;
 using PopLife.Runtime;
 
 namespace PopLife.Customers.NodeCanvas.Actions
@@ -34,6 +35,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         // 外部图 GraphMask，用于限制第一阶段寻路 + 进店后排除
         private GraphMask outsideGraphMask;
+        private GraphMask entryGraphMask;
+        private GraphMask storeInteriorGraphMask;
 
         protected override string info
         {
@@ -103,7 +106,15 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 EndAction(false);
                 return;
             }
-            outsideGraphMask = nav.OutsideGraphMask;
+            outsideGraphMask = nav.GetOutsideGraphMask();
+            if (!nav.TryGetEntryMask(customerBlackboard.destinationStoreId, out entryGraphMask)
+                || !nav.TryGetStoreInteriorGraphMask(customerBlackboard.destinationStoreId, out storeInteriorGraphMask))
+            {
+                Debug.LogError($"[MoveToEntranceAction] Store graph mask not available for '{customerBlackboard.destinationStoreId}'");
+                EndAction(false);
+                return;
+            }
+
             if (seeker != null)
             {
                 seeker.graphMask = outsideGraphMask;
@@ -179,10 +190,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             aiLerp.isStopped = true;
 
-            // 第二阶段：切换到 everything，允许通过 NodeLink2 进入内部图
+            // 第二阶段：只允许 outside + 目标 store interior，避免误跨到其他店铺 graph
             if (seeker != null)
             {
-                seeker.graphMask = GraphMask.everything;
+                seeker.graphMask = entryGraphMask;
             }
 
             // 切换目标到内部锚点
@@ -210,16 +221,16 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             aiLerp.isStopped = true;
 
-            // 排除外部图，允许所有内部图
+            // 进入店内后只允许当前目标 store 的 interior graph
             if (seeker != null)
             {
-                seeker.graphMask = ~outsideGraphMask;
+                seeker.graphMask = storeInteriorGraphMask;
             }
 
             // 标记已进入商店
             customerBlackboard.hasEnteredStore = true;
             var customerAgent = agent.GetComponent<CustomerAgent>();
-            if (customerAgent != null)
+            if (customerAgent != null && customerBlackboard.visitPurpose == CustomerVisitPurpose.PlayerStore)
             {
                 CustomerEventBus.RaiseCustomerEnteredStore(customerAgent);
             }

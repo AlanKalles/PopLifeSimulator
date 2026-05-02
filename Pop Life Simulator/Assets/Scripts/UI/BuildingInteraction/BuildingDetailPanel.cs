@@ -475,11 +475,18 @@ namespace PopLife.UI.BuildingInteraction
 
             bool isMaxLevel = currentBuilding.currentLevel >= currentBuilding.archetype.MaxLevel;
             bool isBuildPhase = dayLoopManager != null && dayLoopManager.currentPhase == GamePhase.BuildPhase;
+            bool isReadOnly = ConstructionGuards.IsTileReadOnlyForPlayer(WorldGrid.ResolveHostTile(currentBuilding));
 
             // Check if can upgrade
-            bool canUpgrade = isBuildPhase && !isMaxLevel;
-
-            if (isMaxLevel)
+            if (isReadOnly)
+            {
+                upgradeButton.interactable = false;
+                if (upgradeButtonText != null)
+                {
+                    upgradeButtonText.text = "Not Your Store";
+                }
+            }
+            else if (isMaxLevel)
             {
                 // Max level
                 upgradeButton.interactable = false;
@@ -564,6 +571,12 @@ namespace PopLife.UI.BuildingInteraction
         {
             if (currentBuilding == null)
             {
+                return;
+            }
+
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(WorldGrid.ResolveHostTile(currentBuilding)))
+            {
+                UIManager.Instance?.ShowAlert("Not your store.");
                 return;
             }
 

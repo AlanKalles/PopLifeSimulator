@@ -63,7 +63,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             var customerContext = CustomerContextBuilder.BuildCustomerContext(adapter);
 
             // 构建货架快照列表
-            var shelfSnapshots = CustomerContextBuilder.BuildAllShelfSnapshots();
+            var shelfSnapshots = CustomerContextBuilder.BuildAllShelfSnapshots(adapter.destinationStoreId);
 
             if (shelfSnapshots.Count == 0)
             {

@@ -157,6 +157,10 @@ namespace PopLife
             int total = 0;
             foreach (var shelf in wg.AllShelves())
             {
+                var hostTile = WorldGrid.ResolveHostTile(shelf);
+                if (hostTile == null || !ConstructionGuards.IsStoreOwnedByPlayer(hostTile.StoreId))
+                    continue;
+
                 total += Mathf.RoundToInt(shelf.GetAppeal());
             }
             storeAppeal = total;

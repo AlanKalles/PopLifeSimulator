@@ -116,13 +116,25 @@ namespace PopLife.Customers.Services
         /// </summary>
         public static List<ShelfSnapshot> BuildAllShelfSnapshots()
         {
+            return BuildAllShelfSnapshots(StoreIds.PlayerStore);
+        }
+
+        /// <summary>
+        /// 构建指定 store 的可用货架快照列表。
+        /// </summary>
+        public static List<ShelfSnapshot> BuildAllShelfSnapshots(string storeId)
+        {
             var snapshots = new List<ShelfSnapshot>();
+            storeId = string.IsNullOrWhiteSpace(storeId) ? StoreIds.PlayerStore : storeId;
 
             // 查找所有货架实例
             var allShelves = Object.FindObjectsByType<ShelfInstance>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             foreach (var shelf in allShelves)
             {
+                var hostTile = WorldGrid.ResolveHostTile(shelf);
+                if (hostTile == null || hostTile.StoreId != storeId) continue;
+
                 // 只添加正在运营的货架
                 if (shelf.isOperational && shelf.currentStock > 0)
                 {
@@ -181,13 +193,25 @@ namespace PopLife.Customers.Services
         /// </summary>
         public static List<CashierSnapshot> BuildAllCashierSnapshots()
         {
+            return BuildAllCashierSnapshots(StoreIds.PlayerStore);
+        }
+
+        /// <summary>
+        /// 构建指定 store 的可用收银台快照列表。
+        /// </summary>
+        public static List<CashierSnapshot> BuildAllCashierSnapshots(string storeId)
+        {
             var snapshots = new List<CashierSnapshot>();
+            storeId = string.IsNullOrWhiteSpace(storeId) ? StoreIds.PlayerStore : storeId;
 
             // 查找所有设施实例
             var allFacilities = Object.FindObjectsByType<FacilityInstance>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
 
             foreach (var facility in allFacilities)
             {
+                var hostTile = WorldGrid.ResolveHostTile(facility);
+                if (hostTile == null || hostTile.StoreId != storeId) continue;
+
                 var facilityArchetype = facility.archetype as FacilityArchetype;
 
                 // 只添加运营中的收银台

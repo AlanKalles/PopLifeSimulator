@@ -171,6 +171,20 @@ namespace PopLife
             return entrances.FirstOrDefault(e => e != null && e.entranceId == entranceId);
         }
 
+        public StoreEntrancePoint GetEntranceForStore(string storeId)
+        {
+            if (string.IsNullOrWhiteSpace(storeId))
+                storeId = StoreIds.PlayerStore;
+
+            var entrance = entrances.FirstOrDefault(e => e != null && e.StoreId == storeId);
+            if (entrance == null && storeId == StoreIds.PlayerStore)
+            {
+                entrance = GetMainEntrance();
+            }
+
+            return entrance;
+        }
+
         /// <summary>
         /// 获取所有入口点
         /// </summary>

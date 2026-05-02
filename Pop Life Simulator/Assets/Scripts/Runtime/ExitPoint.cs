@@ -11,11 +11,17 @@ namespace PopLife.Runtime
         [Tooltip("出口唯一ID")]
         public string exitId;
 
+        [SerializeField]
+        [Tooltip("此出口所属商店 ID")]
+        private StoreIdKind storeId = StoreIdKind.PlayerStore;
+
         [Header("位置信息")]
         [Tooltip("出口的网格位置（可选，用于寻路）")]
         public Vector2Int gridCell;
 
         public bool directionToRight;
+
+        public string StoreId => StoreIds.ToId(storeId);
 
         void Awake()
         {

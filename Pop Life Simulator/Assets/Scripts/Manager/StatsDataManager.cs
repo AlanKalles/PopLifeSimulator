@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
 using PopLife.Runtime;
@@ -71,6 +72,8 @@ namespace PopLife.Manager
         private void OnCustomerPurchased(CustomerAgent agent, ShelfInstance shelf, int quantity, int price)
         {
             if (shelf == null) return;
+            var hostTile = WorldGrid.ResolveHostTile(shelf);
+            if (hostTile == null || !ConstructionGuards.IsStoreOwnedByPlayer(hostTile.StoreId)) return;
 
             string shelfId = shelf.instanceId;
             int revenue = quantity * price;
@@ -94,6 +97,10 @@ namespace PopLife.Manager
 
             // 从 CustomerBlackboardAdapter 获取顾客信息（已在初始化时注入）
             var adapter = agent.GetComponent<CustomerBlackboardAdapter>();
+            if (adapter != null && adapter.visitPurpose != CustomerVisitPurpose.PlayerStore)
+            {
+                return;
+            }
 
             var statsData = new CustomerStatsData
             {
@@ -167,6 +174,10 @@ namespace PopLife.Manager
             {
                 foreach (var shelf in wg.AllShelves())
                 {
+                    var hostTile = WorldGrid.ResolveHostTile(shelf);
+                    if (hostTile == null || !ConstructionGuards.IsStoreOwnedByPlayer(hostTile.StoreId))
+                        continue;
+
                     // 获取货架今日收入
                     int todayRevenue = shelfRevenueTracker.ContainsKey(shelf.instanceId)
                         ? shelfRevenueTracker[shelf.instanceId]
@@ -220,7 +231,9 @@ namespace PopLife.Manager
             foreach (var customer in customers)
             {
                 var adapter = customer.GetComponent<CustomerBlackboardAdapter>();
-                if (adapter != null && adapter.hasEnteredStore)
+                if (adapter != null
+                    && adapter.hasEnteredStore
+                    && adapter.visitPurpose == CustomerVisitPurpose.PlayerStore)
                 {
                     count++;
                 }
@@ -241,6 +254,10 @@ namespace PopLife.Manager
             {
                 foreach (var building in wg.AllBuildings())
                 {
+                    var hostTile = WorldGrid.ResolveHostTile(building);
+                    if (hostTile == null || !ConstructionGuards.IsStoreOwnedByPlayer(hostTile.StoreId))
+                        continue;
+
                     total += building.GetMaintenanceFee();
                 }
             }
@@ -262,6 +279,10 @@ namespace PopLife.Manager
             {
                 foreach (var shelf in wg.AllShelves())
                 {
+                    var hostTile = WorldGrid.ResolveHostTile(shelf);
+                    if (hostTile == null || !ConstructionGuards.IsStoreOwnedByPlayer(hostTile.StoreId))
+                        continue;
+
                     var archetype = shelf.archetype as ShelfArchetype;
                     if (archetype == null) continue;
 

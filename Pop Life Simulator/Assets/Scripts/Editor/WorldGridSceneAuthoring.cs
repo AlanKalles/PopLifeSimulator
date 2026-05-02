@@ -61,7 +61,15 @@ namespace PopLife.Editor
 
         private static EditorGridSnapshot GetSnapshot(WorldGrid wg)
         {
-            if (cachedSnap == null || worldDirty)
+            // 用户在 Inspector 改 gridSize/cellSize/origin 不会触发 worldDirty，
+            // 所以这里也比对当前 WorldGrid 的关键参数，发现不一致直接重建快照
+            Vector3 originPos = wg.origin != null ? wg.origin.position : wg.transform.position;
+            bool paramsChanged = cachedSnap != null
+                && (cachedSnap.GridSize != wg.gridSize
+                    || !Mathf.Approximately(cachedSnap.CellSize, wg.cellSize)
+                    || cachedSnap.Origin != originPos);
+
+            if (cachedSnap == null || worldDirty || paramsChanged)
             {
                 cachedSnap = EditorGridSnapshot.Build(wg);
                 worldDirty = false;
@@ -422,7 +430,19 @@ namespace PopLife.Editor
                 fti.hostFloorTileInstanceId = "";
                 fti.instanceId = System.Guid.NewGuid().ToString();
                 fti.archetype = arch;
+                fti.SetStoreId(arch.StoreId, rebuildNav: false);
                 if (state.markAsDefault) fti.IsDefault = true;
+
+                // 玩家锁定（同时设置 move + destroy 锁，匹配单 toggle 语义）
+                if (state.markAsLocked)
+                {
+                    var so = new SerializedObject(fti);
+                    var moveField = so.FindProperty("editorLockedMove");
+                    var destroyField = so.FindProperty("editorLockedDestroy");
+                    if (moveField != null) moveField.boolValue = true;
+                    if (destroyField != null) destroyField.boolValue = true;
+                    so.ApplyModifiedProperties();
+                }
             }
 
             Undo.RegisterCreatedObjectUndo(go, "Place FloorTile");

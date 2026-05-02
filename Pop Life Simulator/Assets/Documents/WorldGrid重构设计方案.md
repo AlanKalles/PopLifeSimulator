@@ -47,8 +47,8 @@ FloorTileArchetype:
   interiorCellSize (float = 0.5)     — interior 格子大小
 
   [Header("Portals")]
-  leftPortalCells (List<int>)        — 左侧通道的 local Y 索引列表
-  rightPortalCells (List<int>)       — 右侧通道的 local Y 索引列表
+  leftPortalCells (List<int>)        — 从左起的通道列号（0=最左列，1=第二列…）。通道列不可放置建筑；含 0 时最左列亦为通道，可与紧贴左侧的 tile 建立 NodeLink2 连接
+  rightPortalCells (List<int>)       — 从右起的通道列号（0=最右列，1=倒数第二列…）。通道列不可放置建筑；含 0 时最右列亦为通道，可与紧贴右侧的 tile 建立 NodeLink2 连接
 
   [Header("Customer")]
   walkableRows (int = 1)             — 底部几行可行走
@@ -198,16 +198,20 @@ AILerp 不原生支持 NodeLink2 穿越。由 LinkTraversalDetector 检测路径
 
 ### 数据
 ```
-leftPortalCells: List<int>   — 左侧通道 Y 索引
-rightPortalCells: List<int>  — 右侧通道 Y 索引
+leftPortalCells: List<int>   — 从左起的通道列号（0=最左列）
+rightPortalCells: List<int>  — 从右起的通道列号（0=最右列，actualX = w-1-col）
 ```
+
+### 双重职责
+1. **InteriorGrid 层（不可放置）**：列表中的每个列号都把对应整列标记为 `placeable = false`。中间值（不含 0）用于"挖空"中段几列禁止放建筑。walkable 仍仅由 `walkableRows` 决定，与 portal 列无关。
+2. **NavigationService 层（跨 tile 连接）**：仅当列表**包含 0** 时，对应边界列才被视为 portal 边界，可与紧贴的相邻 tile 建立 NodeLink2。
 
 ### 连接规则
 左右紧贴时（`leftMaxX + 1 == rightMinX`）：
-1. 左 tile 的 rightPortalCells vs 右 tile 的 leftPortalCells
-2. 世界 Y 坐标重合的格子 → NodeLink2 + NormalTraversalLink 标记
-3. 不重合 → 不连接
-4. 空列表 → 该侧封闭
+1. 左 tile 的 `rightPortalCells.Contains(0)` 且右 tile 的 `leftPortalCells.Contains(0)` → 两侧边界列均为通道列
+2. 在两侧 `walkableRows` 内的 local Y 上，按世界 Y 坐标重合（容差 0.01）配对 → NodeLink2 + NormalTraversalLink 标记
+3. 任一侧不含 0 → 该侧不开放，无连接
+4. 任一侧 `walkableRows <= 0` → 无可走格子，无连接
 
 Portal NodeLink2 没有 AILerpLinkTeleporter，LinkTraversalDetector 跳过不处理。AILerp 自行直线走过。
 

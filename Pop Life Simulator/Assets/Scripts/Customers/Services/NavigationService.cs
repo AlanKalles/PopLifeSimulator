@@ -46,6 +46,64 @@ namespace PopLife.Customers.Services
             }
         }
 
+        public GraphMask GetOutsideGraphMask()
+        {
+            return OutsideGraphMask;
+        }
+
+        public bool TryGetStoreInteriorGraphMask(string storeId, out GraphMask graphMask)
+        {
+            storeId = string.IsNullOrWhiteSpace(storeId) ? StoreIds.PlayerStore : storeId;
+            graphMask = default;
+            bool hasGraph = false;
+
+            foreach (var kv in tileGraphs)
+            {
+                var tile = WorldGrid.Instance != null ? WorldGrid.Instance.GetFloorTileById(kv.Key) : null;
+                if (tile == null || !string.Equals(tile.StoreId, storeId, StringComparison.Ordinal))
+                    continue;
+
+                var tileMask = GraphMask.FromGraphIndex(kv.Value.graphIndex);
+                graphMask = hasGraph ? graphMask | tileMask : tileMask;
+                hasGraph = true;
+            }
+
+            return hasGraph;
+        }
+
+        public GraphMask GetStoreInteriorGraphMask(string storeId)
+        {
+            if (TryGetStoreInteriorGraphMask(storeId, out var graphMask))
+                return graphMask;
+
+            Debug.LogError($"[NavigationService] No interior graph for store '{storeId}'");
+            return default;
+        }
+
+        public bool TryGetEntryMask(string storeId, out GraphMask graphMask)
+        {
+            graphMask = default;
+            if (!HasOutsideGraph)
+            {
+                Debug.LogError("[NavigationService] Outside graph missing!");
+                return false;
+            }
+
+            if (!TryGetStoreInteriorGraphMask(storeId, out var interiorMask))
+            {
+                Debug.LogError($"[NavigationService] No interior graph for store '{storeId}'");
+                return false;
+            }
+
+            graphMask = OutsideGraphMask | interiorMask;
+            return true;
+        }
+
+        public GraphMask GetEntryMask(string storeId)
+        {
+            return TryGetEntryMask(storeId, out var graphMask) ? graphMask : default;
+        }
+
         void Awake()
         {
             Instance = this;
@@ -215,11 +273,18 @@ namespace PopLife.Customers.Services
         }
 
         /// <summary>
-        /// 尝试在 leftTile 的右边缘和 rightTile 的左边缘之间创建 portal
-        /// 条件: leftTile 最右列 + 1 == rightTile 最左列（世界网格坐标紧贴）
+        /// 尝试在 leftTile 的右边缘和 rightTile 的左边缘之间创建 portal。
+        /// 条件:
+        ///   1. leftTile 最右列 + 1 == rightTile 最左列（世界网格坐标紧贴）
+        ///   2. leftArch.RightPortalCells 包含 0（最右列是通道列）
+        ///   3. rightArch.LeftPortalCells 包含 0（最左列是通道列）
+        /// 满足后在两侧 walkableRows 范围内按世界 Y 匹配建立 NodeLink2。
         /// </summary>
         private void TryCreatePortalsBetween(FloorTileInstance leftTile, FloorTileInstance rightTile)
         {
+            if (!string.Equals(leftTile.StoreId, rightTile.StoreId, StringComparison.Ordinal))
+                return;
+
             if (leftTile.archetype is not FloorTileArchetype leftArch) return;
             if (rightTile.archetype is not FloorTileArchetype rightArch) return;
             if (leftTile.Interior == null || rightTile.Interior == null) return;
@@ -245,23 +310,29 @@ namespace PopLife.Customers.Services
             // 紧贴: leftMaxX + 1 == rightMinX
             if (leftMaxX + 1 != rightMinX) return;
 
-            var leftPortals = leftArch.RightPortalCells;
-            var rightPortals = rightArch.LeftPortalCells;
-            if (leftPortals == null || rightPortals == null) return;
-            if (leftPortals.Count == 0 || rightPortals.Count == 0) return;
+            // 列号语义：值 0 表示边界列本身是通道列
+            //   - leftArch.RightPortalCells 含 0 → 左 tile 最右列（actualX = w-1）是通道
+            //   - rightArch.LeftPortalCells 含 0 → 右 tile 最左列（actualX = 0）是通道
+            // 仅当两侧边界列均为通道列时才建立 NodeLink2
+            if (!ContainsZero(leftArch.RightPortalCells)) return;
+            if (!ContainsZero(rightArch.LeftPortalCells)) return;
 
-            // 匹配 portal cell: 按世界 Y 坐标重叠
-            foreach (int leftLocalY in leftPortals)
+            int leftBoundaryX = leftTile.Interior.GridSize.x - 1;
+            const int rightBoundaryX = 0;
+            int leftWalkable = leftArch.WalkableRows;
+            int rightWalkable = rightArch.WalkableRows;
+            if (leftWalkable <= 0 || rightWalkable <= 0) return;
+
+            // 在 walkable 行（底部 walkableRows）内按世界 Y 重合配对
+            for (int leftLocalY = 0; leftLocalY < leftWalkable; leftLocalY++)
             {
-                // 左侧 tile portal: interior 最右列, local Y
-                Vector2Int leftLocalCell = new(leftTile.Interior.GridSize.x - 1, leftLocalY);
+                Vector2Int leftLocalCell = new(leftBoundaryX, leftLocalY);
                 if (!leftTile.Interior.InBounds(leftLocalCell)) continue;
                 Vector3 leftWorld = leftTile.Interior.LocalToWorld(leftLocalCell);
 
-                foreach (int rightLocalY in rightPortals)
+                for (int rightLocalY = 0; rightLocalY < rightWalkable; rightLocalY++)
                 {
-                    // 右侧 tile portal: interior 最左列, local Y
-                    Vector2Int rightLocalCell = new(0, rightLocalY);
+                    Vector2Int rightLocalCell = new(rightBoundaryX, rightLocalY);
                     if (!rightTile.Interior.InBounds(rightLocalCell)) continue;
                     Vector3 rightWorld = rightTile.Interior.LocalToWorld(rightLocalCell);
 
@@ -284,6 +355,14 @@ namespace PopLife.Customers.Services
                     portalLinks.Add(linkGo);
                 }
             }
+        }
+
+        private static bool ContainsZero(IReadOnlyList<int> list)
+        {
+            if (list == null) return false;
+            for (int i = 0; i < list.Count; i++)
+                if (list[i] == 0) return true;
+            return false;
         }
 
 

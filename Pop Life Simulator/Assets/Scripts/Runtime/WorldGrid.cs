@@ -558,6 +558,7 @@ namespace PopLife.Runtime
             var inst = go.GetComponent<FloorTileInstance>();
             inst.rotation = rot;
             inst.Initialize(arch, pos, ""); // hostTileId = "" for FloorTiles (they ARE the tile)
+            inst.SetStoreId(arch.StoreId, rebuildNav: false);
 
             RegisterFloorTileInternal(inst, fp, pos);
 
@@ -591,7 +592,12 @@ namespace PopLife.Runtime
         /// <summary> 移除地板（检查 isDefault + 无内部建筑 + 无电梯 + 不悬空） </summary>
         public bool RemoveFloorTile(FloorTileInstance inst, bool refundMoney = false)
         {
+            if (inst == null) return false;
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(inst)) return false;
             if (inst.IsDefault) return false;
+            // 编辑器锁定（玩家不可拆除）：与 IsDefault 同等的兜底，
+            // 主流程已在 ConstructionManager 检查 EditorLockedDestroy
+            if (inst.EditorLockedDestroy) return false;
             if (inst.HasBuildingsInInterior()) return false;
             if (elevatorLinkManager != null && elevatorLinkManager.HasElevatorOnTile(inst)) return false;
             if (WouldBreakSupport(inst)) return false;
@@ -729,6 +735,8 @@ namespace PopLife.Runtime
         /// <summary> 临时反注册地板（不销毁 GO，用于移动）。有电梯时拒绝。 </summary>
         public bool UnregisterFloorTile(FloorTileInstance inst)
         {
+            if (inst == null) return false;
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(inst)) return false;
             if (elevatorLinkManager != null && elevatorLinkManager.HasElevatorOnTile(inst)) return false;
             ClearFloorTileCells(inst);
             floorTileInstances.Remove(inst.instanceId);
@@ -739,6 +747,8 @@ namespace PopLife.Runtime
         /// <summary> 重新注册地板到新位置 </summary>
         public bool ReregisterFloorTile(FloorTileInstance inst, Vector2Int newPos, int newRot, bool skipSupportCheck = false)
         {
+            if (inst == null) return false;
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(inst)) return false;
             var fp = inst.archetype.GetRotatedFootprint(newRot);
 
             foreach (var off in fp)
@@ -1005,6 +1015,14 @@ namespace PopLife.Runtime
                 if (kv.Value.Interior == null) continue;
                 foreach (var f in kv.Value.Interior.AllFacilities()) yield return f;
             }
+        }
+
+        public static FloorTileInstance ResolveHostTile(BuildingInstance building)
+        {
+            if (building == null) return null;
+            if (building is FloorTileInstance floorTile) return floorTile;
+            if (string.IsNullOrEmpty(building.hostFloorTileInstanceId)) return null;
+            return Instance != null ? Instance.GetFloorTileById(building.hostFloorTileInstanceId) : null;
         }
 
         public bool HasFacilityOfType(FacilityType type)

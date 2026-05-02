@@ -24,6 +24,12 @@ namespace PopLife.Runtime
         [Tooltip("是否为主入口（用于顾客默认选择）")]
         public bool isMainEntrance = true;
 
+        [SerializeField]
+        [Tooltip("此入口所属商店 ID")]
+        private StoreIdKind storeId = StoreIdKind.PlayerStore;
+
+        public string StoreId => StoreIds.ToId(storeId);
+
         [Header("A* Pathfinding 配置")]
         [Tooltip("NodeLink2 组件引用（在场景中手动配置好 start 和 end）\n双向通行：oneWay = false")]
         public NodeLink2 nodeLink;

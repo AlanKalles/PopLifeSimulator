@@ -25,6 +25,8 @@ namespace PopLife.Editor
         public BuildingArchetype selectedArchetype;
         public int rotation;
         public bool markAsDefault;
+        // 锁定玩家不可移动/拆除（独立于 IsDefault 的 root 语义）
+        public bool markAsLocked;
 
         // Interior 模式选项
         public bool lockMove;

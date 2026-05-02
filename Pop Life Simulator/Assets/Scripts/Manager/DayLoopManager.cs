@@ -366,6 +366,10 @@ namespace PopLife
             {
                 foreach (var building in wg.AllBuildings())
                 {
+                    var hostTile = Runtime.WorldGrid.ResolveHostTile(building);
+                    if (hostTile == null || !Runtime.ConstructionGuards.IsStoreOwnedByPlayer(hostTile.StoreId))
+                        continue;
+
                     total += building.GetMaintenanceFee();
                 }
             }

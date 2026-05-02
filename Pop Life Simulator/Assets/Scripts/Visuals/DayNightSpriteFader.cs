@@ -4,29 +4,30 @@ using UnityEngine;
 namespace PopLife.Visuals
 {
     /// <summary>
-    /// Fades the upper day sprite over a fixed night sprite when BGM day/night transitions start.
+    /// Fades the upper day sprites over fixed night sprites when BGM day/night transitions start.
+    /// 每个槽位支持多个 SpriteRenderer，便于复用同一组 sprite 在多个位置摆放。
     /// </summary>
     public class DayNightSpriteFader : MonoBehaviour
     {
         [Header("Background")]
-        [SerializeField] private SpriteRenderer dayBackgroundSprite;
-        [SerializeField] private SpriteRenderer nightBackgroundSprite;
+        [SerializeField] private SpriteRenderer[] dayBackgroundSprites;
+        [SerializeField] private SpriteRenderer[] nightBackgroundSprites;
 
         [Header("Parallax 0")]
-        [SerializeField] private SpriteRenderer dayParallax0Sprite;
-        [SerializeField] private SpriteRenderer nightParallax0Sprite;
+        [SerializeField] private SpriteRenderer[] dayParallax0Sprites;
+        [SerializeField] private SpriteRenderer[] nightParallax0Sprites;
 
         [Header("Parallax 1")]
-        [SerializeField] private SpriteRenderer dayParallax1Sprite;
-        [SerializeField] private SpriteRenderer nightParallax1Sprite;
+        [SerializeField] private SpriteRenderer[] dayParallax1Sprites;
+        [SerializeField] private SpriteRenderer[] nightParallax1Sprites;
 
         [Header("Parallax 2")]
-        [SerializeField] private SpriteRenderer dayParallax2Sprite;
-        [SerializeField] private SpriteRenderer nightParallax2Sprite;
+        [SerializeField] private SpriteRenderer[] dayParallax2Sprites;
+        [SerializeField] private SpriteRenderer[] nightParallax2Sprites;
 
         [Header("Parallax 3")]
-        [SerializeField] private SpriteRenderer dayParallax3Sprite;
-        [SerializeField] private SpriteRenderer nightParallax3Sprite;
+        [SerializeField] private SpriteRenderer[] dayParallax3Sprites;
+        [SerializeField] private SpriteRenderer[] nightParallax3Sprites;
 
         [Header("Fade")]
         [SerializeField] private AnimationCurve fadeCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
@@ -141,49 +142,80 @@ namespace PopLife.Visuals
 
         private bool HasAnyDaySprite()
         {
-            return dayBackgroundSprite != null
-                || dayParallax0Sprite != null
-                || dayParallax1Sprite != null
-                || dayParallax2Sprite != null
-                || dayParallax3Sprite != null;
+            return HasAny(dayBackgroundSprites)
+                || HasAny(dayParallax0Sprites)
+                || HasAny(dayParallax1Sprites)
+                || HasAny(dayParallax2Sprites)
+                || HasAny(dayParallax3Sprites);
         }
 
         private float GetFirstDayAlpha()
         {
-            if (dayBackgroundSprite != null) return dayBackgroundSprite.color.a;
-            if (dayParallax0Sprite != null) return dayParallax0Sprite.color.a;
-            if (dayParallax1Sprite != null) return dayParallax1Sprite.color.a;
-            if (dayParallax2Sprite != null) return dayParallax2Sprite.color.a;
-            if (dayParallax3Sprite != null) return dayParallax3Sprite.color.a;
+            if (TryGetFirstAlpha(dayBackgroundSprites, out float a)) return a;
+            if (TryGetFirstAlpha(dayParallax0Sprites, out a)) return a;
+            if (TryGetFirstAlpha(dayParallax1Sprites, out a)) return a;
+            if (TryGetFirstAlpha(dayParallax2Sprites, out a)) return a;
+            if (TryGetFirstAlpha(dayParallax3Sprites, out a)) return a;
             return 1f;
         }
 
         private void SetDayAlphaForAll(float alpha)
         {
-            SetSpriteAlpha(dayBackgroundSprite, alpha);
-            SetSpriteAlpha(dayParallax0Sprite, alpha);
-            SetSpriteAlpha(dayParallax1Sprite, alpha);
-            SetSpriteAlpha(dayParallax2Sprite, alpha);
-            SetSpriteAlpha(dayParallax3Sprite, alpha);
+            SetGroupAlpha(dayBackgroundSprites, alpha);
+            SetGroupAlpha(dayParallax0Sprites, alpha);
+            SetGroupAlpha(dayParallax1Sprites, alpha);
+            SetGroupAlpha(dayParallax2Sprites, alpha);
+            SetGroupAlpha(dayParallax3Sprites, alpha);
         }
 
         private void SetNightAlphaForAll(float alpha)
         {
-            SetSpriteAlpha(nightBackgroundSprite, alpha);
-            SetSpriteAlpha(nightParallax0Sprite, alpha);
-            SetSpriteAlpha(nightParallax1Sprite, alpha);
-            SetSpriteAlpha(nightParallax2Sprite, alpha);
-            SetSpriteAlpha(nightParallax3Sprite, alpha);
+            SetGroupAlpha(nightBackgroundSprites, alpha);
+            SetGroupAlpha(nightParallax0Sprites, alpha);
+            SetGroupAlpha(nightParallax1Sprites, alpha);
+            SetGroupAlpha(nightParallax2Sprites, alpha);
+            SetGroupAlpha(nightParallax3Sprites, alpha);
         }
 
-        private static void SetSpriteAlpha(SpriteRenderer spriteRenderer, float alpha)
+        private static bool HasAny(SpriteRenderer[] group)
         {
-            if (spriteRenderer == null)
-                return;
+            if (group == null) return false;
+            for (int i = 0; i < group.Length; i++)
+            {
+                if (group[i] != null) return true;
+            }
+            return false;
+        }
 
-            Color color = spriteRenderer.color;
-            color.a = Mathf.Clamp01(alpha);
-            spriteRenderer.color = color;
+        private static bool TryGetFirstAlpha(SpriteRenderer[] group, out float alpha)
+        {
+            if (group != null)
+            {
+                for (int i = 0; i < group.Length; i++)
+                {
+                    if (group[i] != null)
+                    {
+                        alpha = group[i].color.a;
+                        return true;
+                    }
+                }
+            }
+            alpha = 0f;
+            return false;
+        }
+
+        private static void SetGroupAlpha(SpriteRenderer[] group, float alpha)
+        {
+            if (group == null) return;
+            float clamped = Mathf.Clamp01(alpha);
+            for (int i = 0; i < group.Length; i++)
+            {
+                SpriteRenderer sr = group[i];
+                if (sr == null) continue;
+                Color color = sr.color;
+                color.a = clamped;
+                sr.color = color;
+            }
         }
     }
 }

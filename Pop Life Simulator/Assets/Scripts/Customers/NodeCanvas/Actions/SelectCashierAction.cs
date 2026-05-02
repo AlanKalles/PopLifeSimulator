@@ -49,7 +49,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             var customerContext = CustomerContextBuilder.BuildCustomerContext(adapter);
 
             // 构建收银台快照列表
-            var cashierSnapshots = CustomerContextBuilder.BuildAllCashierSnapshots();
+            var cashierSnapshots = CustomerContextBuilder.BuildAllCashierSnapshots(adapter.destinationStoreId);
 
             if (cashierSnapshots.Count == 0)
             {

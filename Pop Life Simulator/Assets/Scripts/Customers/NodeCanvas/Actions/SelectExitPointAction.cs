@@ -46,7 +46,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                     return;
                 }
 
-                var nearestExit = ExitPointManager.Instance.GetNearestExitPoint(agent.transform.position);
+                var nearestExit = ExitPointManager.Instance.GetNearestExitPointForStore(blackboard.destinationStoreId, agent.transform.position);
                 if (nearestExit == null)
                 {
                     Debug.LogError("[SelectExitPointAction] No exit points available");

@@ -46,7 +46,7 @@ namespace PopLife.Editor
         {
             // 加载 FloorTileArchetype
             floorTileArchetypes = Resources.LoadAll<FloorTileArchetype>("ScriptableObjects/BuildingArchetype/FloorTile");
-            floorTileNames = floorTileArchetypes.Select(a => a.displayName ?? a.name).ToArray();
+            floorTileNames = floorTileArchetypes.Select(a => $"[{a.StoreId}] {a.displayName ?? a.name}").ToArray();
 
             // 加载 interior 可放置原型（排除 FloorTileArchetype）
             var all = Resources.LoadAll<BuildingArchetype>("ScriptableObjects/BuildingArchetype");
@@ -153,6 +153,14 @@ namespace PopLife.Editor
                 if (newDefault != state.markAsDefault)
                 {
                     state.markAsDefault = newDefault;
+                    OnStateChanged(state);
+                }
+
+                // 玩家锁定标记（不影响 BFS root / 电梯 root / AlanBot fallback / support skip）
+                bool newLocked = EditorGUILayout.Toggle("Lock From Player (no move/destroy)", state.markAsLocked);
+                if (newLocked != state.markAsLocked)
+                {
+                    state.markAsLocked = newLocked;
                     OnStateChanged(state);
                 }
             }

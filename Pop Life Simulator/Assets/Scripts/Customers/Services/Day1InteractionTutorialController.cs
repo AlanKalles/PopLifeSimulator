@@ -1,4 +1,5 @@
 using PixelCrushers.DialogueSystem;
+using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 using PopLife.Data;
 using PopLife.Manager;
@@ -80,6 +81,7 @@ namespace PopLife.Customers.Services
         private void HandleCustomerEnteredStore(CustomerAgent agent)
         {
             if (agent == null) return;
+            if (agent.bb != null && agent.bb.visitPurpose != CustomerVisitPurpose.PlayerStore) return;
 
             int day = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 0;
             bool forced = state.RecordCustomerEntered(agent.customerID, day, HasCompletedFirstRequest());

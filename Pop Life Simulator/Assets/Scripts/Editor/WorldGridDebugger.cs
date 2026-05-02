@@ -181,6 +181,8 @@ namespace PopLife.Editor
 
         /// <summary>
         /// 确保 grid 已初始化（避免在编辑器模式下出现 null 引用）
+        /// 同时检查数组尺寸是否与 gridSize 匹配 —— 用户在 Inspector 改了 gridSize 时必须重建，
+        /// 否则 InBounds 用新尺寸放行的坐标会越界访问旧尺寸的数组
         /// </summary>
         private void EnsureGridInitialized(WorldGrid grid)
         {
@@ -188,14 +190,17 @@ namespace PopLife.Editor
             var layerField = typeof(WorldGrid).GetField("floorTileLayer",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-            if (layerField != null)
+            if (layerField == null) return;
+
+            var layer = layerField.GetValue(grid) as System.Array;
+            bool needsRebuild = layer == null
+                || layer.GetLength(0) != grid.gridSize.x
+                || layer.GetLength(1) != grid.gridSize.y;
+
+            if (needsRebuild)
             {
-                var layer = layerField.GetValue(grid);
-                if (layer == null)
-                {
-                    grid.Init();
-                    Debug.Log($"Auto-initialized grid for {grid.name}");
-                }
+                grid.RebuildFromScene();
+                Debug.Log($"Auto-rebuilt grid for {grid.name} (gridSize={grid.gridSize})");
             }
         }
     }

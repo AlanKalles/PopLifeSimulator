@@ -4,6 +4,7 @@ using UnityEngine;
 using Pathfinding;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
+using PopLife.Customers.Data;
 using PopLife.Runtime;
 
 namespace PopLife.Customers.NodeCanvas.Actions
@@ -28,6 +29,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
         private bool aiWasStoppedBeforePause;
         private bool reachedInside = false;
         private CustomerAnimationController animController;
+        private GraphMask outsideGraphMask;
+        private GraphMask entryGraphMask;
+        private GraphMask storeInteriorGraphMask;
 
         protected override string info
         {
@@ -88,8 +92,27 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 aiLerp.speed = customerBlackboard.moveSpeed;
             }
 
-            // 第一阶段：保持当前 graphMask（排除外部图），在店内正常寻路到 entrance 内侧
-            // graphMask 由 MoveToEntranceAction 设置为 ~outsideGraph，无需修改
+            var nav = PopLife.Customers.Services.NavigationService.Instance;
+            if (nav == null || !nav.HasOutsideGraph)
+            {
+                Debug.LogError("[MoveToExitAction] Outside graph not available");
+                EndAction(false);
+                return;
+            }
+
+            outsideGraphMask = nav.GetOutsideGraphMask();
+            if (!nav.TryGetEntryMask(customerBlackboard.destinationStoreId, out entryGraphMask)
+                || !nav.TryGetStoreInteriorGraphMask(customerBlackboard.destinationStoreId, out storeInteriorGraphMask))
+            {
+                Debug.LogError($"[MoveToExitAction] Store graph mask not available for '{customerBlackboard.destinationStoreId}'");
+                EndAction(false);
+                return;
+            }
+
+            if (seeker != null)
+            {
+                seeker.graphMask = storeInteriorGraphMask;
+            }
 
             // 设置 A* 寻路目标
             if (destinationSetter != null)
@@ -198,12 +221,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 aiLerp.destination = targetTransform.position;
             }
 
-            // 第二阶段：需要同时看到当前 interior graph + outside graph 才能穿过 NodeLink2
-            // 当前系统只有 interior graphs + outside graph，everything 等价于正确组合
-            // 如果未来新增其他 graph 类型，需改为显式组合
+            // 第二阶段：只允许当前 store interior + outside graph 穿门
             if (seeker != null)
             {
-                seeker.graphMask = GraphMask.everything;
+                seeker.graphMask = entryGraphMask;
             }
 
             // 恢复移动（A* 会自动通过 NodeLink2）
@@ -228,9 +249,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 标记已离开商店
             customerBlackboard.hasEnteredStore = false;
             var customerAgent = agent.GetComponent<CustomerAgent>();
-            if (customerAgent != null)
+            if (customerAgent != null && customerBlackboard.visitPurpose == CustomerVisitPurpose.PlayerStore)
             {
                 CustomerEventBus.RaiseCustomerLeftStore(customerAgent);
+            }
+
+            if (seeker != null)
+            {
+                seeker.graphMask = outsideGraphMask;
             }
 
             // 更新黑板的队列位置（用于后续的 MoveToTargetAction）

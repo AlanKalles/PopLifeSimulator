@@ -1,0 +1,710 @@
+fileFormatVersion: 2
+guid: 4848655cebdda0a49a5789caf08be926
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7845200055995627446
+    second: glitchCLBVoidRDO-Sheet_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 624
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a48818e5d10402390800000000000000
+      internalID: -7845200055995627446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 598
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7306426af395f0949961ec238491b683
+      internalID: 1157250961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 572
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5996de27fafa12240a3c72f8809a6ba4
+      internalID: 382166598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 546
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f924318de2f9e1e4bb1f32d024047891
+      internalID: 1459208312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 520
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba3ffdc56aae20948abb429614c3f524
+      internalID: -965352456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 494
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 201b950dfdc202a4ebf0e0482eb05e83
+      internalID: 741593169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 468
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: baef203a5c2e2dd4e84bbc658508e9c6
+      internalID: -357850588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 442
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c57cbc074f4c694a85fd3f2f8b3d702
+      internalID: -995709322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 416
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff724386d07eafb4e96093f47e93d480
+      internalID: -40204417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 390
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de22f102365d32441a6f903094f3d379
+      internalID: 336337070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 364
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e04694f553c6244f8619cf24ee7fbdf
+      internalID: -279865333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 338
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1f42e0af6c4e90429b6b4839000c613
+      internalID: -1614552264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 956e9c1481efa4242a51ede639e97cca
+      internalID: 705031820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 286
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab69c4e55a3b8bc40a5fd87f9cea5a61
+      internalID: 2130104070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 260
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a9072b634cde7e4994790c9213758b5
+      internalID: -1598230433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 234
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be4b9db9631a95943bfb330ccdfe647e
+      internalID: 619191778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 208
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88eb86c47ccd4e747b20e1e1ff404979
+      internalID: -1132950341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 182
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a43786344bbcacc408d8011794319385
+      internalID: 1160703791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0282444803cd4a842833672b5351a936
+      internalID: 1798195615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 130
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19867024d8caa8642b6f9f6ea440733f
+      internalID: 659950960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9e750b4faa10554f83c76a1be35024b
+      internalID: 773254457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 78
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29cdf8973ba756b48a3968f1a6defafa
+      internalID: -554586717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 52
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 653e97e81ceb909409be825b1fe08c11
+      internalID: 1001913686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 26
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee7ad77c550b9d84b81a09ad6f9b52f0
+      internalID: -1909028726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: glitchCLBVoidRDO-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 229
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b6ed7ca8fa44614b9cc82be9f49e4f2
+      internalID: -1090499790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d5389b84e6857464ca42674136fcc52b
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":25.0},"gridSpriteSize":{"x":229.0,"y":26.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      glitchCLBVoidRDO-Sheet_0: -7845200055995627446
+      glitchCLBVoidRDO-Sheet_1: 1157250961
+      glitchCLBVoidRDO-Sheet_10: -279865333
+      glitchCLBVoidRDO-Sheet_11: -1614552264
+      glitchCLBVoidRDO-Sheet_12: 705031820
+      glitchCLBVoidRDO-Sheet_13: 2130104070
+      glitchCLBVoidRDO-Sheet_14: -1598230433
+      glitchCLBVoidRDO-Sheet_15: 619191778
+      glitchCLBVoidRDO-Sheet_16: -1132950341
+      glitchCLBVoidRDO-Sheet_17: 1160703791
+      glitchCLBVoidRDO-Sheet_18: 1798195615
+      glitchCLBVoidRDO-Sheet_19: 659950960
+      glitchCLBVoidRDO-Sheet_2: 382166598
+      glitchCLBVoidRDO-Sheet_20: 773254457
+      glitchCLBVoidRDO-Sheet_21: -554586717
+      glitchCLBVoidRDO-Sheet_22: 1001913686
+      glitchCLBVoidRDO-Sheet_23: -1909028726
+      glitchCLBVoidRDO-Sheet_24: -1090499790
+      glitchCLBVoidRDO-Sheet_3: 1459208312
+      glitchCLBVoidRDO-Sheet_4: -965352456
+      glitchCLBVoidRDO-Sheet_5: 741593169
+      glitchCLBVoidRDO-Sheet_6: -357850588
+      glitchCLBVoidRDO-Sheet_7: -995709322
+      glitchCLBVoidRDO-Sheet_8: -40204417
+      glitchCLBVoidRDO-Sheet_9: 336337070
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

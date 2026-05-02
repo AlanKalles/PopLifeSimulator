@@ -1,0 +1,710 @@
+fileFormatVersion: 2
+guid: bb0d3e9dcd34a424b97601e68dd9a5ca
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 9181512248937737881
+    second: MoreKidsSign-Sheet_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 624
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99ee4d2aeb84b6f70800000000000000
+      internalID: 9181512248937737881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 598
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c48944f56d840944866b3899afc4a05
+      internalID: 779123744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 572
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 162a09a398d7e534797b2f92d3e5143e
+      internalID: -236346470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 546
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6e6a90bdb2964e41bfa9f3373524e97
+      internalID: 994855528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 520
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6d138ffdc809d847be365c6cac2bcc0
+      internalID: 529904164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 494
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 883878e303a0aaa4fbe9ef3a50d9c53b
+      internalID: 238481438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 468
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c9925687dc64574ab6d10e7ccc33c0a
+      internalID: 853400725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 442
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bee9c5a9a1706c47a77c945e2902742
+      internalID: -1058762702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 416
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98ed908e4ddb8804e8d9b1c76da8fcae
+      internalID: -1108704879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 390
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99e6bd78397246e45a681f1af57576f7
+      internalID: -48442144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 364
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e5beaa144ce68b49bbd7c04da172b6c
+      internalID: 1706679372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 338
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 115532224c7b9bf469c3b7eb8ccf1342
+      internalID: 927716607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba4d9995acfdde5459edc0abdcac8d34
+      internalID: 1303758057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 286
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec2f0128c9d74b842832da3e2464c770
+      internalID: 808344482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 260
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7798dd7b941669c4c9b5dad0149d4a1e
+      internalID: -1606419761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 234
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c9f906172748bd41befa6c5587dd328
+      internalID: 1790302283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 208
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9769545fedc916748924381086bb4d27
+      internalID: -674714093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 182
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 017eff218c222da4ab06ad3557e8d47f
+      internalID: 1717202415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c59c9efc0eaad5f4fa14c7624d5656af
+      internalID: -1803803517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 130
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f1bed172d729914094e4305d93efc03
+      internalID: 1783540992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d7a84543b0c092499e4d75381698ae3
+      internalID: -349540622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 78
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed3a15d5cee61ab408e08510bb61a4ee
+      internalID: 292478977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 52
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8503f35d627120d47b9d7d5a130a1cd9
+      internalID: 1118607372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 26
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 709f99531546afc44a66a63270fa741b
+      internalID: 2101036905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MoreKidsSign-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 345
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd58143c00531e640a92e6abc7d94cef
+      internalID: -958165929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 60766465fa4705b47919a0c0e97a8ff5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":25.0},"gridSpriteSize":{"x":345.0,"y":26.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      MoreKidsSign-Sheet_0: 9181512248937737881
+      MoreKidsSign-Sheet_1: 779123744
+      MoreKidsSign-Sheet_10: 1706679372
+      MoreKidsSign-Sheet_11: 927716607
+      MoreKidsSign-Sheet_12: 1303758057
+      MoreKidsSign-Sheet_13: 808344482
+      MoreKidsSign-Sheet_14: -1606419761
+      MoreKidsSign-Sheet_15: 1790302283
+      MoreKidsSign-Sheet_16: -674714093
+      MoreKidsSign-Sheet_17: 1717202415
+      MoreKidsSign-Sheet_18: -1803803517
+      MoreKidsSign-Sheet_19: 1783540992
+      MoreKidsSign-Sheet_2: -236346470
+      MoreKidsSign-Sheet_20: -349540622
+      MoreKidsSign-Sheet_21: 292478977
+      MoreKidsSign-Sheet_22: 1118607372
+      MoreKidsSign-Sheet_23: 2101036905
+      MoreKidsSign-Sheet_24: -958165929
+      MoreKidsSign-Sheet_3: 994855528
+      MoreKidsSign-Sheet_4: 529904164
+      MoreKidsSign-Sheet_5: 238481438
+      MoreKidsSign-Sheet_6: 853400725
+      MoreKidsSign-Sheet_7: -1058762702
+      MoreKidsSign-Sheet_8: -1108704879
+      MoreKidsSign-Sheet_9: -48442144
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

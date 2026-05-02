@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using PopLife.Runtime;
 
 namespace PopLife.Data
 {
@@ -13,6 +14,10 @@ namespace PopLife.Data
         [Header("地板尺寸")]
         [SerializeField] private Vector2Int tileSize = new(3, 3);
 
+        [Header("Store Routing")]
+        [Tooltip("This floor tile's default store ownership when placed by runtime or editor tools.")]
+        [SerializeField] private StoreIdKind storeId = StoreIdKind.PlayerStore;
+
         [Header("Interior")]
         [Tooltip("interior 左下角相对 tile 锚点的世界空间偏移")]
         [SerializeField] private Vector2 interiorOffset;
@@ -22,9 +27,11 @@ namespace PopLife.Data
         [SerializeField] private float interiorCellSize = 0.5f;
 
         [Header("Portals")]
-        [Tooltip("从左起哪几列为 portal 通道（0=最左列，1=第二列...）。这些列可行走但不可放置建筑。空 = 左侧无 portal。")]
+        [Tooltip("从左起哪几列为通道列（0=最左列，1=第二列...）。通道列不可放置建筑（walkable 仍仅由 walkableRows 决定）。" +
+                 "当列表包含 0（即最左列也是通道）时，可与紧贴在左侧的 tile 在 walkable 行内建立 NodeLink2 portal 连接。")]
         [SerializeField] private List<int> leftPortalCells = new();
-        [Tooltip("从右起哪几列为 portal 通道（0=最右列，1=倒数第二列...）。这些列可行走但不可放置建筑。空 = 右侧无 portal。")]
+        [Tooltip("从右起哪几列为通道列（0=最右列，1=倒数第二列...）。通道列不可放置建筑（walkable 仍仅由 walkableRows 决定）。" +
+                 "当列表包含 0（即最右列也是通道）时，可与紧贴在右侧的 tile 在 walkable 行内建立 NodeLink2 portal 连接。")]
         [SerializeField] private List<int> rightPortalCells = new();
 
         [Header("Customer")]
@@ -32,6 +39,7 @@ namespace PopLife.Data
         [SerializeField] private int walkableRows = 1;
 
         public Vector2Int TileSize => tileSize;
+        public string StoreId => StoreIds.ToId(storeId);
 
         // 无等级系统
         public override int MaxLevel => 0;

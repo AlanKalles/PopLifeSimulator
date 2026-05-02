@@ -1,22 +1,16 @@
 fileFormatVersion: 2
-guid: 9262b2c9f1ed4426aaf4b982e3dee8db
+guid: ff25ae7f8db48744fa9fdb4678d3bd10
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5775330546779102156
-    second: c013_sheet_0
+      213: 4981366844124183797
+    second: parallax0Night_0
   - first:
-      213: 334100249911226268
-    second: c013_sheet_1
+      213: -8927675262145157781
+    second: parallax0Night_1
   - first:
-      213: -2996492977082192128
-    second: c013_sheet_2
-  - first:
-      213: -166539266922822069
-    second: c013_sheet_3
-  - first:
-      213: 2449430079672612691
-    second: c013_sheet_4
+      213: -8789674922971231592
+    second: parallax0Night_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +43,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -61,9 +55,9 @@ TextureImporter:
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -87,7 +81,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -125,111 +119,67 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: c013_sheet_0
+      name: parallax0Night_0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 343
-        width: 194
-        height: 169
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 0
+        y: 0
+        width: 596
+        height: 214
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 434e4ca7777e9dfa0800000000000000
-      internalID: -5775330546779102156
+      spriteID: 5fc3ee790ce512540800000000000000
+      internalID: 4981366844124183797
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: c013_sheet_1
+      name: parallax0Night_1
       rect:
         serializedVersion: 2
-        x: 327
-        y: 255
-        width: 66
-        height: 66
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 789
+        y: 0
+        width: 608
+        height: 308
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c9fe35b3866f2a400800000000000000
-      internalID: 334100249911226268
+      spriteID: b65abc166a68a1480800000000000000
+      internalID: -8927675262145157781
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: c013_sheet_2
+      name: parallax0Night_2
       rect:
         serializedVersion: 2
-        x: 647
-        y: 255
-        width: 58
-        height: 66
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 1420
+        y: 0
+        width: 548
+        height: 214
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 00f201173815a66d0800000000000000
-      internalID: -2996492977082192128
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: c013_sheet_3
-      rect:
-        serializedVersion: 2
-        x: 39
-        y: 47
-        width: 58
-        height: 82
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b4649e94b6550bdf0800000000000000
-      internalID: -166539266922822069
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: c013_sheet_4
-      rect:
-        serializedVersion: 2
-        x: 423
-        y: 47
-        width: 42
-        height: 74
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 357fa090eaf1ef120800000000000000
-      internalID: 2449430079672612691
+      spriteID: 89a042d2a3dc40680800000000000000
+      internalID: -8789674922971231592
       vertices: []
       indices: 
       edges: []
@@ -238,7 +188,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -248,11 +198,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      c013_sheet_0: -5775330546779102156
-      c013_sheet_1: 334100249911226268
-      c013_sheet_2: -2996492977082192128
-      c013_sheet_3: -166539266922822069
-      c013_sheet_4: 2449430079672612691
+      parallax0Night_0: 4981366844124183797
+      parallax0Night_1: -8927675262145157781
+      parallax0Night_2: -8789674922971231592
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

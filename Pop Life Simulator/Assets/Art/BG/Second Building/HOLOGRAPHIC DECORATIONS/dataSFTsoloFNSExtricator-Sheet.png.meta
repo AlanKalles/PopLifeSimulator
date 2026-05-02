@@ -1,0 +1,641 @@
+fileFormatVersion: 2
+guid: 93ae84f6d05f0a346bcae8566a8bf8a6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8594810808352400153
+    second: dataSFTsoloFNSExtricator-Sheet_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 546
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 913688794e6e64770800000000000000
+      internalID: 8594810808352400153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 520
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1e8c822777d1974aa0794ced426025a
+      internalID: 900858428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 494
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f046505e2a4eea4e9e929845398fea2
+      internalID: 2027234886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 468
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c23b35d17d26ae4ba28110e5543305a
+      internalID: 1674894979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 442
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2eef0fa4704f9b42a531fe9a7700c5f
+      internalID: 1888408079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 416
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f19eaf7eae88d84bb504607b5dcf836
+      internalID: -528790402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 390
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 130380ef863ea8c42a71be3cda753391
+      internalID: -448665030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 364
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 360bf8d0bdb3d244ea5328dffa887825
+      internalID: 478987445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 338
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76652242e21d347459c70eabad517a9a
+      internalID: -495580562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 312
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 953f555a8dec81e4e96e95bb560804bc
+      internalID: 2052722462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 286
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a683b4921d3d4f44d925b8c364f20d79
+      internalID: -194109756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 260
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1756496dbb4e9154c97210203f9fb25b
+      internalID: 359971545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 234
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 365a3628389c2dc4dad755abc0b46de1
+      internalID: 438634057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 208
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e77c567efeb7cff46a2c652c5bc57d1a
+      internalID: 1188368002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 182
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be571357acd40c24f8396d22e477dcc8
+      internalID: 512729560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc99585cadbf0e140a116b3f27203e98
+      internalID: 1278594703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 130
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daa407ff3b4f0ac4c8dfcf9000333794
+      internalID: 877296422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4811c56c893d3ce42bf6aa4c08e210f2
+      internalID: -1310322762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 78
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3dda2f7e21e7084ea08ddf01b104705
+      internalID: -1829216240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 52
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04f8fa75834e76b41b2f0e8623ad22a2
+      internalID: -738398681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 26
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff6038479d9e5a64480c3098e1c3e8da
+      internalID: 2046179824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dataSFTsoloFNSExtricator-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 344
+        height: 26
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e804478a2bef49488db8c5d49eea641
+      internalID: 1365017551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4583e50acc4c56f40992d32f1fdc0040
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":22.0},"gridSpriteSize":{"x":344.0,"y":26.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":6,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      dataSFTsoloFNSExtricator-Sheet_0: 8594810808352400153
+      dataSFTsoloFNSExtricator-Sheet_1: 900858428
+      dataSFTsoloFNSExtricator-Sheet_10: -194109756
+      dataSFTsoloFNSExtricator-Sheet_11: 359971545
+      dataSFTsoloFNSExtricator-Sheet_12: 438634057
+      dataSFTsoloFNSExtricator-Sheet_13: 1188368002
+      dataSFTsoloFNSExtricator-Sheet_14: 512729560
+      dataSFTsoloFNSExtricator-Sheet_15: 1278594703
+      dataSFTsoloFNSExtricator-Sheet_16: 877296422
+      dataSFTsoloFNSExtricator-Sheet_17: -1310322762
+      dataSFTsoloFNSExtricator-Sheet_18: -1829216240
+      dataSFTsoloFNSExtricator-Sheet_19: -738398681
+      dataSFTsoloFNSExtricator-Sheet_2: 2027234886
+      dataSFTsoloFNSExtricator-Sheet_20: 2046179824
+      dataSFTsoloFNSExtricator-Sheet_21: 1365017551
+      dataSFTsoloFNSExtricator-Sheet_3: 1674894979
+      dataSFTsoloFNSExtricator-Sheet_4: 1888408079
+      dataSFTsoloFNSExtricator-Sheet_5: -528790402
+      dataSFTsoloFNSExtricator-Sheet_6: -448665030
+      dataSFTsoloFNSExtricator-Sheet_7: 478987445
+      dataSFTsoloFNSExtricator-Sheet_8: -495580562
+      dataSFTsoloFNSExtricator-Sheet_9: 2052722462
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

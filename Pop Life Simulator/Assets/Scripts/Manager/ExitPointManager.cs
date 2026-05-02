@@ -71,6 +71,29 @@ namespace PopLife
             return nearest;
         }
 
+        public ExitPoint GetNearestExitPointForStore(string storeId, Vector3 position)
+        {
+            if (string.IsNullOrWhiteSpace(storeId))
+                storeId = StoreIds.PlayerStore;
+
+            ExitPoint nearest = null;
+            float minDistance = float.MaxValue;
+
+            foreach (var exit in exitPoints)
+            {
+                if (exit == null || exit.StoreId != storeId) continue;
+
+                float distance = Vector3.Distance(position, exit.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearest = exit;
+                }
+            }
+
+            return nearest != null ? nearest : GetNearestExitPoint(position);
+        }
+
         /// <summary>
         /// 获取所有出口点
         /// </summary>

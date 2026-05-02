@@ -6,6 +6,7 @@ using PopLife.DialogueBridge;
 using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 using PopLife.Customers.Services;
+using PopLife.Runtime;
 using PopLife;
 
 
@@ -29,6 +30,11 @@ namespace PopLife.Customers.Spawner
 
         [Tooltip("防止顾客在同一天内离店后再次访问")]
         public bool preventSameDayRevisit = false;
+
+        [Header("Club routing")]
+        [Range(0f, 1f)]
+        public float clubGoerRatio = 0.3f;
+        public ShopZone clubZoneOverride;
 
         [Header("Store Appeal 影响")]
         [Tooltip("每增加多少 appeal 多允许1个顾客同时在场")]
@@ -264,6 +270,7 @@ namespace PopLife.Customers.Spawner
             Transform selectedSpawnPoint = GetRandomSpawnPoint();
             Vector3 spawnPosition = selectedSpawnPoint != null ? selectedSpawnPoint.position : Vector3.zero;
             GameObject go = Instantiate(customerPrefab, spawnPosition, Quaternion.identity);
+            go.SetActive(false);
 
             CustomerAgent agent = go.GetComponent<CustomerAgent>();
             if (agent == null)
@@ -272,31 +279,23 @@ namespace PopLife.Customers.Spawner
                 Destroy(go);
                 return;
             }
+            if (agent.bb == null) agent.bb = go.GetComponent<CustomerBlackboardAdapter>();
 
-            agent.Initialize(record, archetype, daySeed);
-
-            // 设置生成点（用于离开）
             if (agent.bb != null)
             {
-                agent.bb.spawnPoint = selectedSpawnPoint;
-
-                // 同步到 NodeCanvas 黑板
-#if NODECANVAS
-                if (agent.bb.ncBlackboard != null)
+                var targetStore = PickTargetStore(true);
+                if (!ConfigureVisitRoute(agent.bb, targetStore, selectedSpawnPoint))
                 {
-                    agent.bb.ncBlackboard.SetVariableValue("spawnPoint", selectedSpawnPoint);
+                    ConfigureLegacyPlayerRoute(agent.bb, selectedSpawnPoint);
                 }
-#endif
             }
 
-            // 记录顾客访问到 DayLoopManager
-            if (DayLoopManager.Instance != null)
-            {
-                DayLoopManager.Instance.RecordCustomerVisit();
-            }
+            agent.Initialize(record, archetype, daySeed);
+            ResetRuntimeInteractionState(agent.bb);
 
             lastSpawnedCustomer = $"{record.customerId}: {record.name}";
             Debug.Log($"成功生成顾客: {lastSpawnedCustomer}");
+            go.SetActive(true);
         }
 
         [ContextMenu("重新加载顾客数据")]
@@ -427,7 +426,7 @@ namespace PopLife.Customers.Spawner
             int upcomingSpawnNumber = spawnedTodayCount + 1;
             if (TryGetForcedDay1TutorialSpawn(upcomingSpawnNumber, out var forcedCustomer))
             {
-                if (SpawnCustomer(forcedCustomer))
+                if (SpawnCustomer(forcedCustomer, true))
                 {
                     spawnedTodayCount++;
                 }
@@ -595,10 +594,162 @@ namespace PopLife.Customers.Spawner
                 && Day1InteractionTutorialController.Instance.IsDay1ForcedSpawnCustomerIdReserved(customerId);
         }
 
+        private ShopZone PickTargetStore(bool forcePlayerStore)
+        {
+            var registry = ShopZoneRegistry.Instance;
+            if (registry == null || registry.DefaultPlayerZone == null)
+            {
+                return null;
+            }
+
+            if (forcePlayerStore)
+            {
+                return registry.DefaultPlayerZone;
+            }
+
+            var clubZone = clubZoneOverride != null
+                ? clubZoneOverride
+                : registry.All.FirstOrDefault(zone => zone != null && zone.IsClub);
+
+            if (clubZone != null && UnityEngine.Random.value < clubGoerRatio)
+            {
+                return clubZone;
+            }
+
+            return registry.DefaultPlayerZone;
+        }
+
+        private ShopZone ResolveRouteZone(ShopZone requestedZone)
+        {
+            var registry = ShopZoneRegistry.Instance;
+            if (registry == null || registry.DefaultPlayerZone == null)
+            {
+                return null;
+            }
+
+            var targetZone = requestedZone != null ? requestedZone : registry.DefaultPlayerZone;
+            if (targetZone.Entrance == null)
+            {
+                Debug.LogError($"[CustomerSpawner] Zone '{targetZone.StoreId}' missing entrance");
+                return targetZone == registry.DefaultPlayerZone ? null : ResolveRouteZone(registry.DefaultPlayerZone);
+            }
+
+            if (targetZone.IsClub && targetZone.TrackingPoint == null)
+            {
+                Debug.LogError($"[CustomerSpawner] Club zone '{targetZone.StoreId}' missing trackingPoint");
+                return ResolveRouteZone(registry.DefaultPlayerZone);
+            }
+
+            return targetZone;
+        }
+
+        private bool ConfigureVisitRoute(CustomerBlackboardAdapter bb, ShopZone requestedZone, Transform spawnPoint)
+        {
+            if (bb == null) return false;
+
+            var targetZone = ResolveRouteZone(requestedZone);
+            if (targetZone == null)
+            {
+                return false;
+            }
+
+            bb.assignedZone = targetZone;
+            bb.visitPurpose = targetZone.IsClub ? CustomerVisitPurpose.Club : CustomerVisitPurpose.PlayerStore;
+            bb.destinationStoreId = targetZone.StoreId;
+            bb.spawnPoint = spawnPoint;
+            bb.hasEnteredStore = false;
+
+            if (targetZone.IsClub)
+            {
+                bb.clubTrackingPoint = targetZone.TrackingPoint.transform;
+                bb.clubStayDuration = targetZone.TrackingPoint.SampleDuration();
+            }
+            else
+            {
+                bb.clubTrackingPoint = null;
+                bb.clubStayDuration = 0f;
+            }
+
+            bb.entranceOutsideAnchor = targetZone.Entrance.outsideAnchor;
+            bb.entranceInsideAnchor = targetZone.Entrance.insideAnchor;
+            SyncRouteToNodeCanvas(bb);
+
+            if (bb.visitPurpose == CustomerVisitPurpose.PlayerStore)
+            {
+                DayLoopManager.Instance?.RecordCustomerVisit();
+            }
+
+            Debug.Log($"[CustomerSpawner] 顾客 {bb.customerId} route: {bb.visitPurpose} -> {bb.destinationStoreId}");
+            return true;
+        }
+
+        private bool ConfigureLegacyPlayerRoute(CustomerBlackboardAdapter bb, Transform spawnPoint)
+        {
+            if (bb == null) return false;
+
+            bb.assignedZone = null;
+            bb.visitPurpose = CustomerVisitPurpose.PlayerStore;
+            bb.destinationStoreId = StoreIds.PlayerStore;
+            bb.clubTrackingPoint = null;
+            bb.clubStayDuration = 0f;
+            bb.spawnPoint = spawnPoint;
+            bb.hasEnteredStore = false;
+
+            if (EntranceManager.Instance != null)
+            {
+                var entrance = EntranceManager.Instance.GetMainEntrance();
+                if (entrance != null)
+                {
+                    bb.entranceOutsideAnchor = entrance.outsideAnchor;
+                    bb.entranceInsideAnchor = entrance.insideAnchor;
+                    Debug.Log($"[CustomerSpawner] 顾客 {bb.customerId} 入口已设置: {entrance.entranceId}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[CustomerSpawner] 无法为顾客 {bb.customerId} 设置入口：EntranceManager 没有可用入口");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[CustomerSpawner] EntranceManager 未找到，无法设置入口锚点");
+            }
+
+            SyncRouteToNodeCanvas(bb);
+            DayLoopManager.Instance?.RecordCustomerVisit();
+            return true;
+        }
+
+        private static void ResetRuntimeInteractionState(CustomerBlackboardAdapter bb)
+        {
+            if (bb == null) return;
+            bb.assignedInteraction = null;
+            bb.interactionUsedToday = false;
+            bb.interactionBubbleActive = false;
+            bb.interactionClickAllowed = false;
+            bb.interactionDialogueStarted = false;
+        }
+
+        private static void SyncRouteToNodeCanvas(CustomerBlackboardAdapter bb)
+        {
+#if NODECANVAS
+            if (bb?.ncBlackboard != null)
+            {
+                bb.ncBlackboard.SetVariableValue("spawnPoint", bb.spawnPoint);
+                bb.ncBlackboard.SetVariableValue("entranceOutsideAnchor", bb.entranceOutsideAnchor);
+                bb.ncBlackboard.SetVariableValue("entranceInsideAnchor", bb.entranceInsideAnchor);
+                bb.ncBlackboard.SetVariableValue("hasEnteredStore", bb.hasEnteredStore);
+                bb.ncBlackboard.SetVariableValue("isClubGoer", bb.visitPurpose == CustomerVisitPurpose.Club);
+                bb.ncBlackboard.SetVariableValue("destinationStoreId", bb.destinationStoreId);
+                bb.ncBlackboard.SetVariableValue("clubTrackingPoint", bb.clubTrackingPoint);
+                bb.ncBlackboard.SetVariableValue("clubStayDuration", bb.clubStayDuration);
+            }
+#endif
+        }
+
         /// <summary>
         /// 生成顾客实例（内部方法）
         /// </summary>
-        private bool SpawnCustomer(CustomerRecord record)
+        private bool SpawnCustomer(CustomerRecord record, bool forcePlayerStore = false)
         {
             if (record == null)
             {
@@ -632,6 +783,7 @@ namespace PopLife.Customers.Spawner
             // 实例化
             int daySeed = UnityEngine.Random.Range(0, int.MaxValue);
             GameObject go = Instantiate(customerPrefab, spawnPosition, Quaternion.identity);
+            go.SetActive(false);
 
             CustomerAgent agent = go.GetComponent<CustomerAgent>();
             if (agent == null)
@@ -640,51 +792,18 @@ namespace PopLife.Customers.Spawner
                 Destroy(go);
                 return false;
             }
+            if (agent.bb == null) agent.bb = go.GetComponent<CustomerBlackboardAdapter>();
 
-            agent.Initialize(record, archetype, daySeed);
-
-            // 设置生成点（用于最终撤离）
             if (agent.bb != null)
             {
-                agent.bb.spawnPoint = spawnPoint;
-
-                // 设置商店入口锚点
-                if (EntranceManager.Instance != null)
+                var targetStore = PickTargetStore(forcePlayerStore);
+                if (!ConfigureVisitRoute(agent.bb, targetStore, spawnPoint))
                 {
-                    var entrance = EntranceManager.Instance.GetMainEntrance();
-                    if (entrance != null)
-                    {
-                        agent.bb.entranceOutsideAnchor = entrance.outsideAnchor;
-                        agent.bb.entranceInsideAnchor = entrance.insideAnchor;
-                        Debug.Log($"[CustomerSpawner] 顾客 {record.customerId} 入口已设置: {entrance.entranceId}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[CustomerSpawner] 无法为顾客 {record.customerId} 设置入口：EntranceManager 没有可用入口");
-                    }
+                    ConfigureLegacyPlayerRoute(agent.bb, spawnPoint);
                 }
-                else
-                {
-                    Debug.LogWarning("[CustomerSpawner] EntranceManager 未找到，无法设置入口锚点");
-                }
-
-                // 同步到 NodeCanvas 黑板
-#if NODECANVAS
-                if (agent.bb.ncBlackboard != null)
-                {
-                    agent.bb.ncBlackboard.SetVariableValue("spawnPoint", spawnPoint);
-                    agent.bb.ncBlackboard.SetVariableValue("entranceOutsideAnchor", agent.bb.entranceOutsideAnchor);
-                    agent.bb.ncBlackboard.SetVariableValue("entranceInsideAnchor", agent.bb.entranceInsideAnchor);
-                    agent.bb.ncBlackboard.SetVariableValue("hasEnteredStore", false);
-                }
-#endif
             }
 
-            // 记录访问
-            if (DayLoopManager.Instance != null)
-            {
-                DayLoopManager.Instance.RecordCustomerVisit();
-            }
+            agent.Initialize(record, archetype, daySeed);
 
             // 记录今日已访问（用于防止同日重复访问）
             if (preventSameDayRevisit && !string.IsNullOrEmpty(record.customerId))
@@ -698,16 +817,11 @@ namespace PopLife.Customers.Spawner
             // 在分配前重置所有交互状态是防御性编码。
             // 如果未来改为对象池复用，不会出现 interactionUsedToday 残留为 true
             // 导致该 GameObject 永远无法再次触发交互的问题。
-            if (agent.bb != null)
-            {
-                agent.bb.assignedInteraction = null;
-                agent.bb.interactionUsedToday = false;
-                agent.bb.interactionBubbleActive = false;
-                agent.bb.interactionDialogueStarted = false;
-            }
+            ResetRuntimeInteractionState(agent.bb);
 
             lastSpawnedCustomer = $"{record.customerId}: {record.name}";
             Debug.Log($"[CustomerSpawner] 自动生成顾客: {lastSpawnedCustomer}");
+            go.SetActive(true);
             return true;
         }
 

@@ -12,6 +12,8 @@ namespace PopLife.Runtime
     {
         [Header("地板标记")]
         [SerializeField] private bool isDefaultFloor;
+        [SerializeField] private StoreIdKind storeId = StoreIdKind.PlayerStore;
+        [SerializeField] private ClubGlassController glassController;
 
         /// <summary> 默认一楼标记（不可移动/拆除） </summary>
         public bool IsDefault
@@ -19,6 +21,8 @@ namespace PopLife.Runtime
             get => isDefaultFloor;
             set => isDefaultFloor = value;
         }
+
+        public string StoreId => StoreIds.ToId(storeId);
 
         /// <summary> 获取地板尺寸（从原型） </summary>
         public Vector2Int TileSize => archetype is FloorTileArchetype fta ? fta.TileSize : Vector2Int.one;
@@ -53,6 +57,26 @@ namespace PopLife.Runtime
 
         public override int GetMaintenanceFee() => 0;
 
+        public void SetStoreId(string newStoreId, bool rebuildNav = true)
+        {
+            newStoreId = string.IsNullOrWhiteSpace(newStoreId) ? StoreIds.PlayerStore : newStoreId;
+            var newKind = newStoreId == StoreIds.Club ? StoreIdKind.Club : StoreIdKind.PlayerStore;
+            if (storeId == newKind) return;
+
+            storeId = newKind;
+
+            var zone = ShopZoneRegistry.Instance?.GetByStoreId(StoreId);
+            if (glassController != null && zone != null)
+            {
+                glassController.SetVisible(zone.UseGlassOverlayWhenUnowned && !zone.IsOwnedByPlayer);
+            }
+
+            if (rebuildNav)
+            {
+                PopLife.Customers.Services.NavigationService.Instance?.RebuildAllGraphs();
+            }
+        }
+
         protected override void OnInitialized()
         {
             // 设置独立 Layer
@@ -60,6 +84,17 @@ namespace PopLife.Runtime
             if (layerId != -1)
                 gameObject.layer = layerId;
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (Application.isPlaying) return;
+            if (archetype is FloorTileArchetype floorTileArchetype)
+            {
+                storeId = floorTileArchetype.StoreId == StoreIds.Club ? StoreIdKind.Club : StoreIdKind.PlayerStore;
+            }
+        }
+#endif
 
         // ── InteriorGrid 初始化 ──────────────────────────────────
 
@@ -97,6 +132,7 @@ namespace PopLife.Runtime
         public BuildingInstance PlaceBuildingTransactional(BuildingArchetype arch, Vector2Int localPos, int rot)
         {
             if (Interior == null) return null;
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(this)) return null;
 
             // 通过 IInteriorPlaceable 接口验证（支持 archetype 级自定义规则）
             if (arch is Data.IInteriorPlaceable ip)
@@ -158,6 +194,7 @@ namespace PopLife.Runtime
         public bool MoveBuilding(BuildingInstance bi, Vector2Int newLocalPos, int newRot)
         {
             if (Interior == null) return false;
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(this)) return false;
 
             if (!Interior.MoveBuilding(bi, newLocalPos, newRot))
                 return false;
@@ -180,6 +217,9 @@ namespace PopLife.Runtime
         {
             if (bi == null || targetTile == null || targetTile.Interior == null) return false;
             if (bi is FloorTileInstance) return false; // FloorTile 走 WorldGrid.ReregisterFloorTile 路径
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(this)
+                || ConstructionGuards.IsTileReadOnlyForPlayer(targetTile))
+                return false;
 
             // 同 tile 快速通道：复用既有逻辑
             if (targetTile == this) return MoveBuilding(bi, targetLocalPos, newRot);
@@ -227,6 +267,7 @@ namespace PopLife.Runtime
         public void RemoveBuilding(BuildingInstance bi, bool refundMoney = false)
         {
             if (Interior == null) return;
+            if (ConstructionGuards.IsTileReadOnlyForPlayer(this)) return;
 
             Interior.UnregisterBuilding(bi);
 

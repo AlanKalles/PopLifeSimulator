@@ -319,7 +319,8 @@ namespace PopLife.Runtime
                     var cursorLocal = currentTargetTile.Interior.WorldToLocal(mouse);
                     var fp = selectedArchetype.GetRotatedFootprint(previewRot);
                     var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
-                    canPlace = ip.ValidateInteriorPlacement(currentTargetTile.Interior, snapped, previewRot);
+                    canPlace = !ConstructionGuards.IsTileReadOnlyForPlayer(currentTargetTile)
+                        && ip.ValidateInteriorPlacement(currentTargetTile.Interior, snapped, previewRot);
 
                     ShowPlacedPreviewAt(currentTargetTile.Interior.LocalToWorld(snapped), previewRot);
                     UpdatePlacedPreviewColor(canPlace);
@@ -379,6 +380,12 @@ namespace PopLife.Runtime
                     // Shelf/Facility/Elevator: 通过 FloorTileInstance.Interior 放置，auto-snap 到底部
                     if (currentTargetTile != null && currentTargetTile.Interior != null)
                     {
+                        if (ConstructionGuards.IsTileReadOnlyForPlayer(currentTargetTile))
+                        {
+                            UIManager.Instance?.ShowAlert("Cannot build inside this area.");
+                            return;
+                        }
+
                         var cursorLocal = currentTargetTile.Interior.WorldToLocal(mouse);
                         var fp = selectedArchetype.GetRotatedFootprint(previewRot);
                         var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
@@ -519,6 +526,12 @@ namespace PopLife.Runtime
             var wg = WorldGrid.Instance;
             if (wg == null) return;
 
+            if (IsBuildingReadOnlyForPlayer(bi))
+            {
+                UIManager.Instance?.ShowAlert("Cannot move: this area is not owned by you.");
+                return;
+            }
+
             // Editor 锁定检查
             if (bi.EditorLockedMove)
             {
@@ -639,6 +652,10 @@ namespace PopLife.Runtime
                     var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
 
                     if (elevatorCrossFloor)
+                    {
+                        canPlace = false;
+                    }
+                    else if (ConstructionGuards.IsTileReadOnlyForPlayer(targetTile))
                     {
                         canPlace = false;
                     }
@@ -774,6 +791,11 @@ namespace PopLife.Runtime
                         var targetTile = DetectFloorTileAtWorld(mouse);
                         if (sourceTile != null && targetTile != null && targetTile.Interior != null)
                         {
+                            if (ConstructionGuards.IsTileReadOnlyForPlayer(targetTile))
+                            {
+                                return;
+                            }
+
                             var cursorLocal = targetTile.Interior.WorldToLocal(mouse);
                             var fp = selectedInstance.archetype.GetRotatedFootprint(previewRot);
                             var snapped = InteriorGrid.SnapToBottom(cursorLocal, fp);
@@ -1053,6 +1075,12 @@ namespace PopLife.Runtime
                     BuildingInstance building = hit.collider.GetComponent<BuildingInstance>();
                     if (building != null)
                     {
+                        if (IsBuildingReadOnlyForPlayer(building))
+                        {
+                            UIManager.Instance?.ShowAlert("Cannot destroy: this area is not owned by you.");
+                            return;
+                        }
+
                         // Editor 锁定检查
                         if (building.EditorLockedDestroy)
                         {
@@ -1227,6 +1255,12 @@ namespace PopLife.Runtime
                 {
                     var wg = WorldGrid.Instance;
 
+                    if (ConstructionGuards.IsTileReadOnlyForPlayer(hoveredFloorTile))
+                    {
+                        UIManager.Instance?.ShowAlert("Cannot destroy: this area is not owned by you.");
+                        return;
+                    }
+
                     // Editor 锁定检查
                     if (hoveredFloorTile.EditorLockedDestroy)
                     {
@@ -1393,6 +1427,11 @@ namespace PopLife.Runtime
             foreach (var tile in wg.AllFloorTiles())
                 if (tile.instanceId == id) return tile;
             return null;
+        }
+
+        private bool IsBuildingReadOnlyForPlayer(BuildingInstance building)
+        {
+            return ConstructionGuards.IsTileReadOnlyForPlayer(WorldGrid.ResolveHostTile(building));
         }
 
         // 根据建筑类型播放对应的建造音效
