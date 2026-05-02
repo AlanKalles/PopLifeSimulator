@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
+  m_Name: BDSM
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
+  questName: BDSM
+  questType: 1
+  deadlineDays: 0
+  giverName: Midori
+  giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
+  rewards:
+  - type: 0
+    amount: 100
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: Collar
+  - type: 2
+    amount: 1
+    itemId: Handcuffs
+  - type: 2
+    amount: 1
+    itemId: Whip
+  - type: 3
+    amount: 1
+    itemId: Unc
+  conditions: []
+  activationMarker: 83
+  completionMarker: 82
+  triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
+  title: BDSM
+  description: Cater to customers who enjoy bondage and discipline.
+  successDescription: You gained 100 Money and unlocked the Handcuffs blueprint!
+  entryTexts:
+  - Stock BDSM products
+  questIcon: {fileID: 0}
+  sortPriority: 140

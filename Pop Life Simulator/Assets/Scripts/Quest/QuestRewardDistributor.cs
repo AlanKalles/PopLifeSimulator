@@ -1,6 +1,7 @@
 using UnityEngine;
 using PopLife.Data;
 using PopLife.Customers.Data;
+using PopLife.Customers.Services;
 using PopLife.UI.Quest;
 
 namespace PopLife.Quest
@@ -54,10 +55,23 @@ namespace PopLife.Quest
                 case RewardType.Customer:
                     if (!string.IsNullOrEmpty(reward.itemId))
                     {
-                        var profile = SpawnerProfile.Load();
-                        if (profile != null && !profile.unlockedCustomerIds.Contains(reward.itemId))
+                        // itemId stores customer name; resolve to customerId via repository
+                        string customerId = reward.itemId;
+                        if (CustomerRepository.Instance != null)
                         {
-                            profile.unlockedCustomerIds.Add(reward.itemId);
+                            foreach (var rec in CustomerRepository.Instance.All())
+                            {
+                                if (rec.name == reward.itemId)
+                                {
+                                    customerId = rec.customerId;
+                                    break;
+                                }
+                            }
+                        }
+                        var profile = SpawnerProfile.Load();
+                        if (profile != null && !profile.unlockedCustomerIds.Contains(customerId))
+                        {
+                            profile.unlockedCustomerIds.Add(customerId);
                             profile.Save();
                         }
                     }

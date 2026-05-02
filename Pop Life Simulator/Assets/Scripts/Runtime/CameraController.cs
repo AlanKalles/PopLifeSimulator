@@ -262,6 +262,29 @@ namespace PopLife.Runtime
             targetCamera.orthographicSize = baseOrthographicSize;
         }
 
+        public void SetImmediateView(Vector3 position, float orthographicSize)
+        {
+            if (targetCamera == null)
+            {
+                targetCamera = GetComponent<Camera>();
+                if (targetCamera == null) targetCamera = Camera.main;
+            }
+
+            if (targetCamera == null) return;
+
+            targetCamera.transform.position = position;
+
+            if (targetCamera.orthographic && orthographicSize > 0f)
+            {
+                targetCamera.orthographicSize = orthographicSize;
+                float zoom = baseOrthographicSize > 0f
+                    ? orthographicSize / baseOrthographicSize
+                    : 1f;
+                currentZoom = zoom;
+                targetZoom = zoom;
+            }
+        }
+
         public float GetCurrentZoom()
         {
             return currentZoom;

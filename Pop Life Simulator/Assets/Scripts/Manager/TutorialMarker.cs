@@ -77,8 +77,84 @@ namespace PopLife.Manager
         // Lottery
         LotteryUnlocked,          // = 31  第3天解锁彩票系统 (引用: _LotteryUnlock.asset)
 
-        // Restock
-        CallRestock,              // = 32  解锁 Restock Button
-        FirstRestockDecisionMade, // = 33  首次在 RestockPanel 点击 Restock 或 Skip Restock 按钮（任一即触发，仅一次）
+        // Day-based triggers for quest chain activation (raised by DayLoopManager)
+        Day2Trigger,              // = 32  raised by DayLoopManager on Day 2 start
+        Day3Trigger,              // = 33
+        Day4Trigger,              // = 34
+        Day8Trigger,              // = 35
+        Day10Trigger,             // = 36
+        Day12Trigger,             // = 37
+        Day15Trigger,             // = 38
+
+        // Chain 1: Buildings placed (current total) — starts Day 10
+        a_Building1C,             // = 39
+        a_Building2C,             // = 40
+        a_Building3C,             // = 41
+        a_Building5C,             // = 42
+        a_Building7C,             // = 43
+        a_Building10C,            // = 44
+
+        // Chain 2: Daily revenue thresholds — starts Day 3
+        a_Revenue50C,             // = 45
+        a_Revenue100C,            // = 46
+        a_Revenue200C,            // = 47
+        a_Revenue500C,            // = 48
+        a_Revenue1000C,           // = 49
+
+        // Chain 3: Lifetime income thresholds — starts Day 2
+        a_Income500C,             // = 50
+        a_Income1000C,            // = 51
+        a_Income3000C,            // = 52
+        a_Income5000C,            // = 53
+        a_Income10000C,           // = 54
+
+        // Chain 4: Daily customers served — starts Day 4
+        a_DailyCustomers5C,       // = 55
+        a_DailyCustomers10C,      // = 56
+        a_DailyCustomers20C,      // = 57
+        a_DailyCustomers50C,      // = 58
+        a_DailyCustomers100C,     // = 59
+
+        // Chain 5: Blueprints unlocked (manual trigger) — starts Day 8
+        a_BP10C,                  // = 60
+        a_BP20C,                  // = 61
+        a_BP50C,                  // = 62
+
+        // Chain 6: Total customers served (cumulative) — starts Day 12
+        a_Serve100C,              // = 63
+        a_Serve500C,              // = 64
+        a_Serve1000C,             // = 65
+
+        // Chain 7: Total items sold (cumulative) — starts Day 15
+        a_Sell1000C,              // = 66
+        a_Sell5000C,              // = 67
+        a_Sell10000C,             // = 68
+
+        // Story quest completion flags
+        a_WelcomeC,               // = 69
+        a_FirstshelfC,            // = 70
+        a_FiveshelfC,             // = 71
+        a_TenshelfC,              // = 72
+        a_ProtectionC,            // = 73
+        a_WellnessC,              // = 74
+        a_BoostC,                 // = 75
+        a_PleasureCondomC,        // = 76
+        a_InclusivenessC,         // = 77
+        a_CucciC,                 // = 78
+        a_AwkwardSexC,            // = 79
+        a_BrandingStrategyC,      // = 80
+        a_CyberC,                 // = 81
+        a_BDSMC,                  // = 82
+        a_RoughSexC,              // = 83
+        a_AnalC,                  // = 84
+        a_FirstChildrensDayC,     // = 85
+
+        // Seasonal events
+        ChildrensDayFinished,     // = 86  fired when the Children's Day seasonal event ends (TODO: 接 CalendarManager)
+
+        // Restock — moved to end after merging anna's chain markers (was 32/33 originally)
+        // ⚠️ 重命名/重排号会破坏 SO 引用，需要同步改 .asset 中的 activationMarker 数字
+        CallRestock,              // = 87  解锁 Restock Button
+        FirstRestockDecisionMade, // = 88  首次在 RestockPanel 点击 Restock 或 Skip Restock 按钮（任一即触发，仅一次）(引用: 4_FinishRestock.asset)
     }
 }

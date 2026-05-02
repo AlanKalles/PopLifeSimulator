@@ -74,6 +74,8 @@ namespace PopLife.Data
         [SerializeField] private TutorialMarker completionMarker = TutorialMarker.None;
         [Tooltip("勾选后，Marker 在完成通知 Toast 消失后才触发；否则任务完成时立即触发")]
         [SerializeField] private bool triggerMarkerAfterToast = false;
+        [Tooltip("勾选后，任务激活的同一帧立即自动完成（适用于纯触发型任务，无需玩家操作）")]
+        [SerializeField] private bool autoCompleteOnActivation = false;
 
         [Header("显示文本")]
         [Tooltip("任务标题（UI显示用，留空则使用 questName）")]
@@ -93,7 +95,7 @@ namespace PopLife.Data
         [Header("UI 显示")]
         [SerializeField] private Sprite questIcon;
         [Tooltip("排序优先级，值越大越靠前")]
-        [Range(0, 100)]
+        [Range(0, 1000)]
         [SerializeField] private int sortPriority = 50;
 
         // 公共属性
@@ -111,6 +113,7 @@ namespace PopLife.Data
         public TutorialMarker ActivationMarker => activationMarker;
         public TutorialMarker CompletionMarker => completionMarker;
         public bool TriggerMarkerAfterToast => triggerMarkerAfterToast;
+        public bool AutoCompleteOnActivation => autoCompleteOnActivation;
         public Sprite QuestIcon => questIcon;
         public int SortPriority => sortPriority;
 

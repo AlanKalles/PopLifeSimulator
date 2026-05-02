@@ -117,7 +117,30 @@ namespace PopLife.DialogueBridge
             }
         }
 
-        private void PauseGameplay()
+        public void PushExternalPause(CustomerAgent exemptCustomer = null)
+        {
+            pauseDepth++;
+            if (pauseDepth == 1)
+            {
+                PauseGameplay(exemptCustomer);
+            }
+        }
+
+        public void PopExternalPause()
+        {
+            if (pauseDepth <= 0)
+            {
+                return;
+            }
+
+            pauseDepth--;
+            if (pauseDepth == 0)
+            {
+                ResumeGameplayIfNeeded(force: false);
+            }
+        }
+
+        private void PauseGameplay(CustomerAgent exemptCustomer = null)
         {
             customerSnapshots.Clear();
             DayLoopManager.Instance?.PauseGameplayClock();
@@ -128,6 +151,7 @@ namespace PopLife.DialogueBridge
             foreach (var customer in customers)
             {
                 if (customer == null) continue;
+                if (exemptCustomer != null && customer == exemptCustomer) continue;
 
                 var snapshot = new CustomerPauseSnapshot
                 {

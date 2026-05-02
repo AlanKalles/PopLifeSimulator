@@ -25,7 +25,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
             WaitForClick,     // 播放 emoji 动画，等待玩家点击或超时
             WaitForDialogue,  // 等待对话完成
             HandleResult,     // 处理结果，发放奖励
-            WaitForResultDialogue
+            WaitForResultDialogue,
+            WaitForClubOutro
         }
 
         [UnityEngine.Header("黑板绑定")]
@@ -119,6 +120,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 case Phase.WaitForDialogue: UpdateWaitForDialogue(); break;
                 case Phase.HandleResult:    HandleResult();          break;
                 case Phase.WaitForResultDialogue: UpdateWaitForResultDialogue(); break;
+                case Phase.WaitForClubOutro: UpdateWaitForClubOutro(); break;
             }
         }
 
@@ -286,7 +288,27 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         private void UpdateWaitForResultDialogue()
         {
-            if (!resultDialogueStarted || !DialogueManager.isConversationActive)
+            if (resultDialogueStarted && DialogueManager.isConversationActive)
+            {
+                return;
+            }
+
+            var controller = Day1InteractionTutorialController.Instance;
+            if (isDay1TutorialInteraction
+                && controller != null
+                && controller.TryStartClubOutro(customerAgent))
+            {
+                currentPhase = Phase.WaitForClubOutro;
+                return;
+            }
+
+            CleanupAndEnd();
+        }
+
+        private void UpdateWaitForClubOutro()
+        {
+            var controller = Day1InteractionTutorialController.Instance;
+            if (controller == null || !controller.IsClubOutroRunning)
             {
                 CleanupAndEnd();
             }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using PopLife.Customers.Runtime;
 using PopLife.Data;
+using PopLife.Manager;
 using PopLife.UI;
 
 namespace PopLife
@@ -526,8 +527,33 @@ namespace PopLife
 
             OnDayChanged?.Invoke(currentDay);
             OnBuildPhaseStart?.Invoke();
+            RaiseDayTrigger(currentDay);
 
             Debug.Log($"[DayLoopManager] 进入 Day {currentDay} 建造阶段，时间设为 {buildPhaseHour:F1}:00");
+        }
+
+        /// <summary>
+        /// Fires the day-specific TutorialMarker trigger for quest chain activation.
+        /// </summary>
+        private void RaiseDayTrigger(int day)
+        {
+            TutorialMarker marker = day switch
+            {
+                2  => TutorialMarker.Day2Trigger,
+                3  => TutorialMarker.Day3Trigger,
+                4  => TutorialMarker.Day4Trigger,
+                8  => TutorialMarker.Day8Trigger,
+                10 => TutorialMarker.Day10Trigger,
+                12 => TutorialMarker.Day12Trigger,
+                15 => TutorialMarker.Day15Trigger,
+                _  => TutorialMarker.None,
+            };
+
+            if (marker != TutorialMarker.None)
+            {
+                TutorialEventBus.RaiseMarker(marker);
+                Debug.Log($"[DayLoopManager] Day {day} trigger raised: {marker}");
+            }
         }
 
         /// <summary>

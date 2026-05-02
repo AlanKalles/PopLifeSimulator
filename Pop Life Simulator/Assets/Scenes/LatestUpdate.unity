@@ -49450,7 +49450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Manager.MarkerActivatedVisibility
   bindings:
-  - marker: 32
+  - marker: 87
     target: {fileID: 464772316}
   - marker: 29
     target: {fileID: 1889317442}
@@ -52268,10 +52268,15 @@ MonoBehaviour:
   forcedDay1ThirdSpawnCustomerId: C017
   midoriIntroConversation: Midori/5
   midoriResultConversation: Midori/6
+  midoriClubOutroConversation: Midori/7
   spotlightDelaySeconds: 0.4
   clickWindowSeconds: 10
+  clubOutroCameraPosition: {x: 30.034355, y: 4.6590786, z: -10}
+  clubOutroOrthographicSize: 9.8
+  clubOutroCameraMoveSeconds: 1.2
   forcedCustomerId: 
   day1OverrideActive: 0
+  clubOutroRunning: 0
 --- !u!1 &2104203163
 GameObject:
   m_ObjectHideFlags: 0

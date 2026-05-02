@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf8e2d5307faa746a9a66646bd6bc61, type: 3}
+  m_Name: PROTESTOR GATHER
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.BufferData
+  bufferId: PROTESTOR GATHER
+  displayName: Protestor Gather
+  description: The White Ring Sect is unhappy with your lewd business. They're protesting
+    in front of your store.
+  icon: {fileID: 0}
+  triggerType: 0
+  occurProbability: 0.01
+  hostCost: 0
+  durationDays: 2
+  terminateProbability: 0
+  modifierPayload:
+    constructionCostMultiplier: 1
+    upgradeCostMultiplier: 1
+    customerSpawnRateMultiplier: 1
+    customerMoneyBagMultiplier: 1
+    globalFameGainMultiplier: 1
+    categoryPriceModifiers: []
+    categoryFameModifiers: []
+    categoryQuantityModifiers: []
+    shelfAppealModifiers: []
+    bonusInterestCategories: 
