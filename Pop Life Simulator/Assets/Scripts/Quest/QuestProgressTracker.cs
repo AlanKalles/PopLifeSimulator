@@ -23,8 +23,6 @@ namespace PopLife.Quest
         private Dictionary<string, int[]> dailyCounters = new();
         // 正在追踪的任务集合
         private HashSet<string> trackingQuests = new();
-        // 遍历用临时列表（避免遍历中修改集合）
-        private List<string> trackingSnapshot = new();
 
         private bool debugMode;
 
@@ -148,9 +146,9 @@ namespace PopLife.Quest
         private void HandlePurchased(CustomerAgent agent, ShelfInstance shelf, int qty, int price)
         {
             var shelfArchetype = shelf.archetype as ShelfArchetype;
-            RefreshSnapshot();
+            var snapshot = SnapshotTrackingQuests();
 
-            foreach (string questName in trackingSnapshot)
+            foreach (string questName in snapshot)
             {
                 var def = QuestDataService.Instance?.GetDefinition(questName);
                 if (def?.Conditions == null) continue;
@@ -175,8 +173,8 @@ namespace PopLife.Quest
         /// </summary>
         private void HandleCheckedOut(CustomerAgent agent)
         {
-            RefreshSnapshot();
-            foreach (string questName in trackingSnapshot)
+            var snapshot = SnapshotTrackingQuests();
+            foreach (string questName in snapshot)
             {
                 var def = QuestDataService.Instance?.GetDefinition(questName);
                 if (def?.Conditions == null) continue;
@@ -197,8 +195,8 @@ namespace PopLife.Quest
         /// </summary>
         private void HandleBuildingChanged()
         {
-            RefreshSnapshot();
-            foreach (string questName in trackingSnapshot)
+            var snapshot = SnapshotTrackingQuests();
+            foreach (string questName in snapshot)
             {
                 var def = QuestDataService.Instance?.GetDefinition(questName);
                 if (def?.Conditions == null) continue;
@@ -223,8 +221,8 @@ namespace PopLife.Quest
         /// </summary>
         private void HandleMoneyChanged(int currentMoney)
         {
-            RefreshSnapshot();
-            foreach (string questName in trackingSnapshot)
+            var snapshot = SnapshotTrackingQuests();
+            foreach (string questName in snapshot)
             {
                 var def = QuestDataService.Instance?.GetDefinition(questName);
                 if (def?.Conditions == null) continue;
@@ -250,8 +248,8 @@ namespace PopLife.Quest
         /// </summary>
         private void HandleStoreAppealChanged(int currentAppeal)
         {
-            RefreshSnapshot();
-            foreach (string questName in trackingSnapshot)
+            var snapshot = SnapshotTrackingQuests();
+            foreach (string questName in snapshot)
             {
                 var def = QuestDataService.Instance?.GetDefinition(questName);
                 if (def?.Conditions == null) continue;
@@ -271,8 +269,8 @@ namespace PopLife.Quest
         /// </summary>
         private void HandleDailySettlement(DailySettlementData data)
         {
-            RefreshSnapshot();
-            foreach (string questName in trackingSnapshot)
+            var snapshot = SnapshotTrackingQuests();
+            foreach (string questName in snapshot)
             {
                 var def = QuestDataService.Instance?.GetDefinition(questName);
                 if (def?.Conditions == null) continue;
@@ -299,8 +297,8 @@ namespace PopLife.Quest
         /// </summary>
         public void ProcessDayChanged(int newDay)
         {
-            RefreshSnapshot();
-            foreach (string questName in trackingSnapshot)
+            var snapshot = SnapshotTrackingQuests();
+            foreach (string questName in snapshot)
             {
                 var def = QuestDataService.Instance?.GetDefinition(questName);
                 if (def?.Conditions == null) continue;
@@ -419,12 +417,15 @@ namespace PopLife.Quest
         #region 辅助方法
 
         /// <summary>
-        /// 刷新遍历快照（避免遍历中因事件回调导致集合被修改）
+        /// 生成 trackingQuests 的独立快照
+        /// 每次返回新数组：保证事件处理器嵌套触发时各自的遍历不会互相破坏
         /// </summary>
-        private void RefreshSnapshot()
+        private string[] SnapshotTrackingQuests()
         {
-            trackingSnapshot.Clear();
-            trackingSnapshot.AddRange(trackingQuests);
+            if (trackingQuests.Count == 0) return Array.Empty<string>();
+            var arr = new string[trackingQuests.Count];
+            trackingQuests.CopyTo(arr);
+            return arr;
         }
 
         /// <summary>

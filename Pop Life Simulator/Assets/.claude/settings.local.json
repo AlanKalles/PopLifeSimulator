@@ -42,7 +42,10 @@
       "Bash(ls \"/d/github/PopLifeSimulator/Pop Life Simulator/Assets/Scripts/Data/\"*.cs)",
       "WebFetch(domain:www.uxtigers.com)",
       "WebFetch(domain:www.nngroup.com)",
-      "WebFetch(domain:gamedev.net)"
+      "WebFetch(domain:gamedev.net)",
+      "Bash(git fetch *)",
+      "Bash(git show *)",
+      "Read(//tmp/**)"
     ],
     "deny": [],
     "ask": []
