@@ -37,8 +37,8 @@ MonoBehaviour:
   completionMarker: 40
   triggerMarkerAfterToast: 1
   title: Second Building
-  description: Place 2 buildings total.
-  successDescription: You gained 200 Fame and unlocked a blueprint!
+  description: "A second expansion would make the store feel less temporary. Add enough space that customers can imagine Pop Life becoming a destination."
+  successDescription: "The store layout is starting to feel planned, not improvised."
   entryTexts:
   - Place 2 buildings
   questIcon: {fileID: 0}

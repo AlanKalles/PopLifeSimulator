@@ -34,13 +34,13 @@ MonoBehaviour:
     amount: 1
     itemId: Unc
   conditions: []
-  activationMarker: 83
+  activationMarker: 81
   completionMarker: 82
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: BDSM
-  description: Cater to customers who enjoy bondage and discipline.
-  successDescription: You gained 100 Money and unlocked the Handcuffs blueprint!
+  description: "A sharper-edged crowd is looking for restraint, trust, and control rather than straightforward stimulation. Stock the kind of tools that make negotiated power play feel intentional."
+  successDescription: "The kink-focused crowd has a reason to take the store seriously now."
   entryTexts:
   - Stock BDSM products
   questIcon: {fileID: 0}

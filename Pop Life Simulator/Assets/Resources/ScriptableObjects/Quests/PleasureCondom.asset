@@ -40,9 +40,10 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Pleasure Condom
-  description: Offer pleasure-focused protection options for your customers.
-  successDescription: You gained 100 Money and unlocked the Women's Pleasure Condoms
-    blueprint!
+  description: Some customers want protection that still feels like part of the fun.
+    Add safer-sex options that promise sensation, not just caution.
+  successDescription: Protection now feels less like a compromise and more like part
+    of the experience.
   entryTexts:
   - Sell pleasure condoms
   questIcon: {fileID: 0}

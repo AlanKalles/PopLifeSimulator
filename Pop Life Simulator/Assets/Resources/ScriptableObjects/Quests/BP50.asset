@@ -31,8 +31,8 @@ MonoBehaviour:
   completionMarker: 62
   triggerMarkerAfterToast: 1
   title: Blueprints III
-  description: Unlock 50 blueprints.
-  successDescription: You unlocked a new customer!
+  description: "At this point, variety becomes a reputation of its own. Push the catalog far enough that even picky customers assume you can source almost anything."
+  successDescription: "Your blueprint library is becoming a real competitive advantage."
   entryTexts:
   - Unlock 50 blueprints
   questIcon: {fileID: 0}

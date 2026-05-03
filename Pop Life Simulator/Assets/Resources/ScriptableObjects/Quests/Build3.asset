@@ -37,8 +37,8 @@ MonoBehaviour:
   completionMarker: 41
   triggerMarkerAfterToast: 1
   title: Third Building
-  description: Place 3 buildings total.
-  successDescription: You gained 300 Fame and unlocked a blueprint!
+  description: "More floor space means more routes, more browsing, and more chances for customers to find something unexpected. Keep expanding the store's physical presence."
+  successDescription: "Pop Life now has enough room to support a broader shopping rhythm."
   entryTexts:
   - Place 3 buildings
   questIcon: {fileID: 0}

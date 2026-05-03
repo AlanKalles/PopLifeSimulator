@@ -31,14 +31,13 @@ MonoBehaviour:
     amount: 1
     itemId: Jiro
   conditions: []
-  activationMarker: 71
+  activationMarker: 77
   completionMarker: 78
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Cucci
-  description: Stock up on premium Cucci brand products.
-  successDescription: You gained 100 Money and unlocked the Lovi Couples Vibrator
-    blueprint!
+  description: "A luxury-minded crowd wants something discreet, stylish, and a little overpriced. Bring in products that feel fashionable enough to be whispered about."
+  successDescription: "The premium shoppers have noticed the upgrade, and Cucci's shine is pulling attention."
   entryTexts:
   - Sell Cucci products
   questIcon: {fileID: 0}

@@ -34,8 +34,8 @@ MonoBehaviour:
   completionMarker: 56
   triggerMarkerAfterToast: 1
   title: Customers II
-  description: Serve 10 customers in a single day.
-  successDescription: You gained 100 Money!
+  description: "The morning foot traffic is growing. Keep the line moving and show that Pop Life can serve more than a handful of curious visitors."
+  successDescription: "A busier day proved the staff can keep up with rising demand."
   entryTexts:
   - Serve 10 customers in a day
   questIcon: {fileID: 0}

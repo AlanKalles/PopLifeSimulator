@@ -31,8 +31,8 @@ MonoBehaviour:
   completionMarker: 61
   triggerMarkerAfterToast: 1
   title: Blueprints II
-  description: Unlock 20 blueprints.
-  successDescription: You unlocked a new customer!
+  description: "A broader catalog lets you react to strange requests instead of turning people away. Keep collecting designs until the shop feels adaptable."
+  successDescription: "The store can answer more niche requests now, and regulars have more reasons to return."
   entryTexts:
   - Unlock 20 blueprints
   questIcon: {fileID: 0}

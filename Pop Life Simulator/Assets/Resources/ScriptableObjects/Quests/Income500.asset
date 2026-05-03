@@ -30,12 +30,12 @@ MonoBehaviour:
     targetValue: 500
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: 32
+  activationMarker: 89
   completionMarker: 50
   triggerMarkerAfterToast: 1
   title: Income I
-  description: Earn a lifetime total of 500 Money.
-  successDescription: You gained 120 Fame!
+  description: "Early revenue is less about profit and more about proof of life. Keep selling until the books show the shop can stand on its own."
+  successDescription: "The first meaningful income milestone is on the books."
   entryTexts:
   - Earn 500 total
   questIcon: {fileID: 0}

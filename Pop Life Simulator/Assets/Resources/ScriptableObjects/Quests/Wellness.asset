@@ -28,14 +28,15 @@ MonoBehaviour:
     amount: 1
     itemId: Ash
   conditions: []
-  activationMarker: 70
+  activationMarker: 32
   completionMarker: 74
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Wellness
-  description: Promote health and wellness in your store.
-  successDescription: You gained 100 Money and unlocked the Silicone Toy Cleaner
-    blueprint!
+  description: Desire is easier to explore when people feel clean, safe, and cared
+    for. Stock practical products that make pleasure feel less risky and more sustainable.
+  successDescription: The wellness shelf made the store feel more responsible, not
+    less exciting.
   entryTexts:
   - Stock wellness products
   questIcon: {fileID: 0}

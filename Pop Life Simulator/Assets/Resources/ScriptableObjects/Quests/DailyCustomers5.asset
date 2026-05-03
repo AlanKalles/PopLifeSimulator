@@ -30,12 +30,12 @@ MonoBehaviour:
     targetValue: 5
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: 34
+  activationMarker: 92
   completionMarker: 55
   triggerMarkerAfterToast: 1
   title: Customers I
-  description: Serve 5 customers in a single day.
-  successDescription: You gained 75 Money!
+  description: "A quiet day is not enough anymore. Open the doors and prove the store can handle a small but steady rush."
+  successDescription: "The store handled its first real daily crowd without losing its rhythm."
   entryTexts:
   - Serve 5 customers in a day
   questIcon: {fileID: 0}

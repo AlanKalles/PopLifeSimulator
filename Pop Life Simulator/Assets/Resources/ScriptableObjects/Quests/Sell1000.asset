@@ -27,12 +27,12 @@ MonoBehaviour:
     targetValue: 1000
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: 38
+  activationMarker: 100
   completionMarker: 66
   triggerMarkerAfterToast: 1
   title: Sell I
-  description: Sell 1000 items total.
-  successDescription: You gained 100 Money!
+  description: "Popularity eventually has to become volume. Move enough items that the shelves feel like they are constantly in motion."
+  successDescription: "The store has sold enough items to prove demand is no longer hypothetical."
   entryTexts:
   - Sell 1000 items total
   questIcon: {fileID: 0}

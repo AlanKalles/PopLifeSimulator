@@ -28,14 +28,13 @@ MonoBehaviour:
     amount: 1
     itemId: Shawn
   conditions: []
-  activationMarker: 71
+  activationMarker: 79
   completionMarker: 80
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Branding Strategy
-  description: Establish your store's unique brand identity.
-  successDescription: You gained 100 Money and unlocked the Glow in the Dark Lubricant
-    blueprint!
+  description: "A memorable store needs more than shelves; it needs a mood people recognize. Add products with a distinctive gimmick or visual hook that makes Pop Life feel like its own brand."
+  successDescription: "Pop Life is starting to feel less like a shop and more like a place people remember."
   entryTexts:
   - Build your brand
   questIcon: {fileID: 0}

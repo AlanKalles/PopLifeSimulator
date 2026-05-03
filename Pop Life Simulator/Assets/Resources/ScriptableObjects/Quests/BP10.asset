@@ -27,12 +27,12 @@ MonoBehaviour:
     targetValue: 0
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: 35
+  activationMarker: 91
   completionMarker: 60
   triggerMarkerAfterToast: 1
   title: Blueprints I
-  description: Unlock 10 blueprints.
-  successDescription: You unlocked a new customer!
+  description: "The catalog still feels thin. Keep finding new suppliers and designs so customers see the store as a place that changes every time they visit."
+  successDescription: "Your supplier network is starting to open up, and the blueprint catalog looks less bare."
   entryTexts:
   - Unlock 10 blueprints
   questIcon: {fileID: 0}

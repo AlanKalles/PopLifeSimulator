@@ -156,5 +156,21 @@ namespace PopLife.Manager
         // ⚠️ 重命名/重排号会破坏 SO 引用，需要同步改 .asset 中的 activationMarker 数字
         CallRestock,              // = 87  解锁 Restock Button
         FirstRestockDecisionMade, // = 88  首次在 RestockPanel 点击 Restock 或 Skip Restock 按钮（任一即触发，仅一次）(引用: 4_FinishRestock.asset)
+
+        // Narrative quest activations from Dialogue System conversations
+        Main4Activated,           // = 89
+        Main5Activated,           // = 90
+        Main6Activated,           // = 91
+        Main7Activated,           // = 92
+        Main8Activated,           // = 93
+        Main9Activated,           // = 94
+        BDSM1Activated,           // = 95
+        VIPSoloFans1Activated,    // = 96
+        VIPSoloFans2Activated,    // = 97
+        VIPSoloFans3Activated,    // = 98
+        VIPSoloFans4Activated,    // = 99
+        VIPShyGirl1Activated,     // = 100
+        VIPShyGirl2Activated,     // = 101
+        VIPShyGirl3Activated,     // = 102
     }
 }

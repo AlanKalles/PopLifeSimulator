@@ -34,13 +34,13 @@ MonoBehaviour:
     amount: 1
     itemId: Johane
   conditions: []
-  activationMarker: 72
+  activationMarker: 83
   completionMarker: 84
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Anal
-  description: Stock anal pleasure products for curious customers.
-  successDescription: You gained 100 Money and unlocked the Prostate Massager blueprint!
+  description: "Some customers are asking for toys that reward patience, plenty of lube, and a little courage. Add options that make back-door exploration feel approachable instead of intimidating."
+  successDescription: "Curious customers have a safer path into anal play, and the store's specialist reputation deepened."
   entryTexts:
   - Stock anal products
   questIcon: {fileID: 0}

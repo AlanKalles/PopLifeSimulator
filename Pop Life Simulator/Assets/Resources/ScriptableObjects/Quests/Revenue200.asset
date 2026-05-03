@@ -40,8 +40,8 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Revenue III
-  description: Earn 200 Money in a single day.
-  successDescription: You gained 95 Fame!
+  description: "A stronger sales day will show that curiosity is turning into spending. Build momentum before closing time."
+  successDescription: "The store turned a busy day into meaningful revenue."
   entryTexts:
   - Earn 200 in a day
   questIcon: {fileID: 0}

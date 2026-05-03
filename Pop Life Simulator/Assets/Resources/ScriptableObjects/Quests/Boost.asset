@@ -41,13 +41,16 @@ MonoBehaviour:
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes: []
-  activationMarker: 70
+  activationMarker: 34
   completionMarker: 75
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Boost
-  description: Help customers boost their performance.
-  successDescription: You gained 100 Money and unlocked the PDE-5 inhibitor blueprint!
+  description: Some customers are not chasing novelty; they want confidence, stamina,
+    and reassurance. Stock items that speak to performance without making them feel
+    judged.
+  successDescription: Customers looking for a confidence boost can now find help
+    without awkward explanations.
   entryTexts:
   - Stock enhancement products
   questIcon: {fileID: 0}

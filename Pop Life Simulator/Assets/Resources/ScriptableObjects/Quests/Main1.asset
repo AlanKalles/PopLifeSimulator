@@ -20,13 +20,10 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId:
+    itemId: 
   - type: 2
     amount: 1
-    itemId: Silicone Dildo
-  - type: 3
-    amount: 1
-    itemId: Celine
+    itemId: Bullet Vibrator
   conditions:
   - conditionType: 6
     scope: 2
@@ -38,9 +35,9 @@ MonoBehaviour:
   activationMarker: -1
   completionMarker: 27
   triggerMarkerAfterToast: 1
-  title: Build Your First Shelf
-  description: Your store is empty, try to build the first shelf in your store!
-  successDescription: You gained 100 Fame
+  title: First Shelf
+  description: "The store is empty enough to echo. Give customers one clear place to browse so Midori can start teaching you how the business actually works."
+  successDescription: "Your first display is up. Midori is ready to walk you through opening the store for the day."
   entryTexts:
   - Build 1 shelf
   questIcon: {fileID: 0}

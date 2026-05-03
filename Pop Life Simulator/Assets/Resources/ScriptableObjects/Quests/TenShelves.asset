@@ -42,8 +42,8 @@ MonoBehaviour:
   completionMarker: 72
   triggerMarkerAfterToast: 1
   title: Ten Shelves
-  description: Fill your store with 10 shelves!
-  successDescription: You gained 100 Money and unlocked the Fleshlight blueprint!
+  description: "A fuller store can tell more stories at once. Expand the displays until customers can wander between very different kinds of desire."
+  successDescription: "Ten shelves gave Pop Life the breadth of a serious shop."
   entryTexts:
   - Place 10 shelves
   questIcon: {fileID: 0}

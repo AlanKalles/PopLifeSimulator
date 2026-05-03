@@ -30,12 +30,12 @@ MonoBehaviour:
     targetValue: 50
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: 33
+  activationMarker: 90
   completionMarker: 45
   triggerMarkerAfterToast: 1
   title: Revenue I
-  description: Earn 50 Money in a single day.
-  successDescription: You gained 65 Fame!
+  description: "A modest daily target is still a useful signal. Make today's sales strong enough to show the store can reliably earn."
+  successDescription: "Today's register proved the shop can produce a clean daily baseline."
   entryTexts:
   - Earn 50 in a day
   questIcon: {fileID: 0}

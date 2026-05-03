@@ -37,8 +37,8 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Income V
-  description: Earn a lifetime total of 10000 Money.
-  successDescription: You gained 200 Fame!
+  description: "A major lifetime total would make the store's success impossible to treat as accidental. Keep the register ringing until the numbers become a statement."
+  successDescription: "The store's lifetime earnings now speak with serious authority."
   entryTexts:
   - Earn 10000 total
   questIcon: {fileID: 0}

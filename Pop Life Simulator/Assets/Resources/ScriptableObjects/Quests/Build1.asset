@@ -33,12 +33,12 @@ MonoBehaviour:
     targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: 36
+  activationMarker: 94
   completionMarker: 39
   triggerMarkerAfterToast: 1
   title: First Building
-  description: Place your first building.
-  successDescription: You gained 100 Fame and unlocked a blueprint!
+  description: "The current footprint is too small for the kind of store this city expects. Secure another usable space so the business can start growing outward."
+  successDescription: "The store has taken its first real step beyond a single cramped footprint."
   entryTexts:
   - Place 1 building
   questIcon: {fileID: 0}
