@@ -6,7 +6,7 @@ namespace PopLife.Customers.Runtime
 {
     /// <summary>
     /// 静态工具类：从 Resources/CustomerPortraits/ 加载顾客静态肖像
-    /// 文件命名约定: 以顾客ID开头，如 "C001_Lucy.png"、"C002_Mei.png"
+    /// 文件命名约定: 以顾客ID开头，如 "C001_Anya.png"、"C002_Mei.png"
     /// 通过 LoadAll 加载整个文件夹，按 ID 前缀匹配
     /// 找不到时回退到 CustomerArchetype.portrait
     /// </summary>
@@ -63,7 +63,7 @@ namespace PopLife.Customers.Runtime
 
             foreach (var sprite in allSprites)
             {
-                // 文件名格式: "C001_Lucy" 等，取前4个字符作为ID
+                // 文件名格式: "C001_Anya" 等，取前4个字符作为ID
                 string name = sprite.name;
                 if (name.Length < 4) continue;
 
