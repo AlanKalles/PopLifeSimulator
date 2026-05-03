@@ -16,5 +16,5 @@ MonoBehaviour:
   executionOrder: 100
   conversationToStart: Midori/8
   conversationDelay: 0.5
-  luaScript: 
+  luaScript: RaiseTutorialMarker("CallAlanBot")
   description: 
