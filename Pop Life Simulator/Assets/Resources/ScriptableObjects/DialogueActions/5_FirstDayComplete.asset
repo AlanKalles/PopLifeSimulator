@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.DialogueAction
   activationMarker: 15
   executionOrder: 100
-  conversationToStart: Auditor/1
+  conversationToStart: Midori/8
   conversationDelay: 0.5
   luaScript: 
   description: 

@@ -19,13 +19,14 @@ GameObject:
   - component: {fileID: 2859986929814377815}
   - component: {fileID: 8879160503487199636}
   - component: {fileID: 448231413373781332}
+  - component: {fileID: 4578266363634883934}
   m_Layer: 10
   m_Name: AlanBot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8061572751301884780
 Transform:
   m_ObjectHideFlags: 0
@@ -251,6 +252,9 @@ MonoBehaviour:
   - name: Speechless
     sprite: {fileID: 21300000, guid: ae4802a495c8b614f928a74f319cd3cc, type: 3}
     skipBounce: 1
+  - name: Heart
+    sprite: {fileID: 21300000, guid: 077635310b7724449bac84be0132c5c0, type: 3}
+    skipBounce: 0
   interactionExpressionName: Speechless
   bounceHeight: 0.05
   bounceDuration: 0.15
@@ -333,6 +337,22 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.59375, y: 0.90625}
   m_EdgeRadius: 0
+--- !u!114 &4578266363634883934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2446446890520218220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d30372a050e6704a87f92f8c9504c8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.DialogueBridge.UI.SpotlightTarget
+  spotlightId: Alanbot
+  priority: 0
+  overrideRect: {fileID: 0}
+  ensureRaycastTarget: 1
 --- !u!1 &4817349517339288531
 GameObject:
   m_ObjectHideFlags: 0
