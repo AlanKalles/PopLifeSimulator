@@ -32,7 +32,7 @@ MonoBehaviour:
     itemId: 90's Lingerie
   - type: 3
     amount: 1
-    itemId: Lucy
+    itemId: Anya
   conditions:
   - conditionType: 0
     scope: 0
