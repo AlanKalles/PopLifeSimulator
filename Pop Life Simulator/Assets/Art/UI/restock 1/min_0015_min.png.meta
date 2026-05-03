@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 1348bd8bddccf394ea9de15c6325aef4
+guid: f8a07ecf3f30f6742a154690c0085fe8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7051285834149276314
-    second: subwayTunnelModular_0
+      213: 5394649351491423924
+    second: min_0015_min_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: subwayTunnelModular_0
+      name: min_0015_min_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 420
-        height: 101
+        width: 86
+        height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a9a263a5b133bd160800000000000000
-      internalID: 7051285834149276314
+      spriteID: 4be007bc005adda40800000000000000
+      internalID: 5394649351491423924
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      subwayTunnelModular_0: 7051285834149276314
+      min_0015_min_0: 5394649351491423924
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

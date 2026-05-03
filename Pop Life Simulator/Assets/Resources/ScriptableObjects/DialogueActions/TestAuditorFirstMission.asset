@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3992bcc563d458741a863415dc67327b, type: 3}
-  m_Name: Auditor1stMissionDDL
+  m_Name: TestAuditorFirstMission
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.DialogueAction
-  activationMarker: -1
+  activationMarker: 33
   executionOrder: 100
-  conversationToStart: Auditor/2
-  conversationDelay: 0
+  conversationToStart: Auditor/1
+  conversationDelay: 0.2
   luaScript: 
   description: 

@@ -1627,7 +1627,7 @@ MonoBehaviour:
       canvasRect:
         serializedVersion: 2
         x: 288.885
-        y: 517.40375
+        y: 516.61945
         width: 160
         height: 30
     - id: 9
@@ -1905,8 +1905,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 168.33319}
-    canvasZoom: 0.4800003
+    canvasScrollPosition: {x: 0, y: 0}
+    canvasZoom: 0.5100003
   - id: 2
     fields:
     - title: Title
@@ -3684,8 +3684,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 39.473694, y: 0}
-    canvasZoom: 0.7600002
+    canvasScrollPosition: {x: 2.2857056, y: 77.14282}
+    canvasZoom: 0.7000003
   - id: 8
     fields:
     - title: Title
@@ -14890,7 +14890,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Laugh)
         type: 0
         typeString: 
       conversationID: 33
@@ -15046,7 +15046,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 34
@@ -15651,7 +15651,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Laugh)
         type: 0
         typeString: 
       conversationID: 36
@@ -15706,7 +15706,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Confused)
         type: 0
         typeString: 
       conversationID: 36
@@ -15762,7 +15762,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Confused)
         type: 0
         typeString: 
       conversationID: 36
@@ -15953,7 +15953,7 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 31.926914, y: 2.3783956}
+    canvasScrollPosition: {x: 555.22974, y: 1.4678955}
     canvasZoom: 1.0899999
   - id: 37
     fields:
@@ -16087,7 +16087,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 37
@@ -16254,7 +16254,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Laugh)
         type: 0
         typeString: 
       conversationID: 37
@@ -16465,7 +16465,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 38
@@ -16690,7 +16690,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 38
@@ -16936,7 +16936,7 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 209.75827, y: 154.31099}
+    canvasScrollPosition: {x: 243.50821, y: 78.74997}
     canvasZoom: 0.6400003
   - id: 39
     fields:
