@@ -16,6 +16,8 @@ namespace PopLife
         [Header("Light References")]
         [SerializeField] private Light2D globalLight;
         [SerializeField] private List<Light2D> freeformLights = new List<Light2D>();
+        [Tooltip("场外灯（背景建筑图用），跟随营业时间渐变颜色/强度")]
+        [SerializeField] private List<Light2D> exteriorLights = new List<Light2D>();
 
         [Header("BuildPhase Lighting Config")]
         [Tooltip("建造阶段的固定光照颜色")]
@@ -28,6 +30,16 @@ namespace PopLife
         [SerializeField] private Gradient openPhaseColorGradient;
         [Tooltip("营业阶段光照强度曲线 (可选，留空则使用固定强度)")]
         [SerializeField] private AnimationCurve openPhaseIntensityCurve = AnimationCurve.Constant(0, 1, 1.0f);
+
+        [Header("Exterior Light Config")]
+        [Tooltip("场外灯颜色渐变（跟随营业时间）")]
+        [SerializeField] private Gradient exteriorLightColorGradient;
+        [Tooltip("场外灯基础强度（未启用强度曲线时使用）")]
+        [SerializeField] private float exteriorLightBaseIntensity = 1.0f;
+        [Tooltip("场外灯强度曲线（可选）")]
+        [SerializeField] private AnimationCurve exteriorLightIntensityCurve = AnimationCurve.Constant(0, 1, 1.0f);
+        [Tooltip("是否使用场外灯强度曲线")]
+        [SerializeField] private bool useExteriorIntensityCurve = false;
 
         [Header("Tile Light Config")]
         [Tooltip("FloorTile 灯光颜色渐变（跟随营业时间）")]
@@ -93,6 +105,8 @@ namespace PopLife
                 InitializeDefaultGradient();
             if (tileLightColorGradient == null)
                 InitializeDefaultTileGradient();
+            if (exteriorLightColorGradient == null)
+                InitializeDefaultExteriorGradient();
 
             // 验证引用
             if (globalLight == null)
@@ -198,6 +212,25 @@ namespace PopLife
                 ? openPhaseIntensityCurve.Evaluate(normalizedTime)
                 : 1.0f;
 
+            // 场外灯渐变：每帧只 Evaluate 一次
+            if (exteriorLights.Count > 0)
+            {
+                Color exteriorColor = exteriorLightColorGradient != null
+                    ? exteriorLightColorGradient.Evaluate(normalizedTime)
+                    : Color.white;
+                float exteriorIntensity = useExteriorIntensityCurve && exteriorLightIntensityCurve != null
+                    ? exteriorLightIntensityCurve.Evaluate(normalizedTime)
+                    : exteriorLightBaseIntensity;
+
+                for (int i = 0; i < exteriorLights.Count; i++)
+                {
+                    var light = exteriorLights[i];
+                    if (light == null) continue;
+                    light.color = exteriorColor;
+                    light.intensity = exteriorIntensity;
+                }
+            }
+
             // tile 灯光渐变：每帧只 Evaluate 一次，缓存颜色/强度
             if (tileLights.Count > 0)
             {
@@ -234,22 +267,26 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 启用所有 Freeform lights 和 Tile lights
+        /// 启用所有 Freeform / Exterior / Tile lights
         /// </summary>
         private void EnableFreeformLights()
         {
             foreach (var light in freeformLights)
+                if (light != null) light.enabled = true;
+            foreach (var light in exteriorLights)
                 if (light != null) light.enabled = true;
             foreach (var light in tileLights)
                 if (light != null) light.enabled = true;
         }
 
         /// <summary>
-        /// 禁用所有 Freeform lights 和 Tile lights
+        /// 禁用所有 Freeform / Exterior / Tile lights
         /// </summary>
         private void DisableFreeformLights()
         {
             foreach (var light in freeformLights)
+                if (light != null) light.enabled = false;
+            foreach (var light in exteriorLights)
                 if (light != null) light.enabled = false;
             foreach (var light in tileLights)
                 if (light != null) light.enabled = false;
@@ -396,6 +433,28 @@ namespace PopLife
             openPhaseColorGradient.SetKeys(colorKeys, alphaKeys);
 
             Debug.Log("[LightingManager] Initialized default gradient.");
+        }
+
+        /// <summary>
+        /// 初始化默认场外灯渐变（白天偏冷淡 → 黄昏暖橙 → 夜晚明亮窗光）
+        /// </summary>
+        private void InitializeDefaultExteriorGradient()
+        {
+            exteriorLightColorGradient = new Gradient();
+
+            var colorKeys = new GradientColorKey[4];
+            colorKeys[0] = new GradientColorKey(new Color(0.9f, 0.95f, 1.0f), 0.0f);  // 12:00 冷淡日光
+            colorKeys[1] = new GradientColorKey(new Color(1.0f, 0.95f, 0.85f), 0.4f); // ~17:00 中性暖光
+            colorKeys[2] = new GradientColorKey(new Color(1.0f, 0.7f, 0.4f), 0.65f);  // ~19:00 黄昏暖橙
+            colorKeys[3] = new GradientColorKey(new Color(1.0f, 0.85f, 0.5f), 1.0f);  // 23:00 夜晚明亮窗光
+
+            var alphaKeys = new GradientAlphaKey[2];
+            alphaKeys[0] = new GradientAlphaKey(1.0f, 0.0f);
+            alphaKeys[1] = new GradientAlphaKey(1.0f, 1.0f);
+
+            exteriorLightColorGradient.SetKeys(colorKeys, alphaKeys);
+
+            Debug.Log("[LightingManager] Initialized default exterior light gradient.");
         }
 
         /// <summary>

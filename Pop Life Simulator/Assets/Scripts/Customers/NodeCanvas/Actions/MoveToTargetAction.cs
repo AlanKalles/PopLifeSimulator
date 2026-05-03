@@ -63,7 +63,8 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             if (targetTransform == null)
             {
-                Debug.LogError($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 没有分配队列位置");
+                bool closing = customerBlackboard != null && customerBlackboard.isClosingTime;
+                Debug.LogError($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 没有分配队列位置 (BBParameter._name='{assignedQueueSlot?.name}', isClosingTime={closing}) — 将导致 ActionList 中断、BT 重启循环");
                 EndAction(false);
                 return;
             }

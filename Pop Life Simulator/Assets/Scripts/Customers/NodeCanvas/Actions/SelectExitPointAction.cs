@@ -33,46 +33,54 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
-            // Use spawn point as exit point
-            if (blackboard.spawnPoint == null)
+            Transform chosen = null;
+            string source = null;
+            string exitId = null;
+
+            // 优先级 1：使用 spawn point（设计意图：customer 撤离回到生成点）
+            if (blackboard.spawnPoint != null)
             {
-                Debug.LogWarning("[SelectExitPointAction] Spawn point not set, falling back to nearest exit");
-
-                // Fallback: use nearest exit point
-                if (ExitPointManager.Instance == null)
-                {
-                    Debug.LogError("[SelectExitPointAction] ExitPointManager not found in scene");
-                    EndAction(false);
-                    return;
-                }
-
+                chosen = blackboard.spawnPoint;
+                source = "spawnPoint";
+            }
+            // 优先级 2：ExitPointManager 按 store 找最近 ExitPoint
+            else if (ExitPointManager.Instance != null)
+            {
                 var nearestExit = ExitPointManager.Instance.GetNearestExitPointForStore(blackboard.destinationStoreId, agent.transform.position);
-                if (nearestExit == null)
+                if (nearestExit != null)
                 {
-                    Debug.LogError("[SelectExitPointAction] No exit points available");
-                    EndAction(false);
-                    return;
+                    chosen = nearestExit.transform;
+                    source = "ExitPointManager.nearest";
+                    exitId = nearestExit.exitId;
                 }
-
-                targetExitPoint.value = nearestExit.transform;
-                blackboard.targetExitPoint = nearestExit.transform;
-                if (targetExitId != null)
-                {
-                    targetExitId.value = nearestExit.exitId;
-                    blackboard.targetExitId = nearestExit.exitId;
-                }
-
-                Debug.Log($"[SelectExitPointAction] Customer using fallback nearest exit at {nearestExit.transform.position}");
             }
-            else
+
+            // 最终保底：用 entranceOutsideAnchor，避免 ActionList 因 Failure 中断导致 BT 重启循环
+            // Failure 会让 LeaveStrategy 失败 → BT repeat:true 重启 → MoveToEntrance 把已离店顾客拉回入口
+            if (chosen == null && blackboard.entranceOutsideAnchor != null)
             {
-                // Use spawn point as exit
-                targetExitPoint.value = blackboard.spawnPoint;
-                blackboard.targetExitPoint = blackboard.spawnPoint;
-
-                Debug.Log($"[SelectExitPointAction] Customer returning to spawn point at {blackboard.spawnPoint.position}");
+                chosen = blackboard.entranceOutsideAnchor;
+                source = "entranceOutsideAnchor (final fallback)";
+                Debug.LogWarning($"[SelectExitPointAction] 顾客 {blackboard.customerId} 没有 spawnPoint 且 ExitPointManager 无可用出口，回退到 entranceOutsideAnchor");
             }
 
+            if (exitId != null && targetExitId != null)
+            {
+                targetExitId.value = exitId;
+                blackboard.targetExitId = exitId;
+            }
+
+            if (chosen == null)
+            {
+                Debug.LogError($"[SelectExitPointAction] 顾客 {blackboard.customerId} 无任何可用出口（spawnPoint/ExitPointManager/entranceOutsideAnchor 全为空）");
+                EndAction(false);
+                return;
+            }
+
+            targetExitPoint.value = chosen;
+            blackboard.targetExitPoint = chosen;
+
+            Debug.Log($"[SelectExitPointAction] 顾客 {blackboard.customerId} 选择出口 source={source}, pos={chosen.position}, isClosingTime={blackboard.isClosingTime}");
             EndAction(true);
         }
     }

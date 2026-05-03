@@ -4,6 +4,9 @@ using UnityEngine;
 using PopLife.Customers.Data;
 using PopLife.Data;
 using PopLife.Runtime;
+#if NODECANVAS
+using NodeCanvas.Framework;
+#endif
 
 
 namespace PopLife.Customers.Runtime
@@ -75,8 +78,19 @@ namespace PopLife.Customers.Runtime
 
 // NodeCanvas 黑板写入（可选）
 #if NODECANVAS
-        public global::NodeCanvas.Framework.Blackboard ncBlackboard;
-        void Reset(){ ncBlackboard = GetComponent<global::NodeCanvas.Framework.Blackboard>(); }
+        public Blackboard ncBlackboard;
+        void Reset(){ ncBlackboard = GetComponent<Blackboard>(); }
+
+        // 类型安全地写入黑板：若变量不存在，先按 T 创建，避免 null 值触发 AddVariable 报错
+        internal static void SetTypedVariable<T>(Blackboard bb, string name, T value)
+        {
+            if (bb == null) return;
+            if (bb.GetVariable(name) == null)
+            {
+                bb.AddVariable<T>(name);
+            }
+            bb.SetVariableValue(name, value);
+        }
 #endif
         public void InjectFromRecord(CustomerRecord record, CustomerArchetype archetype, int embarrassmentCapVal, float finalMoveSpeed)
         {
@@ -93,20 +107,20 @@ namespace PopLife.Customers.Runtime
 #if NODECANVAS
             if (ncBlackboard)
             {
-                ncBlackboard.SetVariableValue("customerId", customerId);
-                ncBlackboard.SetVariableValue("loyaltyLevel", loyaltyLevel);
-                ncBlackboard.SetVariableValue("trust", trust);
-                ncBlackboard.SetVariableValue("embarrassmentCap", embarrassmentCap);
-                ncBlackboard.SetVariableValue("moveSpeed", moveSpeed);
-                ncBlackboard.SetVariableValue("queueToleranceSec", queueToleranceSec);
-                ncBlackboard.SetVariableValue("policies", policies);
-                ncBlackboard.SetVariableValue("moneyBag", moneyBag);
-                ncBlackboard.SetVariableValue("purchaseQuantity", 0); // 初始化为0
-                ncBlackboard.SetVariableValue("isClosingTime", isClosingTime); // 初始化闭店状态
-                ncBlackboard.SetVariableValue("isClubGoer", visitPurpose == CustomerVisitPurpose.Club);
-                ncBlackboard.SetVariableValue("destinationStoreId", destinationStoreId);
-                ncBlackboard.SetVariableValue("clubTrackingPoint", clubTrackingPoint);
-                ncBlackboard.SetVariableValue("clubStayDuration", clubStayDuration);
+                SetTypedVariable(ncBlackboard, "customerId", customerId);
+                SetTypedVariable(ncBlackboard, "loyaltyLevel", loyaltyLevel);
+                SetTypedVariable(ncBlackboard, "trust", trust);
+                SetTypedVariable(ncBlackboard, "embarrassmentCap", embarrassmentCap);
+                SetTypedVariable(ncBlackboard, "moveSpeed", moveSpeed);
+                SetTypedVariable(ncBlackboard, "queueToleranceSec", queueToleranceSec);
+                SetTypedVariable(ncBlackboard, "policies", policies);
+                SetTypedVariable(ncBlackboard, "moneyBag", moneyBag);
+                SetTypedVariable(ncBlackboard, "purchaseQuantity", 0);
+                SetTypedVariable(ncBlackboard, "isClosingTime", isClosingTime);
+                SetTypedVariable(ncBlackboard, "isClubGoer", visitPurpose == CustomerVisitPurpose.Club);
+                SetTypedVariable(ncBlackboard, "destinationStoreId", destinationStoreId);
+                SetTypedVariable(ncBlackboard, "clubTrackingPoint", clubTrackingPoint);
+                SetTypedVariable(ncBlackboard, "clubStayDuration", clubStayDuration);
             }
 #endif
         }

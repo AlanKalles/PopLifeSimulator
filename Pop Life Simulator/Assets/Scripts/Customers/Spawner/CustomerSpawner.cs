@@ -735,14 +735,14 @@ namespace PopLife.Customers.Spawner
 #if NODECANVAS
             if (bb?.ncBlackboard != null)
             {
-                bb.ncBlackboard.SetVariableValue("spawnPoint", bb.spawnPoint);
-                bb.ncBlackboard.SetVariableValue("entranceOutsideAnchor", bb.entranceOutsideAnchor);
-                bb.ncBlackboard.SetVariableValue("entranceInsideAnchor", bb.entranceInsideAnchor);
-                bb.ncBlackboard.SetVariableValue("hasEnteredStore", bb.hasEnteredStore);
-                bb.ncBlackboard.SetVariableValue("isClubGoer", bb.visitPurpose == CustomerVisitPurpose.Club);
-                bb.ncBlackboard.SetVariableValue("destinationStoreId", bb.destinationStoreId);
-                bb.ncBlackboard.SetVariableValue("clubTrackingPoint", bb.clubTrackingPoint);
-                bb.ncBlackboard.SetVariableValue("clubStayDuration", bb.clubStayDuration);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "spawnPoint", bb.spawnPoint);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "entranceOutsideAnchor", bb.entranceOutsideAnchor);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "entranceInsideAnchor", bb.entranceInsideAnchor);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "hasEnteredStore", bb.hasEnteredStore);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "isClubGoer", bb.visitPurpose == CustomerVisitPurpose.Club);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "destinationStoreId", bb.destinationStoreId);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "clubTrackingPoint", bb.clubTrackingPoint);
+                CustomerBlackboardAdapter.SetTypedVariable(bb.ncBlackboard, "clubStayDuration", bb.clubStayDuration);
             }
 #endif
         }

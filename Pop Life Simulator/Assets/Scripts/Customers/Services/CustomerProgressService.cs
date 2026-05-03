@@ -92,14 +92,14 @@ namespace PopLife.Customers.Services
         public static int CalculateLevel(int currentXp, int[] thresholds)
         {
             if (thresholds == null || thresholds.Length == 0)
-                return 0;
+                return 1;
 
-            int level = 0;
+            int level = 1;
             for (int i = 0; i < thresholds.Length; i++)
             {
                 if (currentXp >= thresholds[i])
                 {
-                    level = i + 1;
+                    level = i + 2;
                 }
                 else
                 {
@@ -108,6 +108,12 @@ namespace PopLife.Customers.Services
             }
 
             return level;
+        }
+
+        private static int NormalizeLoyaltyLevel(int level, int[] thresholds)
+        {
+            int maxLevel = thresholds == null || thresholds.Length == 0 ? 1 : thresholds.Length + 1;
+            return Mathf.Clamp(level, 1, maxLevel);
         }
 
         /// <summary>
@@ -128,7 +134,8 @@ namespace PopLife.Customers.Services
             int xpGained = CalculateXpGain(session, archetype);
 
             // 2. 记录升级前等级
-            int oldLevel = record.loyaltyLevel;
+            int oldLevel = NormalizeLoyaltyLevel(record.loyaltyLevel, archetype.levelUpThresholds);
+            record.loyaltyLevel = oldLevel;
 
             // 3. 增加经验（累积式，不清零）
             record.xp += xpGained;
