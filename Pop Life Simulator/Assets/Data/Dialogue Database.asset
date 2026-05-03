@@ -1122,7 +1122,8 @@ MonoBehaviour:
     - title: Entry 1
       value: Meet Midori
       type: 0
-      typeString: CustomFieldType_Text  - id: 18
+      typeString: CustomFieldType_Text
+  - id: 18
     fields:
     - title: Name
       value: Protection
