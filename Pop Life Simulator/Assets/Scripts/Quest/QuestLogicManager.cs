@@ -99,6 +99,7 @@ namespace PopLife.Quest
             // 构建 marker → quest 查找表并订阅事件
             BuildMarkerLookup();
             TutorialEventBus.OnMarkerTriggered += OnMarkerTriggered;
+            ActivateAlreadyTriggeredMarkerQuests();
 
             // 初始扫描已激活的任务
             ScanActiveQuests();
@@ -146,6 +147,11 @@ namespace PopLife.Quest
             if (state == QuestState.Active)
             {
                 if (debugMode) Debug.Log($"[QuestLogicManager] 任务已激活: {questName}");
+                return;
+            }
+            if (state == QuestState.Success || state == QuestState.Failure)
+            {
+                if (debugMode) Debug.Log($"[QuestLogicManager] 任务已有终态，跳过激活: {questName} ({state})");
                 return;
             }
 
@@ -214,6 +220,25 @@ namespace PopLife.Quest
             foreach (var questName in questNames)
             {
                 ActivateQuest(questName);
+            }
+        }
+
+        /// <summary>
+        /// Some startup markers can be raised before this manager subscribes.
+        /// Catch those up so marker-activated quests are still assigned.
+        /// </summary>
+        private void ActivateAlreadyTriggeredMarkerQuests()
+        {
+            if (markerToQuests == null) return;
+
+            foreach (var pair in markerToQuests)
+            {
+                if (!TutorialEventBus.IsMarkerTriggered(pair.Key)) continue;
+
+                foreach (var questName in pair.Value)
+                {
+                    ActivateQuest(questName);
+                }
             }
         }
 

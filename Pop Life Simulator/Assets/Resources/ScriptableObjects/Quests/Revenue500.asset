@@ -34,8 +34,8 @@ MonoBehaviour:
   completionMarker: 48
   triggerMarkerAfterToast: 1
   title: Revenue IV
-  description: Earn 500 Money in a single day.
-  successDescription: You gained 110 Fame!
+  description: "This target needs a day where the aisles, stock, and checkout all pull together. Keep the store earning until the number feels undeniable."
+  successDescription: "A serious revenue day proved the operation can carry real weight."
   entryTexts:
   - Earn 500 in a day
   questIcon: {fileID: 0}

@@ -43,8 +43,10 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Inclusiveness
-  description: Make your store welcoming for everyone.
-  successDescription: You gained 100 Money and unlocked the Strap on Dildo blueprint!
+  description: The store should not assume every customer shops the same way or loves
+    the same body. Add options that make more relationships and identities feel seen.
+  successDescription: More customers can now recognize themselves somewhere in Pop
+    Life's aisles.
   entryTexts:
   - Promote inclusiveness
   questIcon: {fileID: 0}

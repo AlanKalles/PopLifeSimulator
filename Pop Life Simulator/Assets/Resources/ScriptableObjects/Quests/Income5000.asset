@@ -34,8 +34,8 @@ MonoBehaviour:
   completionMarker: 53
   triggerMarkerAfterToast: 1
   title: Income IV
-  description: Earn a lifetime total of 5000 Money.
-  successDescription: You gained 180 Fame!
+  description: "Sustained income proves customers are returning, not just gawking. Push the total high enough to show Pop Life has staying power."
+  successDescription: "Pop Life has crossed from promising experiment into stable operation."
   entryTexts:
   - Earn 5000 total
   questIcon: {fileID: 0}

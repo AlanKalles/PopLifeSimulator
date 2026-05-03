@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
   m_Name: FiveShelves
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
-  questName: Five Shelves
+  questName: Five Shelves (Merged)
   questType: 0
   deadlineDays: 0
   giverName: Midori
@@ -41,12 +41,12 @@ MonoBehaviour:
     filterCategory: 0
     useFilterArchetypes: 0
     filterArchetypes: []
-  activationMarker: 70
-  completionMarker: 71
+  activationMarker: -1
+  completionMarker: -1
   triggerMarkerAfterToast: 1
-  title: Five Shelves
-  description: Expand your store to 5 shelves!
-  successDescription: You gained 100 Money and unlocked the Wand Vibrator blueprint!
+  title: Five Shelves (Merged)
+  description: "This retired duplicate is merged into Main/2. The live six-shelf task is Auditor's Request #1."
+  successDescription: "Merged into Auditor's Request #1 so the shelf-count chain has one six-shelf task."
   entryTexts:
   - Place 5 shelves
   questIcon: {fileID: 0}

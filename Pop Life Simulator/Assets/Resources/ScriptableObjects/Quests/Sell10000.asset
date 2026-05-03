@@ -31,8 +31,8 @@ MonoBehaviour:
   completionMarker: 68
   triggerMarkerAfterToast: 1
   title: Sell III
-  description: Sell 10000 items total.
-  successDescription: You gained 1000 Money!
+  description: "This is a milestone for a store that has become part of customers' routines. Keep selling until the number feels almost absurd."
+  successDescription: "The store crossed a massive sales milestone and earned every digit."
   entryTexts:
   - Sell 10000 items total
   questIcon: {fileID: 0}

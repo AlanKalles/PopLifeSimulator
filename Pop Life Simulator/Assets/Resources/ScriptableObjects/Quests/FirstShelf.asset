@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
   m_Name: FirstShelf
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
-  questName: First Shelf
+  questName: First Shelf (Merged)
   questType: 0
   deadlineDays: 0
   giverName: Midori
@@ -38,12 +38,12 @@ MonoBehaviour:
     filterCategory: 0
     useFilterArchetypes: 0
     filterArchetypes: []
-  activationMarker: 69
-  completionMarker: 70
+  activationMarker: -1
+  completionMarker: -1
   triggerMarkerAfterToast: 1
-  title: First Shelf
-  description: Place your first shelf in the store!
-  successDescription: You gained 100 Money and unlocked the Bullet Vibrator blueprint!
+  title: First Shelf (Merged)
+  description: "This retired duplicate is merged into Main/1. The live First Shelf quest is the main opening task that unlocks the starter products and teaches the first display."
+  successDescription: "Merged into Main/1 so the opening quest chain has one first-shelf task."
   entryTexts:
   - Place 1 shelf
   questIcon: {fileID: 0}

@@ -37,8 +37,8 @@ MonoBehaviour:
   completionMarker: 44
   triggerMarkerAfterToast: 1
   title: Tenth Building
-  description: Place 10 buildings total.
-  successDescription: You gained 1000 Fame and unlocked a blueprint!
+  description: "The final expansion push should make the store feel like an institution. Give every major product fantasy enough space to breathe."
+  successDescription: "The store has become a full destination, with room for nearly every kind of customer."
   entryTexts:
   - Place 10 buildings
   questIcon: {fileID: 0}

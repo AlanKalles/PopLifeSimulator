@@ -27,12 +27,12 @@ MonoBehaviour:
     targetValue: 100
     useFilterCategory: 0
     filterCategory: 0
-  activationMarker: 37
+  activationMarker: 96
   completionMarker: 63
   triggerMarkerAfterToast: 1
   title: Serve I
-  description: Serve 100 customers total.
-  successDescription: You gained 300 Money!
+  description: "A growing customer base needs consistency more than charm. Serve enough people that Pop Life feels dependable."
+  successDescription: "A hundred customers have now passed through Pop Life's care."
   entryTexts:
   - Serve 100 customers total
   questIcon: {fileID: 0}

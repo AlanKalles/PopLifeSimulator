@@ -37,8 +37,8 @@ MonoBehaviour:
   completionMarker: 42
   triggerMarkerAfterToast: 1
   title: Fifth Building
-  description: Place 5 buildings total.
-  successDescription: You gained 500 Fame and unlocked a blueprint!
+  description: "The business is ready for a more ambitious footprint. Expand until the shop feels like a growing district instead of a single storefront."
+  successDescription: "The store's footprint now matches its growing reputation."
   entryTexts:
   - Place 5 buildings
   questIcon: {fileID: 0}

@@ -14,6 +14,8 @@ namespace PopLife.Customers.Spawner
 {
     public class CustomerSpawner : MonoBehaviour
     {
+        public static CustomerSpawner Instance { get; private set; }
+
         [Header("基础配置")]
         public GameObject customerPrefab; // 带 CustomerAgent + CustomerBlackboardAdapter
 
@@ -84,6 +86,16 @@ namespace PopLife.Customers.Spawner
 
         void Awake()
         {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             repository = CustomerRepository.Instance;
             if (repository == null)
             {
@@ -129,6 +141,12 @@ namespace PopLife.Customers.Spawner
                 DayLoopManager.Instance.OnStoreOpen -= InitializeDailyPool;
                 DayLoopManager.Instance.OnStopSpawning -= StopSpawning;
             }
+        }
+
+        void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
         }
 
         void Start()

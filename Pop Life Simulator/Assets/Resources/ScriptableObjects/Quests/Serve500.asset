@@ -37,8 +37,8 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Serve II
-  description: Serve 500 customers total.
-  successDescription: You gained 400 Money!
+  description: "Serving this many people means the store is no longer niche gossip. Keep the operation welcoming through a much larger crowd."
+  successDescription: "Hundreds of customers have trusted the store enough to shop here."
   entryTexts:
   - Serve 500 customers total
   questIcon: {fileID: 0}

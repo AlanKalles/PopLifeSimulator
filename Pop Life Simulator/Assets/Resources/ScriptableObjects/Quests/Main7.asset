@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
+  m_Name: Main7
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
+  questName: Main/7
+  questType: 0
+  deadlineDays: 4
+  giverName: Auditor
+  giverPortrait: {fileID: 21300000, guid: adfa28d6e21e50941b0609702b296174, type: 3}
+  rewards:
+  - type: 1
+    amount: 125
+    itemId: 
+  conditions:
+  - conditionType: 4
+    scope: 0
+    targetValue: 40
+    useFilterCategory: 0
+    filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
+  activationMarker: 92
+  completionMarker: -1
+  triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
+  title: Auditor's Tourist Surge
+  description: "Tourists are coming, and they will not browse patiently if the store feels thin. Prepare enough variety and flow to survive a sudden crowd."
+  successDescription: "The tourist surge became a success story instead of a stampede."
+  entryTexts:
+  - Serve 40 customers before the deadline
+  questIcon: {fileID: 0}
+  sortPriority: 26

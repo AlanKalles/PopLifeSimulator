@@ -40,8 +40,8 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Income III
-  description: Earn a lifetime total of 3000 Money.
-  successDescription: You gained 160 Fame!
+  description: "The ledger needs a number that speaks louder than enthusiasm. Keep building lifetime income until the shop's growth is undeniable."
+  successDescription: "The store's accumulated income is becoming hard for anyone to dismiss."
   entryTexts:
   - Earn 3000 total
   questIcon: {fileID: 0}

@@ -34,8 +34,8 @@ MonoBehaviour:
   completionMarker: 51
   triggerMarkerAfterToast: 1
   title: Income II
-  description: Earn a lifetime total of 1000 Money.
-  successDescription: You gained 140 Fame!
+  description: "A stronger lifetime total will calm the doubters and keep suppliers interested. Build enough sales history to show this is not a novelty act."
+  successDescription: "The store's earnings now look like a business instead of a lucky opening."
   entryTexts:
   - Earn 1000 total
   questIcon: {fileID: 0}

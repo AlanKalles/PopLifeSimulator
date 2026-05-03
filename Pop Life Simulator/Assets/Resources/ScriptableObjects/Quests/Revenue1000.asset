@@ -34,8 +34,8 @@ MonoBehaviour:
   completionMarker: 49
   triggerMarkerAfterToast: 1
   title: Revenue V
-  description: Earn 1000 Money in a single day.
-  successDescription: You gained 125 Fame!
+  description: "A four-digit day would change how people talk about Pop Life. Push sales until the register becomes the headline."
+  successDescription: "The store hit a headline-worthy day of revenue."
   entryTexts:
   - Earn 1000 in a day
   questIcon: {fileID: 0}

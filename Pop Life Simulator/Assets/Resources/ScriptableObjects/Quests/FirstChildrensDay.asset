@@ -36,8 +36,8 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 1
   title: First Children's Day
-  description: A special event to celebrate new beginnings.
-  successDescription: You gained 100 Money and unlocked the 1-Step PlanB and Rapid Pregnancy Test blueprints!
+  description: "A seasonal event is bringing in shoppers thinking about responsibility, timing, and consequences. Stock products that support careful choices after intimate moments."
+  successDescription: "The seasonal rush ended with customers feeling better prepared and better informed."
   entryTexts:
   - Celebrate the occasion
   questIcon: {fileID: 0}

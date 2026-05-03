@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7027fc4885d628a41817674e8adc322c, type: 3}
+  m_Name: VIPSoloFans3
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
+  questName: VIP/SoloFans/3
+  questType: 1
+  deadlineDays: 0
+  giverName: Omega
+  giverPortrait: {fileID: 0}
+  rewards:
+  - type: 0
+    amount: 300
+    itemId: 
+  conditions:
+  - conditionType: 0
+    scope: 0
+    targetValue: 1
+    useFilterCategory: 0
+    filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
+  activationMarker: 98
+  completionMarker: -1
+  triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
+  title: "SoloFans: Extreme Toy"
+  description: "Omega wants intensity that might reveal the truth, even if it hurts. Find a tool dramatic enough for performance but serious enough to test a boundary."
+  successDescription: "Omega has the extreme prop they asked for, and the consequences are now theirs."
+  entryTexts:
+  - Find an extreme toy for Omega
+  questIcon: {fileID: 0}
+  sortPriority: 136

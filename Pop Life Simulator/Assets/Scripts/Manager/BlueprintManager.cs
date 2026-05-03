@@ -257,8 +257,7 @@ namespace PopLife
                 return;
             }
 
-            // 尝试从Resources加载以判断类型
-            var building = Resources.Load<BuildingArchetype>($"ScriptableObjects/BuildingArchetype/{archetypeId}");
+            var building = ResolveBuildingArchetype(archetypeId);
 
             if (building == null)
             {
@@ -287,6 +286,28 @@ namespace PopLife
                 Debug.LogWarning($"[BlueprintManager] Unknown building type for '{archetypeId}', adding as generic blueprint");
                 UnlockShelf(archetypeId);
             }
+        }
+
+        private static BuildingArchetype ResolveBuildingArchetype(string archetypeId)
+        {
+            var direct = Resources.Load<BuildingArchetype>($"ScriptableObjects/BuildingArchetype/{archetypeId}");
+            if (direct != null)
+                return direct;
+
+            var allBuildings = Resources.LoadAll<BuildingArchetype>("ScriptableObjects/BuildingArchetype");
+            foreach (var building in allBuildings)
+            {
+                if (building == null) continue;
+
+                if (string.Equals(building.archetypeId, archetypeId, StringComparison.Ordinal)
+                    || string.Equals(building.name, archetypeId, StringComparison.Ordinal)
+                    || string.Equals(building.displayName, archetypeId, StringComparison.Ordinal))
+                {
+                    return building;
+                }
+            }
+
+            return null;
         }
     }
 }

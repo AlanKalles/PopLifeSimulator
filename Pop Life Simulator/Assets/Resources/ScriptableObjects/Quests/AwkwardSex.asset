@@ -40,8 +40,8 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Awkward Sex
-  description: Help first-timers feel less awkward about exploring their desires.
-  successDescription: You gained 100 Money and unlocked the Flower Vibrator blueprint!
+  description: "New shoppers are hovering near the aisles, pretending they are only browsing. Give them gentle, beginner-friendly options that make the first step feel less embarrassing."
+  successDescription: "First-timers found something they could actually ask for, and the store became a little easier to enter."
   entryTexts:
   - Sell beginner-friendly products
   questIcon: {fileID: 0}

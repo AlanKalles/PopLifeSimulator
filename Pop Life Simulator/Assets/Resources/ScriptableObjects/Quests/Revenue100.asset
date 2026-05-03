@@ -34,8 +34,8 @@ MonoBehaviour:
   completionMarker: 46
   triggerMarkerAfterToast: 1
   title: Revenue II
-  description: Earn 100 Money in a single day.
-  successDescription: You gained 80 Fame!
+  description: "The next daily target asks for rhythm, not luck. Keep customers buying until the day has a respectable shape."
+  successDescription: "The day's revenue landed with confidence instead of hope."
   entryTexts:
   - Earn 100 in a day
   questIcon: {fileID: 0}

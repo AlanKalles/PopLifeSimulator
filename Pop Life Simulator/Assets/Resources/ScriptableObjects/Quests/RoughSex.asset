@@ -31,13 +31,13 @@ MonoBehaviour:
     amount: 1
     itemId: Jammi
   conditions: []
-  activationMarker: 72
+  activationMarker: 82
   completionMarker: 83
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Rough Sex
-  description: Stock products for the more adventurous customers.
-  successDescription: You gained 100 Money and unlocked the Whip blueprint!
+  description: "Some customers want play that feels intense without losing control. Stock gear for people who like their pleasure with bite, pressure, and clear boundaries."
+  successDescription: "The adventurous crowd now has a reason to trust Pop Life with rougher fantasies."
   entryTexts:
   - Stock rough play products
   questIcon: {fileID: 0}

@@ -31,8 +31,8 @@ MonoBehaviour:
   completionMarker: 65
   triggerMarkerAfterToast: 1
   title: Serve III
-  description: Serve 1000 customers total.
-  successDescription: You gained 500 Money!
+  description: "A thousand served customers would make Pop Life part of the city's intimate infrastructure. Keep helping people find what they came for."
+  successDescription: "Pop Life has served a thousand customers and become part of the city."
   entryTexts:
   - Serve 1000 customers total
   questIcon: {fileID: 0}

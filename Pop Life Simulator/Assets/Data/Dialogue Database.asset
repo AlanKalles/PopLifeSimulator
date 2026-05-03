@@ -238,7 +238,944 @@ MonoBehaviour:
     spritePortrait: {fileID: 0}
     alternatePortraits: []
     spritePortraits: []
-  items: []
+  items:
+  - id: 1
+    fields:
+    - title: Name
+      value: Main/1
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: The store is empty enough to echo. Give customers one clear place to
+        browse so Midori can start teaching you how the business actually works.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Your first display is up, and the shop finally has a pulse.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Build 1 shelf
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 2
+    fields:
+    - title: Name
+      value: Main/2
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: The Auditor wants proof that this store can attract more than pity traffic.
+        Add enough browsing options that new customers have a reason to enter and
+        stay.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: The first Auditor target is complete, and Pop Life looks less like a
+        government mistake.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Build 6 shelves
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 3
+    fields:
+    - title: Name
+      value: Main/4
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: The Auditor is watching whether you can move high-demand vibration products
+        at scale. Stock around that appetite without obsessing over one brand.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: The vibration sales target is complete, and the Auditor has fresh numbers
+        to file.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Sell 200 vibrators
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 4
+    fields:
+    - title: Name
+      value: Main/5
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: The government wants evidence that customers are forming habits, not
+        just making one nervous visit. Focus on service that turns strangers into
+        recognizable regulars.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Enough customers came back often enough to prove Pop Life is building
+        loyalty.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Have 3 loyal customers reach member status
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 5
+    fields:
+    - title: Name
+      value: Main/6
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: The holiday will bring shoppers with money, nerves, and excuses. Prepare
+        the store to turn seasonal curiosity into a strong day of sales.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: The holiday rush paid off, and the store looked ready instead of surprised.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Earn 1000 money during the holiday
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 6
+    fields:
+    - title: Name
+      value: Main/7
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Tourists are coming, and they will not browse patiently if the store
+        feels thin. Prepare enough variety and flow to survive a sudden crowd.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: The tourist surge became a success story instead of a stampede.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Serve 40 customers before the deadline
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 7
+    fields:
+    - title: Name
+      value: Main/8
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: 'The Auditor''s order is political, not personal: Cucci needs to disappear
+        from the sales floor. Remove the brand before loyalty to fashion becomes
+        disloyalty to the state.'
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Cucci is off the floor, and the Auditor has one less reason to threaten
+        the license.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Remove all Cucci products from the store
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 8
+    fields:
+    - title: Name
+      value: Main/9
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: The next phase needs more than better shelves; it needs more space.
+        Prepare a second building so Pop Life can become something larger than a
+        single shop.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: The second-building plan is in motion, and Pop Life's expansion feels
+        official.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Place 2 buildings total
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 9
+    fields:
+    - title: Name
+      value: BDSM/1
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Henya's challenge is less about one product and more about proving there
+        is demand for intensity, restraint, and spectacle. Prepare the store for
+        customers who want something less vanilla.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Henya's challenge has moved from trash talk into a real rivalry, and
+        the store is ready to answer it.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Resolve Henya's BDSM challenge
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 10
+    fields:
+    - title: Name
+      value: VIP/SoloFans/1
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Omega wants a showpiece powerful enough to turn a video into an event.
+        Find something rare, mechanical, and hard for competitors to copy.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Omega got the kind of spectacle that can move rankings.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Find a rare sex machine for Omega
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 11
+    fields:
+    - title: Name
+      value: VIP/SoloFans/2
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Omega is chasing an old performance that seems more personal than professional.
+        Find the forgotten media before the mystery eats them alive.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: The old DomeOwenTica lead gave Omega something real to confront.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Find DomeOwenTica pornography for Omega
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 12
+    fields:
+    - title: Name
+      value: VIP/SoloFans/3
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Omega wants intensity that might reveal the truth, even if it hurts.
+        Find a tool dramatic enough for performance but serious enough to test a
+        boundary.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Omega has the extreme prop they asked for, and the consequences are
+        now theirs.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Find an extreme toy for Omega
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 13
+    fields:
+    - title: Name
+      value: VIP/SoloFans/4
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Omega needs a way forward that does not erase their brand or their partner's
+        honesty. Find something flexible enough for both fantasy and care.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Omega found a path that can hold performance and intimacy in the same
+        frame.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Find a mutually satisfying tool for Omega and their partner
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 14
+    fields:
+    - title: Name
+      value: VIP/ShyGirl/1
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Hana is new to this and trying to keep her boundaries intact while still
+        exploring pleasure. Point her toward something gentle and external.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Hana left with a first choice that respected both her curiosity and
+        her limits.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Recommend an external vibrator for Hana
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 15
+    fields:
+    - title: Name
+      value: VIP/ShyGirl/2
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Hana wants to enter a darker, more theatrical scene without feeling
+        swallowed by it. Find something she can wear like confidence, not armor.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Hana found a look that lets her step into the party without disappearing
+        inside it.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Find BDSM party lingerie for Hana
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 16
+    fields:
+    - title: Name
+      value: VIP/ShyGirl/3
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Hana's curiosity is running into Henya's intensity. Help her keep hold
+        of her own desire while the room gets louder around her.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Hana's encounter with Henya became another step toward naming what she
+        actually wants.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Continue Hana's BDSM self-recognition arc
+      type: 0
+      typeString: CustomFieldType_Text
+  - id: 17
+    fields:
+    - title: Name
+      value: Start Game
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Midori is waiting with the first practical lesson. Before the shop can
+        open, you need one simple display for the starter products.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Midori has handed you the first real store task.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Meet Midori
+      type: 0
+      typeString: CustomFieldType_Text  - id: 18
+    fields:
+    - title: Name
+      value: Protection
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: Some shoppers are not here for spectacle; they are here because they
+        want to be careful. Stock practical protection that makes safer sex feel
+        normal and easy to ask for.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Success Description
+      value: Customers looking for protection can now shop without feeling like they
+        are making a confession.
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Failure Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Is Item
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Trackable
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Track
+      value: True
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Entry Count
+      value: 1
+      type: 1
+      typeString: CustomFieldType_Number
+    - title: Entry 1 State
+      value: unassigned
+      type: 0
+      typeString: CustomFieldType_QuestState
+    - title: Entry 1
+      value: Sell protection products
+      type: 0
+      typeString: CustomFieldType_Text
+
   locations: []
   variables:
   - id: 1
@@ -1330,7 +2267,9 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/1", "active"); '
+      userScript: 'GiveMoney(150); UnlockBlueprint("Silicone Dildo"); UnlockCustomer("C001");
+        UnlockCustomer("C004"); UnlockCustomer("C005"); SetQuestStateAfter("Start
+        Game", "success"); SetQuestStateAfter("Main/1", "active"); '
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -1921,7 +2860,8 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/2", "active"); '
+      userScript: 'SetQuestStateAfter("Main/2", "active"); SetQuestStateAfter("Protection",
+        "active"); '
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -2296,7 +3236,13 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: []
+      outgoingLinks:
+      - originConversationID: 6
+        originDialogueID: 5
+        destinationConversationID: 6
+        destinationDialogueID: 6
+        isConnector: 0
+        priority: 2
       conditionsString: 
       userScript: 
       onExecute:
@@ -2306,6 +3252,56 @@ MonoBehaviour:
         serializedVersion: 2
         x: 317.2
         y: 370.80002
+        width: 160
+        height: 30
+    - id: 6
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: 
+      - title: Description
+        value: 
+        type: 0
+        typeString: 
+      - title: Actor
+        value: 4
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 4
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: 
+        type: 0
+        typeString: 
+      - title: Dialogue Text
+        value: If you don't have the shelf that a customer is looking for, they won't
+          buy anything, not even entering your store.
+        type: 0
+        typeString: 
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: 
+      conversationID: 6
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks: []
+      conditionsString: 
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 317.2
+        y: 444
         width: 160
         height: 30
     entryGroups: []
@@ -15874,7 +16870,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: SetQuestStateAfter("Main/4", "active");
+      userScript: SetQuestStateAfter("Main/4", "active"); RaiseMarkerAfter("Main4Activated");
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -15888,7 +16884,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 8.343, y: 11.202129}
     canvasZoom: 1.0239978
   - id: 39
-    fields: 
+    fields:
     - title: Title
       value: Auditor/4
       type: 0
@@ -15905,7 +16901,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -15925,18 +16921,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -15972,7 +16968,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 39
         originDialogueID: 0
         destinationConversationID: 39
@@ -15981,17 +16977,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16013,7 +17009,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I have reviewed the report provided by your robot companion. You have met the requirements.
+        value: I have reviewed the report provided by your robot companion. You have
+          met the requirements.
         type: 0
         typeString: 
       - title: Sequence
@@ -16027,7 +17024,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 39
         originDialogueID: 1
         destinationConversationID: 39
@@ -16036,17 +17033,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16068,7 +17065,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: This is the basic level of performance that any shop should be able to achieve.
+        value: This is the basic level of performance that any shop should be able
+          to achieve.
         type: 0
         typeString: 
       - title: Sequence
@@ -16082,7 +17080,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 39
         originDialogueID: 2
         destinationConversationID: 39
@@ -16091,17 +17089,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16123,7 +17121,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: However, there are still a few more things I need you to complete in order to prove that you are capable of running this shop, as well as meeting PEI standards.
+        value: However, there are still a few more things I need you to complete
+          in order to prove that you are capable of running this shop, as well as
+          meeting PEI standards.
         type: 0
         typeString: 
       - title: Sequence
@@ -16137,7 +17137,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 39
         originDialogueID: 3
         destinationConversationID: 39
@@ -16146,17 +17146,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16178,7 +17178,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I will supervise your store in the meantime. Keep up the good work but don't become too comfortable, your shop is helping build a better future for this society."
+        value: I will supervise your store in the meantime. Keep up the good work
+          but don't become too comfortable, your shop is helping build a better future
+          for this society.
         type: 0
         typeString: 
       - title: Sequence
@@ -16192,7 +17194,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 39
         originDialogueID: 4
         destinationConversationID: 39
@@ -16201,17 +17203,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16247,7 +17249,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 39
         originDialogueID: 5
         destinationConversationID: 39
@@ -16256,17 +17258,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16288,7 +17290,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Your next task is to have three loyal customers level up to member status.
+        value: Your next task is to have three loyal customers level up to member
+          status.
         type: 0
         typeString: 
       - title: Sequence
@@ -16302,7 +17305,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 39
         originDialogueID: 6
         destinationConversationID: 39
@@ -16311,17 +17314,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16359,11 +17362,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/5", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("Main/5", "active"); RaiseMarkerAfter("Main5Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 378
@@ -16373,7 +17376,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 40
-    fields: 
+    fields:
     - title: Title
       value: Auditor/5
       type: 0
@@ -16390,7 +17393,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -16410,18 +17413,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -16457,7 +17460,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 40
         originDialogueID: 0
         destinationConversationID: 40
@@ -16466,17 +17469,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16512,7 +17515,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 40
         originDialogueID: 1
         destinationConversationID: 40
@@ -16521,17 +17524,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16567,7 +17570,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 40
         originDialogueID: 2
         destinationConversationID: 40
@@ -16576,17 +17579,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16622,7 +17625,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 40
         originDialogueID: 3
         destinationConversationID: 40
@@ -16631,17 +17634,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16663,7 +17666,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Review the calendar. The government has arranged promotional campaigns for your store during every holiday.
+        value: Review the calendar. The government has arranged promotional campaigns
+          for your store during every holiday.
         type: 0
         typeString: 
       - title: Sequence
@@ -16677,7 +17681,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 40
         originDialogueID: 4
         destinationConversationID: 40
@@ -16686,17 +17690,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16718,7 +17722,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Your next objective is to earn [HOLIDAY_TARGET] money during the upcoming holiday.
+        value: Your next objective is to earn [HOLIDAY_TARGET] money during the upcoming
+          holiday.
         type: 0
         typeString: 
       - title: Sequence
@@ -16734,11 +17739,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/6", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("Main/6", "active"); RaiseMarkerAfter("Main6Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
@@ -16748,7 +17753,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 41
-    fields: 
+    fields:
     - title: Title
       value: Auditor/6
       type: 0
@@ -16765,7 +17770,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -16785,18 +17790,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -16832,7 +17837,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 41
         originDialogueID: 0
         destinationConversationID: 41
@@ -16841,17 +17846,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16873,7 +17878,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I want to see the reports from your store. All of them, from the day you opened until now.
+        value: I want to see the reports from your store. All of them, from the day
+          you opened until now.
         type: 0
         typeString: 
       - title: Sequence
@@ -16887,7 +17893,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 41
         originDialogueID: 1
         destinationConversationID: 41
@@ -16896,17 +17902,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16942,7 +17948,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 41
         originDialogueID: 2
         destinationConversationID: 41
@@ -16951,17 +17957,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -16997,7 +18003,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 41
         originDialogueID: 3
         destinationConversationID: 41
@@ -17006,17 +18012,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17038,7 +18044,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Recently, a large number of exhibitions have been taking place in this city. Which means — customer volume is about to surge.
+        value: "Recently, a large number of exhibitions have been taking place in
+          this city. Which means \u2014 customer volume is about to surge."
         type: 0
         typeString: 
       - title: Sequence
@@ -17052,7 +18059,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 41
         originDialogueID: 4
         destinationConversationID: 41
@@ -17061,17 +18068,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17093,7 +18100,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I will make sure that a large number of tourists stop by your store while they're in town."
+        value: I will make sure that a large number of tourists stop by your store
+          while they're in town.
         type: 0
         typeString: 
       - title: Sequence
@@ -17107,7 +18115,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 41
         originDialogueID: 5
         destinationConversationID: 41
@@ -17116,17 +18124,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17148,7 +18156,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: In four days, be prepared to welcome roughly 4-5 times your current customer flow.
+        value: In four days, be prepared to welcome roughly 4-5 times your current
+          customer flow.
         type: 0
         typeString: 
       - title: Sequence
@@ -17162,7 +18171,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 41
         originDialogueID: 6
         destinationConversationID: 41
@@ -17171,17 +18180,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17203,7 +18212,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I would expand your variety of items in the store as well as increase your stock.
+        value: I would expand your variety of items in the store as well as increase
+          your stock.
         type: 0
         typeString: 
       - title: Sequence
@@ -17219,11 +18229,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/7", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("Main/7", "active"); RaiseMarkerAfter("Main7Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 378
@@ -17233,7 +18243,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 42
-    fields: 
+    fields:
     - title: Title
       value: Auditor/7
       type: 0
@@ -17250,7 +18260,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -17270,18 +18280,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -17317,7 +18327,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 0
         destinationConversationID: 42
@@ -17326,17 +18336,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17358,7 +18368,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Your store is doing very well. It looks like many major luxury brands are being sold here now.
+        value: Your store is doing very well. It looks like many major luxury brands
+          are being sold here now.
         type: 0
         typeString: 
       - title: Sequence
@@ -17372,7 +18383,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 1
         destinationConversationID: 42
@@ -17381,17 +18392,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17413,7 +18424,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "You haven't forgotten the original purpose of this store, have you?"
+        value: You haven't forgotten the original purpose of this store, have you?
         type: 0
         typeString: 
       - title: Sequence
@@ -17427,7 +18438,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 2
         destinationConversationID: 42
@@ -17436,17 +18447,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17482,7 +18493,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 3
         destinationConversationID: 42
@@ -17491,17 +18502,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17537,7 +18548,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 4
         destinationConversationID: 42
@@ -17546,17 +18557,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17578,7 +18589,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: The true purpose of this shop is to carry out the expectations of the government increasing PEI. That is why I appear periodically to inspect your progress.
+        value: The true purpose of this shop is to carry out the expectations of
+          the government increasing PEI. That is why I appear periodically to inspect
+          your progress.
         type: 0
         typeString: 
       - title: Sequence
@@ -17592,7 +18605,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 5
         destinationConversationID: 42
@@ -17601,17 +18614,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17633,7 +18646,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Do you understand? You are not an independent merchant. You are an employee of the government.
+        value: Do you understand? You are not an independent merchant. You are an
+          employee of the government.
         type: 0
         typeString: 
       - title: Sequence
@@ -17647,7 +18661,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 6
         destinationConversationID: 42
@@ -17656,17 +18670,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17688,7 +18702,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "So I'll be direct."
+        value: So I'll be direct.
         type: 0
         typeString: 
       - title: Sequence
@@ -17702,7 +18716,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 7
         destinationConversationID: 42
@@ -17711,17 +18725,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 378
         width: 160
         height: 30
     - id: 8
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17757,7 +18771,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 8
         destinationConversationID: 42
@@ -17766,17 +18780,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 428
         width: 160
         height: 30
     - id: 9
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17798,7 +18812,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "...They have severely damaged the government's reputation. This is the sanction they deserve."
+        value: ...They have severely damaged the government's reputation. This is
+          the sanction they deserve.
         type: 0
         typeString: 
       - title: Sequence
@@ -17812,7 +18827,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 9
         destinationConversationID: 42
@@ -17821,17 +18836,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 478
         width: 160
         height: 30
     - id: 10
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17853,7 +18868,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: You will lose some money. And some customers. But collective interests always outweigh individual interests.
+        value: You will lose some money. And some customers. But collective interests
+          always outweigh individual interests.
         type: 0
         typeString: 
       - title: Sequence
@@ -17867,7 +18883,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 42
         originDialogueID: 10
         destinationConversationID: 42
@@ -17876,17 +18892,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 528
         width: 160
         height: 30
     - id: 11
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -17924,11 +18940,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/8", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("Main/8", "active"); RaiseMarkerAfter("Main8Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 578
@@ -17938,7 +18954,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 43
-    fields: 
+    fields:
     - title: Title
       value: Auditor/8
       type: 0
@@ -17955,7 +18971,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -17975,18 +18991,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -18022,7 +19038,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 0
         destinationConversationID: 43
@@ -18037,17 +19053,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18083,26 +19099,26 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 1
         destinationConversationID: 43
         destinationDialogueID: 2
         isConnector: 0
         priority: 2
-      conditionsString: 'CurrentQuestState("Main/8") == "failure"'
+      conditionsString: CurrentQuestState("Main/8") == "failure"
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 53.6
         y: 100
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18138,7 +19154,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 2
         destinationConversationID: 43
@@ -18147,17 +19163,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 53.6
         y: 150
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18193,7 +19209,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 3
         destinationConversationID: 43
@@ -18202,17 +19218,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 53.6
         y: 200
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18234,7 +19250,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Sell them, throw them out, I don't care just get rid of them."
+        value: Sell them, throw them out, I don't care just get rid of them.
         type: 0
         typeString: 
       - title: Sequence
@@ -18248,7 +19264,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 4
         destinationConversationID: 43
@@ -18257,17 +19273,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 53.6
         y: 250
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18289,7 +19305,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Or the government will consider replacing other things in this store instead — for example, you.
+        value: "Or the government will consider replacing other things in this store
+          instead \u2014 for example, you."
         type: 0
         typeString: 
       - title: Sequence
@@ -18303,7 +19320,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 5
         destinationConversationID: 43
@@ -18312,17 +19329,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 53.6
         y: 300
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18344,7 +19361,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I will be back in two days. Don't be stupid."
+        value: I will be back in two days. Don't be stupid.
         type: 0
         typeString: 
       - title: Sequence
@@ -18361,17 +19378,17 @@ MonoBehaviour:
       outgoingLinks: []
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 53.6
         y: 350
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18407,26 +19424,26 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 7
         destinationConversationID: 43
         destinationDialogueID: 8
         isConnector: 0
         priority: 2
-      conditionsString: 'CurrentQuestState("Main/8") == "success"'
+      conditionsString: CurrentQuestState("Main/8") == "success"
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 400
         width: 160
         height: 30
     - id: 8
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18462,7 +19479,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 8
         destinationConversationID: 43
@@ -18471,17 +19488,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 450
         width: 160
         height: 30
     - id: 9
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18503,7 +19520,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: This is part of our comprehensive suppression of the rebellious brand, Cucci.
+        value: This is part of our comprehensive suppression of the rebellious brand,
+          Cucci.
         type: 0
         typeString: 
       - title: Sequence
@@ -18517,7 +19535,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 9
         destinationConversationID: 43
@@ -18526,17 +19544,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 500
         width: 160
         height: 30
     - id: 10
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18572,7 +19590,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 10
         destinationConversationID: 43
@@ -18581,17 +19599,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 550
         width: 160
         height: 30
     - id: 11
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18613,7 +19631,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "You only need to follow the government's arrangements."
+        value: You only need to follow the government's arrangements.
         type: 0
         typeString: 
       - title: Sequence
@@ -18627,7 +19645,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 11
         destinationConversationID: 43
@@ -18636,17 +19654,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 600
         width: 160
         height: 30
     - id: 12
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18668,7 +19686,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: If everyone does so, the government will lead us toward a more perfect future.
+        value: If everyone does so, the government will lead us toward a more perfect
+          future.
         type: 0
         typeString: 
       - title: Sequence
@@ -18682,7 +19701,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 12
         destinationConversationID: 43
@@ -18691,17 +19710,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 650
         width: 160
         height: 30
     - id: 13
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18723,7 +19742,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Oh... you're concerned about your losses?"
+        value: Oh... you're concerned about your losses?
         type: 0
         typeString: 
       - title: Sequence
@@ -18737,7 +19756,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 13
         destinationConversationID: 43
@@ -18746,17 +19765,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 700
         width: 160
         height: 30
     - id: 14
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18792,7 +19811,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 43
         originDialogueID: 14
         destinationConversationID: 43
@@ -18801,17 +19820,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 750
         width: 160
         height: 30
     - id: 15
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18833,7 +19852,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Your new task is to expand the store space. You need to prepare for a second building.
+        value: Your new task is to expand the store space. You need to prepare for
+          a second building.
         type: 0
         typeString: 
       - title: Sequence
@@ -18849,11 +19869,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/9", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("Main/9", "active"); RaiseMarkerAfter("Main9Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 320
         y: 800
@@ -18863,7 +19883,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 44
-    fields: 
+    fields:
     - title: Title
       value: Auditor/9
       type: 0
@@ -18880,7 +19900,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -18900,18 +19920,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -18947,7 +19967,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 44
         originDialogueID: 0
         destinationConversationID: 44
@@ -18956,17 +19976,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -18988,7 +20008,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "You didn't even bother to hide the Cucci products."
+        value: You didn't even bother to hide the Cucci products.
         type: 0
         typeString: 
       - title: Sequence
@@ -19002,7 +20022,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 44
         originDialogueID: 1
         destinationConversationID: 44
@@ -19011,17 +20031,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19043,7 +20063,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "...I am deeply disappointed in you. I thought our continued interactions and the government's support would have made you a responsible citizen by now."
+        value: ...I am deeply disappointed in you. I thought our continued interactions
+          and the government's support would have made you a responsible citizen
+          by now.
         type: 0
         typeString: 
       - title: Sequence
@@ -19057,7 +20079,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 44
         originDialogueID: 2
         destinationConversationID: 44
@@ -19066,17 +20088,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19098,7 +20120,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I regret to inform you that I must now apply a penalty mechanism to your store. For a period of time, your Customer Traffic and Fame will both decrease.
+        value: I regret to inform you that I must now apply a penalty mechanism to
+          your store. For a period of time, your Customer Traffic and Fame will both
+          decrease.
         type: 0
         typeString: 
       - title: Sequence
@@ -19112,7 +20136,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 44
         originDialogueID: 3
         destinationConversationID: 44
@@ -19121,17 +20145,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19153,7 +20177,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Continue working. Your new task is to expand the store space. You must prepare for a second building.
+        value: Continue working. Your new task is to expand the store space. You
+          must prepare for a second building.
         type: 0
         typeString: 
       - title: Sequence
@@ -19169,11 +20194,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/9", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("Main/9", "active"); RaiseMarkerAfter("Main9Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
@@ -19183,7 +20208,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 45
-    fields: 
+    fields:
     - title: Title
       value: BDSM/1
       type: 0
@@ -19200,7 +20225,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -19220,18 +20245,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -19267,7 +20292,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 0
         destinationConversationID: 45
@@ -19276,17 +20301,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19308,7 +20333,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Sis, you're still as boring as ever. This store is just like you — conservative, basic, and lacks anything distinctive or interesting."
+        value: "Sis, you're still as boring as ever. This store is just like you
+          \u2014 conservative, basic, and lacks anything distinctive or interesting."
         type: 0
         typeString: 
       - title: Sequence
@@ -19322,7 +20348,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 1
         destinationConversationID: 45
@@ -19331,17 +20357,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19363,7 +20389,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Aren't you busy with your own shop? Why do you keep coming here?"
+        value: Aren't you busy with your own shop? Why do you keep coming here?
         type: 0
         typeString: 
       - title: Sequence
@@ -19377,7 +20403,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 2
         destinationConversationID: 45
@@ -19386,17 +20412,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19432,7 +20458,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 3
         destinationConversationID: 45
@@ -19441,17 +20467,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19473,7 +20499,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "You're asking who I am? Why should I tell you?"
+        value: You're asking who I am? Why should I tell you?
         type: 0
         typeString: 
       - title: Sequence
@@ -19487,7 +20513,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 4
         destinationConversationID: 45
@@ -19496,17 +20522,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19528,7 +20554,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: This is my twin brother, Henya. And this is the new store manager I hired.
+        value: This is my twin brother, Henya. And this is the new store manager
+          I hired.
         type: 0
         typeString: 
       - title: Sequence
@@ -19542,7 +20569,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 5
         destinationConversationID: 45
@@ -19551,17 +20578,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19583,7 +20610,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "How pathetic, working for my sister's dull shop. Are you the one running operations? My god — no wonder this place is so horrible! I just saw you make a customer cry while talking to them!"
+        value: "How pathetic, working for my sister's dull shop. Are you the one
+          running operations? My god \u2014 no wonder this place is so horrible!
+          I just saw you make a customer cry while talking to them!"
         type: 0
         typeString: 
       - title: Sequence
@@ -19597,7 +20626,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 6
         destinationConversationID: 45
@@ -19606,17 +20635,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19652,7 +20681,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 7
         destinationConversationID: 45
@@ -19661,17 +20690,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 378
         width: 160
         height: 30
     - id: 8
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19693,7 +20722,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Well, I just happened to run into dear Mr. Auditor. And he just happened to have some doubts about your store's operational efficiency."
+        value: Well, I just happened to run into dear Mr. Auditor. And he just happened
+          to have some doubts about your store's operational efficiency.
         type: 0
         typeString: 
       - title: Sequence
@@ -19707,7 +20737,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 8
         destinationConversationID: 45
@@ -19716,17 +20746,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 428
         width: 160
         height: 30
     - id: 9
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19748,7 +20778,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: So I suggested — why not let me take over?
+        value: "So I suggested \u2014 why not let me take over?"
         type: 0
         typeString: 
       - title: Sequence
@@ -19762,7 +20792,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 9
         destinationConversationID: 45
@@ -19771,17 +20801,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 478
         width: 160
         height: 30
     - id: 10
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19803,7 +20833,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: You already have your own shop, Henya! Go manage your own kinks and torture tools properly.
+        value: You already have your own shop, Henya! Go manage your own kinks and
+          torture tools properly.
         type: 0
         typeString: 
       - title: Sequence
@@ -19817,7 +20848,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 10
         destinationConversationID: 45
@@ -19826,17 +20857,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 528
         width: 160
         height: 30
     - id: 11
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19872,7 +20903,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 11
         destinationConversationID: 45
@@ -19881,17 +20912,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 578
         width: 160
         height: 30
     - id: 12
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19913,7 +20944,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Only my products can deliver real passion and ultimate psychological highs.
+        value: Only my products can deliver real passion and ultimate psychological
+          highs.
         type: 0
         typeString: 
       - title: Sequence
@@ -19927,7 +20959,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 12
         destinationConversationID: 45
@@ -19936,17 +20968,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 628
         width: 160
         height: 30
     - id: 13
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -19982,7 +21014,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 13
         destinationConversationID: 45
@@ -19991,17 +21023,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 678
         width: 160
         height: 30
     - id: 14
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20023,7 +21055,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "What are you avoiding? Look at your store — you don't even have a single whip!"
+        value: "What are you avoiding? Look at your store \u2014 you don't even have
+          a single whip!"
         type: 0
         typeString: 
       - title: Sequence
@@ -20037,7 +21070,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 14
         destinationConversationID: 45
@@ -20046,17 +21079,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 728
         width: 160
         height: 30
     - id: 15
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20078,7 +21111,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Anyway, I've submitted an application to the Auditor."
+        value: Anyway, I've submitted an application to the Auditor.
         type: 0
         typeString: 
       - title: Sequence
@@ -20092,7 +21125,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 15
         destinationConversationID: 45
@@ -20101,17 +21134,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 778
         width: 160
         height: 30
     - id: 16
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20133,7 +21166,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: If my customer traffic surpasses yours, proving BDSM is more popular than ordinary adult products.....
+        value: If my customer traffic surpasses yours, proving BDSM is more popular
+          than ordinary adult products.....
         type: 0
         typeString: 
       - title: Sequence
@@ -20147,7 +21181,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 45
         originDialogueID: 16
         destinationConversationID: 45
@@ -20156,17 +21190,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 828
         width: 160
         height: 30
     - id: 17
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20188,7 +21222,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Then your store can start preparing for a change in ownership. Midori, you're far too conservative...!"
+        value: Then your store can start preparing for a change in ownership. Midori,
+          you're far too conservative...!
         type: 0
         typeString: 
       - title: Sequence
@@ -20204,11 +21239,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("BDSM/1", "active"); '
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("BDSM/1", "active"); RaiseMarkerAfter("BDSM1Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 878
@@ -20218,7 +21253,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 46
-    fields: 
+    fields:
     - title: Title
       value: VIP/SoloFans/1
       type: 0
@@ -20235,7 +21270,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -20255,18 +21290,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -20302,7 +21337,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 46
         originDialogueID: 0
         destinationConversationID: 46
@@ -20311,17 +21346,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20357,7 +21392,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 46
         originDialogueID: 1
         destinationConversationID: 46
@@ -20366,17 +21401,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20412,7 +21447,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 46
         originDialogueID: 2
         destinationConversationID: 46
@@ -20421,17 +21456,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20453,7 +21488,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "No, baby, no autograph today. I'm here for a next big surprise. You'll find out soon in my account."
+        value: No, baby, no autograph today. I'm here for a next big surprise. You'll
+          find out soon in my account.
         type: 0
         typeString: 
       - title: Sequence
@@ -20467,7 +21503,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 46
         originDialogueID: 3
         destinationConversationID: 46
@@ -20476,17 +21512,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20522,7 +21558,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 46
         originDialogueID: 4
         destinationConversationID: 46
@@ -20531,17 +21567,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20577,7 +21613,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 46
         originDialogueID: 5
         destinationConversationID: 46
@@ -20586,17 +21622,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20618,7 +21654,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Listen, I need a powerful, high-performance toy. Preferably a very new model and the rarer, the better. Price is not an issue. Can you help me get one? I'm aiming to climb the rankings this month."
+        value: Listen, I need a powerful, high-performance toy. Preferably a very
+          new model and the rarer, the better. Price is not an issue. Can you help
+          me get one? I'm aiming to climb the rankings this month.
         type: 0
         typeString: 
       - title: Sequence
@@ -20632,7 +21670,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 46
         originDialogueID: 6
         destinationConversationID: 46
@@ -20641,17 +21679,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20673,7 +21711,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "And don't sell it to other SoloFans bloggers. At least... sell it to me first."
+        value: And don't sell it to other SoloFans bloggers. At least... sell it
+          to me first.
         type: 0
         typeString: 
       - title: Sequence
@@ -20689,11 +21728,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("VIP/SoloFans/1", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("VIP/SoloFans/1", "active"); RaiseMarkerAfter("VIPSoloFans1Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 378
@@ -20703,7 +21742,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 47
-    fields: 
+    fields:
     - title: Title
       value: VIP/SoloFans/2
       type: 0
@@ -20720,7 +21759,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -20740,18 +21779,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -20787,7 +21826,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 0
         destinationConversationID: 47
@@ -20796,17 +21835,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20842,7 +21881,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 1
         destinationConversationID: 47
@@ -20851,17 +21890,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20883,7 +21922,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "It's me. Me, who gave you loads of money for that Sex Machine. Yes it was wonderful. Look at my eyes."
+        value: It's me. Me, who gave you loads of money for that Sex Machine. Yes
+          it was wonderful. Look at my eyes.
         type: 0
         typeString: 
       - title: Sequence
@@ -20897,7 +21937,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 2
         destinationConversationID: 47
@@ -20906,17 +21946,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20938,7 +21978,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I need this mask. No — I'm not sick."
+        value: "I need this mask. No \u2014 I'm not sick."
         type: 0
         typeString: 
       - title: Sequence
@@ -20952,7 +21992,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 3
         destinationConversationID: 47
@@ -20961,17 +22001,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -20993,7 +22033,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Don't ask anything."
+        value: Don't ask anything.
         type: 0
         typeString: 
       - title: Sequence
@@ -21007,7 +22047,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 4
         destinationConversationID: 47
@@ -21016,17 +22056,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21062,7 +22102,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 5
         destinationConversationID: 47
@@ -21071,17 +22111,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21103,7 +22143,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I need you to help find... a pornography with DomeOwenTica as lead actor. It might be digital or physical, could be a work from a decade or so....
+        value: I need you to help find... a pornography with DomeOwenTica as lead
+          actor. It might be digital or physical, could be a work from a decade or
+          so....
         type: 0
         typeString: 
       - title: Sequence
@@ -21117,7 +22159,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 6
         destinationConversationID: 47
@@ -21126,17 +22168,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21158,7 +22200,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I really need this pornography, there is something I have to find out... Help me, and I will give you enough reward, I promise.
+        value: I really need this pornography, there is something I have to find
+          out... Help me, and I will give you enough reward, I promise.
         type: 0
         typeString: 
       - title: Sequence
@@ -21172,7 +22215,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 47
         originDialogueID: 7
         destinationConversationID: 47
@@ -21181,17 +22224,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 378
         width: 160
         height: 30
     - id: 8
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21213,7 +22256,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "DomeOwenTica... they're my... I... nevermind. Find me the pornography first."
+        value: DomeOwenTica... they're my... I... nevermind. Find me the pornography
+          first.
         type: 0
         typeString: 
       - title: Sequence
@@ -21229,11 +22273,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("VIP/SoloFans/2", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("VIP/SoloFans/2", "active"); RaiseMarkerAfter("VIPSoloFans2Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 428
@@ -21243,7 +22287,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 48
-    fields: 
+    fields:
     - title: Title
       value: VIP/SoloFans/3
       type: 0
@@ -21260,7 +22304,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -21280,18 +22324,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -21327,7 +22371,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 48
         originDialogueID: 0
         destinationConversationID: 48
@@ -21336,17 +22380,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21368,7 +22412,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I need something... special. Something unbelievable....or even aggressive! I can't believe they've been hiding this from me for so long."
+        value: I need something... special. Something unbelievable....or even aggressive!
+          I can't believe they've been hiding this from me for so long.
         type: 0
         typeString: 
       - title: Sequence
@@ -21382,7 +22427,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 48
         originDialogueID: 1
         destinationConversationID: 48
@@ -21391,17 +22436,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21423,7 +22468,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I want to push us to the edge. Either I'll find out their true feelings for me... or I gain another round of huge rewards."
+        value: I want to push us to the edge. Either I'll find out their true feelings
+          for me... or I gain another round of huge rewards.
         type: 0
         typeString: 
       - title: Sequence
@@ -21437,7 +22483,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 48
         originDialogueID: 2
         destinationConversationID: 48
@@ -21446,17 +22492,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21478,7 +22524,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Yes, I need an extreme toy. I don't care if it hurts me. Find it and contact me. As soon as possible."
+        value: Yes, I need an extreme toy. I don't care if it hurts me. Find it and
+          contact me. As soon as possible.
         type: 0
         typeString: 
       - title: Sequence
@@ -21494,11 +22541,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("VIP/SoloFans/3", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("VIP/SoloFans/3", "active"); RaiseMarkerAfter("VIPSoloFans3Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
@@ -21508,7 +22555,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 49
-    fields: 
+    fields:
     - title: Title
       value: VIP/SoloFans/4
       type: 0
@@ -21525,7 +22572,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -21545,18 +22592,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -21592,7 +22639,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 49
         originDialogueID: 0
         destinationConversationID: 49
@@ -21601,17 +22648,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21633,7 +22680,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: They confessed to me. Yes, at the beginning we only partnered up to film for my account.
+        value: They confessed to me. Yes, at the beginning we only partnered up to
+          film for my account.
         type: 0
         typeString: 
       - title: Sequence
@@ -21647,7 +22695,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 49
         originDialogueID: 1
         destinationConversationID: 49
@@ -21656,17 +22704,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21688,7 +22736,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: And soon they developed that the role they performed... the fetish they pretended to like in my videos was actually not their thing anymore....
+        value: And soon they developed that the role they performed... the fetish
+          they pretended to like in my videos was actually not their thing anymore....
         type: 0
         typeString: 
       - title: Sequence
@@ -21702,7 +22751,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 49
         originDialogueID: 2
         destinationConversationID: 49
@@ -21711,17 +22760,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21757,7 +22806,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 49
         originDialogueID: 3
         destinationConversationID: 49
@@ -21766,17 +22815,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21798,7 +22847,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Should I change too? But I don't want to give up my account's established genre and style."
+        value: Should I change too? But I don't want to give up my account's established
+          genre and style.
         type: 0
         typeString: 
       - title: Sequence
@@ -21812,7 +22862,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 49
         originDialogueID: 4
         destinationConversationID: 49
@@ -21821,17 +22871,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -21853,7 +22903,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "What if there's something that could both satisfy my needs and their fetish..."
+        value: What if there's something that could both satisfy my needs and their
+          fetish...
         type: 0
         typeString: 
       - title: Sequence
@@ -21869,11 +22920,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("VIP/SoloFans/4", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("VIP/SoloFans/4", "active"); RaiseMarkerAfter("VIPSoloFans4Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
@@ -21883,7 +22934,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 50
-    fields: 
+    fields:
     - title: Title
       value: VIP/ShyGirl/1
       type: 0
@@ -21900,7 +22951,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -21920,18 +22971,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -21967,7 +23018,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 50
         originDialogueID: 0
         destinationConversationID: 50
@@ -21976,17 +23027,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22008,7 +23059,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "It's my first time coming to a store like this."
+        value: It's my first time coming to a store like this.
         type: 0
         typeString: 
       - title: Sequence
@@ -22022,7 +23073,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 50
         originDialogueID: 1
         destinationConversationID: 50
@@ -22031,17 +23082,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22063,7 +23114,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I mean... uh... my friend said that instead of dating a boyfriend, it's better to just buy some toys and DIY."
+        value: I mean... uh... my friend said that instead of dating a boyfriend,
+          it's better to just buy some toys and DIY.
         type: 0
         typeString: 
       - title: Sequence
@@ -22077,7 +23129,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 50
         originDialogueID: 2
         destinationConversationID: 50
@@ -22086,17 +23138,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22132,7 +23184,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 50
         originDialogueID: 3
         destinationConversationID: 50
@@ -22141,17 +23193,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22173,7 +23225,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "And also...I don't want to break my hymen yet. Is that possible? Or should I just use my fingers instead..."
+        value: And also...I don't want to break my hymen yet. Is that possible? Or
+          should I just use my fingers instead...
         type: 0
         typeString: 
       - title: Sequence
@@ -22187,7 +23240,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 50
         originDialogueID: 4
         destinationConversationID: 50
@@ -22196,17 +23249,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22244,11 +23297,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("VIP/ShyGirl/1", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("VIP/ShyGirl/1", "active"); RaiseMarkerAfter("VIPShyGirl1Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
@@ -22258,7 +23311,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 51
-    fields: 
+    fields:
     - title: Title
       value: VIP/ShyGirl/2
       type: 0
@@ -22275,7 +23328,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -22295,18 +23348,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -22342,7 +23395,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 51
         originDialogueID: 0
         destinationConversationID: 51
@@ -22351,17 +23404,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22397,7 +23450,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 51
         originDialogueID: 1
         destinationConversationID: 51
@@ -22406,17 +23459,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22452,7 +23505,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 51
         originDialogueID: 2
         destinationConversationID: 51
@@ -22461,17 +23514,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22507,7 +23560,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 51
         originDialogueID: 3
         destinationConversationID: 51
@@ -22516,17 +23569,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22548,7 +23601,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "She said there's a really cool party coming up soon with a special theme."
+        value: She said there's a really cool party coming up soon with a special
+          theme.
         type: 0
         typeString: 
       - title: Sequence
@@ -22562,7 +23616,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 51
         originDialogueID: 4
         destinationConversationID: 51
@@ -22571,17 +23625,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22603,7 +23657,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "Uh... I can't remember the name of the theme — it was something I'd never heard before, composed of letters."
+        value: "Uh... I can't remember the name of the theme \u2014 it was something
+          I'd never heard before, composed of letters."
         type: 0
         typeString: 
       - title: Sequence
@@ -22617,7 +23672,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 51
         originDialogueID: 5
         destinationConversationID: 51
@@ -22626,17 +23681,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22658,7 +23713,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Anyway, do you have any cool, unique outfits that would be perfect for this kind of special party?
+        value: Anyway, do you have any cool, unique outfits that would be perfect
+          for this kind of special party?
         type: 0
         typeString: 
       - title: Sequence
@@ -22674,11 +23730,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("VIP/ShyGirl/2", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("VIP/ShyGirl/2", "active"); RaiseMarkerAfter("VIPShyGirl2Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
@@ -22688,7 +23744,7 @@ MonoBehaviour:
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
   - id: 52
-    fields: 
+    fields:
     - title: Title
       value: VIP/ShyGirl/3
       type: 0
@@ -22705,7 +23761,7 @@ MonoBehaviour:
       value: -1
       type: 5
       typeString: CustomFieldType_Actor
-    overrideSettings: 
+    overrideSettings:
       useOverrides: 0
       overrideSubtitleSettings: 0
       showNPCSubtitlesDuringLine: 1
@@ -22725,18 +23781,18 @@ MonoBehaviour:
       responseTimeout: 0
       emTagForOldResponses: 0
       emTagForInvalidResponses: 0
-      cancelSubtitle: 
+      cancelSubtitle:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
-      cancelConversation: 
+      cancelConversation:
         key: 27
         buttonName: 
         inputAction: {fileID: 0}
     nodeColor: 
-    dialogueEntries: 
+    dialogueEntries:
     - id: 0
-      fields: 
+      fields:
       - title: Title
         value: START
         type: 0
@@ -22772,7 +23828,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 0
         destinationConversationID: 52
@@ -22781,17 +23837,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 160
         y: 28
         width: 160
         height: 30
     - id: 1
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22813,7 +23869,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "It's me... uh, about that party outfit from last time."
+        value: It's me... uh, about that party outfit from last time.
         type: 0
         typeString: 
       - title: Sequence
@@ -22827,7 +23883,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 1
         destinationConversationID: 52
@@ -22836,17 +23892,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 78
         width: 160
         height: 30
     - id: 2
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22882,7 +23938,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 2
         destinationConversationID: 52
@@ -22891,17 +23947,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 128
         width: 160
         height: 30
     - id: 3
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22937,7 +23993,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 3
         destinationConversationID: 52
@@ -22946,17 +24002,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 178
         width: 160
         height: 30
     - id: 4
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -22978,7 +24034,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Waaahhh — actually it was completely wrong!!
+        value: "Waaahhh \u2014 actually it was completely wrong!!"
         type: 0
         typeString: 
       - title: Sequence
@@ -22992,7 +24048,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 4
         destinationConversationID: 52
@@ -23001,17 +24057,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 228
         width: 160
         height: 30
     - id: 5
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23033,7 +24089,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I couldn't even get in because my outfit didn't meet the dress code!"
+        value: I couldn't even get in because my outfit didn't meet the dress code!
         type: 0
         typeString: 
       - title: Sequence
@@ -23047,7 +24103,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 5
         destinationConversationID: 52
@@ -23056,17 +24112,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 278
         width: 160
         height: 30
     - id: 6
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23088,7 +24144,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "They had strict requirements... the lingerie you provided didn't pass at all."
+        value: They had strict requirements... the lingerie you provided didn't pass
+          at all.
         type: 0
         typeString: 
       - title: Sequence
@@ -23102,7 +24159,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 6
         destinationConversationID: 52
@@ -23111,17 +24168,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 328
         width: 160
         height: 30
     - id: 7
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23157,7 +24214,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 7
         destinationConversationID: 52
@@ -23166,17 +24223,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 378
         width: 160
         height: 30
     - id: 8
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23212,7 +24269,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 8
         destinationConversationID: 52
@@ -23221,17 +24278,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 428
         width: 160
         height: 30
     - id: 9
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23267,7 +24324,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 9
         destinationConversationID: 52
@@ -23276,17 +24333,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 478
         width: 160
         height: 30
     - id: 10
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23322,7 +24379,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 10
         destinationConversationID: 52
@@ -23331,17 +24388,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 528
         width: 160
         height: 30
     - id: 11
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23363,7 +24420,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "I knew this store wasn't good enough. I walked around and couldn't find a single bold item."
+        value: I knew this store wasn't good enough. I walked around and couldn't
+          find a single bold item.
         type: 0
         typeString: 
       - title: Sequence
@@ -23377,7 +24435,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 11
         destinationConversationID: 52
@@ -23386,17 +24444,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 578
         width: 160
         height: 30
     - id: 12
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23418,7 +24476,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "If you ask me, you should've switched stores a long time ago."
+        value: If you ask me, you should've switched stores a long time ago.
         type: 0
         typeString: 
       - title: Sequence
@@ -23432,7 +24490,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 12
         destinationConversationID: 52
@@ -23441,17 +24499,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 628
         width: 160
         height: 30
     - id: 13
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23487,7 +24545,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 13
         destinationConversationID: 52
@@ -23496,17 +24554,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 678
         width: 160
         height: 30
     - id: 14
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23542,7 +24600,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 14
         destinationConversationID: 52
@@ -23551,17 +24609,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 728
         width: 160
         height: 30
     - id: 15
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23583,7 +24641,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Paddles, bondage gear, cages —
+        value: "Paddles, bondage gear, cages \u2014"
         type: 0
         typeString: 
       - title: Sequence
@@ -23597,7 +24655,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 15
         destinationConversationID: 52
@@ -23606,17 +24664,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 778
         width: 160
         height: 30
     - id: 16
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23638,7 +24696,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Your store has none of it. Hard to believe my sister would hand the shop over to someone like you.
+        value: Your store has none of it. Hard to believe my sister would hand the
+          shop over to someone like you.
         type: 0
         typeString: 
       - title: Sequence
@@ -23652,7 +24711,7 @@ MonoBehaviour:
       delaySimStatus: 0
       falseConditionAction: Block
       conditionPriority: 2
-      outgoingLinks: 
+      outgoingLinks:
       - originConversationID: 52
         originDialogueID: 16
         destinationConversationID: 52
@@ -23661,17 +24720,17 @@ MonoBehaviour:
         priority: 2
       conditionsString: 
       userScript: 
-      onExecute: 
-        m_PersistentCalls: 
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 828
         width: 160
         height: 30
     - id: 17
-      fields: 
+      fields:
       - title: Title
         value: 
         type: 0
@@ -23693,7 +24752,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "You, go to my store. I'll have the perfect outfit for the next BDSM party."
+        value: You, go to my store. I'll have the perfect outfit for the next BDSM
+          party.
         type: 0
         typeString: 
       - title: Sequence
@@ -23709,11 +24769,11 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("VIP/ShyGirl/3", "active");'
-      onExecute: 
-        m_PersistentCalls: 
+      userScript: SetQuestStateAfter("VIP/ShyGirl/3", "active"); RaiseMarkerAfter("VIPShyGirl3Activated");
+      onExecute:
+        m_PersistentCalls:
           m_Calls: []
-      canvasRect: 
+      canvasRect:
         serializedVersion: 2
         x: 153.6
         y: 878
@@ -23722,7 +24782,6 @@ MonoBehaviour:
     entryGroups: []
     canvasScrollPosition: {x: 0, y: 0}
     canvasZoom: 1
-
   syncInfo:
     syncActors: 0
     syncItems: 0
@@ -23732,10 +24791,9 @@ MonoBehaviour:
     syncItemsDatabase: {fileID: 0}
     syncLocationsDatabase: {fileID: 0}
     syncVariablesDatabase: {fileID: 0}
-  templateJson: '{"treatItemsAsQuests":true,"actorFields":[{"title":"Name","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Pictures","value":"[]","type":3,"typeString":"CustomFieldType_Files"},{"title":"Description","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"IsPlayer","value":"False","type":2,"typeString":"CustomFieldType_Boolean"}],"itemFields":[{"title":"Name","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Pictures","value":"[]","type":3,"typeString":"CustomFieldType_Files"},{"title":"Description","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Is
-    Item","value":"True","type":2,"typeString":"CustomFieldType_Boolean"}],"questFields":[{"title":"Name","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Pictures","value":"[]","type":3,"typeString":"CustomFieldType_Files"},{"title":"Description","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Success
-    Description","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Failure
-    Description","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"State","value":"unassigned","type":0,"typeString":"CustomFieldType_QuestState"},{"title":"Is
-    Item","value":"False","type":2,"typeString":"CustomFieldType_Boolean"}],"locationFields":[{"title":"Name","value":"","type":0,"typeString":""},{"title":"Description","value":"","type":0,"typeString":""}],"variableFields":[{"title":"Name","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Initial
-    Value","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Description","value":"","type":0,"typeString":"CustomFieldType_Text"}],"conversationFields":[{"title":"Title","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Description","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Actor","value":"0","type":5,"typeString":"CustomFieldType_Actor"},{"title":"Conversant","value":"0","type":5,"typeString":"CustomFieldType_Actor"}],"dialogueEntryFields":[{"title":"Title","value":"","type":0,"typeString":""},{"title":"Description","value":"","type":0,"typeString":""},{"title":"Actor","value":"","type":5,"typeString":"CustomFieldType_Actor"},{"title":"Conversant","value":"","type":5,"typeString":"CustomFieldType_Actor"},{"title":"Menu
+  templateJson: '{"treatItemsAsQuests":true,"actorFields":[{"title":"Name","value":"","type":0,"typeString":""},{"title":"Pictures","value":"[]","type":3,"typeString":"CustomFieldType_Files"},{"title":"Description","value":"","type":0,"typeString":""},{"title":"IsPlayer","value":"False","type":2,"typeString":"CustomFieldType_Boolean"}],"itemFields":[{"title":"Name","value":"","type":0,"typeString":""},{"title":"Pictures","value":"[]","type":3,"typeString":"CustomFieldType_Files"},{"title":"Description","value":"","type":0,"typeString":""},{"title":"Is
+    Item","value":"True","type":2,"typeString":"CustomFieldType_Boolean"}],"questFields":[{"title":"Name","value":"","type":0,"typeString":""},{"title":"Pictures","value":"[]","type":3,"typeString":"CustomFieldType_Files"},{"title":"Description","value":"","type":0,"typeString":""},{"title":"Success
+    Description","value":"","type":0,"typeString":""},{"title":"Failure Description","value":"","type":0,"typeString":""},{"title":"State","value":"unassigned","type":0,"typeString":""},{"title":"Is
+    Item","value":"False","type":2,"typeString":"CustomFieldType_Boolean"}],"locationFields":[{"title":"Name","value":"","type":0,"typeString":""},{"title":"Description","value":"","type":0,"typeString":""}],"variableFields":[{"title":"Name","value":"","type":0,"typeString":""},{"title":"Initial
+    Value","value":"","type":0,"typeString":""},{"title":"Description","value":"","type":0,"typeString":""}],"conversationFields":[{"title":"Title","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Description","value":"","type":0,"typeString":"CustomFieldType_Text"},{"title":"Actor","value":"0","type":5,"typeString":"CustomFieldType_Actor"},{"title":"Conversant","value":"0","type":5,"typeString":"CustomFieldType_Actor"}],"dialogueEntryFields":[{"title":"Title","value":"","type":0,"typeString":""},{"title":"Description","value":"","type":0,"typeString":""},{"title":"Actor","value":"","type":5,"typeString":"CustomFieldType_Actor"},{"title":"Conversant","value":"","type":5,"typeString":"CustomFieldType_Actor"},{"title":"Menu
     Text","value":"","type":0,"typeString":""},{"title":"Dialogue Text","value":"","type":0,"typeString":""},{"title":"Sequence","value":"","type":0,"typeString":""}],"actorPrimaryFieldTitles":[],"itemPrimaryFieldTitles":[],"questPrimaryFieldTitles":[],"locationPrimaryFieldTitles":[],"variablePrimaryFieldTitles":[],"conversationPrimaryFieldTitles":[],"dialogueEntryPrimaryFieldTitles":[],"npcLineColor":{"r":1.0,"g":0.0,"b":0.0,"a":1.0},"pcLineColor":{"r":0.0,"g":0.0,"b":1.0,"a":1.0},"repeatLineColor":{"r":0.5,"g":0.5,"b":0.5,"a":1.0}}'

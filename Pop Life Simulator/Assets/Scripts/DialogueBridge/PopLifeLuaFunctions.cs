@@ -4,6 +4,7 @@ using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PopLife.Manager;
 using PopLife.Customers.Data;
+using PopLife.Customers.Spawner;
 using PopLife.DialogueBridge.UI;
 
 namespace PopLife.DialogueBridge
@@ -247,7 +248,12 @@ namespace PopLife.DialogueBridge
             var profile = SpawnerProfile.Load();
             if (profile != null)
             {
-                if (!profile.unlockedCustomerIds.Contains(customerId))
+                if (CustomerSpawner.Instance != null)
+                {
+                    CustomerSpawner.Instance.UnlockCustomer(customerId);
+                    Debug.Log($"[PopLifeLuaFunctions] Unlocked customer through live spawner: {customerId}");
+                }
+                else if (!profile.unlockedCustomerIds.Contains(customerId))
                 {
                     profile.unlockedCustomerIds.Add(customerId);
                     profile.Save();

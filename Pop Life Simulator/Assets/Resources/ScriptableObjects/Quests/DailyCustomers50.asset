@@ -34,8 +34,8 @@ MonoBehaviour:
   completionMarker: 58
   triggerMarkerAfterToast: 1
   title: Customers IV
-  description: Serve 50 customers in a single day.
-  successDescription: You gained 150 Money!
+  description: "The city is watching how well Pop Life performs under pressure. Keep customers moving through the store until the rush becomes proof of demand."
+  successDescription: "A heavy customer day turned into a public sign that Pop Life can scale."
   entryTexts:
   - Serve 50 customers in a day
   questIcon: {fileID: 0}

@@ -37,8 +37,8 @@ MonoBehaviour:
   completionMarker: 43
   triggerMarkerAfterToast: 1
   title: Seventh Building
-  description: Place 7 buildings total.
-  successDescription: You gained 700 Fame and unlocked a blueprint!
+  description: "At this scale, customers should feel the store before they understand its layout. Keep building until Pop Life becomes hard to ignore."
+  successDescription: "Pop Life is becoming a fixture in the neighborhood rather than a curious little shop."
   entryTexts:
   - Place 7 buildings
   questIcon: {fileID: 0}

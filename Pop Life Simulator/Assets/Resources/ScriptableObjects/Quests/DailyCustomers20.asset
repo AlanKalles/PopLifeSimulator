@@ -40,8 +40,8 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Customers III
-  description: Serve 20 customers in a single day.
-  successDescription: You gained 125 Money!
+  description: "Today's crowd should feel like momentum, not chaos. Serve enough customers to make the store's popularity visible."
+  successDescription: "The store handled a genuine rush and came out looking stronger."
   entryTexts:
   - Serve 20 customers in a day
   questIcon: {fileID: 0}
