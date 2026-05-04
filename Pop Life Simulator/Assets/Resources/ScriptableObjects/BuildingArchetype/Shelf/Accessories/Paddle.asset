@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Paddle
   displayName: Paddle
   icon: {fileID: 0}
-  prefab: {fileID: 6477555939506826541, guid: 6d1195465e2007747a9a442e2b9b2632, type: 3}
+  prefab: {fileID: 2553700819061216157, guid: c4a0adf5f3d594d5388961a933c2cab6, type: 3}
   buildCost: 155
   moveCost: 0
   destroyRefundRate: 0.75

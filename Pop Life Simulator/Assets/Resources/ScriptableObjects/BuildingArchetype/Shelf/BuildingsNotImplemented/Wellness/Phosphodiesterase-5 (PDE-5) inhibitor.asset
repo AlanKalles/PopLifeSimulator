@@ -15,11 +15,19 @@ MonoBehaviour:
   archetypeId: Phosphodiesterase-5 (PDE-5) inhibitor
   displayName: Phosphodiesterase-5 (PDE-5) inhibitor
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 382962493764624635, guid: c4eab86b6320c42d3b79c106145141b9, type: 3}
   buildCost: 125
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 2, y: 1}
+  - {x: 3, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 2, y: 0}
+  - {x: 3, y: 0}
   canRotate: 0
   levels: []
   category: 10

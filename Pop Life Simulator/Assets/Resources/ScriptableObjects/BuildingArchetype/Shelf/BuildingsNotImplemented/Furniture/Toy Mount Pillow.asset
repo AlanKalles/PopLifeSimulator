@@ -15,11 +15,19 @@ MonoBehaviour:
   archetypeId: Toy Mount Pillow
   displayName: Toy Mount Pillow
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 5107907286294035973, guid: 488828309a10d47e886b8b528790aca1, type: 3}
   buildCost: 510
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 3}
+  - {x: 1, y: 3}
+  - {x: 0, y: 2}
+  - {x: 1, y: 2}
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 6

@@ -15,11 +15,15 @@ MonoBehaviour:
   archetypeId: Ribbed Sheath
   displayName: Ribbed Sheath
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 2553700819061216157, guid: f99ae817724b3483c9d35c7c4b133b5d, type: 3}
   buildCost: 445
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 4

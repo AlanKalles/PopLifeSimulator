@@ -15,11 +15,15 @@ MonoBehaviour:
   archetypeId: Silicone Toy Cleaner
   displayName: Silicone Toy Cleaner
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 382962493764624635, guid: 35ee774a0a94f463d93187d6fdc8358e, type: 3}
   buildCost: 37
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 10
