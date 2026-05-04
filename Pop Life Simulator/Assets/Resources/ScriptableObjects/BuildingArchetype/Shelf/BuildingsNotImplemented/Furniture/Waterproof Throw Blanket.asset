@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Waterproof Throw Blanket
   displayName: Waterproof Throw Blanket
+  isImplemented: 0
   icon: {fileID: 0}
   prefab: {fileID: 0}
   buildCost: 415

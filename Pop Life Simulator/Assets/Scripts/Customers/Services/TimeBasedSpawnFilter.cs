@@ -91,10 +91,11 @@ namespace PopLife.Customers.Services
             if (string.IsNullOrEmpty(archetypeId))
                 return null;
 
-            // 从Resources加载
-            var archetype = Resources.Load<CustomerArchetype>($"ScriptableObjects/Archetypes/{archetypeId}");
+            // 路径修正：原本是 "ScriptableObjects/Archetypes"（拼写错误，该路径不存在），
+            // 实际目录是 "ScriptableObjects/CustomerArchetypes"。修正后命中直接 load，无需走 LoadAll fallback。
+            var archetype = Resources.Load<CustomerArchetype>($"ScriptableObjects/CustomerArchetypes/{archetypeId}");
 
-            // 如果Resources中没找到，尝试直接用名字搜索所有资源
+            // fallback：如果 customer prefab 用了非根目录命名（未来可能加子目录），用 LoadAll 兜底
             if (archetype == null)
             {
                 var allArchetypes = Resources.LoadAll<CustomerArchetype>("ScriptableObjects");

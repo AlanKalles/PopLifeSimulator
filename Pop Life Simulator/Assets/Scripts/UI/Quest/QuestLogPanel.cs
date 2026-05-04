@@ -99,12 +99,25 @@ namespace PopLife.UI.Quest
         {
             if (QuestDataService.Instance != null)
                 QuestDataService.Instance.OnQuestStateChanged += OnQuestStateChanged;
+
+            if (DayLoopManager.Instance != null)
+                DayLoopManager.Instance.OnDailySettlement += OnDailySettlement;
         }
 
         private void OnDisable()
         {
             if (QuestDataService.Instance != null)
                 QuestDataService.Instance.OnQuestStateChanged -= OnQuestStateChanged;
+
+            if (DayLoopManager.Instance != null)
+                DayLoopManager.Instance.OnDailySettlement -= OnDailySettlement;
+        }
+
+        // 结算时自动关闭面板
+        private void OnDailySettlement(DailySettlementData data)
+        {
+            if (IsShowing())
+                Hide();
         }
 
         private void Update()
@@ -136,6 +149,12 @@ namespace PopLife.UI.Quest
 
             onCloseCallback = closeCallback;
 
+            // 先激活面板根，保证后续 Instantiate 出来的 UI 子物体处于 active 容器内，
+            // LayoutGroup / ContentSizeFitter / TMP 的 preferred size 计算才会正常发生；
+            // 否则布局会推迟到 SetActive(true) 之后的下一帧才 settle，与 FadeIn 同步进行 → 视觉抖动。
+            if (!gameObject.activeSelf) gameObject.SetActive(true);
+            if (panelRoot != null && !panelRoot.activeSelf) panelRoot.SetActive(true);
+
             RefreshList();
 
             if (!string.IsNullOrEmpty(focusQuestName))
@@ -143,14 +162,30 @@ namespace PopLife.UI.Quest
             else
                 SelectFirstQuest();
 
-            if (!gameObject.activeSelf) gameObject.SetActive(true);
-            if (panelRoot != null) panelRoot.SetActive(true);
+            // 同步强制一次完整布局重算，避免 fade-in 过程中布局还在 settle
+            ForceLayoutRebuild();
 
             StopAllCoroutines();
             StartCoroutine(FadeIn());
 
             if (AudioManager.Instance != null)
                 AudioManager.Instance.PlaySound(AudioKeys.UI_CLICK);
+        }
+
+        /// <summary>
+        /// 强制完整刷新一次布局：Canvas 同步重绘 + 所有嵌套 LayoutGroup 立即重算。
+        /// 必要原因：嵌套 LayoutGroup + ContentSizeFitter + TMP 默认需要 1-2 帧才稳定，
+        /// 与 FadeIn 同步进行会让玩家看到内容跳动。
+        /// </summary>
+        private void ForceLayoutRebuild()
+        {
+            if (panelRoot == null) return;
+
+            var rt = panelRoot.transform as RectTransform;
+            if (rt == null) return;
+
+            Canvas.ForceUpdateCanvases();
+            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
         }
 
         /// <summary>
@@ -486,8 +521,13 @@ namespace PopLife.UI.Quest
 
         private IEnumerator FadeIn()
         {
+            canvasGroup.alpha = 0f;
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
+
+            // 多等一帧，让 TMP 的 mesh 与嵌套 LayoutGroup 的 ContentSizeFitter 在 alpha 抬起前彻底 settle，
+            // 否则同步强制布局后仍可能有一帧的残余抖动可见
+            yield return null;
 
             float elapsed = 0f;
             while (elapsed < fadeInDuration)

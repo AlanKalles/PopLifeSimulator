@@ -128,10 +128,37 @@ namespace PopLife.AlanBot
             fadeCoroutine = StartCoroutine(FadeAndHide());
         }
 
+        private void OnEnable()
+        {
+            if (DayLoopManager.Instance != null)
+                DayLoopManager.Instance.OnDailySettlement += OnDailySettlement;
+        }
+
         private void OnDisable()
         {
+            if (DayLoopManager.Instance != null)
+                DayLoopManager.Instance.OnDailySettlement -= OnDailySettlement;
+
             // 兜底：场景切换/对象销毁时停止打字机
             StopTypewriter();
+        }
+
+        // 结算时自动关闭面板（包括正在显示的子面板）
+        private void OnDailySettlement(DailySettlementData data)
+        {
+            // 子面板独立显示时 panelRoot 已被关闭，但 Calendar/ItemCodex 等可能仍在显示，
+            // 强制关闭所有从 AlanBot 入口打开的面板，保证结算面板独占。
+            if (panelRoot != null && panelRoot.activeSelf)
+                Hide();
+
+            if (itemCodexPanel != null) itemCodexPanel.Hide();
+            if (customerCodexPanel != null) customerCodexPanel.Hide();
+            if (calendarPanel != null) calendarPanel.Hide();
+            if (questLogPanel != null) questLogPanel.Hide();
+            if (guideCollectionPanel != null) guideCollectionPanel.Hide();
+
+            // 清理回调链，避免子面板关闭后回弹到 AlanBot 选择面板
+            onHideCallback = null;
         }
 
         private void StopTypewriter()

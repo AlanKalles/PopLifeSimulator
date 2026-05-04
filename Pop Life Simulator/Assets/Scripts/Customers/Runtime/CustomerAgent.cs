@@ -63,10 +63,11 @@ namespace PopLife.Customers.Runtime
             foreach (var id in favoriteIds)
             {
                 if (string.IsNullOrEmpty(id)) continue;
-                var so = Resources.Load<ShelfArchetype>($"ScriptableObjects/BuildingArchetype/Shelf/{id}");
+                // 通过 registry 查询，自动处理子目录路径和 isImplemented 过滤
+                var so = ShelfArchetypeRegistry.GetByArchetypeId(id);
                 if (so == null)
                 {
-                    Debug.LogWarning($"[CustomerAgent] {customerID}: 偏好货架 '{id}' 未找到");
+                    Debug.LogWarning($"[CustomerAgent] {customerID}: 偏好货架 '{id}' 未找到（不存在 / 未实装 / 名字拼写错）");
                     continue;
                 }
                 categories.Add((int)so.category);
