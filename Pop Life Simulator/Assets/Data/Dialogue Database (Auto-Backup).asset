@@ -2267,7 +2267,8 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/1", "active"); '
+      userScript: "SetQuestStateAfter(\"Main/1\", \"active\"); \nSetQuestStateAfter(\"Start
+        Game\", \"active\"); "
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -3684,8 +3685,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 39.473694, y: 0}
-    canvasZoom: 0.7600002
+    canvasScrollPosition: {x: 2.2857056, y: 77.14282}
+    canvasZoom: 0.7000003
   - id: 8
     fields:
     - title: Title
@@ -14890,7 +14891,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Laugh)
         type: 0
         typeString: 
       conversationID: 33
@@ -15046,7 +15047,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 34
@@ -15651,7 +15652,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Laugh)
         type: 0
         typeString: 
       conversationID: 36
@@ -15706,7 +15707,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Confused)
         type: 0
         typeString: 
       conversationID: 36
@@ -15762,7 +15763,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Confused)
         type: 0
         typeString: 
       conversationID: 36
@@ -15953,7 +15954,7 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 31.926914, y: 2.3783956}
+    canvasScrollPosition: {x: 555.22974, y: 1.4678955}
     canvasZoom: 1.0899999
   - id: 37
     fields:
@@ -16087,7 +16088,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 37
@@ -16254,7 +16255,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Laugh)
         type: 0
         typeString: 
       conversationID: 37
@@ -16321,7 +16322,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 
+      userScript: 'SetQuestStateAfter("Gift from Midori", "active"); '
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -16465,7 +16466,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 38
@@ -16690,7 +16691,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Sequence
-        value: 
+        value: Emote(Normal)
         type: 0
         typeString: 
       conversationID: 38
@@ -16936,7 +16937,7 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 209.75827, y: 154.31099}
+    canvasScrollPosition: {x: 243.50821, y: 78.74997}
     canvasZoom: 0.6400003
   - id: 39
     fields:

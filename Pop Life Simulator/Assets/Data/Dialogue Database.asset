@@ -2267,7 +2267,8 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/1", "active"); '
+      userScript: "SetQuestStateAfter(\"Main/1\", \"active\"); \nSetQuestStateAfter(\"Start
+        Game\", \"active\"); "
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -14902,7 +14903,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 
+      userScript: RaiseMarkerAfter("EnableStoreToggle")
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -16321,7 +16322,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 
+      userScript: 'SetQuestStateAfter("Gift from Midori", "active"); '
       onExecute:
         m_PersistentCalls:
           m_Calls: []
