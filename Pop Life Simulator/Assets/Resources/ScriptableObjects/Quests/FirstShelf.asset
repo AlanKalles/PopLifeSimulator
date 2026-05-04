@@ -30,6 +30,9 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Yuta
+  - type: 2
+    amount: 1
+    itemId: Silicone Toy Cleaner
   conditions:
   - conditionType: 6
     scope: 2
@@ -41,9 +44,13 @@ MonoBehaviour:
   activationMarker: -1
   completionMarker: -1
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: First Shelf (Merged)
-  description: "This retired duplicate is merged into Main/1. The live First Shelf quest is the main opening task that unlocks the starter products and teaches the first display."
-  successDescription: "Merged into Main/1 so the opening quest chain has one first-shelf task."
+  description: This retired duplicate is merged into Main/1. The live First Shelf
+    quest is the main opening task that unlocks the starter products and teaches
+    the first display.
+  successDescription: Your first display is up. Midori is ready to walk you through
+    opening the store for the day.
   entryTexts:
   - Place 1 shelf
   questIcon: {fileID: 0}

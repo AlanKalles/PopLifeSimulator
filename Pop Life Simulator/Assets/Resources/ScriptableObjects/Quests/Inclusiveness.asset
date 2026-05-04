@@ -37,7 +37,8 @@ MonoBehaviour:
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
-    filterArchetypes: []
+    filterArchetypes:
+    - {fileID: 11400000, guid: 63a7794a79d7944acb086814c4b4efc8, type: 2}
   activationMarker: 75
   completionMarker: 77
   triggerMarkerAfterToast: 1

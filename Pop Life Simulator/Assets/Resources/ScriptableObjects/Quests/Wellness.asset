@@ -19,15 +19,20 @@ MonoBehaviour:
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 100
+    amount: 200
     itemId: 
-  - type: 2
-    amount: 1
-    itemId: Silicone Toy Cleaner
   - type: 3
     amount: 1
-    itemId: Ash
-  conditions: []
+    itemId: 
+  conditions:
+  - conditionType: 0
+    scope: 0
+    targetValue: 0
+    useFilterCategory: 0
+    filterCategory: 0
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: df68b262ed3fb674d96917ef2927c2a2, type: 2}
   activationMarker: 32
   completionMarker: 74
   triggerMarkerAfterToast: 1

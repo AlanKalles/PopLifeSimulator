@@ -1905,8 +1905,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 168.33319}
-    canvasZoom: 0.4800003
+    canvasScrollPosition: {x: 127.30045, y: 359.28387}
+    canvasZoom: 0.9779999
   - id: 2
     fields:
     - title: Title
@@ -2267,19 +2267,20 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 'SetQuestStateAfter("Main/1", "active"); '
+      userScript: "SetQuestStateAfter(\"Main/1\", \"active\"); \nSetQuestStateAfter(\"Start
+        Game\", \"active\"); "
       onExecute:
         m_PersistentCalls:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 156.06134
+        x: 157.41087
         y: 240.4571
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 0}
-    canvasZoom: 0.5800004
+    canvasScrollPosition: {x: 26.643257, y: 90.29694}
+    canvasZoom: 0.7410003
   - id: 4
     fields:
     - title: Title
@@ -2869,8 +2870,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 11.880575}
-    canvasZoom: 0.6700003
+    canvasScrollPosition: {x: 135.64357, y: 265.3784}
+    canvasZoom: 1.3310001
   - id: 6
     fields:
     - title: Title
@@ -14758,8 +14759,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 262.6865}
-    canvasZoom: 0.6700003
+    canvasScrollPosition: {x: 43.474277, y: 292.47}
+    canvasZoom: 0.7985006
   - id: 33
     fields:
     - title: Title
@@ -15953,8 +15954,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 31.926914, y: 2.3783956}
-    canvasZoom: 1.0899999
+    canvasScrollPosition: {x: 31.148111, y: 17.187572}
+    canvasZoom: 0.53000027
   - id: 37
     fields:
     - title: Title
@@ -16321,7 +16322,7 @@ MonoBehaviour:
       conditionPriority: 2
       outgoingLinks: []
       conditionsString: 
-      userScript: 
+      userScript: 'SetQuestStateAfter("Gift from Midori", "active"); '
       onExecute:
         m_PersistentCalls:
           m_Calls: []
@@ -16332,8 +16333,8 @@ MonoBehaviour:
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 0, y: 0}
-    canvasZoom: 0.34000027
+    canvasScrollPosition: {x: 1000.76556, y: 25.132313}
+    canvasZoom: 1.1860005
   - id: 38
     fields:
     - title: Title
