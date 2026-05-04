@@ -28,6 +28,10 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         protected override void OnExecute()
         {
+            // 诊断：unconditional log 确认 OnExecute 是否真的被 BT 调用
+            // 如果开店期间从未看到此行，说明 NodeCanvas 根本没触发这个 action
+            Debug.Log($"[SelectTargetShelfAction.entry] OnExecute fired (agent={agent?.name})");
+
             // 获取 CustomerBlackboardAdapter
             var adapter = agent.GetComponent<CustomerBlackboardAdapter>();
             if (adapter == null)

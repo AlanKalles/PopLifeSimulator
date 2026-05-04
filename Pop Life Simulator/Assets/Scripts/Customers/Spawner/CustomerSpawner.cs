@@ -84,6 +84,12 @@ namespace PopLife.Customers.Spawner
         private SpawnerProfile spawnerProfile; // 运行时缓存的解锁配置
         private int cachedStoreAppeal = 0;
 
+        // 暂停时冻结生成计时器：对话/外部暂停期间 Time.time 仍在走，
+        // 进入暂停时记录起点，退出时把 nextSpawnTime 向后偏移暂停时长，
+        // 让对话结束后还按原本剩余间隔继续数，而不是立即生成。
+        private bool wasPausedLastFrame = false;
+        private float pauseStartTime = 0f;
+
         void Awake()
         {
             if (Instance == null)
@@ -158,10 +164,24 @@ namespace PopLife.Customers.Spawner
         {
             if (DialogueGameplayPauseService.IsGameplayPaused)
             {
+                if (!wasPausedLastFrame)
+                {
+                    pauseStartTime = Time.time;
+                    wasPausedLastFrame = true;
+                }
+
                 currentCustomerCount = GetCurrentCustomerCount();
                 visitedTodayCount = visitedTodayCustomerIds.Count;
                 effectiveMaxCustomers = GetEffectiveMaxCustomers();
                 return;
+            }
+
+            if (wasPausedLastFrame)
+            {
+                // 退出暂停：把 nextSpawnTime 向后偏移暂停时长，避免对话结束瞬间立即生成。
+                float pausedDuration = Time.time - pauseStartTime;
+                nextSpawnTime += pausedDuration;
+                wasPausedLastFrame = false;
             }
 
             // 手动生成逻辑

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Textured Stroker
   displayName: Textured Stroker
+  isImplemented: 0
   icon: {fileID: 0}
   prefab: {fileID: 5107907286294035973, guid: 84da99df9d1334ceeb15ed4f6d334d06, type: 3}
   buildCost: 55

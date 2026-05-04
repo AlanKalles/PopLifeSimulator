@@ -150,6 +150,20 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
+            // 兜底：路径已走到末尾但 reachedDestination 始终 false
+            // 典型场景：target Anchor 落在 unwalkable cell 上（如 cashier 桌面、货架内部），
+            // A* 路径终点是最近的可达节点，customer 物理上无法再靠近 target，会永远卡死。
+            // reachedEndOfPath = true 时 customer 已到能到的最远处，视为到达。
+            if (aiLerp.reachedEndOfPath)
+            {
+                float endDist = target != null ? Vector3.Distance(agent.transform.position, target.position) : -1f;
+                hasReachedTarget.value = true;
+                aiLerp.isStopped = true;
+                Debug.LogWarning($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 到达路径末尾但与 target 仍距 {endDist:F2}m (reachedDestination=false) — 视为到达。检查 target Anchor '{target?.name}' 是否落在 unwalkable cell 上");
+                EndAction(true);
+                return;
+            }
+
             // 诊断：卡超过 grace 时间还没到达，每 1 秒打一行状态
             // 用于定位 Stuck 2（从货架去 cashier 卡 entrance 等场景）
             float elapsed = Time.time - startTime;

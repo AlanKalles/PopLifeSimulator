@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Thrusting Vibrator
   displayName: Thrusting Vibrator
+  isImplemented: 0
   icon: {fileID: 0}
   prefab: {fileID: 5107907286294035973, guid: 252ff5e7bfd134824897edcf626f993b, type: 3}
   buildCost: 455

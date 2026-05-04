@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Silicone Toy Cleaner
   displayName: Silicone Toy Cleaner
+  isImplemented: 0
   icon: {fileID: 0}
   prefab: {fileID: 382962493764624635, guid: 35ee774a0a94f463d93187d6fdc8358e, type: 3}
   buildCost: 37

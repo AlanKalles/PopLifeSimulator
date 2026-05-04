@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Finger Vibrator
   displayName: Finger Vibrator
+  isImplemented: 0
   icon: {fileID: 0}
   prefab: {fileID: 5107907286294035973, guid: d3ba3a7ec4fad4803b724ae97f6f7350, type: 3}
   buildCost: 540

@@ -40,6 +40,9 @@ namespace PopLife.Data
         [HideInInspector] public string archetypeId; // 由 OnValidate 自动同步为资产文件名
         public string displayName;
 
+        [Tooltip("是否已实装到游戏中。设为 false 表示该 SO 是占位符（如 BuildingsNotImplemented 文件夹下的资源），\nLoadAll 时会被 customer favorite/runtime 业务逻辑过滤掉。")]
+        public bool isImplemented = true;
+
 #if UNITY_EDITOR
         protected virtual void OnValidate()
         {

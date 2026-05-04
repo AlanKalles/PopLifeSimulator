@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Bondage Pillow
   displayName: Bondage Pillow
+  isImplemented: 0
   icon: {fileID: 0}
   prefab: {fileID: 5107907286294035973, guid: af250e5dc5fe74a269e1624bc94d1517, type: 3}
   buildCost: 740
