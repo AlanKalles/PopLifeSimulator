@@ -578,7 +578,7 @@ namespace PopLife.AlanBot.UI
             }
 
             int currentXp = record.xp;
-            int level = record.loyaltyLevel;
+            int level = Mathf.Max(1, record.loyaltyLevel);
 
             // levelUpThresholds 是累计阈值
             // loyaltyLevel 起始1，升到 level+1 需要 thresholds[level-1]

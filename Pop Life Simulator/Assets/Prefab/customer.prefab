@@ -836,7 +836,7 @@ Transform:
   m_GameObject: {fileID: 7018696242757326488}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -51.83465, y: 31.697, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -882,6 +882,11 @@ MonoBehaviour:
   entranceOutsideAnchor: {fileID: 0}
   entranceInsideAnchor: {fileID: 0}
   hasEnteredStore: 0
+  visitPurpose: 0
+  destinationStoreId: PlayerStore
+  assignedZone: {fileID: 0}
+  clubTrackingPoint: {fileID: 0}
+  clubStayDuration: 0
   isClosingTime: 0
   isUpset: 0
   consecutivePurchaseFailures: 0
@@ -961,7 +966,11 @@ MonoBehaviour:
     UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"entranceInsideAnchor":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.entranceInsideAnchor","_name":"entranceInsideAnchor","_id":"4e110af2-9d53-4237-b559-c85e4cc9bbb7","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
     UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"},"lastPurchaseSuccessful":{"_name":"lastPurchaseSuccessful","_id":"3bc003df-9063-4195-b307-9006910dea9f","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
     mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"currentPhaseMaxLoops":{"_name":"currentPhaseMaxLoops","_id":"cd40edd6-ef9e-4dc0-8238-62be137a8e67","$type":"NodeCanvas.Framework.Variable`1[[System.Int32,
-    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}}}'
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"isClubGoer":{"_name":"isClubGoer","_id":"48e83915-159b-4d63-a4e4-2166c8d8406e","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"destinationStoreId":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.destinationStoreId","_name":"destinationStoreId","_id":"ab9715ab-3582-4320-8a36-ed79c4b511cd","$type":"NodeCanvas.Framework.Variable`1[[System.String,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"clubStayDuration":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.clubStayDuration","_name":"clubStayDuration","_id":"2b2e4d02-17d3-475c-a17c-5892f9fc7ac2","$type":"NodeCanvas.Framework.Variable`1[[System.Single,
+    mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"},"clubTrackingPoint":{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.clubTrackingPoint","_name":"clubTrackingPoint","_id":"6f03a656-66e0-404c-a3ee-8ee6193d5525","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
+    UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}}}'
   _objectReferences: []
   _serializedVariables:
   - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.customerId","_name":"customerId","_id":"5d567434-7a78-4a26-bd7d-261896895d73","$type":"NodeCanvas.Framework.Variable`1[[System.String,
@@ -1038,6 +1047,18 @@ MonoBehaviour:
     _references: []
   - _json: '{"_name":"currentPhaseMaxLoops","_id":"cd40edd6-ef9e-4dc0-8238-62be137a8e67","$type":"NodeCanvas.Framework.Variable`1[[System.Int32,
       mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_name":"isClubGoer","_id":"48e83915-159b-4d63-a4e4-2166c8d8406e","$type":"NodeCanvas.Framework.Variable`1[[System.Boolean,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.destinationStoreId","_name":"destinationStoreId","_id":"ab9715ab-3582-4320-8a36-ed79c4b511cd","$type":"NodeCanvas.Framework.Variable`1[[System.String,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.clubStayDuration","_name":"clubStayDuration","_id":"2b2e4d02-17d3-475c-a17c-5892f9fc7ac2","$type":"NodeCanvas.Framework.Variable`1[[System.Single,
+      mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"}'
+    _references: []
+  - _json: '{"_propertyPath":"PopLife.Customers.Runtime.CustomerBlackboardAdapter.clubTrackingPoint","_name":"clubTrackingPoint","_id":"6f03a656-66e0-404c-a3ee-8ee6193d5525","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.Transform,
+      UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}'
     _references: []
 --- !u!114 &5441276965745480517
 MonoBehaviour:

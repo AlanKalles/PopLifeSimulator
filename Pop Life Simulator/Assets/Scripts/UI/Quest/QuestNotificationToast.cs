@@ -24,10 +24,22 @@ namespace PopLife.UI.Quest
         [SerializeField] private GameObject toastRoot;
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private TextMeshProUGUI titleText;
-        [SerializeField] private TextMeshProUGUI messageText;
-        [SerializeField] private TextMeshProUGUI subMessageText;
         [SerializeField] private Image questIconImage;
         [SerializeField] private Image accentBar;
+
+        [Header("UI - 单消息布局 (NEW QUEST / QUEST FAILED)")]
+        [Tooltip("仅显示一行 message 的容器（如 'new quest message' 节点）")]
+        [SerializeField] private GameObject singleLayoutRoot;
+        [Tooltip("NEW QUEST / QUEST FAILED 显示的单行消息文本")]
+        [SerializeField] private TextMeshProUGUI messageText;
+
+        [Header("UI - 双消息布局 (QUEST COMPLETE)")]
+        [Tooltip("含 message + sub message 的容器（如 'success or fail' 节点）")]
+        [SerializeField] private GameObject dualLayoutRoot;
+        [Tooltip("QUEST COMPLETE 显示的主消息（如 'name message' 节点）")]
+        [SerializeField] private TextMeshProUGUI completeMessageText;
+        [Tooltip("QUEST COMPLETE 显示的副消息（如 'description' 节点）")]
+        [SerializeField] private TextMeshProUGUI subMessageText;
 
         [Header("标题颜色")]
         [SerializeField] private Color newQuestTitleColor = new(0.4f, 0.8f, 1f);
@@ -48,6 +60,8 @@ namespace PopLife.UI.Quest
             public string title;
             public string message;
             public string subMessage;
+            // true = QUEST COMPLETE 双布局；false = NEW QUEST / QUEST FAILED 单布局
+            public bool useDualLayout;
             public Sprite icon;
             public Color titleColor;
             public string audioKey;
@@ -130,6 +144,7 @@ namespace PopLife.UI.Quest
                 title = "QUEST COMPLETE",
                 message = store?.GetTitle(questName) ?? questName,
                 subMessage = string.IsNullOrEmpty(successDesc) ? null : successDesc,
+                useDualLayout = true,
                 icon = def?.QuestIcon,
                 titleColor = questCompleteTitleColor,
                 audioKey = AudioKeys.QUEST_COMPLETE,
@@ -198,12 +213,24 @@ namespace PopLife.UI.Quest
         {
             // 填充内容
             if (titleText != null) titleText.text = data.title;
-            if (messageText != null) messageText.text = data.message;
-            if (subMessageText != null)
+
+            // 切换布局：双布局 (QUEST COMPLETE) vs 单布局 (NEW QUEST / QUEST FAILED)
+            if (singleLayoutRoot != null) singleLayoutRoot.SetActive(!data.useDualLayout);
+            if (dualLayoutRoot != null) dualLayoutRoot.SetActive(data.useDualLayout);
+
+            if (data.useDualLayout)
             {
-                bool hasSubMessage = !string.IsNullOrEmpty(data.subMessage);
-                subMessageText.gameObject.SetActive(hasSubMessage);
-                if (hasSubMessage) subMessageText.text = data.subMessage;
+                if (completeMessageText != null) completeMessageText.text = data.message ?? "";
+                if (subMessageText != null)
+                {
+                    bool hasSub = !string.IsNullOrEmpty(data.subMessage);
+                    subMessageText.gameObject.SetActive(hasSub);
+                    if (hasSub) subMessageText.text = data.subMessage;
+                }
+            }
+            else
+            {
+                if (messageText != null) messageText.text = data.message ?? "";
             }
 
             if (questIconImage != null)

@@ -112,7 +112,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 5
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 976ead179ce1cc443927c51780fe3381, type: 3}
@@ -334,6 +334,7 @@ GameObject:
   m_Component:
   - component: {fileID: 896974351813275812}
   - component: {fileID: 901802768151105357}
+  - component: {fileID: 8182612365029548618}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -403,7 +404,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 5
+  m_SortingLayer: 8
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 50646e38557ea9f4db5c31685fb8e70e, type: 3}
@@ -416,6 +417,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &8182612365029548618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7410886033877055595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 283319215ae075b41abe669c7ef8527e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Runtime.StorePhaseSpriteController
+  targetRenderer: {fileID: 901802768151105357}
+  closedSprite: {fileID: 21300000, guid: 240d13b8dc93c784b91d12741c806c11, type: 3}
+  openSprite: {fileID: 21300000, guid: 50646e38557ea9f4db5c31685fb8e70e, type: 3}
 --- !u!1 &7553879994220993482
 GameObject:
   m_ObjectHideFlags: 0
@@ -494,7 +510,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1272535841
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 923137a4442b8a144a95530db3a9955b, type: 3}
@@ -585,7 +601,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1272535841
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 318b91d00d28ea949b1e121174d29063, type: 3}

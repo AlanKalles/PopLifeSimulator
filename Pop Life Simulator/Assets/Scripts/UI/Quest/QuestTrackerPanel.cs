@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using PopLife.Data;
+using PopLife.Quest;
 
 namespace PopLife.UI.Quest
 {
@@ -43,6 +44,12 @@ namespace PopLife.UI.Quest
                 RefreshQuests();
             }
 
+            // 触发即完成的任务（CurrentScope 条件已满足、AutoCompleteOnActivation 等）
+            // 仅靠 OnTrackedQuestsChanged 在嵌套广播链中可能产生残留条目，这里直接监听
+            // 终态事件，确保完成/失败时一定刷新。
+            QuestLogicManager.OnQuestCompleted += OnQuestTerminalState;
+            QuestLogicManager.OnQuestFailed += OnQuestTerminalState;
+
             if (collapseButton != null)
                 collapseButton.onClick.AddListener(Toggle);
         }
@@ -70,8 +77,16 @@ namespace PopLife.UI.Quest
             if (QuestDataService.Instance != null)
                 QuestDataService.Instance.OnTrackedQuestsChanged -= RefreshQuests;
 
+            QuestLogicManager.OnQuestCompleted -= OnQuestTerminalState;
+            QuestLogicManager.OnQuestFailed -= OnQuestTerminalState;
+
             if (collapseButton != null)
                 collapseButton.onClick.RemoveListener(Toggle);
+        }
+
+        private void OnQuestTerminalState(string questName)
+        {
+            RefreshQuests();
         }
 
         /// <summary>
@@ -91,6 +106,10 @@ namespace PopLife.UI.Quest
             if (quests == null || quests.Count == 0)
             {
                 UpdateHeader(0);
+                // 即使列表为空也强制重建：上面的 Destroy 是延迟到帧末，layout
+                // 不主动收缩会让已销毁条目的位置看起来还占着 panel
+                if (contentContainer != null)
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer);
                 return;
             }
 

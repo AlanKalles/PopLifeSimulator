@@ -17,7 +17,7 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   sortOrder: 100
-  activationMarker: 24
+  activationMarker: -1
   closingMarker: -1
   pages:
   - screenshot: {fileID: 21300000, guid: 1da884bb810dc2c408e6b340c781e162, type: 3}
@@ -32,8 +32,8 @@ MonoBehaviour:
       a quest, and Red means you failed a quest."
   - screenshot: {fileID: -7469096589320162694, guid: b6ced1d421ed0754090ca1ed96fbdb2b, type: 3}
     title: Tracker Panel
-    body: You can check on the status of your quests by hovering your cursor over the
-      quest tracking panel.
+    body: You can check on the status of your quests by hovering your cursor over
+      the quest tracking panel.
   - screenshot: {fileID: 21300000, guid: d53e4a9e966553b46aee1a0a693a216c, type: 3}
     title: Log Panel
     body: Clicking on a quest opens up this quest panel UI where you can see more

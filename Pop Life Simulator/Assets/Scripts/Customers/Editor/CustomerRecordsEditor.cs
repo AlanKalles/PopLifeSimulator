@@ -521,7 +521,7 @@ namespace PopLife.Customers.Editor
                 archetypeId = "",
                 favoriteShelfIds = new string[4],
                 trust = 0,
-                loyaltyLevel = 0,
+                loyaltyLevel = 1,
                 xp = 0,
                 walletCapBase = 100,
                 visitCount = 0,
@@ -747,7 +747,7 @@ namespace PopLife.Customers.Editor
                             archetypeId = fields[3],
                             favoriteShelfIds = favIds,
                             trust = int.TryParse(fields[5], out int trust) ? trust : 0,
-                            loyaltyLevel = int.TryParse(fields[6], out int loyalty) ? loyalty : 0,
+                            loyaltyLevel = int.TryParse(fields[6], out int loyalty) ? Mathf.Max(1, loyalty) : 1,
                             xp = int.TryParse(fields[7], out int xp) ? xp : 0,
                             visitCount = int.TryParse(fields[8], out int visits) ? visits : 0,
                             lifetimeSpent = int.TryParse(fields[9], out int spent) ? spent : 0,
@@ -890,9 +890,9 @@ namespace PopLife.Customers.Editor
             // 确认对话框
             bool confirmed = EditorUtility.DisplayDialog(
                 "Clean All Customer Memory",
-                $"This will reset the following fields to 0 for ALL {records.Count} customers:\n\n" +
+                $"This will reset the following fields for ALL {records.Count} customers:\n\n" +
                 "• Trust\n" +
-                "• Loyalty Level\n" +
+                "• Loyalty Level to 1\n" +
                 "• XP\n" +
                 "• Visit Count\n" +
                 "• Lifetime Spent\n\n" +
@@ -912,7 +912,7 @@ namespace PopLife.Customers.Editor
             foreach (var record in records)
             {
                 record.trust = 0;
-                record.loyaltyLevel = 0;
+                record.loyaltyLevel = 1;
                 record.xp = 0;
                 record.visitCount = 0;
                 record.lifetimeSpent = 0;

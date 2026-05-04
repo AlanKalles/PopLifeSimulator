@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 5
+  m_SortingLayer: 8
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 61f8376f4f6935943826292e7dc8a731, type: 3}
@@ -169,7 +169,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1272535841
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 4777b855364f3e0469351f4d894da9fe, type: 3}
@@ -192,6 +192,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5822384979326384247}
   - component: {fileID: 7257522363402632452}
+  - component: {fileID: 732829504097173006}
   m_Layer: 0
   m_Name: 6DoorOpen
   m_TagString: Untagged
@@ -262,7 +263,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 5
+  m_SortingLayer: 8
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 48d871db3ccaf884caa09299809f32b1, type: 3}
@@ -275,6 +276,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &732829504097173006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1248746273087594896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 283319215ae075b41abe669c7ef8527e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopLife.Runtime.StorePhaseSpriteController
+  targetRenderer: {fileID: 7257522363402632452}
+  closedSprite: {fileID: 21300000, guid: 81f0cddf7a886cf439778eec2eb6baf1, type: 3}
+  openSprite: {fileID: 21300000, guid: 48d871db3ccaf884caa09299809f32b1, type: 3}
 --- !u!1 &2055779007331914550
 GameObject:
   m_ObjectHideFlags: 0
@@ -353,7 +369,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1272535841
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: adfaaf7bae0f59f49b56d00dd99a8ddc, type: 3}
@@ -564,7 +580,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 5
+  m_SortingLayer: 8
   m_SortingOrder: 6
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: f891b33d943fd5a4bbf4ae14e0b83e71, type: 3}
@@ -770,7 +786,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -631160693
-  m_SortingLayer: 5
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 122b9b1f26a41cc448d125d36f92bb88, type: 3}

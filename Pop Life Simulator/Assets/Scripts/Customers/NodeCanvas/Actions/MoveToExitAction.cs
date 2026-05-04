@@ -109,6 +109,12 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
+            if (customerBlackboard.isClosingTime && !customerBlackboard.hasEnteredStore)
+            {
+                CompleteExitFromOutside("闭店时顾客已在店外，跳过穿门流程");
+                return;
+            }
+
             if (seeker != null)
             {
                 seeker.graphMask = storeInteriorGraphMask;
@@ -145,7 +151,17 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 检查超时（不受电梯穿越阻止，避免电梯卡住时 timeout 也被跳过）
             if (Time.time - startTime > timeoutSeconds)
             {
-                Debug.LogWarning($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 移动到出口超时");
+                string phase = reachedInside ? "CrossToOutside" : "ApproachInside";
+                string dist = targetTransform != null ? Vector3.Distance(agent.transform.position, targetTransform.position).ToString("F2") : "n/a";
+
+                if (customerBlackboard.isClosingTime)
+                {
+                    Debug.LogWarning($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 闭店离店超时 (phase={phase}, dist={dist}m)，强制完成离店以避免重进入店循环");
+                    CompleteExitFromOutside("闭店离店超时强制完成");
+                    return;
+                }
+
+                Debug.LogWarning($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 移动到出口超时 (phase={phase}, isClosingTime={customerBlackboard.isClosingTime}, dist={dist}m) — 将导致 ActionList 中断、BT 重启循环");
                 aiLerp.isStopped = true;
                 EndAction(false);
                 return;
@@ -271,6 +287,50 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
             Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 离店完成，准备前往最终撤离点");
 
+            EndAction(true);
+        }
+
+        private void CompleteExitFromOutside(string reason)
+        {
+            if (aiLerp != null)
+            {
+                aiLerp.isStopped = true;
+            }
+
+            if (customerBlackboard == null)
+            {
+                EndAction(false);
+                return;
+            }
+
+            bool wasInsideStore = customerBlackboard.hasEnteredStore;
+
+            if (customerBlackboard.entranceOutsideAnchor != null)
+            {
+                agent.transform.position = customerBlackboard.entranceOutsideAnchor.position;
+                targetTransform = customerBlackboard.entranceOutsideAnchor;
+            }
+
+            customerBlackboard.hasEnteredStore = false;
+            customerBlackboard.assignedQueueSlot = customerBlackboard.entranceOutsideAnchor;
+
+            if (seeker != null)
+            {
+                seeker.graphMask = outsideGraphMask;
+            }
+
+            var customerAgent = agent.GetComponent<CustomerAgent>();
+            if (wasInsideStore && customerAgent != null && customerBlackboard.visitPurpose == CustomerVisitPurpose.PlayerStore)
+            {
+                CustomerEventBus.RaiseCustomerLeftStore(customerAgent);
+            }
+
+            if (animController != null)
+            {
+                animController.SetAllSortingLayer("OutsideStoreLayer");
+            }
+
+            Debug.Log($"[MoveToExitAction] 顾客 {customerBlackboard.customerId} 离店完成：{reason}");
             EndAction(true);
         }
 

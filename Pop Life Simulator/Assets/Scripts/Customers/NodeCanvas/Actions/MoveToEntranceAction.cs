@@ -20,7 +20,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
         public float timeoutSeconds = 30f;
 
         // 两阶段状态
-        private enum Phase { ApproachOutside, CrossToInside }
+        private enum Phase { ApproachOutside, CrossToInside, ClosingExit }
         private Phase currentPhase;
 
         private AILerp aiLerp;
@@ -35,6 +35,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
         // 外部图 GraphMask，用于限制第一阶段寻路 + 进店后排除
         private GraphMask outsideGraphMask;
+        private bool outsideGraphMaskReady;
         private GraphMask entryGraphMask;
         private GraphMask storeInteriorGraphMask;
 
@@ -51,6 +52,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
             animController = agent.GetComponent<CustomerAnimationController>();
+            outsideGraphMaskReady = false;
 
             if (aiLerp == null)
             {
@@ -73,6 +75,24 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
+            // 设置移动速度
+            if (customerBlackboard.moveSpeed > 0)
+            {
+                aiLerp.speed = customerBlackboard.moveSpeed;
+            }
+
+            var nav = PopLife.Customers.Services.NavigationService.Instance;
+            if (nav != null && nav.HasOutsideGraph)
+            {
+                outsideGraphMask = nav.GetOutsideGraphMask();
+                outsideGraphMaskReady = true;
+            }
+
+            if (TryBeginClosingExit())
+            {
+                return;
+            }
+
             // 验证入口配置
             if (customerBlackboard.entranceOutsideAnchor == null)
             {
@@ -92,21 +112,13 @@ namespace PopLife.Customers.NodeCanvas.Actions
             targetTransform = customerBlackboard.entranceOutsideAnchor;
             currentPhase = Phase.ApproachOutside;
 
-            // 设置移动速度
-            if (customerBlackboard.moveSpeed > 0)
-            {
-                aiLerp.speed = customerBlackboard.moveSpeed;
-            }
-
             // 第一阶段：显式获取 outside graph，避免在重叠区域被 snap 到内部图
-            var nav = PopLife.Customers.Services.NavigationService.Instance;
-            if (nav == null || !nav.HasOutsideGraph)
+            if (nav == null || !outsideGraphMaskReady)
             {
                 Debug.LogError("[MoveToEntranceAction] Outside graph not available");
                 EndAction(false);
                 return;
             }
-            outsideGraphMask = nav.GetOutsideGraphMask();
             if (!nav.TryGetEntryMask(customerBlackboard.destinationStoreId, out entryGraphMask)
                 || !nav.TryGetStoreInteriorGraphMask(customerBlackboard.destinationStoreId, out storeInteriorGraphMask))
             {
@@ -147,9 +159,21 @@ namespace PopLife.Customers.NodeCanvas.Actions
                 return;
             }
 
+            if (TryBeginClosingExit())
+            {
+                return;
+            }
+
             // 检查超时（不受电梯穿越阻止）
             if (Time.time - startTime > timeoutSeconds)
             {
+                if (currentPhase == Phase.ClosingExit)
+                {
+                    Debug.LogWarning($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 闭店后返回 spawnPoint 超时，强制离场");
+                    DestroyClosingOutsideCustomer();
+                    return;
+                }
+
                 Debug.LogWarning($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 移动到入口超时");
                 aiLerp.isStopped = true;
                 EndAction(false);
@@ -175,10 +199,122 @@ namespace PopLife.Customers.NodeCanvas.Actions
             {
                 OnReachedOutside();
             }
+            else if (currentPhase == Phase.ClosingExit)
+            {
+                DestroyClosingOutsideCustomer();
+            }
             else
             {
                 OnReachedInside();
             }
+        }
+
+        private bool TryBeginClosingExit()
+        {
+            if (currentPhase == Phase.ClosingExit)
+            {
+                return false;
+            }
+
+            if (customerBlackboard == null || !customerBlackboard.isClosingTime || customerBlackboard.hasEnteredStore)
+            {
+                return false;
+            }
+
+            // 穿越保护：已在 NodeLink2 普通通道穿越中或电梯中时，不允许打断
+            // 让 customer 完成穿越（出门 / 出电梯 / sprite 显形），到达 entranceInsideAnchor 后
+            // hasEnteredStore=true，自然走正常 LifeCycle → LeaveStrategy 流程（含找 cashier 结账）
+            if (currentPhase == Phase.CrossToInside)
+            {
+                return false;
+            }
+
+            var linkDetector = agent.GetComponent<PopLife.Runtime.LinkTraversalDetector>();
+            if (linkDetector != null && linkDetector.IsTraversingElevator)
+            {
+                return false;
+            }
+
+            Transform exitTarget = customerBlackboard.spawnPoint != null
+                ? customerBlackboard.spawnPoint
+                : customerBlackboard.entranceOutsideAnchor;
+
+            if (exitTarget == null)
+            {
+                Debug.LogWarning($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 闭店时未进入建筑且没有 spawnPoint，直接离场");
+                DestroyClosingOutsideCustomer();
+                return true;
+            }
+
+            currentPhase = Phase.ClosingExit;
+            targetTransform = exitTarget;
+            customerBlackboard.hasEnteredStore = false;
+            customerBlackboard.targetExitPoint = exitTarget;
+            customerBlackboard.assignedQueueSlot = exitTarget;
+
+#if NODECANVAS
+            if (customerBlackboard.ncBlackboard != null)
+            {
+                customerBlackboard.ncBlackboard.SetVariableValue("hasEnteredStore", false);
+                customerBlackboard.ncBlackboard.SetVariableValue("targetExitPoint", exitTarget);
+                customerBlackboard.ncBlackboard.SetVariableValue("assignedQueueSlot", exitTarget);
+            }
+#endif
+
+            if (seeker != null && outsideGraphMaskReady)
+            {
+                seeker.graphMask = outsideGraphMask;
+            }
+
+            if (destinationSetter != null)
+            {
+                destinationSetter.target = exitTarget;
+            }
+            else
+            {
+                aiLerp.destination = exitTarget.position;
+            }
+
+            aiLerp.isStopped = false;
+            aiLerp.SearchPath();
+            startTime = Time.time;
+
+            Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard.customerId} 闭店时尚未进入建筑，改为返回 spawnPoint {exitTarget.position}");
+            return true;
+        }
+
+        private void DestroyClosingOutsideCustomer()
+        {
+            if (aiLerp != null)
+            {
+                aiLerp.isStopped = true;
+            }
+
+            var customerAgent = agent.GetComponent<CustomerAgent>();
+            if (customerAgent != null && customerAgent.currentSession != null)
+            {
+                var repository = CustomerRepository.Instance;
+                if (repository != null)
+                {
+                    var record = repository.GetRecord(customerAgent.customerID);
+                    if (record != null)
+                    {
+                        CustomerProgressService.ApplySessionRewardsStatic(
+                            record,
+                            customerAgent.currentSession,
+                            customerAgent.cachedArchetype
+                        );
+
+                        repository.SaveSingleRecord(record);
+                    }
+                }
+
+                CustomerEventBus.RaiseCustomerDestroyed(customerAgent);
+            }
+
+            Debug.Log($"[MoveToEntranceAction] 顾客 {customerBlackboard?.customerId} 闭店后未进入建筑，已离场");
+            GameObject.Destroy(agent.gameObject);
+            EndAction(true);
         }
 
         /// <summary>

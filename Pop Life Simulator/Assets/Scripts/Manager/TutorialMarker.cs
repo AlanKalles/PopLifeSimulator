@@ -62,7 +62,7 @@ namespace PopLife.Manager
         FirstQuestToastDismissed, // = 24  首个任务通知Toast完全消失 (引用: Guide_Quest.asset)
 
         // Store UI
-        EnableStoreToggle,        // = 25  解锁开店按钮（一次性，游戏开局教程用）
+        EnableStoreToggle,        // = 25  [DEPRECATED] 解锁开店按钮已改由 StoreToggleAnimator 监听 Midori/4 对话结束直接触发，此 marker 不再被任何系统消费。保留 enum 值仅为兼容历史 .asset 序列化。
 
         BottomButton,             // = 26
         AlreadyKnowShelfSelectionPanel, // = 27  (引用: 3_TalkAboutSellShelf.asset)

@@ -42,6 +42,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: bg3
+    uniqueID: 2738636775
+    locked: 0
+  - name: bg2
+    uniqueID: 930987101
+    locked: 0
+  - name: bg1
+    uniqueID: 3931578469
+    locked: 0
   - name: StoreBackgroundLayer
     uniqueID: 3022431455
     locked: 0

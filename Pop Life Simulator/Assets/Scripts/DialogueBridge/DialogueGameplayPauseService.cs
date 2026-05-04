@@ -161,21 +161,14 @@ namespace PopLife.DialogueBridge
                     seeker = customer.GetComponent<Seeker>()
                 };
 
-                if (snapshot.behaviourTree != null)
-                {
-                    snapshot.treeWasRunning = snapshot.behaviourTree.isRunning;
-                    snapshot.treeWasPaused = snapshot.behaviourTree.isPaused;
-                    if (snapshot.treeWasRunning && !snapshot.treeWasPaused)
-                    {
-                        snapshot.behaviourTree.PauseBehaviour();
-                    }
-                }
-
+                // 关键顺序：必须先拍 AILerp/destinationSetter/seeker 快照，再 PauseBehaviour。
+                // PauseBehaviour 会同步触发 ActionTask.OnPause（MoveToEntranceAction / MoveToExitAction /
+                // ClubStayPointAction 都会立即把 aiLerp.isStopped 改成 true），如果先 PauseBehaviour 再拍快照，
+                // snapshot.aiWasStopped 会被污染成 true，恢复时跳过 SearchPath，导致 customer 永远停滞。
                 if (snapshot.aiLerp != null)
                 {
                     snapshot.aiWasStopped = snapshot.aiLerp.isStopped;
                     snapshot.aiDestination = snapshot.aiLerp.destination;
-                    snapshot.aiLerp.isStopped = true;
                 }
 
                 if (snapshot.destinationSetter != null)
@@ -186,6 +179,23 @@ namespace PopLife.DialogueBridge
                 if (snapshot.seeker != null)
                 {
                     snapshot.graphMask = snapshot.seeker.graphMask;
+                }
+
+                if (snapshot.behaviourTree != null)
+                {
+                    snapshot.treeWasRunning = snapshot.behaviourTree.isRunning;
+                    snapshot.treeWasPaused = snapshot.behaviourTree.isPaused;
+                    if (snapshot.treeWasRunning && !snapshot.treeWasPaused)
+                    {
+                        snapshot.behaviourTree.PauseBehaviour();
+                    }
+                }
+
+                // 兜底：OnPause 已经做过 isStopped=true（对有 OnPause 的 Action），
+                // 这里覆盖确保没有 OnPause 的 Action（如 MoveToTargetAction）也被暂停
+                if (snapshot.aiLerp != null)
+                {
+                    snapshot.aiLerp.isStopped = true;
                 }
 
                 customerSnapshots[customer] = snapshot;
@@ -208,6 +218,7 @@ namespace PopLife.DialogueBridge
 
                 var snapshot = pair.Value;
 
+                // 1. 先恢复目标 / graphMask / destination / isStopped（按快照真实值）
                 if (snapshot.destinationSetter != null)
                 {
                     snapshot.destinationSetter.target = snapshot.destinationTarget;
@@ -222,13 +233,10 @@ namespace PopLife.DialogueBridge
                 {
                     snapshot.aiLerp.destination = snapshot.aiDestination;
                     snapshot.aiLerp.isStopped = snapshot.aiWasStopped;
-
-                    if (!snapshot.aiWasStopped)
-                    {
-                        snapshot.aiLerp.SearchPath();
-                    }
                 }
 
+                // 2. Resume BehaviourTree（同步触发 OnResume；OnResume 仅修改 isStopped 与内部计时，
+                //    不动 destination/graphMask，不污染上面的全局快照恢复）
                 if (snapshot.behaviourTree != null
                     && snapshot.treeWasRunning
                     && !snapshot.treeWasPaused
@@ -236,6 +244,14 @@ namespace PopLife.DialogueBridge
                     && snapshot.behaviourTree.graph != null)
                 {
                     snapshot.behaviourTree.graph.Resume();
+                }
+
+                // 3. 兜底：总是 SearchPath() 刷新路径（不依赖 aiWasStopped）。
+                //    AILerp 在 isStopped=true 期间会丢路径，恢复 isStopped=false 后若没有有效路径会原地卡死。
+                //    SearchPath 仅刷新路径，不改变行为状态——本来该停的 customer (isStopped=true) 仍然停。
+                if (snapshot.aiLerp != null)
+                {
+                    snapshot.aiLerp.SearchPath();
                 }
             }
 
