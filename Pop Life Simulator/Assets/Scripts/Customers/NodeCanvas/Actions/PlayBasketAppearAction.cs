@@ -2,6 +2,7 @@ using NodeCanvas.Framework;
 using ParadoxNotion.Design;
 using UnityEngine;
 using Pathfinding;
+using PopLife.Customers.Data;
 using PopLife.Customers.Runtime;
 
 namespace PopLife.Customers.NodeCanvas.Actions
@@ -23,6 +24,15 @@ namespace PopLife.Customers.NodeCanvas.Actions
         protected override void OnExecute()
         {
             completedNormally = false;
+
+            // Club 顾客不购物也不结账，直接跳过篮子动画
+            var blackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            if (blackboard != null && blackboard.visitPurpose == CustomerVisitPurpose.Club)
+            {
+                completedNormally = true;
+                EndAction(true);
+                return;
+            }
 
             animController = agent.GetComponent<CustomerAnimationController>();
             if (animController == null)

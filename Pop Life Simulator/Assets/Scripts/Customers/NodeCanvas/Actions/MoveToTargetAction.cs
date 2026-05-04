@@ -27,7 +27,14 @@ namespace PopLife.Customers.NodeCanvas.Actions
         private AILerp aiLerp;
         private AIDestinationSetter destinationSetter;
         private CustomerBlackboardAdapter customerBlackboard;
+        private Seeker seeker;
         private bool waitingForNewPath; // 等待新路径计算完成，防止 reachedDestination 误判
+
+        // 诊断用：定位 customer 卡死场景（如 Stuck 2: 从货架去 cashier 时卡 entrance）
+        private float startTime;
+        private float lastDiagnosticLogTime;
+        private const float DiagnosticGraceSeconds = 3f;       // 卡超过 3 秒才开始打 log，避免短路径刷屏
+        private const float DiagnosticLogInterval = 1f;
 
         protected override string info
         {
@@ -40,6 +47,7 @@ namespace PopLife.Customers.NodeCanvas.Actions
             aiLerp = agent.GetComponent<AILerp>();
             destinationSetter = agent.GetComponent<AIDestinationSetter>();
             customerBlackboard = agent.GetComponent<CustomerBlackboardAdapter>();
+            seeker = agent.GetComponent<Seeker>();
 
             if (aiLerp == null)
             {
@@ -87,6 +95,9 @@ namespace PopLife.Customers.NodeCanvas.Actions
             // 防止 OnUpdate 第一帧读到上一次寻路的 reachedDestination=true 而瞬间完成
             aiLerp.SearchPath();
             waitingForNewPath = true;
+
+            startTime = Time.time;
+            lastDiagnosticLogTime = startTime;
 
             Debug.Log($"[MoveToTargetAction] 顾客 {customerBlackboard?.customerId} 开始移动到 {targetTransform.position}");
         }
@@ -137,6 +148,23 @@ namespace PopLife.Customers.NodeCanvas.Actions
 
                 EndAction(true);
                 return;
+            }
+
+            // 诊断：卡超过 grace 时间还没到达，每 1 秒打一行状态
+            // 用于定位 Stuck 2（从货架去 cashier 卡 entrance 等场景）
+            float elapsed = Time.time - startTime;
+            if (elapsed > DiagnosticGraceSeconds && Time.time - lastDiagnosticLogTime > DiagnosticLogInterval)
+            {
+                lastDiagnosticLogTime = Time.time;
+                float dist = target != null ? Vector3.Distance(agent.transform.position, target.position) : -1f;
+                string targetDesc = target != null ? $"{target.name}@{target.position}" : "null";
+                string graphMaskDesc = seeker != null ? seeker.graphMask.ToString() : "n/a";
+                Debug.LogWarning(
+                    $"[MoveToTargetAction.diag] customer={customerBlackboard?.customerId}, " +
+                    $"elapsed={elapsed:F1}s, dist={dist:F2}m, " +
+                    $"pathPending={aiLerp.pathPending}, reachedDestination={aiLerp.reachedDestination}, " +
+                    $"isStopped={aiLerp.isStopped}, graphMask={graphMaskDesc}, target={targetDesc}, " +
+                    $"agentPos={agent.transform.position}");
             }
         }
 

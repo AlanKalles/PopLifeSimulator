@@ -26,7 +26,7 @@ MonoBehaviour:
     filterCategory: 0
     useFilterArchetypes: 0
     filterArchetypes: []
-  activationMarker: 0
+  activationMarker: -1
   completionMarker: -1
   triggerMarkerAfterToast: 0
   autoCompleteOnActivation: 0

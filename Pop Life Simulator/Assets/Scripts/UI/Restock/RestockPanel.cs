@@ -910,9 +910,6 @@ namespace PopLife.UI.Restock
             if (total <= 0 || selectedShelfIds.Count == 0) return;
             if (ResourceManager.Instance == null || !ResourceManager.Instance.CanAfford(total, 0)) return;
 
-            // 首次做出补货决定（Restock 或 Skip 任一）→ 触发教程 marker，后续点击不再重复触发
-            TutorialEventBus.RaiseMarker(TutorialMarker.FirstRestockDecisionMade);
-
             // 1. 扣钱（一次性）
             ResourceManager.Instance.SpendMoney(total);
 
@@ -949,19 +946,26 @@ namespace PopLife.UI.Restock
 
         private void OnSuccessPromptDismissed()
         {
+            // 首次（Restock 或 Skip 任一）补货决定的 success prompt 关闭时 → 触发 Midori/4 教程对话
+            // 后续点击不再重复触发：TutorialEventBus 内部 HashSet 自带 dedup
+            TutorialEventBus.RaiseMarker(TutorialMarker.FirstRestockDecisionMade);
+
             if (successPrompt != null) successPrompt.Hide();
             ClosePanel();
         }
 
         private void OnSkipRestockClicked()
         {
-            // 首次做出补货决定（Restock 或 Skip 任一）→ 触发教程 marker，后续点击不再重复触发
-            TutorialEventBus.RaiseMarker(TutorialMarker.FirstRestockDecisionMade);
-
-            // 玩家选择当日不补货：标记后关闭面板，DayLoopManager.OpenStore 的 IsReadyToOpen 闸门会因此放行
+            // 玩家选择当日不补货：标记后弹出复用的 success prompt（覆盖文案），点击关闭面板
             if (RestockManager.Instance != null)
                 RestockManager.Instance.MarkSkippedRestock();
-            ClosePanel();
+
+            if (notRestockedPrompt != null) notRestockedPrompt.Hide();
+
+            if (successPrompt != null)
+                successPrompt.ShowSkip(OnSuccessPromptDismissed);
+            else
+                ClosePanel();
         }
 
         // ================================================================

@@ -20969,7 +20969,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 483.9, y: 212.4}
+  m_SizeDelta: {x: 483.9, y: 164.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &775223889
 MonoBehaviour:
@@ -31805,7 +31805,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 8}
+  m_AnchoredPosition: {x: 0, y: 12}
   m_SizeDelta: {x: 386.4, y: 151.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1208176808
@@ -31828,7 +31828,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Shelves restocked successfully
+  m_text: Restock Succeeded
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
   m_sharedMaterial: {fileID: -2483764444016197910, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
@@ -31855,8 +31855,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42
-  m_fontSizeBase: 42
+  m_fontSize: 36
+  m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -36167,7 +36167,8 @@ MonoBehaviour:
   messageText: {fileID: 1208176808}
   dismissClickTarget: {fileID: 1421156481}
   dismissLockDuration: 0.2
-  successMessage: Shelves restocked successfully
+  successMessage: Restock Succeeded
+  skipMessage: Restock Skipped
 --- !u!1 &1375328319
 GameObject:
   m_ObjectHideFlags: 0
@@ -37707,7 +37708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -69.999985}
+  m_AnchoredPosition: {x: 0, y: -46}
   m_SizeDelta: {x: 454, y: 54.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1406172900
@@ -37908,10 +37909,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 59298526}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1409257776
 MonoBehaviour:
@@ -39403,6 +39404,7 @@ MonoBehaviour:
   timeControlUI: {fileID: 1284766177}
   openStoreCanvasGroup: {fileID: 21533581}
   timeControlCanvasGroup: {fileID: 1284766182}
+  unlockOnConversationEnd: Midori/4
   pressDuration: 0.1
   pressDistance: 5
   pressScale: 0.95
@@ -58850,6 +58852,34 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2013757098563990579, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2013757098563990579, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272473000940471918, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272473000940471918, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272473000940471918, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272473000940471918, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 194.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 2272473000940471918, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -44.6
+      objectReference: {fileID: 0}
     - target: {fileID: 2603750757945054692, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -58950,9 +58980,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: QuestNotificationToast
       objectReference: {fileID: 0}
+    - target: {fileID: 5685147627212523474, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7248432659106679456, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7784360240467164858, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_text
+      value: Your first display is up. Midori is ready to walk you through opening
+        the store for the day.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7784360240467164858, guid: bd990d28cf97d3647bfc50c8ae75fb83, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 24
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

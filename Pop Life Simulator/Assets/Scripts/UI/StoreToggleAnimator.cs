@@ -1,6 +1,6 @@
 using UnityEngine;
 using PrimeTween;
-using PopLife.Manager;
+using PixelCrushers.DialogueSystem;
 
 namespace PopLife.UI
 {
@@ -16,6 +16,10 @@ namespace PopLife.UI
         [SerializeField] private RectTransform timeControlUI;
         [SerializeField] private CanvasGroup openStoreCanvasGroup;
         [SerializeField] private CanvasGroup timeControlCanvasGroup;
+
+        [Header("Unlock Trigger")]
+        [Tooltip("当此标题对话结束时解锁开店按钮（坠入演示）。留空则禁用对话触发。")]
+        [SerializeField] private string unlockOnConversationEnd = "Midori/4";
 
         [Header("Press Animation")]
         [SerializeField] private float pressDuration = 0.1f;
@@ -36,8 +40,9 @@ namespace PopLife.UI
         private Sequence currentSequence;
         private bool isAnimating;
 
-        // 锁定状态：marker触发前，OpenStoreButton和TimeControlUI都不显示
+        // 锁定状态：解锁前 OpenStoreButton 和 TimeControlUI 都不显示
         private bool isUnlocked = false;
+        private bool subscribedToDialogue;
 
         private void Awake()
         {
@@ -56,39 +61,62 @@ namespace PopLife.UI
             else
                 canvasHeight = 1080f; // 兜底值
 
-            // 检查marker是否已经触发过（非首次游戏）
-            if (TutorialEventBus.IsMarkerTriggered(TutorialMarker.EnableStoreToggle))
-            {
-                isUnlocked = true;
-                SnapToInitState();
-            }
-            else
-            {
-                // 首次游戏，全部隐藏，等待marker
-                SnapToHidden();
-            }
+            // 默认隐藏，等触发对话结束后解锁
+            SnapToHidden();
         }
 
         private void OnEnable()
         {
-            if (!isUnlocked)
-                TutorialEventBus.OnMarkerTriggered += OnMarkerTriggered;
+            SubscribeDialogueEvents();
         }
 
         private void OnDisable()
         {
-            TutorialEventBus.OnMarkerTriggered -= OnMarkerTriggered;
+            UnsubscribeDialogueEvents();
         }
 
-        private void OnMarkerTriggered(TutorialMarker marker)
+        private void SubscribeDialogueEvents()
         {
-            if (marker != TutorialMarker.EnableStoreToggle) return;
+            if (subscribedToDialogue) return;
+            if (isUnlocked) return;
+            if (string.IsNullOrEmpty(unlockOnConversationEnd)) return;
+            if (DialogueManager.instance == null) return;
+
+            DialogueManager.instance.conversationEnded += OnConversationEnded;
+            subscribedToDialogue = true;
+        }
+
+        private void UnsubscribeDialogueEvents()
+        {
+            if (!subscribedToDialogue) return;
+            if (DialogueManager.instance != null)
+                DialogueManager.instance.conversationEnded -= OnConversationEnded;
+            subscribedToDialogue = false;
+        }
+
+        private void OnConversationEnded(Transform actor)
+        {
+            if (isUnlocked) return;
+
+            // 用 lastConversationEnded 静态属性识别刚结束的对话标题
+            if (DialogueManager.lastConversationEnded != unlockOnConversationEnd) return;
 
             isUnlocked = true;
-            TutorialEventBus.OnMarkerTriggered -= OnMarkerTriggered;
+            UnsubscribeDialogueEvents();
 
-            // 解锁时播放OpenStoreButton坠入动画
             PlayUnlockSequence();
+        }
+
+        /// <summary>
+        /// 外部强制解锁（如读档恢复或调试）。已解锁则忽略。
+        /// </summary>
+        public void ForceUnlock(bool playAnimation = false)
+        {
+            if (isUnlocked) return;
+            isUnlocked = true;
+            UnsubscribeDialogueEvents();
+            if (playAnimation) PlayUnlockSequence();
+            else SnapToInitState();
         }
 
         /// <summary>

@@ -17,6 +17,7 @@ namespace PopLife.UI.Restock
         [SerializeField] private Button dismissClickTarget;
         [SerializeField] private float dismissLockDuration = 0.2f;
         [SerializeField] private string successMessage = "Shelves restocked successfully.";
+        [SerializeField] private string skipMessage = "Skipped restocking for today.";
 
         private Action onDismiss;
         private float shownAtUnscaledTime;
@@ -33,7 +34,11 @@ namespace PopLife.UI.Restock
             Hide();
         }
 
-        public void Show(Action dismissCallback)
+        public void Show(Action dismissCallback) => ShowInternal(dismissCallback, successMessage);
+
+        public void ShowSkip(Action dismissCallback) => ShowInternal(dismissCallback, skipMessage);
+
+        private void ShowInternal(Action dismissCallback, string message)
         {
             onDismiss = dismissCallback;
             shownAtUnscaledTime = Time.unscaledTime;
@@ -41,7 +46,7 @@ namespace PopLife.UI.Restock
             isDismissing = false;
 
             if (messageText != null)
-                messageText.text = successMessage;
+                messageText.text = message;
 
             if (root != null)
                 root.SetActive(true);
