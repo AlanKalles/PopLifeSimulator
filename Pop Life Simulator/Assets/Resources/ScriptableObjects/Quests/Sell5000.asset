@@ -37,8 +37,10 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Sell II
-  description: "A larger sales count will prove the store can sustain repeat buying across many tastes. Keep products moving at scale."
-  successDescription: "Pop Life's sales volume now looks like a machine, not a lucky streak."
+  description: A larger sales count will prove the store can sustain repeat buying
+    across many tastes. Keep products moving at scale.
+  successDescription: POPLife's sales volume now looks like a machine, not a lucky
+    streak.
   entryTexts:
   - Sell 5000 items total
   questIcon: {fileID: 0}

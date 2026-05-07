@@ -33,9 +33,11 @@ MonoBehaviour:
   completionMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "Auditor's Request #2"
-  description: "The Auditor is watching whether you can move high-demand vibration products at scale. Stock around that appetite without obsessing over one brand."
-  successDescription: "The vibration sales target is complete, and the Auditor has fresh numbers to file."
+  title: Auditor's Request #2
+  description: The Auditor is watching whether  or not you can sell vibrators at
+    scale. Stock around that appetite without obsessing over one brand.
+  successDescription: The vibration sales target is complete, and the Auditor has
+    fresh numbers to file.
   entryTexts:
   - Sell 200 vibrators
   questIcon: {fileID: 0}

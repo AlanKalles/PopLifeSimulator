@@ -33,8 +33,11 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Branding Strategy
-  description: "A memorable store needs more than shelves; it needs a mood people recognize. Add products with a distinctive gimmick or visual hook that makes Pop Life feel like its own brand."
-  successDescription: "Pop Life is starting to feel less like a shop and more like a place people remember."
+  description: A memorable store needs more than shelves; it needs a mood people
+    recognize. Add products with a distinctive gimmick or visual hook that makes
+    POPLife feel like its own brand.
+  successDescription: POPLfe is starting to feel less like a shop and more like a
+    place people remember.
   entryTexts:
   - Build your brand
   questIcon: {fileID: 0}

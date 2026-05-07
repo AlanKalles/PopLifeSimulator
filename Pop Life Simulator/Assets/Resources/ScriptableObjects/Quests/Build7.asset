@@ -23,7 +23,7 @@ MonoBehaviour:
     itemId: Sensory Glass Dildo
   - type: 1
     amount: 700
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Bonnie
@@ -33,12 +33,17 @@ MonoBehaviour:
     targetValue: 7
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 42
   completionMarker: 43
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Seventh Building
-  description: "At this scale, customers should feel the store before they understand its layout. Keep building until Pop Life becomes hard to ignore."
-  successDescription: "Pop Life is becoming a fixture in the neighborhood rather than a curious little shop."
+  description: At this scale, customers should feel the store before they understand
+    its layout. Keep building until Pop Life becomes hard to ignore.
+  successDescription: POPLife is becoming a fixture in the neighborhood rather than
+    a curious little shop.
   entryTexts:
   - Place 7 buildings
   questIcon: {fileID: 0}
