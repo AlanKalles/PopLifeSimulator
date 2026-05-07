@@ -27,6 +27,9 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Alex
+  - type: 3
+    amount: 1
+    itemId: Intense Polyisoprene Condoms
   conditions:
   - conditionType: 6
     scope: 2

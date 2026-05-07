@@ -20,7 +20,7 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Riko
@@ -30,12 +30,16 @@ MonoBehaviour:
     targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 55
   completionMarker: 56
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Customers II
-  description: "The morning foot traffic is growing. Keep the line moving and show that Pop Life can serve more than a handful of curious visitors."
-  successDescription: "A busier day proved the staff can keep up with rising demand."
+  description: The morning foot traffic is growing. Keep the line moving and show
+    that POPLife can serve more than a handful of curious visitors.
+  successDescription: A busier day proved the staff can keep up with rising demand.
   entryTexts:
   - Serve 10 customers in a day
   questIcon: {fileID: 0}

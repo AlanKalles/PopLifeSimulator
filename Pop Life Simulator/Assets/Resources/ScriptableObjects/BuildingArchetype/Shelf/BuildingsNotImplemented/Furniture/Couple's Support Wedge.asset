@@ -16,11 +16,19 @@ MonoBehaviour:
   displayName: Couple's Support Wedge
   isImplemented: 0
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 5107907286294035973, guid: 71fd425ee1a8c4768872b41df3350ab4, type: 3}
   buildCost: 455
   moveCost: 0
   destroyRefundRate: 0.75
-  footprintPattern: []
+  footprintPattern:
+  - {x: 0, y: 3}
+  - {x: 1, y: 3}
+  - {x: 0, y: 2}
+  - {x: 1, y: 2}
+  - {x: 0, y: 1}
+  - {x: 1, y: 1}
+  - {x: 0, y: 0}
+  - {x: 1, y: 0}
   canRotate: 0
   levels: []
   category: 6

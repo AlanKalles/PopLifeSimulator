@@ -37,16 +37,18 @@ MonoBehaviour:
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
-    filterArchetypes: []
+    filterArchetypes:
+    - {fileID: 11400000, guid: 63a7794a79d7944acb086814c4b4efc8, type: 2}
   activationMarker: 75
   completionMarker: 77
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Inclusiveness
-  description: The store should not assume every customer shops the same way or loves
-    the same body. Add options that make more relationships and identities feel seen.
-  successDescription: More customers can now recognize themselves somewhere in Pop
-    Life's aisles.
+  description: A store should not assume that every customer shops the same way or
+    loves the same body. Add options that make more relationships and identities
+    feel seen.
+  successDescription: More customers can now recognize themselves somewhere in POPLife's
+    aisles.
   entryTexts:
   - Promote inclusiveness
   questIcon: {fileID: 0}

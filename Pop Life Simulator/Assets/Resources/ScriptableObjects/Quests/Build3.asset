@@ -23,7 +23,7 @@ MonoBehaviour:
     itemId: Portable Vibrator
   - type: 1
     amount: 300
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Devi
@@ -33,12 +33,17 @@ MonoBehaviour:
     targetValue: 3
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 40
   completionMarker: 41
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Third Building
-  description: "More floor space means more routes, more browsing, and more chances for customers to find something unexpected. Keep expanding the store's physical presence."
-  successDescription: "Pop Life now has enough room to support a broader shopping rhythm."
+  description: More floor space means more routes, more browsing, and more chances
+    for customers to find something unexpected. Keep expanding the store's physical
+    presence.
+  successDescription: POPLife now has enough room to support a broader shopping rhythm.
   entryTexts:
   - Place 3 buildings
   questIcon: {fileID: 0}

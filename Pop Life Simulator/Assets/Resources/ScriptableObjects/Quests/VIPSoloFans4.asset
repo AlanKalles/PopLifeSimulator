@@ -21,6 +21,12 @@ MonoBehaviour:
   - type: 1
     amount: 100
     itemId: 
+  - type: 0
+    amount: 100
+    itemId: 
+  - type: 2
+    amount: 100
+    itemId: Orgy VR Porn
   conditions:
   - conditionType: 0
     scope: 0
@@ -33,9 +39,11 @@ MonoBehaviour:
   completionMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "SoloFans: New Fetish"
-  description: "Omega needs a way forward that does not erase their brand or their partner's honesty. Find something flexible enough for both fantasy and care."
-  successDescription: "Omega found a path that can hold performance and intimacy in the same frame."
+  title: 'SoloFans: New Fetish'
+  description: Omega needs a way forward that does not erase their brand or their
+    partner's honesty. Find something flexible enough for both fantasy and care.
+  successDescription: Omega found a path that can hold performance and intimacy in
+    the same frame.
   entryTexts:
   - Find a mutually satisfying tool for Omega and their partner
   questIcon: {fileID: 0}

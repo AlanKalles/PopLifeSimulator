@@ -33,9 +33,12 @@ MonoBehaviour:
   completionMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "Auditor's Request #3"
-  description: "The government wants evidence that customers are forming habits, not just making one nervous visit. Focus on service that turns strangers into recognizable regulars."
-  successDescription: "Enough customers came back often enough to prove Pop Life is building loyalty."
+  title: Auditor's Request #3
+  description: The government wants evidence that customers are forming habits, not
+    just making one nervous visit. Focus on service that turns strangers into recognizable
+    regulars.
+  successDescription: Enough customers came back often enough to prove POPLife is
+    building loyalty.
   entryTexts:
   - Have 3 loyal customers reach member status
   questIcon: {fileID: 0}

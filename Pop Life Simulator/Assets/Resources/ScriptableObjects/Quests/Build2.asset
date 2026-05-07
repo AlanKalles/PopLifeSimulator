@@ -23,7 +23,7 @@ MonoBehaviour:
     itemId: Pen Vibrator
   - type: 1
     amount: 200
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Paxton
@@ -33,12 +33,16 @@ MonoBehaviour:
     targetValue: 2
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 39
   completionMarker: 40
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Second Building
-  description: "A second expansion would make the store feel less temporary. Add enough space that customers can imagine Pop Life becoming a destination."
-  successDescription: "The store layout is starting to feel planned, not improvised."
+  description: A second expansion would make the store feel less temporary. Add enough
+    space that customers can imagine POPLife becoming a destination.
+  successDescription: The store layout is starting to feel planned, not improvised.
   entryTexts:
   - Place 2 buildings
   questIcon: {fileID: 0}

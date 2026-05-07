@@ -44,9 +44,12 @@ MonoBehaviour:
   activationMarker: -1
   completionMarker: -1
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Five Shelves (Merged)
-  description: "This retired duplicate is merged into Main/2. The live six-shelf task is Auditor's Request #1."
-  successDescription: "Merged into Auditor's Request #1 so the shelf-count chain has one six-shelf task."
+  description: This retired duplicate is merged into Main/2. The live six-shelf task
+    is Auditor's Request #1.
+  successDescription: Merged into Auditor's Request #1 so the shelf-count chain has
+    one six-shelf task.
   entryTexts:
   - Place 5 shelves
   questIcon: {fileID: 0}

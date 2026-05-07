@@ -31,8 +31,10 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Remove Cucci Products
-  description: "The Auditor's order is political, not personal: Cucci needs to disappear from the sales floor. Remove the brand before loyalty to fashion becomes disloyalty to the state."
-  successDescription: "Cucci is off the floor, and the Auditor has one less reason to threaten the license."
+  description: 'The Auditor''s order is political, not personal: Cucci needs to disappear
+    from the sales floor.'
+  successDescription: Cucci is off the floor, and the Auditor has one less reason
+    to threaten our license.
   entryTexts:
   - Remove all Cucci products from the store
   questIcon: {fileID: 0}

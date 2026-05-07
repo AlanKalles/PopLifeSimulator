@@ -39,8 +39,11 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Anal
-  description: "Some customers are asking for toys that reward patience, plenty of lube, and a little courage. Add options that make back-door exploration feel approachable instead of intimidating."
-  successDescription: "Curious customers have a safer path into anal play, and the store's specialist reputation deepened."
+  description: Some customers are asking for toys that reward patience, plenty of
+    lube, and a little courage. Add options that make back-door exploration feel
+    approachable instead of intimidating.
+  successDescription: Curious customers have a safer path into anal play, and the
+    store's reputation has grown.
   entryTexts:
   - Stock anal products
   questIcon: {fileID: 0}

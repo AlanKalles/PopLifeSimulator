@@ -34,8 +34,11 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Prepare a Second Building
-  description: "The next phase needs more than better shelves; it needs more space. Prepare a second building so Pop Life can become something larger than a single shop."
-  successDescription: "The second-building plan is in motion, and Pop Life's expansion feels official."
+  description: The next phase needs more than better shelves, it needs more space.
+    Prepare a second building so POPLife can become something larger than a single
+    shop.
+  successDescription: The second-building plan is in motion, and POPLife's expansion
+    feels official.
   entryTexts:
   - Place 2 buildings total
   questIcon: {fileID: 0}

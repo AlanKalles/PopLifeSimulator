@@ -47,7 +47,7 @@ namespace PopLife.Data
 
         /// <summary>每件利润 = Floor(buildCost * 0.03 + level² * 0.25)</summary>
         public int GetProfit(int level)
-            => Mathf.FloorToInt(buildCost * 0.03f + Mathf.Pow(level, 2) * 0.25f);
+            => Mathf.FloorToInt(buildCost * 0.03f + Mathf.Pow(level, 2) * 0.25f)+2;
 
         /// <summary>商品售价 = StockFee + Profit（顾客支付的单价）</summary>
         public int GetPrice(int level)
