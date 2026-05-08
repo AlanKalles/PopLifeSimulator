@@ -157,8 +157,13 @@ namespace PopLife.AlanBot
             if (questLogPanel != null) questLogPanel.Hide();
             if (guideCollectionPanel != null) guideCollectionPanel.Hide();
 
-            // 清理回调链，避免子面板关闭后回弹到 AlanBot 选择面板
+            // 立即同步触发 hide 回调（重置 AlanBot.isInteracting）
+            // Hide() 的回调要等淡出协程结束才执行；若此处直接 onHideCallback=null，
+            // OnSelectionPanelHidden 永远不会被调用，isInteracting 会卡在 true，
+            // 导致结算后再也无法打开 AlanBot 面板。
+            var pending = onHideCallback;
             onHideCallback = null;
+            pending?.Invoke();
         }
 
         private void StopTypewriter()
