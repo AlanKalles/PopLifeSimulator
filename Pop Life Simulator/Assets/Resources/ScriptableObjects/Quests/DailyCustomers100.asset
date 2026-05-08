@@ -20,7 +20,7 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 175
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Eason
@@ -30,12 +30,17 @@ MonoBehaviour:
     targetValue: 100
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 58
   completionMarker: 59
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Customers V
-  description: "This is less a normal day and more a stress test. Keep the operation smooth while the crowd pushes every system at once."
-  successDescription: "Pop Life survived a massive customer wave and proved it can operate at city scale."
+  description: This is less a normal day and more a stress test. Keep the operation
+    running smooth ly while the crowd pushes every system at once.
+  successDescription: POPLife survived a massive customer wave and proved it can
+    operate at city scale.
   entryTexts:
   - Serve 100 customers in a day
   questIcon: {fileID: 0}

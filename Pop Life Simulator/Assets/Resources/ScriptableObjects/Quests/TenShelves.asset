@@ -41,9 +41,11 @@ MonoBehaviour:
   activationMarker: 71
   completionMarker: 72
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Ten Shelves
-  description: "A fuller store can tell more stories at once. Expand the displays until customers can wander between very different kinds of desire."
-  successDescription: "Ten shelves gave Pop Life the breadth of a serious shop."
+  description: A fuller store can tell more stories at once. Expand the displays
+    until customers can wander between very different kinds of desire.
+  successDescription: Ten shelves gave POPLife the breadth of a serious shop.
   entryTexts:
   - Place 10 shelves
   questIcon: {fileID: 0}

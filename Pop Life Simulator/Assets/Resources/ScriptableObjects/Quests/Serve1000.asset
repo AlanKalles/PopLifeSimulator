@@ -20,19 +20,24 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 500
-    itemId:
+    itemId: 
   conditions:
   - conditionType: 4
     scope: 0
     targetValue: 1000
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 64
   completionMarker: 65
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Serve III
-  description: "A thousand served customers would make Pop Life part of the city's intimate infrastructure. Keep helping people find what they came for."
-  successDescription: "Pop Life has served a thousand customers and become part of the city."
+  description: A thousand served customers would make POPLife part of the city's
+    intimate infrastructure. Keep helping people find what they came for.
+  successDescription: POPLife has served a thousand customers and become part of
+    the city.
   entryTexts:
   - Serve 1000 customers total
   questIcon: {fileID: 0}

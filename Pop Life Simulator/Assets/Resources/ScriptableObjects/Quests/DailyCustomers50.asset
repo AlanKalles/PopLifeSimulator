@@ -20,7 +20,7 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 150
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Josh
@@ -30,12 +30,17 @@ MonoBehaviour:
     targetValue: 50
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 57
   completionMarker: 58
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Customers IV
-  description: "The city is watching how well Pop Life performs under pressure. Keep customers moving through the store until the rush becomes proof of demand."
-  successDescription: "A heavy customer day turned into a public sign that Pop Life can scale."
+  description: The city is watching how well POPLife performs under pressure. Keep
+    customers moving through the store until the rush becomes proof of demand.
+  successDescription: A heavy customer day turned into a public sign that Pop Life
+    can scale.
   entryTexts:
   - Serve 50 customers in a day
   questIcon: {fileID: 0}

@@ -20,7 +20,7 @@ MonoBehaviour:
   rewards:
   - type: 1
     amount: 180
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Mirah
@@ -30,12 +30,16 @@ MonoBehaviour:
     targetValue: 5000
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 52
   completionMarker: 53
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Income IV
-  description: "Sustained income proves customers are returning, not just gawking. Push the total high enough to show Pop Life has staying power."
-  successDescription: "Pop Life has crossed from promising experiment into stable operation."
+  description: Sustained income proves customers are returning, not just gawking.
+    Push the total high enough to show POPLife has staying power.
+  successDescription: POPLife has crossed from promising experiment into stable operation.
   entryTexts:
   - Earn 5000 total
   questIcon: {fileID: 0}
