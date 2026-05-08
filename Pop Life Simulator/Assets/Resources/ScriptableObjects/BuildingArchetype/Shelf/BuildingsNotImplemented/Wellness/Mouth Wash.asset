@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Mouth Wash
   displayName: Mouth Wash
-  isImplemented: 0
+  isImplemented: 1
   icon: {fileID: 0}
   prefab: {fileID: 382962493764624635, guid: 068cf874fa8954ceba5d51a8407fec05, type: 3}
   buildCost: 325

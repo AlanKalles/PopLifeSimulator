@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Wand Vibrator
   displayName: Wand Vibrator
   icon: {fileID: -5133743911857542770, guid: 9f283f52f5b3545628a18ed1011ec030, type: 3}
-  prefab: {fileID: 5659159893351281282, guid: 1da1b78d61f18491d9337a4d246e8e80, type: 3}
+  prefab: {fileID: 4468677320379019377, guid: 1da1b78d61f18491d9337a4d246e8e80, type: 3}
   buildCost: 120
   moveCost: 0
   destroyRefundRate: 0.75

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Maid Outfit
   displayName: Maid Outfit
-  isImplemented: 0
+  isImplemented: 1
   icon: {fileID: 0}
   prefab: {fileID: 2553700819061216157, guid: d905242290f5c4df28952b01f356d9c0, type: 3}
   buildCost: 250

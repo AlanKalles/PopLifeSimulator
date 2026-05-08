@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Cupid Outfit
   displayName: Cupid Outfit
-  isImplemented: 0
+  isImplemented: 1
   icon: {fileID: 0}
   prefab: {fileID: 2553700819061216157, guid: 18a077fa5e98049ab89e8c090bcda8d1, type: 3}
   buildCost: 370

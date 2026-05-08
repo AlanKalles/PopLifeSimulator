@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Lipstick Vibrator
   displayName: Lipstick Vibrator
   icon: {fileID: 0}
-  prefab: {fileID: 6477555939506826541, guid: 602583f22dba4eb4b92d9c97800f13b0, type: 3}
+  prefab: {fileID: 2551036000870525135, guid: 602583f22dba4eb4b92d9c97800f13b0, type: 3}
   buildCost: 205
   moveCost: 0
   destroyRefundRate: 0.75

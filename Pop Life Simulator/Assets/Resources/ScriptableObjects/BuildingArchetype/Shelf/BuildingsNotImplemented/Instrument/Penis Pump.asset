@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Penis Pump
   displayName: Vaginal Douche
-  isImplemented: 0
+  isImplemented: 1
   icon: {fileID: 0}
   prefab: {fileID: 2553700819061216157, guid: ca0aeb60060fd4079b913bfd53427077, type: 3}
   buildCost: 95

@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Bunny Girl Lingerie
   displayName: Bunny Gril Lingerie
   icon: {fileID: 21300000, guid: 1b8292421d052224ea249e79f281d530, type: 3}
-  prefab: {fileID: 6477555939506826541, guid: e8a2faf0dadcd4cec8cf93d8f5cde4ae, type: 3}
+  prefab: {fileID: 2551036000870525135, guid: e8a2faf0dadcd4cec8cf93d8f5cde4ae, type: 3}
   buildCost: 250
   moveCost: 0
   destroyRefundRate: 0.75

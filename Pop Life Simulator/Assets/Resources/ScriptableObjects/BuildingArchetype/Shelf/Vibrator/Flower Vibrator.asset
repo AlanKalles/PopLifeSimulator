@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Flower Vibrator
   displayName: Flower Vibrator
   icon: {fileID: 0}
-  prefab: {fileID: 6477555939506826541, guid: 67d26ea62ff10b1458dce0d4dde47ca8, type: 3}
+  prefab: {fileID: 2551036000870525135, guid: 67d26ea62ff10b1458dce0d4dde47ca8, type: 3}
   buildCost: 150
   moveCost: 0
   destroyRefundRate: 0.75

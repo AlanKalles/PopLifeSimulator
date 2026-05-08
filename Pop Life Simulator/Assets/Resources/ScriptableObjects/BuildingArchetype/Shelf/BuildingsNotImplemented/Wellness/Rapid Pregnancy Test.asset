@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Rapid Pregnancy Test
   displayName: Rapid Pregnancy Test
-  isImplemented: 0
+  isImplemented: 1
   icon: {fileID: 0}
   prefab: {fileID: 382962493764624635, guid: 3faea0eb1672b4e66a84ca8ca393939a, type: 3}
   buildCost: 90

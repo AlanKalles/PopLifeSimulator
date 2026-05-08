@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Over The Counter Birth Control
   displayName: 
-  isImplemented: 0
+  isImplemented: 1
   icon: {fileID: 0}
   prefab: {fileID: 2553700819061216157, guid: 0961c3ea4e6784f6bb4e9622abb2089f, type: 3}
   buildCost: 133
