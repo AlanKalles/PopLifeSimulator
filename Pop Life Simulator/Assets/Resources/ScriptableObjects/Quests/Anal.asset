@@ -20,20 +20,34 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 50
+    itemId:
   - type: 2
     amount: 1
     itemId: Anal Lubricant Dildo
   - type: 2
     amount: 1
-    itemId: Anal beads
+    itemId: Anal Beads
   - type: 2
     amount: 1
     itemId: Anal Vibrator
+  - type: 2
+    amount: 1
+    itemId: Anal Plug
   - type: 3
     amount: 1
     itemId: Johane
-  conditions: []
+  conditions:
+  - conditionType: 6
+    scope: 2
+    targetValue: 1
+    useFilterCategory: 0
+    filterCategory: 0
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: dc2cf04e956aef24f8f4edb9b09765b4, type: 2}
   activationMarker: 83
   completionMarker: 84
   triggerMarkerAfterToast: 1
@@ -45,6 +59,6 @@ MonoBehaviour:
   successDescription: Curious customers have a safer path into anal play, and the
     store's reputation has grown.
   entryTexts:
-  - Stock anal products
+  - Stock 1 Silicone Dildo shelf
   questIcon: {fileID: 0}
   sortPriority: 60

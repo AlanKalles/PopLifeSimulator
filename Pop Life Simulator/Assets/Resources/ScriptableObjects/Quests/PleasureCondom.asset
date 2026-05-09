@@ -23,25 +23,25 @@ MonoBehaviour:
     itemId: 
   - type: 2
     amount: 1
-    itemId: Women's Pleasure Condoms
+    itemId: Women’s Pleasure Condoms
   - type: 3
     amount: 1
     itemId: Alex
   - type: 3
     amount: 1
-    itemId: Intense Polyisoprene Condoms
+    itemId: Cherry
   conditions:
-  - conditionType: 6
-    scope: 2
-    targetValue: 1
+  - conditionType: 0
+    scope: 0
+    targetValue: 0
     useFilterCategory: 0
     filterCategory: 0
-    useFilterArchetypes: 1
+    useFilterArchetypes: 0
     filterArchetypes: []
   activationMarker: 73
   completionMarker: 76
   triggerMarkerAfterToast: 1
-  autoCompleteOnActivation: 0
+  autoCompleteOnActivation: 1
   title: Pleasure Condom
   description: Some customers want protection that still feels like part of the fun.
     Add safer-sex options that promise sensation, not just caution.

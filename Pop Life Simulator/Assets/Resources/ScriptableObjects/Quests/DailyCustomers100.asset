@@ -20,7 +20,10 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 175
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 150
+    itemId:
   - type: 3
     amount: 1
     itemId: Eason

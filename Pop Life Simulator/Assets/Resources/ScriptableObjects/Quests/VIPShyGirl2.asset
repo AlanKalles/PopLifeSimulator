@@ -18,17 +18,22 @@ MonoBehaviour:
   giverName: Hana
   giverPortrait: {fileID: 0}
   rewards:
+  - type: 0
+    amount: 75
+    itemId:
   - type: 1
     amount: 50
-    itemId: 
+    itemId:
   conditions:
-  - conditionType: 0
-    scope: 0
+  - conditionType: 6
+    scope: 2
     targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
-    useFilterArchetypes: 0
-    filterArchetypes: []
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: 41fadbfd3565b91429da869370698f16, type: 2}
+    - {fileID: 11400000, guid: b8e3789a5910b45f19838eed626c2c2c, type: 2}
   activationMarker: 101
   completionMarker: -1
   triggerMarkerAfterToast: 1
@@ -37,6 +42,6 @@ MonoBehaviour:
   description: "Hana wants to enter a darker, more theatrical scene without feeling swallowed by it. Find something she can wear like confidence, not armor."
   successDescription: "Hana found a look that lets her step into the party without disappearing inside it."
   entryTexts:
-  - Find BDSM party lingerie for Hana
+  - Stock 1 dramatic lingerie shelf for Hana
   questIcon: {fileID: 0}
   sortPriority: 133

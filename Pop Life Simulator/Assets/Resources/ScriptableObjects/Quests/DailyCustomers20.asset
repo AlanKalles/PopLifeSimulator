@@ -20,10 +20,16 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 125
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 75
+    itemId:
   - type: 2
     amount: 1
     itemId: Glow in the Dark Lubricant
+  - type: 2
+    amount: 1
+    itemId: 90's Lingerie
   - type: 3
     amount: 1
     itemId: Blaze

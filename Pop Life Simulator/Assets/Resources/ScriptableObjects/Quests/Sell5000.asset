@@ -20,10 +20,19 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 500
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 150
+    itemId:
   - type: 2
     amount: 1
     itemId: Lovi Couples Vibrator
+  - type: 2
+    amount: 1
+    itemId: Sex Swing
+  - type: 2
+    amount: 1
+    itemId: Bondage Chair
   conditions:
   - conditionType: 1
     scope: 0

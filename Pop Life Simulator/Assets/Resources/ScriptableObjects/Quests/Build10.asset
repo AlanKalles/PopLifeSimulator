@@ -18,6 +18,9 @@ MonoBehaviour:
   giverName: Midori
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
+  - type: 0
+    amount: 350
+    itemId:
   - type: 2
     amount: 1
     itemId: Textured Fantasy Dildo

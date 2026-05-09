@@ -20,7 +20,16 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 500
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 350
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Waterproof Throw Blanket
+  - type: 2
+    amount: 1
+    itemId: Toy Mount Pillow
   conditions:
   - conditionType: 4
     scope: 0

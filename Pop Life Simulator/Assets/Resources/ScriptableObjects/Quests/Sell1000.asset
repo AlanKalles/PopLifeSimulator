@@ -21,6 +21,15 @@ MonoBehaviour:
   - type: 0
     amount: 100
     itemId:
+  - type: 1
+    amount: 50
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Sex Couch
+  - type: 2
+    amount: 1
+    itemId: Sex Position Enhancer Chair
   conditions:
   - conditionType: 1
     scope: 0

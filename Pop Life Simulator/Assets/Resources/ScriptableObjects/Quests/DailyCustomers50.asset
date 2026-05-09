@@ -20,7 +20,13 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 150
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 100
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Threesome VR Porn
   - type: 3
     amount: 1
     itemId: Josh

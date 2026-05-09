@@ -20,15 +20,19 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 300
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 100
+    itemId:
   conditions:
-  - conditionType: 0
-    scope: 0
+  - conditionType: 6
+    scope: 2
     targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
-    useFilterArchetypes: 0
-    filterArchetypes: []
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: f1c9c3dbacc0144f295d97e030a6ccdd, type: 2}
   activationMarker: 97
   completionMarker: -1
   triggerMarkerAfterToast: 1
@@ -37,6 +41,6 @@ MonoBehaviour:
   description: "Omega is chasing an old performance that seems more personal than professional. Find the forgotten media before the mystery eats them alive."
   successDescription: "The old DomeOwenTica lead gave Omega something real to confront."
   entryTexts:
-  - Find DomeOwenTica pornography for Omega
+  - Stock 1 SoloFans GiftCode shelf for Omega
   questIcon: {fileID: 0}
   sortPriority: 137

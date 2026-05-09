@@ -31,15 +31,14 @@ MonoBehaviour:
     amount: 1
     itemId: Zarah
   conditions:
-  - conditionType: 6
-    scope: 2
-    targetValue: 1
-    useFilterCategory: 0
-    filterCategory: 0
+  - conditionType: 1
+    scope: 0
+    targetValue: 3
+    useFilterCategory: 1
+    filterCategory: 10
     useFilterArchetypes: 0
-    filterArchetypes:
-    - {fileID: 11400000, guid: 29e9aeaf9ee6542b180df127cf36d86a, type: 2}
-  activationMarker: -1
+    filterArchetypes: []
+  activationMarker: 33
   completionMarker: 73
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0

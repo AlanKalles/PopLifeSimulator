@@ -20,7 +20,16 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 300
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 100
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Door Bondage
+  - type: 2
+    amount: 1
+    itemId: Support Wedge
   conditions:
   - conditionType: 4
     scope: 0

@@ -21,6 +21,12 @@ MonoBehaviour:
   - type: 0
     amount: 75
     itemId:
+  - type: 1
+    amount: 30
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Cupid Outfit
   - type: 3
     amount: 1
     itemId: Takeshi

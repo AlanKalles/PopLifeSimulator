@@ -27,6 +27,9 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Ribbed Sheath
+  - type: 2
+    amount: 1
+    itemId: Textured Fantasy Sheath
   - type: 3
     amount: 1
     itemId: Yukari
@@ -38,7 +41,7 @@ MonoBehaviour:
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes:
-    - {fileID: 11400000, guid: 63a7794a79d7944acb086814c4b4efc8, type: 2}
+    - {fileID: 11400000, guid: dc2cf04e956aef24f8f4edb9b09765b4, type: 2}
   activationMarker: 75
   completionMarker: 77
   triggerMarkerAfterToast: 1
@@ -50,6 +53,6 @@ MonoBehaviour:
   successDescription: More customers can now recognize themselves somewhere in POPLife's
     aisles.
   entryTexts:
-  - Promote inclusiveness
+  - Stock 1 Silicone Dildo shelf
   questIcon: {fileID: 0}
   sortPriority: 180
