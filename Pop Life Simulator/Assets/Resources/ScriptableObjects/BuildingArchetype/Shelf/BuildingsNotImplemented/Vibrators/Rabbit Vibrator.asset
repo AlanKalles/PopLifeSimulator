@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.ShelfArchetype
   archetypeId: Rabbit Vibrator
   displayName: Rabbit Vibrator
-  isImplemented: 0
+  isImplemented: 1
   icon: {fileID: 0}
-  prefab: {fileID: 5107907286294035973, guid: 94d91ed243f694cf48b23cbd76ab4202, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 94d91ed243f694cf48b23cbd76ab4202, type: 3}
   buildCost: 490
   moveCost: 0
   destroyRefundRate: 0.75

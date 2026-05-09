@@ -20,10 +20,19 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 400
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 200
+    itemId:
   - type: 2
     amount: 1
     itemId: Leather Queen Lingerie
+  - type: 2
+    amount: 1
+    itemId: Couple's Support Wedge
+  - type: 2
+    amount: 1
+    itemId: Bondage Pillow
   conditions:
   - conditionType: 4
     scope: 0

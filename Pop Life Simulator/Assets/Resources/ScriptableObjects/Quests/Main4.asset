@@ -18,9 +18,12 @@ MonoBehaviour:
   giverName: Auditor
   giverPortrait: {fileID: 21300000, guid: adfa28d6e21e50941b0609702b296174, type: 3}
   rewards:
+  - type: 0
+    amount: 150
+    itemId:
   - type: 1
     amount: 100
-    itemId: 
+    itemId:
   conditions:
   - conditionType: 1
     scope: 0
@@ -39,6 +42,6 @@ MonoBehaviour:
   successDescription: The vibration sales target is complete, and the Auditor has
     fresh numbers to file.
   entryTexts:
-  - Sell 200 vibrators
+  - Move 200 pleasure devices built around vibration
   questIcon: {fileID: 0}
   sortPriority: 29

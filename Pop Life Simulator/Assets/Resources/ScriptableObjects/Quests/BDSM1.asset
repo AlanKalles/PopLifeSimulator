@@ -18,20 +18,47 @@ MonoBehaviour:
   giverName: Henya
   giverPortrait: {fileID: 0}
   rewards:
+  - type: 0
+    amount: 50
+    itemId:
+  - type: 1
+    amount: 50
+    itemId:
   - type: 2
     amount: 1
-    itemId: Handcuffs
+    itemId: Nipple Clamps
   - type: 2
     amount: 1
-    itemId: Whip
+    itemId: Chasity Cage
+  - type: 0
+    amount: 150
+    itemId:
+  - type: 1
+    amount: 50
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Pussy Pump
+  - type: 2
+    amount: 1
+    itemId: Sounding Rod
+  - type: 3
+    amount: 1
+    itemId: Naoko
   conditions:
-  - conditionType: 0
-    scope: 0
-    targetValue: 1
+  - conditionType: 6
+    scope: 2
+    targetValue: 3
     useFilterCategory: 0
     filterCategory: 0
-    useFilterArchetypes: 0
-    filterArchetypes: []
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: aad26c89e792c4aeb939a14e47ffafd1, type: 2}
+    - {fileID: 11400000, guid: 7feffd00d16c34893bcb8c8bbda5996b, type: 2}
+    - {fileID: 11400000, guid: 428ce8ac92e5e455ba024716e651a258, type: 2}
+    - {fileID: 11400000, guid: 63a7794a79d7944acb086814c4b4efc8, type: 2}
+    - {fileID: 11400000, guid: 2e5e77ba46f31410780d679b66661801, type: 2}
+    - {fileID: 11400000, guid: 28c2d19a605654907ac89f6675793032, type: 2}
   activationMarker: 95
   completionMarker: 82
   triggerMarkerAfterToast: 1
@@ -40,6 +67,6 @@ MonoBehaviour:
   description: "Henya's challenge is less about one product and more about proving there is demand for intensity, restraint, and spectacle. Prepare the store for customers who want something less vanilla."
   successDescription: "Henya's challenge has moved from trash talk into a real rivalry, and the store is ready to answer it."
   entryTexts:
-  - Resolve Henya's BDSM challenge
+  - Prepare three shelves for restraint, control, or impact play
   questIcon: {fileID: 0}
   sortPriority: 139

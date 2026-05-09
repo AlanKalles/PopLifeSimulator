@@ -20,7 +20,10 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 75
+    itemId:
   - type: 2
     amount: 1
     itemId: Bondage Rope
@@ -33,7 +36,7 @@ MonoBehaviour:
   conditions:
   - conditionType: 6
     scope: 2
-    targetValue: 16
+    targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 0

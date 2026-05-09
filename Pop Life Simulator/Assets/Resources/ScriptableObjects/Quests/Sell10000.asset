@@ -21,6 +21,12 @@ MonoBehaviour:
   - type: 0
     amount: 1000
     itemId:
+  - type: 1
+    amount: 300
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Cage
   conditions:
   - conditionType: 1
     scope: 0

@@ -21,6 +21,9 @@ MonoBehaviour:
   - type: 0
     amount: 100
     itemId:
+  - type: 1
+    amount: 75
+    itemId:
   - type: 2
     amount: 1
     itemId: 1-Step PlanB
@@ -30,15 +33,25 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Guliana
-  conditions: []
+  conditions:
+  - conditionType: 6
+    scope: 2
+    targetValue: 2
+    useFilterCategory: 0
+    filterCategory: 0
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: 29e9aeaf9ee6542b180df127cf36d86a, type: 2}
+    - {fileID: 11400000, guid: 36f9b136240a48345b049eba6b922643, type: 2}
+    - {fileID: 11400000, guid: f22d15a85d633df458b3902cf9c1a781, type: 2}
   activationMarker: 86
   completionMarker: 85
   triggerMarkerAfterToast: 1
-  autoCompleteOnActivation: 1
+  autoCompleteOnActivation: 0
   title: First Children's Day
   description: "A seasonal event is bringing in shoppers thinking about responsibility, timing, and consequences. Stock products that support careful choices after intimate moments."
   successDescription: "The seasonal rush ended with customers feeling better prepared and better informed."
   entryTexts:
-  - Celebrate the occasion
+  - Stock two shelves for safer timing, prevention, and consequences
   questIcon: {fileID: 0}
   sortPriority: 150

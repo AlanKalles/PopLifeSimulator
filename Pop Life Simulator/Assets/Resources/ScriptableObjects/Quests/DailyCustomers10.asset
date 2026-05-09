@@ -20,7 +20,13 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId: 
+    itemId:
+  - type: 1
+    amount: 50
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Maid Outfit
   - type: 3
     amount: 1
     itemId: Riko

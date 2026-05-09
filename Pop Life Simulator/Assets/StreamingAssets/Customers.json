@@ -1002,6 +1002,28 @@
             "lifetimeSpent": 0,
             "availableNarrativeIds": [],
             "schemaVersion": 1
+        },
+        {
+            "customerId": "C044",
+            "name": "Cherry",
+            "bio": "",
+            "archetypeId": "RegularCustomer",
+            "favoriteShelfIds": [
+                "Women’s Pleasure Condoms",
+                "Intense Polyisoprene Condoms",
+                "Latex Condoms",
+                "Darex Natural Lubricant"
+            ],
+            "trust": 0,
+            "loyaltyLevel": 1,
+            "xp": 0,
+            "walletCapBase": 100,
+            "visitCount": 0,
+            "lastVisitDay": "",
+            "lastLeaveReason": "",
+            "lifetimeSpent": 0,
+            "availableNarrativeIds": [],
+            "schemaVersion": 1
         }
     ]
 }

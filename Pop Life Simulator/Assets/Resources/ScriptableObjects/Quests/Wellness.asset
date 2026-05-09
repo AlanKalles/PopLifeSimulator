@@ -20,19 +20,25 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 200
-    itemId: 
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Mouth Wash
+  - type: 2
+    amount: 1
+    itemId: Vaginal Douche
   - type: 3
     amount: 1
-    itemId: 
+    itemId: Yuta
   conditions:
-  - conditionType: 0
-    scope: 0
-    targetValue: 0
+  - conditionType: 6
+    scope: 2
+    targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes:
-    - {fileID: 11400000, guid: df68b262ed3fb674d96917ef2927c2a2, type: 2}
+    - {fileID: 11400000, guid: 29e9aeaf9ee6542b180df127cf36d86a, type: 2}
   activationMarker: 32
   completionMarker: 74
   triggerMarkerAfterToast: 1
@@ -43,6 +49,6 @@ MonoBehaviour:
   successDescription: The wellness shelf made the store feel more responsible, not
     less exciting.
   entryTexts:
-  - Stock wellness products
+  - Put out the basic protection customers reach for first
   questIcon: {fileID: 0}
   sortPriority: 20
