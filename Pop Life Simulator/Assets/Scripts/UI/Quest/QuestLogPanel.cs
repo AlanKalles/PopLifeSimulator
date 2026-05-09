@@ -173,19 +173,32 @@ namespace PopLife.UI.Quest
         }
 
         /// <summary>
-        /// 强制完整刷新一次布局：Canvas 同步重绘 + 所有嵌套 LayoutGroup 立即重算。
-        /// 必要原因：嵌套 LayoutGroup + ContentSizeFitter + TMP 默认需要 1-2 帧才稳定，
-        /// 与 FadeIn 同步进行会让玩家看到内容跳动。
+        /// 强制完整刷新一次布局：Canvas 同步重绘 + 嵌套 LayoutGroup 按 leaf-first 顺序立即重算。
+        /// 必要原因：嵌套 LayoutGroup + ContentSizeFitter + TMP 默认需要 1-2 帧才稳定。
+        /// 内层 ContentSizeFitter 必须先确定自己的尺寸，外层 LayoutGroup 才能正确读到 preferred size，
+        /// 否则会出现"有时坍缩有时正常"的随机抖动。
         /// </summary>
         private void ForceLayoutRebuild()
         {
             if (panelRoot == null) return;
 
-            var rt = panelRoot.transform as RectTransform;
-            if (rt == null) return;
-
+            // 先驱动一次 Canvas 同步刷新，让新 Instantiate 的 TMP 立刻生成 mesh，
+            // 否则后续 LayoutRebuilder 读到的 preferredHeight 可能是 0 → 父容器坍缩
             Canvas.ForceUpdateCanvases();
-            UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+
+            // leaf-first：先重算右侧详情中的两个内层容器，再重算根
+            RebuildIfRect(entriesContainer);
+            RebuildIfRect(rewardsContainer);
+
+            var rt = panelRoot.transform as RectTransform;
+            if (rt != null)
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+        }
+
+        private static void RebuildIfRect(Transform t)
+        {
+            if (t is RectTransform rt)
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
         }
 
         /// <summary>
@@ -261,6 +274,18 @@ namespace PopLife.UI.Quest
 
         private void OnListEntryClicked(QuestLogListEntry entry)
         {
+            if (entry == null) return;
+
+            // 已经是当前选中项：仅播放音效，跳过整套 destroy + instantiate + 布局重算。
+            // 否则嵌套 LayoutGroup + ContentSizeFitter + TMP 的多帧 settle 流程
+            // 会在每次重复点击时随机出现"坍缩-恢复"抖动。
+            if (entry.QuestName == selectedQuestName)
+            {
+                if (AudioManager.Instance != null)
+                    AudioManager.Instance.PlaySound(AudioKeys.UI_CLICK);
+                return;
+            }
+
             SelectQuest(entry.QuestName);
 
             if (AudioManager.Instance != null)
@@ -291,6 +316,12 @@ namespace PopLife.UI.Quest
                 if (detailEmptyState != null) detailEmptyState.SetActive(false);
                 if (detailContent != null) detailContent.SetActive(true);
                 UpdateDetailContent(detail.Value);
+
+                // 切换 quest 后立刻强制完整布局重算：
+                // PopulateEntries/PopulateRewards 改了子物体集合 + TMP 文本，
+                // 单靠 Unity 自带的 dirty 标记需要 1-2 帧 + 多次 pass 才能 settle 嵌套
+                // ContentSizeFitter，期间玩家会看到坍缩或参差。
+                ForceLayoutRebuild();
             }
             else
             {
@@ -453,9 +484,14 @@ namespace PopLife.UI.Quest
 
         private void PopulateEntries(QuestEntryInfo[] entries)
         {
+            // 关键：先 SetParent(null) 把旧物体立刻从 LayoutGroup 中脱钩再 Destroy。
+            // Unity 的 Destroy 是延迟到帧末执行的，若直接 Destroy，本帧 LayoutGroup 仍把它当作子物体，
+            // 与即将 Instantiate 的新条目"重叠计算"一次布局，造成 ContentSizeFitter 抖动/坍缩。
             foreach (var obj in spawnedEntries)
             {
-                if (obj != null) Destroy(obj);
+                if (obj == null) continue;
+                obj.transform.SetParent(null, false);
+                Destroy(obj);
             }
             spawnedEntries.Clear();
 
@@ -476,9 +512,12 @@ namespace PopLife.UI.Quest
 
         private void PopulateRewards(QuestReward[] rewards)
         {
+            // 同 PopulateEntries：先脱钩 LayoutGroup 再 Destroy，规避 deferred-destroy 引发的布局抖动
             foreach (var obj in spawnedRewards)
             {
-                if (obj != null) Destroy(obj);
+                if (obj == null) continue;
+                obj.transform.SetParent(null, false);
+                Destroy(obj);
             }
             spawnedRewards.Clear();
 
