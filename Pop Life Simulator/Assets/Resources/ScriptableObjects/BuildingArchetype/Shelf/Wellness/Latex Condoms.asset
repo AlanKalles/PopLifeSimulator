@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Latex Condoms
   displayName: Latex Condoms
   icon: {fileID: 21300000, guid: d03e319bc27b54a3a90c84000bbb652a, type: 3}
-  prefab: {fileID: 382962493764624635, guid: 1ff6959a9f6824f7baaa47dee5123193, type: 3}
+  prefab: {fileID: 2535633934883308398, guid: 1ff6959a9f6824f7baaa47dee5123193, type: 3}
   buildCost: 29
   moveCost: 0
   destroyRefundRate: 0.75

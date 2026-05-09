@@ -172,5 +172,8 @@ namespace PopLife.Manager
         VIPShyGirl1Activated,     // = 100
         VIPShyGirl2Activated,     // = 101
         VIPShyGirl3Activated,     // = 102
+
+        // Twenty Shelves completion
+        a_TwentyshelfC,           // = 103
     }
 }

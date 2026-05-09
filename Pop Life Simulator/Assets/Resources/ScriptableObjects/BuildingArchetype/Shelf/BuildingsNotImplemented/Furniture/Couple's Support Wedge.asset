@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Couple's Support Wedge
   isImplemented: 1
   icon: {fileID: 0}
-  prefab: {fileID: 5107907286294035973, guid: 71fd425ee1a8c4768872b41df3350ab4, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 71fd425ee1a8c4768872b41df3350ab4, type: 3}
   buildCost: 455
   moveCost: 0
   destroyRefundRate: 0.75

@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Textured Fantasy Fleshlight
   isImplemented: 1
   icon: {fileID: 0}
-  prefab: {fileID: 5107907286294035973, guid: 27a24271d11ce40a1aae644f95bc1864, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 27a24271d11ce40a1aae644f95bc1864, type: 3}
   buildCost: 330
   moveCost: 0
   destroyRefundRate: 0.75

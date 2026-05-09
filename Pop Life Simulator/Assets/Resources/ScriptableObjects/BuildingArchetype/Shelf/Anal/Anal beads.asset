@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Anal Beads
   displayName: Anal Beads
   icon: {fileID: 21300000, guid: 2df2fa682430c48a1a2c34c378c19a6f, type: 3}
-  prefab: {fileID: 4468677320379019377, guid: 65e28fd65d23c44de8d28989e019e8ce, type: 3}
+  prefab: {fileID: 5659159893351281282, guid: 65e28fd65d23c44de8d28989e019e8ce, type: 3}
   buildCost: 300
   moveCost: 0
   destroyRefundRate: 0.75

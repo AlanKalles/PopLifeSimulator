@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Portable Vibrator
   displayName: Portable Vibrator
   icon: {fileID: 0}
-  prefab: {fileID: 2551036000870525135, guid: 7d1d4b1199ae0ab469a5b09f1f476169, type: 3}
+  prefab: {fileID: 6477555939506826541, guid: 7d1d4b1199ae0ab469a5b09f1f476169, type: 3}
   buildCost: 175
   moveCost: 0
   destroyRefundRate: 0.75

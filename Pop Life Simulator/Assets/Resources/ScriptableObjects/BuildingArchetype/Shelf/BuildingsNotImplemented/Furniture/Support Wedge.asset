@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Support Wedge
   isImplemented: 1
   icon: {fileID: 0}
-  prefab: {fileID: 5107907286294035973, guid: 47cff5278ea4d4160aa2d2b68ca2925c, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 47cff5278ea4d4160aa2d2b68ca2925c, type: 3}
   buildCost: 325
   moveCost: 0
   destroyRefundRate: 0.75

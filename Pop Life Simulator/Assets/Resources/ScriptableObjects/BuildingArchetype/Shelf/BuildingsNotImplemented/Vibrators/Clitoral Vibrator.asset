@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Clitoral Vibrator
   isImplemented: 1
   icon: {fileID: 0}
-  prefab: {fileID: 5107907286294035973, guid: 147fb3b5f597d452984a8ba4a4078415, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 147fb3b5f597d452984a8ba4a4078415, type: 3}
   buildCost: 430
   moveCost: 0
   destroyRefundRate: 0.75

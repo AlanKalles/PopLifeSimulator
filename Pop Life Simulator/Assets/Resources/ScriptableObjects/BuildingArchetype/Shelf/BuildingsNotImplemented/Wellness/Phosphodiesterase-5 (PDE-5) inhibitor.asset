@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Phosphodiesterase-5 (PDE-5) inhibitor
   isImplemented: 1
   icon: {fileID: 0}
-  prefab: {fileID: 382962493764624635, guid: c4eab86b6320c42d3b79c106145141b9, type: 3}
+  prefab: {fileID: 2535633934883308398, guid: c4eab86b6320c42d3b79c106145141b9, type: 3}
   buildCost: 125
   moveCost: 0
   destroyRefundRate: 0.75

@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Bondage Rope
   displayName: Bondage Rope
   icon: {fileID: 0}
-  prefab: {fileID: 2551036000870525135, guid: 9fea0760d699a6c4988b9acfb82fbde5, type: 3}
+  prefab: {fileID: 6477555939506826541, guid: 9fea0760d699a6c4988b9acfb82fbde5, type: 3}
   buildCost: 500
   moveCost: 0
   destroyRefundRate: 0.75

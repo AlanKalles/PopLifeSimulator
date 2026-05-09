@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Whip
   displayName: Whip
   icon: {fileID: 0}
-  prefab: {fileID: 2551036000870525135, guid: f2d07ec0137c5e34d918cbc8dfe4694e, type: 3}
+  prefab: {fileID: 6477555939506826541, guid: f2d07ec0137c5e34d918cbc8dfe4694e, type: 3}
   buildCost: 255
   moveCost: 0
   destroyRefundRate: 0.75

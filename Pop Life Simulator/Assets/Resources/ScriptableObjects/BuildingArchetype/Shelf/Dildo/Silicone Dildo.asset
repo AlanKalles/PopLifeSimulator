@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Silicone Dildo
   displayName: Silicone Dildo
   icon: {fileID: 21300000, guid: 1fa7cfed40e324da190ec0045bb65434, type: 3}
-  prefab: {fileID: 5107907286294035973, guid: 6ea29f3f20a9ea14080fe7495a84897f, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 6ea29f3f20a9ea14080fe7495a84897f, type: 3}
   buildCost: 90
   moveCost: 0
   destroyRefundRate: 0.75

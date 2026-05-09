@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Anal Vibrator
   isImplemented: 1
   icon: {fileID: 0}
-  prefab: {fileID: 5107907286294035973, guid: 876db1bd9402b4581bdf4c150b50ff89, type: 3}
+  prefab: {fileID: 9121478431460335272, guid: 876db1bd9402b4581bdf4c150b50ff89, type: 3}
   buildCost: 615
   moveCost: 0
   destroyRefundRate: 0.75

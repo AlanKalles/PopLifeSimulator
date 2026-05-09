@@ -15,7 +15,7 @@ MonoBehaviour:
   archetypeId: Pen Vibrator
   displayName: Pen Vibrator
   icon: {fileID: 0}
-  prefab: {fileID: 2551036000870525135, guid: 0cb97f2df84078d4eb69585c36f17c4c, type: 3}
+  prefab: {fileID: 6477555939506826541, guid: 0cb97f2df84078d4eb69585c36f17c4c, type: 3}
   buildCost: 145
   moveCost: 0
   destroyRefundRate: 0.75
