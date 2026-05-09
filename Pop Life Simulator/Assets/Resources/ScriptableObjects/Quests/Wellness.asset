@@ -49,6 +49,6 @@ MonoBehaviour:
   successDescription: The wellness shelf made the store feel more responsible, not
     less exciting.
   entryTexts:
-  - Stock 1 Latex Condoms shelf
+  - Put out the basic protection customers reach for first
   questIcon: {fileID: 0}
   sortPriority: 20

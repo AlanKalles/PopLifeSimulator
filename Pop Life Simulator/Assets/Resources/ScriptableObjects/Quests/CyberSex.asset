@@ -54,6 +54,6 @@ MonoBehaviour:
   description: "Some customers would rather escape into pixels than meet anyone's eyes. Add digital fantasies for shoppers who want distance, privacy, and high production value."
   successDescription: "The store now has a digital fantasy corner for customers who prefer screens to small talk."
   entryTexts:
-  - Stock 1 digital gift card shelf
+  - Stock a digital gift card for customers who prefer fantasy through a screen
   questIcon: {fileID: 0}
   sortPriority: 110

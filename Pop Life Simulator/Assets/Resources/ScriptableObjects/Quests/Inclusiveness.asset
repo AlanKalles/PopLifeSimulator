@@ -30,6 +30,18 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Textured Fantasy Sheath
+  - type: 1
+    amount: 30
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Nipple Pump
+  - type: 2
+    amount: 1
+    itemId: Penis Pump
+  - type: 3
+    amount: 1
+    itemId: Jie
   - type: 3
     amount: 1
     itemId: Yukari
@@ -53,6 +65,6 @@ MonoBehaviour:
   successDescription: More customers can now recognize themselves somewhere in POPLife's
     aisles.
   entryTexts:
-  - Stock 1 Silicone Dildo shelf
+  - Make room for a smooth, body-safe penetrative option with a flared base
   questIcon: {fileID: 0}
   sortPriority: 180

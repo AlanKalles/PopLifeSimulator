@@ -52,6 +52,6 @@ MonoBehaviour:
   description: "A seasonal event is bringing in shoppers thinking about responsibility, timing, and consequences. Stock products that support careful choices after intimate moments."
   successDescription: "The seasonal rush ended with customers feeling better prepared and better informed."
   entryTexts:
-  - Stock 2 contraception shelves
+  - Stock two shelves for safer timing, prevention, and consequences
   questIcon: {fileID: 0}
   sortPriority: 150

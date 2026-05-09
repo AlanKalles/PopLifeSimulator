@@ -30,6 +30,21 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Chasity Cage
+  - type: 0
+    amount: 150
+    itemId:
+  - type: 1
+    amount: 50
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: Pussy Pump
+  - type: 2
+    amount: 1
+    itemId: Sounding Rod
+  - type: 3
+    amount: 1
+    itemId: Naoko
   conditions:
   - conditionType: 6
     scope: 2
@@ -52,6 +67,6 @@ MonoBehaviour:
   description: "Henya's challenge is less about one product and more about proving there is demand for intensity, restraint, and spectacle. Prepare the store for customers who want something less vanilla."
   successDescription: "Henya's challenge has moved from trash talk into a real rivalry, and the store is ready to answer it."
   entryTexts:
-  - Stock 3 accessories shelves for Henya's challenge
+  - Prepare three shelves for restraint, control, or impact play
   questIcon: {fileID: 0}
   sortPriority: 139

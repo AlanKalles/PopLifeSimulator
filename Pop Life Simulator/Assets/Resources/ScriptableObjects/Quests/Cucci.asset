@@ -50,6 +50,6 @@ MonoBehaviour:
   description: "A luxury-minded crowd wants something discreet, stylish, and a little overpriced. Bring in products that feel fashionable enough to be whispered about."
   successDescription: "The premium shoppers have noticed the upgrade, and Cucci's shine is pulling attention."
   entryTexts:
-  - Stock 1 wand vibrator shelf
+  - Show a premium wand-style toy with enough presence for luxury shoppers
   questIcon: {fileID: 0}
   sortPriority: 190

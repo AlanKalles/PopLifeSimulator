@@ -42,6 +42,6 @@ MonoBehaviour:
   description: "Hana wants to enter a darker, more theatrical scene without feeling swallowed by it. Find something she can wear like confidence, not armor."
   successDescription: "Hana found a look that lets her step into the party without disappearing inside it."
   entryTexts:
-  - Stock 1 dramatic lingerie shelf for Hana
+  - Find Hana something theatrical enough for the party, but still wearable as confidence
   questIcon: {fileID: 0}
   sortPriority: 133

@@ -41,6 +41,6 @@ MonoBehaviour:
   description: "Hana's curiosity is running into Henya's intensity. Help her keep hold of her own desire while the room gets louder around her."
   successDescription: "Hana's encounter with Henya became another step toward naming what she actually wants."
   entryTexts:
-  - Stock 1 Collar shelf for Hana
+  - Give Hana a wearable signal of restraint without taking away her agency
   questIcon: {fileID: 0}
   sortPriority: 132

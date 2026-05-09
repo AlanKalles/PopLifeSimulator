@@ -36,6 +36,18 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Anal Plug
+  - type: 0
+    amount: 200
+    itemId:
+  - type: 1
+    amount: 75
+    itemId:
+  - type: 2
+    amount: 1
+    itemId: 6.8oz Anal Douche
+  - type: 3
+    amount: 1
+    itemId: Oscar
   - type: 3
     amount: 1
     itemId: Johane
@@ -59,6 +71,6 @@ MonoBehaviour:
   successDescription: Curious customers have a safer path into anal play, and the
     store's reputation has grown.
   entryTexts:
-  - Stock 1 Silicone Dildo shelf
+  - Start with a penetrative toy that is smooth, flexible, and safe at the base
   questIcon: {fileID: 0}
   sortPriority: 60
