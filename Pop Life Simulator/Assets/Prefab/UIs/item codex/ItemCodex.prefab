@@ -3488,7 +3488,7 @@ MonoBehaviour:
   buildCostText: {fileID: 3941390908975709746}
   maintenanceFeeText: {fileID: 8161307962832624273}
   sellPriceText: {fileID: 7270187748225964230}
-  stockFeeText: {fileID: 0}
+  stockFeeText: {fileID: 4058576755275467482}
   profitText: {fileID: 0}
   stockText: {fileID: 4058576755275467482}
   appealText: {fileID: 744040759175928276}
@@ -7282,7 +7282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -263.8728}
+  m_AnchoredPosition: {x: 0, y: -263.87283}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &573864631752129818
@@ -7737,7 +7737,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2931930300646443385}
   m_HandleRect: {fileID: 30214180975018823}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 0.49999994
   m_NumberOfSteps: 0
   m_OnValueChanged:

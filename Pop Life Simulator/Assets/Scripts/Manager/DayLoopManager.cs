@@ -115,6 +115,11 @@ namespace PopLife
         public event Action<int> OnDayChanged;
         public event Action OnBankruptcy; // 破产事件
         public event Action<Season> OnSeasonChanged; // 季节变更事件
+        /// <summary>
+        /// 玩家累计销售额变化时触发，参数为 dailyTotalSale 当前值。
+        /// 用于 ResourceDisplay 实时显示当日收入。
+        /// </summary>
+        public event Action<float> OnSaleRecorded;
 
         private void Awake()
         {
@@ -212,8 +217,9 @@ namespace PopLife
             // ⚠️ 不暂停时间流动，保持当前倍速（让顾客继续移动离开）
             Debug.Log($"[DayLoopManager] 到达关店时间 {storeCloseHour:F1}:00，保持当前时间倍速 {timeScale}x，等待顾客离开");
 
-            // 触发关店事件（禁用时间控制UI）
-            OnStoreClose?.Invoke();
+            // 注：OnStoreClose 现在仅在 WaitForCustomersToLeave 末尾触发一次（所有顾客离开后）。
+            // 订阅方（TimeControlUI / PhaseLockedButton / GameStateLuaSync）都是 UI 状态刷新，
+            // 在"商店真正关闭"那一刻触发更合适。关店开始时间点已用 OnStopSpawning 通知顾客生成停止。
 
             // 等待所有顾客离开后再显示结算界面
             StartCoroutine(WaitForCustomersToLeave());
@@ -257,15 +263,50 @@ namespace PopLife
                 yield return new WaitForSecondsRealtime(0.5f); // 使用 Realtime 因为时间已暂停
             }
 
-            // 触发关店事件（所有顾客已离开）
+            // 触发关店事件（所有顾客已离开）— 唯一触发点
             OnStoreClose?.Invoke();
             Debug.Log("[DayLoopManager] 触发 OnStoreClose 事件");
 
-            // 检查彩票中奖（在结算界面之前）
+            // 1. 彩票（保留 — 必须在破产判定之前发生，破产是结算面板出现前的最后一步）
             yield return StartCoroutine(CheckLotteryWinBeforeSettlement());
 
-            // 所有顾客离开，显示结算界面
-            ShowSettlementUI();
+            // 2. 扣除维护费（含 GlobalModifier，从原 CalculateDailySettlement 抽离）
+            int totalMaintenance = CalculateAndDeductMaintenance();
+
+            // 3. 破产判定 + Midori 对话 + 补助
+            BankruptcyManager.EvaluationResult result = default;
+            if (BankruptcyManager.Instance != null)
+            {
+                yield return StartCoroutine(
+                    BankruptcyManager.Instance.EvaluatePostMaintenance(r => result = r));
+            }
+
+            if (result.gameOver)
+            {
+                // 真正破产：跳过结算面板，直接显示破产面板
+                OnBankruptcy?.Invoke();
+                PauseTime();
+                yield break;
+            }
+
+            // 4. 显示结算界面（携带已扣维护费 + 补助金额）
+            ShowSettlementUI(totalMaintenance, result.sponsorshipAmount);
+        }
+
+        /// <summary>
+        /// 计算并扣除当日总维护费（含 GlobalModifier 维护乘数）。
+        /// 抽离自原 CalculateDailySettlement，确保扣费时机在结算面板之前、破产判定之前。
+        /// </summary>
+        private int CalculateAndDeductMaintenance()
+        {
+            float totalMaintenanceFee = CalculateTotalMaintenanceFee();
+            if (GlobalModifierManager.Instance != null)
+                totalMaintenanceFee *= GlobalModifierManager.Instance.GetMaintenanceCostMultiplier();
+
+            int totalFee = Mathf.RoundToInt(totalMaintenanceFee);
+            if (ResourceManager.Instance != null)
+                ResourceManager.Instance.SpendMoney(totalFee);
+            return totalFee;
         }
 
         /// <summary>
@@ -305,33 +346,35 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 显示结算界面
+        /// 显示结算界面（维护费已在 CalculateAndDeductMaintenance 中扣除，
+        /// 补助金额已在 BankruptcyManager.EvaluatePostMaintenance 中到账）
         /// </summary>
-        private void ShowSettlementUI()
+        private void ShowSettlementUI(int totalMaintenance, int sponsorshipAmount)
         {
             // 重置时间倍速为1x（为下一天准备）
             SetTimeScale(1f);
             Debug.Log("[DayLoopManager] 结算界面显示，时间倍速已重置为1x");
 
             // 计算每日数据
-            DailySettlementData data = CalculateDailySettlement();
+            DailySettlementData data = CalculateDailySettlement(totalMaintenance, sponsorshipAmount);
 
             // 触发结算事件
             OnDailySettlement?.Invoke(data);
         }
 
-        private DailySettlementData CalculateDailySettlement()
+        /// <summary>
+        /// 构建结算数据。维护费扣除与补助到账都在此方法之前已经完成（不在此方法内重复扣费）。
+        /// </summary>
+        private DailySettlementData CalculateDailySettlement(int totalMaintenance, int sponsorshipAmount)
         {
-            // 计算所有建筑的维护费用
-            float totalMaintenanceFee = CalculateTotalMaintenanceFee();
-
             DailySettlementData data = new DailySettlementData();
             data.day = currentDay;
             data.totalSale = dailyTotalSale;
-            data.bonusIncome = lotteryWinnings; // 彩票奖金
+            data.lotteryWinnings = lotteryWinnings; // 彩票奖金
+            data.sponsorshipAmount = sponsorshipAmount; // Midori 补助
             lotteryWinnings = 0; // 重置
-            data.dailyExpenses = dailyTotalExpenses + totalMaintenanceFee;
-            data.dailyIncome = dailyTotalSale + data.bonusIncome - data.dailyExpenses;
+            data.dailyExpenses = dailyTotalExpenses + totalMaintenance;
+            data.dailyIncome = dailyTotalSale + data.lotteryWinnings + sponsorshipAmount - data.dailyExpenses;
             data.totalCustomers = dailyTotalCustomers;
             data.levelUps = todayLevelUps.ToArray(); // 传递升级列表
 
@@ -348,11 +391,7 @@ namespace PopLife
             // 今日累计获得的Fame（通过购买实时累积）
             data.fameEarned = Mathf.RoundToInt(dailyFameEarned);
 
-            // 从玩家资源中扣除维护费用
-            if (ResourceManager.Instance != null)
-            {
-                ResourceManager.Instance.SpendMoney(Mathf.RoundToInt(totalMaintenanceFee));
-            }
+            // 维护费扣除已在 CalculateAndDeductMaintenance 中完成，此处不再重复扣费
 
             return data;
         }
@@ -391,14 +430,9 @@ namespace PopLife
                 return;
             }
 
-            // 开店前检查破产（防止玩家在建造阶段花光所有钱后仍开店）
-            if (CheckBankruptcy())
-            {
-                Debug.LogWarning("[DayLoopManager] 无法开店：资金不足，已破产");
-                OnBankruptcy?.Invoke();
-                PauseTime();
-                return;
-            }
+            // 注：开店前破产检查已删除。玩家结算后负债时需要靠营业还钱，
+            // 不能在开店时直接 Game Over。破产判定已迁移至结算面板显示之前
+            // （BankruptcyManager.EvaluatePostMaintenance）。
 
             // 补货闸门：必须在本次建造阶段至少成功补货一次才能开店（除非场上没货架）
             if (RestockManager.Instance != null && !RestockManager.Instance.IsReadyToOpen())
@@ -457,13 +491,9 @@ namespace PopLife
         /// </summary>
         public void AdvanceToNextDay()
         {
-            // 检查破产
-            if (CheckBankruptcy())
-            {
-                OnBankruptcy?.Invoke();
-                PauseTime();
-                return;
-            }
+            // 注：破产检查已删除。新破产系统在结算面板显示之前判定
+            // （BankruptcyManager.EvaluatePostMaintenance），真正破产时直接走破产面板，
+            // 不会走到 AdvanceToNextDay。允许负债玩家进入下一天继续营业还债。
 
             // 记录前一天的季节（用于检测季节变更）
             var prevSeason = CurrentSeason;
@@ -609,6 +639,7 @@ namespace PopLife
         public void RecordSale(float amount)
         {
             dailyTotalSale += amount;
+            OnSaleRecorded?.Invoke(dailyTotalSale);
         }
 
         public void RecordExpense(float amount)
@@ -682,9 +713,14 @@ namespace PopLife
     {
         public int day;
         public float totalSale;              // 今日开店收益（当日销售总金额）
-        public float bonusIncome;            // 今日额外收益（彩票奖金等）
+        public int lotteryWinnings;          // 今日彩票奖金
+        public int sponsorshipAmount;        // 今日 Midori 补助金额
+        /// <summary>
+        /// 兼容属性：合并彩票 + 补助。旧 DailySettlementPanel 仍引用此字段。
+        /// </summary>
+        public float bonusIncome => lotteryWinnings + sponsorshipAmount;
         public float dailyExpenses;          // 今日维护费
-        public float dailyIncome;            // 今日净收入（totalSale + bonusIncome - dailyExpenses）
+        public float dailyIncome;            // 今日净收入（totalSale + lotteryWinnings + sponsorshipAmount - dailyExpenses）
         public int dailyMoneyChange;         // 今日金钱变化（建造阶段开始时的钱 - 结算时的钱）
         public int lifetimeIncome;           // 总收入（累计，仅来自顾客结账）
         public int lifetimeExpenses;         // 总开支（累计，所有花费）

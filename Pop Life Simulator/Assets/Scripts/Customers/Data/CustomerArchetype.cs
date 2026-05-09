@@ -66,16 +66,16 @@ public float baseXpGain = 10f;
 [Tooltip("消费金额对应的经验乘数阈值")]
 public SpendingThreshold[] spendingThresholds = new SpendingThreshold[]
 {
-    new() { minSpent = 0,  maxSpent = 0,   multiplier = 0f },
-    new() { minSpent = 1,  maxSpent = 15,  multiplier = 1.2f },
-    new() { minSpent = 16, maxSpent = 25,  multiplier = 1.4f },
-    new() { minSpent = 26, maxSpent = 45,  multiplier = 1.6f },
-    new() { minSpent = 46, maxSpent = -1,  multiplier = 1.8f }
+    new() { minSpent = 0,   maxSpent = 0,   multiplier = 0f },
+    new() { minSpent = 1,   maxSpent = 30,  multiplier = 1.2f },
+    new() { minSpent = 31,  maxSpent = 80,  multiplier = 1.4f },
+    new() { minSpent = 81,  maxSpent = 150, multiplier = 1.6f },
+    new() { minSpent = 151, maxSpent = -1,  multiplier = 1.8f }
 };
 
 [Header("等级系统")]
 [Tooltip("累积经验阈值，达到阈值[i]时升到等级i+1")]
-public int[] levelUpThresholds = new int[] { 100, 250, 500, 1000 };
+public int[] levelUpThresholds = new int[] { 80, 200, 400, 700 };
 
 
 /// <summary>

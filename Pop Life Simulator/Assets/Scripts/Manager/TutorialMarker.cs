@@ -75,7 +75,7 @@ namespace PopLife.Manager
         Day5Auditor1stQuestDDL,   // = 30  第5天开始时触发（审计员首个任务DDL） (引用: _Auditor1stMissionDDL.asset)
 
         // Lottery
-        LotteryUnlocked,          // = 31  第3天解锁彩票系统 (引用: _LotteryUnlock.asset)
+        LotteryUnlocked,          // = 31  第5天解锁彩票系统 (引用: _LotteryUnlock.asset)
 
         // Day-based triggers for quest chain activation (raised by DayLoopManager)
         Day2Trigger,              // = 32  raised by DayLoopManager on Day 2 start

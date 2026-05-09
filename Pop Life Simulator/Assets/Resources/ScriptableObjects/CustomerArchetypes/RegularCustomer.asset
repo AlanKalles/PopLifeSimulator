@@ -113,15 +113,15 @@ MonoBehaviour:
     maxSpent: 0
     multiplier: 0
   - minSpent: 1
-    maxSpent: 15
-    multiplier: 1
-  - minSpent: 16
-    maxSpent: 25
+    maxSpent: 30
     multiplier: 1.2
-  - minSpent: 26
-    maxSpent: 45
+  - minSpent: 31
+    maxSpent: 80
     multiplier: 1.4
-  - minSpent: 46
-    maxSpent: -1
+  - minSpent: 81
+    maxSpent: 150
     multiplier: 1.6
-  levelUpThresholds: 64000000fa000000f4010000e8030000
+  - minSpent: 151
+    maxSpent: -1
+    multiplier: 1.8
+  levelUpThresholds: 50000000c800000090010000bc020000

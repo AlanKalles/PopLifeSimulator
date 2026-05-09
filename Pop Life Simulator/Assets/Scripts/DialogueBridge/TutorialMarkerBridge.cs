@@ -127,19 +127,49 @@ namespace PopLife.DialogueBridge
 
             if (debugMode)
             {
-                Debug.Log($"[TutorialMarkerBridge] Processing marker: {marker}");
+                Debug.Log($"[TutorialMarkerBridge] Processing marker: {marker} ({actions.Count} action(s))");
             }
 
-            foreach (var action in actions)
-            {
-                ExecuteAction(action);
-            }
+            // actions 已在 BuildLookupTables() 按 executionOrder 升序排好。
+            // 串行执行：前一个 action 启动的对话结束后，才启动下一个 action。
+            // ⚠️ 串行范围限于"同一 marker 内"——不同 marker 同时被 raise 时，它们各自的协程仍并发，
+            //    顺序由 DialogueManager.isConversationActive 抢占决定，不可控。当前游戏无此场景。
+            DialogueManager.instance.StartCoroutine(ExecuteActionsSerially(actions));
         }
 
-        private void ExecuteAction(DialogueAction action)
+        private System.Collections.IEnumerator ExecuteActionsSerially(List<DialogueAction> actions)
         {
-            ExecuteLuaAction(action.LuaScript);
-            ExecuteConversationAction(action.ConversationToStart, action.ConversationDelay);
+            foreach (var action in actions)
+            {
+                if (action == null) continue;
+
+                // 1. 先等任何进行中的对话结束（可能是上一 action 启动的，也可能是无关的）。
+                //    这样 Lua、delay、StartConversation 都和"该 action 自身的 conversation"绑定时序，
+                //    避免未来出现"Lua 改变量，紧接的 conversation 用到"的场景因 Lua 提前执行而踩坑。
+                while (DialogueManager.isConversationActive)
+                    yield return null;
+
+                // 2. 执行 Lua（与本 action 的 conversation 时序绑定，紧贴启动前）
+                ExecuteLuaAction(action.LuaScript);
+
+                // 3. 跳过空 conversation
+                if (string.IsNullOrEmpty(action.ConversationToStart))
+                    continue;
+
+                // 4. 启动前缓冲（delay 回归本意：UI/动画过渡时间，仅作用于本 action）
+                if (action.ConversationDelay > 0f)
+                    yield return new WaitForSecondsRealtime(action.ConversationDelay);
+
+                // 5. 启动对话
+                StartConversation(action.ConversationToStart);
+
+                // 6. 等下一帧让 isConversationActive 翻成 true（StartConversation 同步调用但状态需 1 帧生效）
+                yield return null;
+
+                // 7. 等本对话结束才走下一个 action
+                while (DialogueManager.isConversationActive)
+                    yield return null;
+            }
         }
 
         private void ExecuteLuaAction(string luaScript)
@@ -159,57 +189,6 @@ namespace PopLife.DialogueBridge
             {
                 Debug.LogError($"[TutorialMarkerBridge] Failed to execute Lua: {e.Message}");
             }
-        }
-
-        private void ExecuteConversationAction(string conversationToStart, float conversationDelay)
-        {
-            if (string.IsNullOrEmpty(conversationToStart))
-                return;
-
-            if (DialogueManager.isConversationActive)
-            {
-                if (debugMode)
-                {
-                    Debug.Log($"[TutorialMarkerBridge] Conversation already active, queuing: {conversationToStart}");
-                }
-
-                DialogueManager.instance.StartCoroutine(StartConversationWhenReady(conversationToStart));
-                return;
-            }
-
-            if (conversationDelay > 0f)
-            {
-                DialogueManager.instance.StartCoroutine(StartConversationDelayed(conversationToStart, conversationDelay));
-            }
-            else
-            {
-                StartConversation(conversationToStart);
-            }
-        }
-
-        private System.Collections.IEnumerator StartConversationDelayed(string conversationTitle, float delay)
-        {
-            yield return new WaitForSecondsRealtime(delay);
-
-            if (!DialogueManager.isConversationActive)
-            {
-                StartConversation(conversationTitle);
-            }
-            else
-            {
-                yield return StartConversationWhenReady(conversationTitle);
-            }
-        }
-
-        private System.Collections.IEnumerator StartConversationWhenReady(string conversationTitle)
-        {
-            while (DialogueManager.isConversationActive)
-            {
-                yield return null;
-            }
-
-            yield return new WaitForSecondsRealtime(0.1f);
-            StartConversation(conversationTitle);
         }
 
         private void StartConversation(string conversationTitle)

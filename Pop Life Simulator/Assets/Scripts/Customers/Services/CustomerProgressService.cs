@@ -15,7 +15,7 @@ namespace PopLife.Customers.Services
 
         [Title("漏斗层级 XP 倍率")]
         [BoxGroup("Funnel XP")]
-        [LabelText("Favorite"), SerializeField] private float favoriteXpMul = 1.5f;
+        [LabelText("Favorite"), SerializeField] private float favoriteXpMul = 2.5f;
         [BoxGroup("Funnel XP")]
         [LabelText("Category"), SerializeField] private float categoryXpMul = 1.2f;
         [BoxGroup("Funnel XP")]

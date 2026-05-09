@@ -1,11 +1,11 @@
 namespace PopLife.Customers.Services
 {
     /// <summary>
-    /// Day 1 专用 interaction 的纯状态：锁定当天第三个自动生成顾客。
+    /// Day 1 专用 interaction 的纯状态：锁定当天第一个自动生成顾客。
     /// </summary>
     public class Day1InteractionTutorialState
     {
-        public const int RequiredEnteredCustomerIndex = 3;
+        public const int RequiredEnteredCustomerIndex = 1;
 
         private int enteredCount;
         private string forcedCustomerId;

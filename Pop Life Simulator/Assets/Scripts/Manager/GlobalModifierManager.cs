@@ -31,6 +31,7 @@ namespace PopLife
         private float spawnRateMul;
         private float moneyBagMul;
         private float globalFameMul;
+        private float maintenanceCostMul;
 
         // B. 品类扁平数组
         private float[] categoryPriceMul;
@@ -40,9 +41,13 @@ namespace PopLife
         // C. 货架Appeal加值
         private int globalAppealAddend;
         private Dictionary<ShelfArchetype, int> shelfSpecificAppealAddends;
+        private int[] categoryAppealAddend;
 
         // D. AI行为
         private HashSet<ProductCategory> bonusInterests;
+
+        // E. 补货禁令
+        private HashSet<ProductCategory> restockBlockedCategories;
 
         #region Unity 生命周期
 
@@ -62,8 +67,10 @@ namespace PopLife
             categoryPriceMul = new float[CATEGORY_COUNT];
             categoryFameMul = new float[CATEGORY_COUNT];
             categoryQuantityMul = new float[CATEGORY_COUNT];
+            categoryAppealAddend = new int[CATEGORY_COUNT];
             shelfSpecificAppealAddends = new Dictionary<ShelfArchetype, int>();
             bonusInterests = new HashSet<ProductCategory>();
+            restockBlockedCategories = new HashSet<ProductCategory>();
 
             // 设置默认值
             ResetPayload();
@@ -114,22 +121,29 @@ namespace PopLife
                     AggregatePayload(evt.modifierPayload);
             }
 
-            // 聚合活跃 Buffer
+            // 聚合活跃 Buffer（跳过尚未到生效日的 pending buffer）
+            int today = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
             var buffers = CalendarManager.Instance.GetActiveBuffers();
             foreach (var buf in buffers)
             {
-                if (buf?.data != null && buf.data.modifierPayload != null)
+                if (buf?.data == null) continue;
+                if (today < buf.startAbsoluteDay) continue;  // 延迟激活：startDay 当天才烘焙生效
+                if (buf.data.modifierPayload != null)
                     AggregatePayload(buf.data.modifierPayload);
+                // 动态品类禁令（Robot Strike 路径）
+                if (buf.hasRolledBlockedCategory)
+                    restockBlockedCategories.Add(buf.rolledBlockedCategory);
             }
 
 #if UNITY_EDITOR
             Debug.Log($"[GlobalModifierManager] 烘焙完成: " +
                       $"建造×{constructionCostMul:F2}, 升级×{upgradeCostMul:F2}, " +
                       $"生成速率×{spawnRateMul:F2}, 钱包×{moneyBagMul:F2}, " +
-                      $"Fame×{globalFameMul:F2}, " +
+                      $"Fame×{globalFameMul:F2}, 维护×{maintenanceCostMul:F2}, " +
                       $"Appeal全局+{globalAppealAddend}, " +
                       $"货架特定Appeal:{shelfSpecificAppealAddends.Count}项, " +
-                      $"奖励兴趣:{bonusInterests.Count}类");
+                      $"奖励兴趣:{bonusInterests.Count}类, " +
+                      $"禁补品类:{restockBlockedCategories.Count}类");
 #endif
         }
 
@@ -143,17 +157,20 @@ namespace PopLife
             spawnRateMul = 1f;
             moneyBagMul = 1f;
             globalFameMul = 1f;
+            maintenanceCostMul = 1f;
 
             for (int i = 0; i < CATEGORY_COUNT; i++)
             {
                 categoryPriceMul[i] = 1f;
                 categoryFameMul[i] = 1f;
                 categoryQuantityMul[i] = 1f;
+                categoryAppealAddend[i] = 0;
             }
 
             globalAppealAddend = 0;
             shelfSpecificAppealAddends.Clear();
             bonusInterests.Clear();
+            restockBlockedCategories.Clear();
         }
 
         /// <summary>
@@ -168,6 +185,7 @@ namespace PopLife
             spawnRateMul += (p.customerSpawnRateMultiplier - 1f);
             moneyBagMul += (p.customerMoneyBagMultiplier - 1f);
             globalFameMul += (p.globalFameGainMultiplier - 1f);
+            maintenanceCostMul += (p.maintenanceCostMultiplier - 1f);
 
             // 加性叠加品类乘数
             if (p.categoryPriceModifiers != null)
@@ -188,7 +206,7 @@ namespace PopLife
                     categoryQuantityMul[(int)cm.category] += (cm.multiplier - 1f);
             }
 
-            // 求和Appeal加值
+            // 求和Appeal加值（按货架）
             if (p.shelfAppealModifiers != null)
             {
                 foreach (var sam in p.shelfAppealModifiers)
@@ -208,11 +226,25 @@ namespace PopLife
                 }
             }
 
+            // 求和Appeal加值（按品类）
+            if (p.categoryAppealModifiers != null)
+            {
+                foreach (var cam in p.categoryAppealModifiers)
+                    categoryAppealAddend[(int)cam.category] += cam.addend;
+            }
+
             // 并集兴趣品类（HashSet自动去重）
             if (p.bonusInterestCategories != null)
             {
                 foreach (var cat in p.bonusInterestCategories)
                     bonusInterests.Add(cat);
+            }
+
+            // 并集禁补品类（HashSet自动去重）
+            if (p.restockBlockedCategories != null)
+            {
+                foreach (var cat in p.restockBlockedCategories)
+                    restockBlockedCategories.Add(cat);
             }
         }
 
@@ -227,6 +259,7 @@ namespace PopLife
         public float GetSpawnRateMultiplier() => Mathf.Max(0f, spawnRateMul);
         public float GetMoneyBagMultiplier() => Mathf.Max(0f, moneyBagMul);
         public float GetGlobalFameMultiplier() => globalFameMul;
+        public float GetMaintenanceCostMultiplier() => Mathf.Max(0f, maintenanceCostMul);
 
         // ── 品类乘数（数组直接索引）──
 
@@ -252,12 +285,24 @@ namespace PopLife
             return total;
         }
 
+        /// <summary>
+        /// 获取指定品类的Appeal加值（C_Lingere Sale 类 Buffer 用）
+        /// </summary>
+        public int GetCategoryAppealAddend(ProductCategory cat) => categoryAppealAddend[(int)cat];
+
         // ── AI行为 ──
 
         /// <summary>
         /// 获取当前活跃的奖励兴趣品类集合（只读引用）
         /// </summary>
         public HashSet<ProductCategory> GetBonusInterestCategories() => bonusInterests;
+
+        // ── 补货禁令 ──
+
+        /// <summary>
+        /// 检查指定品类是否被禁止补货（Robot Strike 类 Buffer 用）
+        /// </summary>
+        public bool IsRestockBlocked(ProductCategory cat) => restockBlockedCategories.Contains(cat);
 
         #endregion
     }

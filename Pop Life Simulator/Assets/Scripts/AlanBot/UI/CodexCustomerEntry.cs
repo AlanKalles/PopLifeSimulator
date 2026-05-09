@@ -37,6 +37,10 @@ namespace PopLife.AlanBot.UI
         private EntryState currentState = EntryState.Unselected;
         private Action<CodexCustomerEntry> onClicked;
 
+        // 缺失肖像时使用 C001 作为通用剪影，无视状态强制显示为黑色
+        private bool isSilhouette;
+        private const string SilhouetteFallbackId = "C001";
+
         /// <summary>
         /// 关联的顾客记录
         /// </summary>
@@ -60,7 +64,15 @@ namespace PopLife.AlanBot.UI
             record = recordData;
             onClicked = clickCallback;
 
-            // 设置肖像
+            // 设置肖像：缺失时回退到 C001 通用剪影
+            isSilhouette = false;
+            if (portrait == null)
+            {
+                portrait = CustomerPortraitLoader.LoadPortrait(SilhouetteFallbackId);
+                if (portrait != null)
+                    isSilhouette = true;
+            }
+
             if (portraitImage != null)
             {
                 if (portrait != null)
@@ -127,8 +139,9 @@ namespace PopLife.AlanBot.UI
 
         private void SetPortraitColor(Color color)
         {
-            if (portraitImage != null)
-                portraitImage.color = color;
+            if (portraitImage == null) return;
+            // 剪影兜底优先级最高：无论 Selected/New/Unselected/Locked 都强制黑色
+            portraitImage.color = isSilhouette ? Color.black : color;
         }
 
         private void SetNewIndicator(bool visible)

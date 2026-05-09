@@ -33,6 +33,20 @@ namespace PopLife.Data
     }
 
     /// <summary>
+    /// 品类Appeal加值条目（Inspector序列化用）
+    /// 同品类下所有货架统一加值，与 ShelfAppealModifier 叠加
+    /// </summary>
+    [Serializable]
+    public struct CategoryAppealModifier
+    {
+        [Tooltip("目标商品品类")]
+        public ProductCategory category;
+
+        [Tooltip("Appeal 平坦加值（整数）")]
+        public int addend;
+    }
+
+    /// <summary>
     /// 全局修饰器数据载荷
     /// 挂载在 SeasonEventData / BufferData 上，由设计师在 Inspector 中配置
     /// 运行时由 GlobalModifierManager 聚合烘焙
@@ -56,6 +70,9 @@ namespace PopLife.Data
         [Tooltip("全局Fame获取乘数")]
         public float globalFameGainMultiplier = 1f;
 
+        [Tooltip("维护费乘数（>1=结算时维护费更贵，<1=更便宜）")]
+        public float maintenanceCostMultiplier = 1f;
+
         [Header("B. 品类定向乘数")]
         [Tooltip("品类售价乘数列表")]
         public List<CategoryModifier> categoryPriceModifiers = new();
@@ -70,8 +87,15 @@ namespace PopLife.Data
         [Tooltip("货架Appeal平坦加值列表（targetShelf留空=全局）")]
         public List<ShelfAppealModifier> shelfAppealModifiers = new();
 
+        [Tooltip("品类Appeal平坦加值列表（同品类所有货架统一加值，与 shelfAppealModifiers 叠加）")]
+        public List<CategoryAppealModifier> categoryAppealModifiers = new();
+
         [Header("D. AI行为修饰")]
         [Tooltip("奖励兴趣品类（顾客生成时临时加入购物偏好）")]
         public List<ProductCategory> bonusInterestCategories = new();
+
+        [Header("E. 补货禁令")]
+        [Tooltip("禁止补货的品类列表（玩家在补货面板中无法看到这些品类的货架）")]
+        public List<ProductCategory> restockBlockedCategories = new();
     }
 }

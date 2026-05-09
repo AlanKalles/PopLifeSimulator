@@ -17,6 +17,11 @@ namespace PopLife
         /// </summary>
         public event Action<int> OnMoneyChanged;
 
+        /// <summary>
+        /// 声望变化时触发，参数为当前 fame 值
+        /// </summary>
+        public event Action<int> OnFameChanged;
+
         [Header("Store Appeal")]
         [SerializeField] private int storeAppeal;
 
@@ -41,11 +46,16 @@ namespace PopLife
         {
             // 订阅建筑变化事件以更新 Store Appeal
             ConstructionManager.OnBuildingPlacedOrDestroyed += RecalculateStoreAppeal;
+            // 订阅日历数据变化（季节事件 / Buffer 激活/到期 → Appeal 修饰器变化）
+            if (CalendarManager.Instance != null)
+                CalendarManager.Instance.OnCalendarDataChanged += RecalculateStoreAppeal;
         }
 
         void OnDestroy()
         {
             ConstructionManager.OnBuildingPlacedOrDestroyed -= RecalculateStoreAppeal;
+            if (CalendarManager.Instance != null)
+                CalendarManager.Instance.OnCalendarDataChanged -= RecalculateStoreAppeal;
         }
 
         #region Getters
@@ -76,6 +86,7 @@ namespace PopLife
             fame -= fameCost;
             totalExpenses += moneyCost; // 记录金钱开支
             if (moneyCost != 0) OnMoneyChanged?.Invoke(money);
+            if (fameCost != 0) OnFameChanged?.Invoke(fame);
         }
 
         /// <summary>
@@ -95,6 +106,7 @@ namespace PopLife
         public void SpendFame(int amount)
         {
             fame -= amount;
+            OnFameChanged?.Invoke(fame);
         }
         #endregion
 
@@ -122,11 +134,23 @@ namespace PopLife
         }
 
         /// <summary>
+        /// Midori 赞助补助到账（不计入 totalIncome 统计）
+        /// 用于：还债失败时的破产救济补助
+        /// </summary>
+        public void AddSponsorshipMoney(int amount)
+        {
+            if (amount <= 0) return;
+            money += amount;
+            OnMoneyChanged?.Invoke(money);
+        }
+
+        /// <summary>
         /// 增加声望（整数版本）
         /// </summary>
         public void AddFame(int amount)
         {
             fame += amount;
+            if (amount != 0) OnFameChanged?.Invoke(fame);
         }
 
         /// <summary>
@@ -140,6 +164,7 @@ namespace PopLife
             {
                 fame += wholeFame;
                 fameAccumulator -= wholeFame;
+                OnFameChanged?.Invoke(fame);
             }
         }
         #endregion

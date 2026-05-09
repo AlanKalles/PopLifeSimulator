@@ -89,6 +89,11 @@ namespace PopLife.AlanBot
             if (panelRoot != null)
                 panelRoot.SetActive(true);
 
+            // 每次打开都同步刷新一次 Calendar 按钮可见性。
+            // 不只依赖 OnEnable —— GameStateManager.Instance 初始化与 ES3 加载完成的时序不保证（多个单例 Awake 顺序），
+            // 这里再调用一次保证用户看到的是最新状态。
+            UpdateCalendarButtonVisibility();
+
             if (fadeCoroutine != null)
                 StopCoroutine(fadeCoroutine);
 
@@ -132,6 +137,10 @@ namespace PopLife.AlanBot
         {
             if (DayLoopManager.Instance != null)
                 DayLoopManager.Instance.OnDailySettlement += OnDailySettlement;
+
+            // 订阅 Calendar 解锁事件：Day3 教程结束时若面板正打开，按钮立即出现
+            if (GameStateManager.Instance != null)
+                GameStateManager.Instance.OnCalendarUnlocked += UpdateCalendarButtonVisibility;
         }
 
         private void OnDisable()
@@ -139,8 +148,18 @@ namespace PopLife.AlanBot
             if (DayLoopManager.Instance != null)
                 DayLoopManager.Instance.OnDailySettlement -= OnDailySettlement;
 
+            if (GameStateManager.Instance != null)
+                GameStateManager.Instance.OnCalendarUnlocked -= UpdateCalendarButtonVisibility;
+
             // 兜底：场景切换/对象销毁时停止打字机
             StopTypewriter();
+        }
+
+        private void UpdateCalendarButtonVisibility()
+        {
+            if (calendarButton == null) return;
+            bool unlocked = GameStateManager.Instance != null && GameStateManager.Instance.isCalendarUnlocked;
+            calendarButton.gameObject.SetActive(unlocked);
         }
 
         // 结算时自动关闭面板（包括正在显示的子面板）

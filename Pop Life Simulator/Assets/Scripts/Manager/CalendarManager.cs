@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PopLife.Data;
+using PopLife.Manager;
 using PopLife.Runtime;
 
 namespace PopLife
@@ -145,9 +146,16 @@ namespace PopLife
         /// </summary>
         private void TickActiveBuffers()
         {
+            int today = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
+
             for (int i = activeBuffers.Count - 1; i >= 0; i--)
             {
                 var buf = activeBuffers[i];
+
+                // 跳过 pending 与"生效首日"：
+                // - pending（today < startDay）：延迟 buffer 还未到生效日，不应递减
+                // - 生效首日（today == startDay）：用 <= 保证 durationDays=1 的延迟 buffer 不会在生效首日早晨就 tick 归零
+                if (today <= buf.startAbsoluteDay) continue;
 
                 if (buf.remainingDays > 0)
                 {
@@ -180,6 +188,14 @@ namespace PopLife
         /// </summary>
         private void RollAutoBuffers(int today)
         {
+            // Calendar 解锁前不滚动 Auto-Buffer（Day1/Day2/Day3 早晨——Day3 BuildPhase 流程是 OnBuildPhaseStart → 此处 →
+            // RaiseDayTrigger 启动 Midori/9，所以 Day3 早晨仍跳过；Day3 对话结束解锁后，Day4 起才真正 roll）
+            if (GameStateManager.Instance == null || !GameStateManager.Instance.isCalendarUnlocked)
+            {
+                Debug.Log("[CalendarManager] Calendar 未解锁，跳过 Auto-Buffer 滚动");
+                return;
+            }
+
             foreach (var bufData in allBuffers)
             {
                 if (bufData == null) continue;
@@ -206,15 +222,28 @@ namespace PopLife
         /// </summary>
         private void ActivateBuffer(BufferData bufData, int startDay)
         {
+            // 延迟激活：滚到当天不生效，从次日开始第一天
+            int effectiveStart = bufData.delayActivationByOneDay ? startDay + 1 : startDay;
+
             var active = new ActiveBuffer
             {
                 bufferId = bufData.bufferId,
-                startAbsoluteDay = startDay,
+                startAbsoluteDay = effectiveStart,
                 remainingDays = bufData.durationDays > 0 ? bufData.durationDays : -1,
                 data = bufData
             };
 
+            // 激活时落定随机品类（Robot Strike 路径）
+            if (bufData.rollRandomBlockedCategory)
+            {
+                var allCats = (ProductCategory[])System.Enum.GetValues(typeof(ProductCategory));
+                active.rolledBlockedCategory = allCats[UnityEngine.Random.Range(0, allCats.Length)];
+                active.hasRolledBlockedCategory = true;
+                Debug.Log($"[CalendarManager] '{bufData.bufferId}' rolled category: {active.rolledBlockedCategory}");
+            }
+
             activeBuffers.Add(active);
+            // 立即广播：即便延迟激活，对话/UI 桥仍当天得到通知（实际禁令在次日生效）
             OnBufferStarted?.Invoke(bufData);
             SaveBufferState();
             OnCalendarDataChanged?.Invoke();
@@ -373,6 +402,20 @@ namespace PopLife
                 {
                     Debug.LogWarning($"[CalendarManager] 加载时找不到 Buffer SO '{buf.bufferId}'，移除该记录");
                     activeBuffers.RemoveAt(i);
+                }
+            }
+
+            // 旧存档兼容：加载前未持有 hasRolledBlockedCategory 字段的 Robot Strike 类记录补 roll 一次
+            foreach (var buf in activeBuffers)
+            {
+                if (buf.data != null
+                    && buf.data.rollRandomBlockedCategory
+                    && !buf.hasRolledBlockedCategory)
+                {
+                    var allCats = (ProductCategory[])System.Enum.GetValues(typeof(ProductCategory));
+                    buf.rolledBlockedCategory = allCats[UnityEngine.Random.Range(0, allCats.Length)];
+                    buf.hasRolledBlockedCategory = true;
+                    Debug.Log($"[CalendarManager] LoadBufferState 补 roll '{buf.bufferId}': {buf.rolledBlockedCategory}");
                 }
             }
 

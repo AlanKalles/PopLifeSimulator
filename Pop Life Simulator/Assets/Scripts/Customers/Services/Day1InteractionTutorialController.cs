@@ -11,7 +11,7 @@ using UnityEngine;
 namespace PopLife.Customers.Services
 {
     /// <summary>
-    /// Day 1 专用顾客问答教程：只在第三个自动生成顾客身上强制触发一次。
+    /// Day 1 专用顾客问答教程：只在第一个自动生成顾客身上强制触发一次。
     /// </summary>
     public class Day1InteractionTutorialController : MonoBehaviour
     {
@@ -19,7 +19,7 @@ namespace PopLife.Customers.Services
 
         [Header("Interaction")]
         [SerializeField] private InteractionEventData tutorialInteractionEvent;
-        [Tooltip("Optional. If set, Day 1's 3rd auto-spawned customer will use this customer ID even if it is not unlocked in SpawnerProfile.")]
+        [Tooltip("Optional. If set, Day 1's 1st auto-spawned customer will use this customer ID even if it is not unlocked in SpawnerProfile.")]
         [SerializeField] private string forcedDay1ThirdSpawnCustomerId;
 
         [Header("Dialogue")]
@@ -109,7 +109,7 @@ namespace PopLife.Customers.Services
                 bool forced = state.RecordCustomerEntered(agent.customerID, day, HasCompletedFirstRequest());
                 if (forced)
                 {
-                    Debug.Log($"[Day1InteractionTutorial] 第三个进店顾客已锁定: {agent.customerID}");
+                    Debug.Log($"[Day1InteractionTutorial] 第一个进店顾客已锁定: {agent.customerID}");
                 }
             }
 
@@ -186,7 +186,7 @@ namespace PopLife.Customers.Services
             bool marked = state.RecordForcedCustomerSpawned(customerId, day, HasCompletedFirstRequest());
             if (marked)
             {
-                Debug.Log($"[Day1InteractionTutorial] 第三个自动生成顾客已锁定: {customerId}");
+                Debug.Log($"[Day1InteractionTutorial] 第一个自动生成顾客已锁定: {customerId}");
             }
 
             RefreshDebugState();

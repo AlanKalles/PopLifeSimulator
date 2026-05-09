@@ -47,6 +47,11 @@ namespace PopLife.UI
         [SerializeField] private Transform hotSellersContainer;
         [SerializeField] private TextMeshProUGUI noHotSellerText;
 
+        [Header("Extra Income")]
+        [SerializeField] private GameObject extraIncomeSection;       // 整块区域（含 header + container）
+        [SerializeField] private Transform extraIncomeContainer;      // 词条父节点
+        [SerializeField] private GameObject extraIncomeItemPrefab;    // 含 ExtraIncomeItem 组件
+
         [Header("Level Up Section")]
         [SerializeField] private GameObject levelUpContainer;
         [SerializeField] private GameObject levelUpItemPrefab;
@@ -226,6 +231,9 @@ namespace PopLife.UI
 
             // --- 热销商品 ---
             PopulateHotSellers(topSellers);
+
+            // --- 额外收入（彩票 + Midori 补助，按存在性动态生成词条） ---
+            PopulateExtraIncome(data);
 
             // --- 升级列表 ---
             PopulateLevelUpList(data.levelUps);
@@ -554,6 +562,57 @@ namespace PopLife.UI
 
         #endregion
 
+        #region 额外收入（彩票 / 补助）
+
+        /// <summary>
+        /// 动态生成 Extra Income 词条。彩票奖金 / Midori 补助分项展示，有则生成，无则隐藏整块。
+        /// </summary>
+        private void PopulateExtraIncome(DailySettlementData data)
+        {
+            // 清空旧词条
+            if (extraIncomeContainer != null)
+            {
+                foreach (Transform child in extraIncomeContainer)
+                    Destroy(child.gameObject);
+            }
+
+            bool hasAny = false;
+
+            if (data.lotteryWinnings > 0)
+            {
+                CreateExtraItem("Lottery Win", data.lotteryWinnings);
+                hasAny = true;
+            }
+
+            if (data.sponsorshipAmount > 0)
+            {
+                CreateExtraItem("Midori's Sponsorship", data.sponsorshipAmount);
+                hasAny = true;
+            }
+
+            // 都为 0 时隐藏整块区域（避免空标题）
+            if (extraIncomeSection != null)
+                extraIncomeSection.SetActive(hasAny);
+        }
+
+        private void CreateExtraItem(string label, int amount)
+        {
+            if (extraIncomeItemPrefab == null || extraIncomeContainer == null) return;
+
+            var obj = Instantiate(extraIncomeItemPrefab, extraIncomeContainer);
+            var item = obj.GetComponent<ExtraIncomeItem>();
+            if (item != null)
+            {
+                item.SetData(label, amount);
+            }
+            else
+            {
+                Debug.LogWarning("[NewDailySettlementPanel] extraIncomeItemPrefab 缺少 ExtraIncomeItem 组件！");
+            }
+        }
+
+        #endregion
+
         #region 升级列表
 
         private void PopulateLevelUpList(CustomerLevelUpInfo[] levelUps)
@@ -582,8 +641,8 @@ namespace PopLife.UI
                 var itemComponent = item.GetComponent<LevelUpItem>();
                 if (itemComponent != null)
                 {
-                    // 通过 CustomerPartLoader 获取头部精灵作为头像
-                    Sprite portraitSprite = CustomerPartLoader.GetPart(levelUp.customerId, PartIndex.Head);
+                    // 加载完整肖像（Resources/CustomerPortraits/），失败时回退到 archetype.portrait
+                    Sprite portraitSprite = CustomerPortraitLoader.LoadPortrait(levelUp.customerId);
 
                     itemComponent.SetData(portraitSprite, levelUp.customerName,
                         levelUp.oldLevel, levelUp.newLevel, levelUp.xpGained);

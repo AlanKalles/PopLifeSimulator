@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using PopLife.Services;
@@ -54,6 +55,8 @@ namespace PopLife.Runtime
         private Camera targetCamera;
         private float currentZoom = 1f;
         private float targetZoom = 1f;
+        private bool isProgrammaticFocusActive;
+        private Coroutine activeFocusCoroutine;
 
         private bool isDragging = false;
         private bool pendingDragStart = false; // 等待 InputGateService 确认拖拽
@@ -100,9 +103,13 @@ namespace PopLife.Runtime
         {
             if (targetCamera == null || !targetCamera.orthographic) return;
 
-            HandleZoomInput();
-            HandleDragInput();
-            ApplyZoom();
+            if (!isProgrammaticFocusActive)
+            {
+                HandleZoomInput();
+                HandleDragInput();
+                ApplyZoom();
+            }
+
             ApplyBoundaries();
             UpdateForegroundAlpha();
         }
@@ -282,6 +289,123 @@ namespace PopLife.Runtime
                     : 1f;
                 currentZoom = zoom;
                 targetZoom = zoom;
+            }
+        }
+
+        public struct CameraSnapshot
+        {
+            public Vector3 position;
+            public float orthographicSize;
+        }
+
+        public CameraSnapshot Snapshot()
+        {
+            EnsureCameraReference();
+
+            if (targetCamera == null)
+            {
+                return default;
+            }
+
+            return new CameraSnapshot
+            {
+                position = targetCamera.transform.position,
+                orthographicSize = targetCamera.orthographicSize,
+            };
+        }
+
+        public Coroutine FocusOn(Transform target, float duration = 0.6f, float? targetOrthoSize = null)
+        {
+            if (target == null) return null;
+            EnsureCameraReference();
+            if (targetCamera == null) return null;
+
+            isProgrammaticFocusActive = true;
+            return StartFocusCoroutine(target.position, duration, targetOrthoSize, releaseFocusWhenDone: false);
+        }
+
+        public Coroutine RestoreTo(CameraSnapshot snapshot, float duration = 0.6f)
+        {
+            EnsureCameraReference();
+            if (targetCamera == null) return null;
+
+            isProgrammaticFocusActive = true;
+            return StartFocusCoroutine(snapshot.position, duration, snapshot.orthographicSize, releaseFocusWhenDone: true);
+        }
+
+        private Coroutine StartFocusCoroutine(Vector3 targetWorld, float duration, float? targetOrthoSize, bool releaseFocusWhenDone)
+        {
+            if (activeFocusCoroutine != null)
+            {
+                StopCoroutine(activeFocusCoroutine);
+            }
+
+            activeFocusCoroutine = StartCoroutine(FocusCoroutine(targetWorld, duration, targetOrthoSize, releaseFocusWhenDone));
+            return activeFocusCoroutine;
+        }
+
+        private IEnumerator FocusCoroutine(Vector3 targetWorld, float duration, float? targetOrthoSize, bool releaseFocusWhenDone)
+        {
+            Vector3 startPos = targetCamera.transform.position;
+            float startSize = targetCamera.orthographicSize;
+            float endSize = targetOrthoSize ?? startSize;
+            duration = Mathf.Max(0f, duration);
+
+            if (duration <= 0f)
+            {
+                ApplyImmediate(targetWorld, endSize, targetOrthoSize.HasValue);
+                activeFocusCoroutine = null;
+                if (releaseFocusWhenDone)
+                {
+                    isProgrammaticFocusActive = false;
+                }
+                yield break;
+            }
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                Vector3 end = new Vector3(targetWorld.x, targetWorld.y, startPos.z);
+                targetCamera.transform.position = Vector3.Lerp(startPos, end, t);
+                if (targetOrthoSize.HasValue)
+                {
+                    targetCamera.orthographicSize = Mathf.Lerp(startSize, endSize, t);
+                }
+                yield return null;
+            }
+
+            ApplyImmediate(targetWorld, endSize, targetOrthoSize.HasValue);
+            activeFocusCoroutine = null;
+            if (releaseFocusWhenDone)
+            {
+                isProgrammaticFocusActive = false;
+            }
+        }
+
+        private void ApplyImmediate(Vector3 targetWorld, float endSize, bool applySize)
+        {
+            Vector3 finalPos = new Vector3(targetWorld.x, targetWorld.y, targetCamera.transform.position.z);
+            targetCamera.transform.position = finalPos;
+
+            if (applySize)
+            {
+                targetCamera.orthographicSize = endSize;
+                float zoom = baseOrthographicSize > 0f ? endSize / baseOrthographicSize : 1f;
+                currentZoom = zoom;
+                targetZoom = zoom;
+            }
+        }
+
+        private void EnsureCameraReference()
+        {
+            if (targetCamera != null) return;
+
+            targetCamera = GetComponent<Camera>();
+            if (targetCamera == null)
+            {
+                targetCamera = Camera.main;
             }
         }
 

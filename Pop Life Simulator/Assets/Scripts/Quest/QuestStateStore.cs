@@ -77,6 +77,15 @@ namespace PopLife.Quest
         /// </summary>
         private void SetQuestStateFromString(string questName, string state)
         {
+            // 同状态短路：状态未变则不写不广播，避免 dialogue/Lua 反复调 SetQuestState 触发重复 toast 和重置
+            if (questStates.TryGetValue(questName, out string oldState)
+                && string.Equals(oldState, state, StringComparison.OrdinalIgnoreCase))
+            {
+                if (debugMode)
+                    Debug.Log($"[QuestStateStore] SetQuestState skip (unchanged): {questName} = {state}");
+                return;
+            }
+
             questStates[questName] = state;
 
             // 初始化 entry 状态数组（如果还没有）

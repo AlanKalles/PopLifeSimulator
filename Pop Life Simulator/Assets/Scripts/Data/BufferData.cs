@@ -57,6 +57,17 @@ namespace PopLife.Data
         [Tooltip("该Buffer的全局修饰器载荷（由 GlobalModifierManager 聚合）")]
         public GlobalModifierPayload modifierPayload;
 
+        [Header("延迟激活 / 动态品类（高级）")]
+        [Tooltip("激活后从次日开始第一天生效（Robot Strike: 滚到当天不影响补货，从明天开始禁补）")]
+        public bool delayActivationByOneDay = false;
+
+        [Tooltip("激活时随机选一个 ProductCategory 写入 ActiveBuffer.rolledBlockedCategory（Robot Strike 用）")]
+        public bool rollRandomBlockedCategory = false;
+
+        [Header("激活时启动对话（可选）")]
+        [Tooltip("对话标题（如 Auditor/BufferHappy）。空字符串 = 不触发对话。已有对话进行中会自动排队等待")]
+        public string activationConversationTitle = "";
+
 #if UNITY_EDITOR
         private void OnValidate()
         {

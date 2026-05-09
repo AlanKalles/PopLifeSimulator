@@ -100,6 +100,7 @@ namespace PopLife.DialogueBridge
             Lua.RegisterFunction("GiveFame", this, SymbolExtensions.GetMethodInfo(() => GiveFame(0)));
             Lua.RegisterFunction("UnlockBlueprint", this, SymbolExtensions.GetMethodInfo(() => UnlockBlueprint(string.Empty)));
             Lua.RegisterFunction("UnlockCustomer", this, SymbolExtensions.GetMethodInfo(() => UnlockCustomer(string.Empty)));
+            Lua.RegisterFunction("UnlockCalendar", this, SymbolExtensions.GetMethodInfo(() => UnlockCalendar()));
             Lua.RegisterFunction("GiveReward", this, SymbolExtensions.GetMethodInfo(() => GiveReward(string.Empty, string.Empty)));
 
             // Tutorial marker functions
@@ -149,6 +150,7 @@ namespace PopLife.DialogueBridge
             Lua.UnregisterFunction("GiveFame");
             Lua.UnregisterFunction("UnlockBlueprint");
             Lua.UnregisterFunction("UnlockCustomer");
+            Lua.UnregisterFunction("UnlockCalendar");
             Lua.UnregisterFunction("GiveReward");
             Lua.UnregisterFunction("RaiseTutorialMarker");
             Lua.UnregisterFunction("RaiseMarkerAfter");
@@ -267,6 +269,23 @@ namespace PopLife.DialogueBridge
             else
             {
                 Debug.LogWarning("[PopLifeLuaFunctions] Failed to load SpawnerProfile");
+            }
+        }
+
+        /// <summary>
+        /// 解锁 Calendar 入口（Day3 教程结束时调用）
+        /// Lua usage: UnlockCalendar()
+        /// </summary>
+        public void UnlockCalendar()
+        {
+            if (GameStateManager.Instance != null)
+            {
+                GameStateManager.Instance.NotifyCalendarUnlocked();
+                Debug.Log("[PopLifeLuaFunctions] Calendar unlocked via Lua");
+            }
+            else
+            {
+                Debug.LogWarning("[PopLifeLuaFunctions] UnlockCalendar: GameStateManager.Instance is null");
             }
         }
 

@@ -38,6 +38,9 @@ namespace PopLife.Manager
         public bool hasOpenedCustomerCodex = false;
         public bool hasOpenedItemCodex = false;
         public bool hasDismissedFirstQuestToast = false;
+        public bool isCalendarUnlocked = false;
+
+        private const string ES3_KEY_CALENDAR_UNLOCKED = "GameState_CalendarUnlocked";
 
         // Game progress tracking
         [Header("Game Progress")]
@@ -53,6 +56,7 @@ namespace PopLife.Manager
         public event Action OnStoreOpened;
         public event Action OnFirstCustomerServed;
         public event Action OnFirstFameEarned;
+        public event Action OnCalendarUnlocked;
 
         private void Awake()
         {
@@ -65,6 +69,10 @@ namespace PopLife.Manager
                 {
                     ClearAllSaves();
                 }
+
+                // 加载 Calendar 解锁状态（在 ClearAllSaves 之后——若勾选 clearSaveOnStart 则 key 已被删，KeyExists 返回 false）
+                if (ES3.KeyExists(ES3_KEY_CALENDAR_UNLOCKED))
+                    isCalendarUnlocked = ES3.Load<bool>(ES3_KEY_CALENDAR_UNLOCKED);
             }
             else
             {
@@ -295,6 +303,20 @@ namespace PopLife.Manager
         }
 
         /// <summary>
+        /// Day3 教程结束时调用：解锁 Calendar 入口（AlanBot 主面板的 Calendar 按钮 + RollAutoBuffers 开始滚动）
+        /// </summary>
+        public void NotifyCalendarUnlocked()
+        {
+            if (!isCalendarUnlocked)
+            {
+                isCalendarUnlocked = true;
+                ES3.Save(ES3_KEY_CALENDAR_UNLOCKED, true);
+                OnCalendarUnlocked?.Invoke();
+                Debug.Log("[GameState] Calendar unlocked (Day3 tutorial complete)");
+            }
+        }
+
+        /// <summary>
         /// 首次打开顾客图鉴面板时调用
         /// </summary>
         public void NotifyCustomerCodexOpened()
@@ -354,6 +376,13 @@ namespace PopLife.Manager
             hasOpenedCustomerCodex = false;
             hasOpenedItemCodex = false;
             hasDismissedFirstQuestToast = false;
+            isCalendarUnlocked = false;
+
+            // 仅重置内存不够：右键单独调用此 context menu 时若不删 ES3 key，
+            // 下次 Play 进入 Awake 仍会从 ES3 加载回 true，导致"重置"假象。
+            // ClearAllSaves → ResetTutorialStates 调用链里此处 KeyExists 返回 false（已被 es3Keys 数组删过），第二次删 no-op。
+            if (ES3.KeyExists(ES3_KEY_CALENDAR_UNLOCKED))
+                ES3.DeleteKey(ES3_KEY_CALENDAR_UNLOCKED);
 
             totalShelvesPlaced = 0;
             totalCustomersServed = 0;
@@ -403,7 +432,11 @@ namespace PopLife.Manager
             string[] es3Keys = {
                 "CalendarActiveBuffers",
                 "RestockMgr_HasRestockedThisSession",
-                "RestockMgr_ShelvesKnownAtLastRestock"
+                "RestockMgr_ShelvesKnownAtLastRestock",
+                BankruptcyManager.ES3_FIRST_DEBT,
+                BankruptcyManager.ES3_FAIL_COUNT,
+                BankruptcyManager.ES3_DEBT_ACTIVE,
+                ES3_KEY_CALENDAR_UNLOCKED
             };
             foreach (var key in es3Keys)
             {
@@ -432,6 +465,15 @@ namespace PopLife.Manager
             {
                 LotteryManager.ClearSave();
                 Debug.Log("[GameState] LotteryManager 未初始化，仅删除了 Lottery.es3 文件");
+            }
+
+            // BankruptcyManager 在 Start 阶段加载（与 RestockManager 同款约束），
+            // 所以 es3Keys 数组的删除已经能覆盖。但仍提供 ClearSaveAndResetState 作为防御性兜底，
+            // 避免未来执行顺序变更时漏清内存状态。
+            if (BankruptcyManager.Instance != null)
+            {
+                BankruptcyManager.Instance.ClearSaveAndResetState();
+                Debug.Log("[GameState] 已重置 Bankruptcy 存档与内存状态");
             }
 
             // 2. 重置 Customers.json（清除运行时统计数据，保留身份信息）

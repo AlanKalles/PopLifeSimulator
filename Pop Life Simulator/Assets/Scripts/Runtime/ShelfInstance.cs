@@ -52,10 +52,13 @@ namespace PopLife.Runtime
             var lv = SA.GetShelfLevel(currentLevel);
             float catMul = CategoryManager.Instance.GetCategoryMultiplier(SA.category);
             float baseAppeal = lv.appeal * catMul;
-            // 全局修饰器：Appeal 平坦加值
-            int addend = GlobalModifierManager.Instance != null
-                ? GlobalModifierManager.Instance.GetShelfAppealAddend(SA)
-                : 0;
+            // 全局修饰器：Appeal 平坦加值（按货架原型 + 按品类，两者叠加）
+            int addend = 0;
+            if (GlobalModifierManager.Instance != null)
+            {
+                addend += GlobalModifierManager.Instance.GetShelfAppealAddend(SA);
+                addend += GlobalModifierManager.Instance.GetCategoryAppealAddend(SA.category);
+            }
             return baseAppeal + addend;
         }
 

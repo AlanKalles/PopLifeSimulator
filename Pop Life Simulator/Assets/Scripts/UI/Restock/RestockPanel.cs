@@ -139,6 +139,8 @@ namespace PopLife.UI.Restock
                 DayLoopManager.Instance.OnBuildPhaseStart += OnBuildPhaseStart;
             if (ResourceManager.Instance != null)
                 ResourceManager.Instance.OnMoneyChanged += OnMoneyChanged;
+            if (CalendarManager.Instance != null)
+                CalendarManager.Instance.OnCalendarDataChanged += HandleCalendarDataChanged;
         }
 
         private void OnDisable()
@@ -148,6 +150,16 @@ namespace PopLife.UI.Restock
                 DayLoopManager.Instance.OnBuildPhaseStart -= OnBuildPhaseStart;
             if (ResourceManager.Instance != null)
                 ResourceManager.Instance.OnMoneyChanged -= OnMoneyChanged;
+            if (CalendarManager.Instance != null)
+                CalendarManager.Instance.OnCalendarDataChanged -= HandleCalendarDataChanged;
+        }
+
+        // Buffer 激活/到期会改变可补货品类列表；面板已打开时立即重建 grid
+        // 包一层无参 handler 以匹配 Action 委托签名（RebuildGrid 带 bool 参数）
+        private void HandleCalendarDataChanged()
+        {
+            if (isOpen)
+                RebuildGrid(scrollCheckoutToBottom: false);
         }
 
         // 面板显示时屏幕居中（anchor/pivot=0.5,0.5），藏身时向上平移到整个面板完全超出屏幕上沿。
@@ -234,6 +246,7 @@ namespace PopLife.UI.Restock
                 // 已经打开的话，只更新提示状态和刷新列表
                 if (successPrompt != null) successPrompt.Hide();
                 UpdateNotRestockedPrompt(showNotReadyPrompt);
+                RefreshCloseButtonInteractable();
                 RebuildGrid(scrollCheckoutToBottom: false);
                 return;
             }
@@ -243,6 +256,7 @@ namespace PopLife.UI.Restock
             if (panelRoot != null) panelRoot.SetActive(true);
             if (successPrompt != null) successPrompt.Hide();
             SetCategoryButtonsVisible(false);
+            RefreshCloseButtonInteractable();
 
             slideTween.Stop();
             if (openSlideCoroutine != null) StopCoroutine(openSlideCoroutine);
@@ -535,6 +549,11 @@ namespace PopLife.UI.Restock
             if (shelf == null || shelf.archetype == null) return false;
             var sa = shelf.archetype as ShelfArchetype;
             if (sa == null) return false;
+
+            // 全局禁补品类（Robot Strike 等 Buffer）：直接从列表移除，玩家无法选择
+            if (GlobalModifierManager.Instance != null
+                && GlobalModifierManager.Instance.IsRestockBlocked(sa.category))
+                return false;
 
             if (selectedCategory.HasValue && sa.category != selectedCategory.Value) return false;
 
@@ -908,9 +927,12 @@ namespace PopLife.UI.Restock
         {
             int total = ComputeTotalCost();
             if (total <= 0 || selectedShelfIds.Count == 0) return;
-            if (ResourceManager.Instance == null || !ResourceManager.Instance.CanAfford(total, 0)) return;
+            // 注：不再检查 CanAfford。负债期间允许玩家继续补货以营业还债，
+            // 否则负债玩家会陷入死锁（无库存无法营业，无法营业无法还债）。
+            // 累积负债的风险由"4 次还债失败 = Game Over"机制兜底。
+            if (ResourceManager.Instance == null) return;
 
-            // 1. 扣钱（一次性）
+            // 1. 扣钱（一次性）— money 可能因此变更负，这是预期行为
             ResourceManager.Instance.SpendMoney(total);
 
             // 2. 逐个 shelf 补货
@@ -924,6 +946,7 @@ namespace PopLife.UI.Restock
 
             // 3. 标记 ready
             if (RestockManager.Instance != null) RestockManager.Instance.MarkRestocked();
+            RefreshCloseButtonInteractable();
 
             // 4. 清理已消耗的状态（保留 filter/search）
             selectedShelfIds.Clear();
@@ -959,6 +982,7 @@ namespace PopLife.UI.Restock
             // 玩家选择当日不补货：标记后弹出复用的 success prompt（覆盖文案），点击关闭面板
             if (RestockManager.Instance != null)
                 RestockManager.Instance.MarkSkippedRestock();
+            RefreshCloseButtonInteractable();
 
             if (notRestockedPrompt != null) notRestockedPrompt.Hide();
 
@@ -966,6 +990,16 @@ namespace PopLife.UI.Restock
                 successPrompt.ShowSkip(OnSuccessPromptDismissed);
             else
                 ClosePanel();
+        }
+
+        // 首次打开 RestockPanel（玩家此存档从未做过 restock/skip 决策）时禁用关闭键，
+        // 强制玩家通过 Restock 或 Skip Restock 完成首次决策。决策后永久启用。
+        private void RefreshCloseButtonInteractable()
+        {
+            if (closeButton == null) return;
+            bool hasMadeDecision = RestockManager.Instance == null
+                || RestockManager.Instance.HasMadeFirstRestockDecisionEver;
+            closeButton.interactable = hasMadeDecision;
         }
 
         // ================================================================

@@ -30,6 +30,15 @@ namespace PopLife
                 quitButton.onClick.AddListener(OnQuitClicked);
             }
 
+            // ⚠️ 配置校验：panelRoot 必须指向**子节点**，不能是自己。
+            // 否则 Awake 中的 SetActive(false) 会让自己 inactive，导致 OnEnable 不再运行，
+            // OnBankruptcy 事件订阅失效（这是 Day3 卡死 bug 的根因）。
+            if (panelRoot == gameObject)
+            {
+                Debug.LogError("[BankruptcyPanel] panelRoot 不应指向自己 — 必须指向子节点（视觉 panel）。" +
+                               "否则 OnEnable 不会运行，OnBankruptcy 事件无法被订阅。");
+            }
+
             // 初始隐藏面板
             if (panelRoot != null)
             {

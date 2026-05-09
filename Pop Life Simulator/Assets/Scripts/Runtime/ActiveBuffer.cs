@@ -28,6 +28,17 @@ namespace PopLife.Runtime
         public int remainingDays;
 
         /// <summary>
+        /// 是否已落定随机品类（Robot Strike 类 Buffer 用）
+        /// 激活时 roll 一个 ProductCategory 写入下方字段
+        /// </summary>
+        public bool hasRolledBlockedCategory;
+
+        /// <summary>
+        /// 激活时随机选定的禁补品类（仅 hasRolledBlockedCategory==true 时有意义）
+        /// </summary>
+        public ProductCategory rolledBlockedCategory;
+
+        /// <summary>
         /// 运行时缓存的 SO 引用（不参与序列化）
         /// </summary>
         [NonSerialized]

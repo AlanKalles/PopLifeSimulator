@@ -269,6 +269,10 @@ namespace PopLife.Quest
             string[] activeQuests = stateStore?.GetAllQuests(QuestState.Active);
             if (activeQuests != null && activeQuests.Length > 0)
             {
+                // 收集需要 auto-complete 的任务，避免在遍历 activeQuests 时
+                // 因 CompleteQuest 同步触发新一轮 HandleQuestStateChanged 造成迭代不一致
+                List<string> autoCompletePending = null;
+
                 foreach (string questName in activeQuests)
                 {
                     if (!tracker.IsTracking(questName))
@@ -278,6 +282,25 @@ namespace PopLife.Quest
 
                         if (debugMode)
                             Debug.Log($"[QuestLogicManager] 检测到新激活任务: {questName}");
+
+                        // Dialogue/Lua 通过 SetQuestState 直接激活的任务也要尊重 AutoCompleteOnActivation
+                        // （ActivateQuest() 路径之外的兜底）
+                        var def = QuestDataService.Instance?.GetDefinition(questName);
+                        if (def != null && def.AutoCompleteOnActivation)
+                        {
+                            autoCompletePending ??= new List<string>();
+                            autoCompletePending.Add(questName);
+                        }
+                    }
+                }
+
+                if (autoCompletePending != null)
+                {
+                    foreach (var questName in autoCompletePending)
+                    {
+                        if (debugMode)
+                            Debug.Log($"[QuestLogicManager] 自动完成任务（外部激活路径）: {questName}");
+                        CompleteQuest(questName);
                     }
                 }
 
@@ -305,12 +328,9 @@ namespace PopLife.Quest
             CheckDeadlines();
 
             // 4. 按天触发 marker（在DDL判定之后）
-            if (newDay == 3)
-            {
-                TutorialEventBus.RaiseMarker(TutorialMarker.LotteryUnlocked);
-            }
             if (newDay == 5)
             {
+                TutorialEventBus.RaiseMarker(TutorialMarker.LotteryUnlocked);
                 TutorialEventBus.RaiseMarker(TutorialMarker.Day5Auditor1stQuestDDL);
             }
 
@@ -399,6 +419,10 @@ namespace PopLife.Quest
             string[] activeQuests = stateStore?.GetAllQuests(QuestState.Active);
             if (activeQuests == null || activeQuests.Length == 0) return;
 
+            // 兜底修复存量：因历史 bug 滞留在 Active 但应当 auto-complete 的任务，重启时一并完成。
+            // 在遍历之外执行，避免 CompleteQuest 修改 stateStore 影响迭代。
+            List<string> autoCompletePending = null;
+
             foreach (string questName in activeQuests)
             {
                 if (!tracker.IsTracking(questName))
@@ -407,6 +431,23 @@ namespace PopLife.Quest
 
                     if (debugMode)
                         Debug.Log($"[QuestLogicManager] 扫描到已激活任务: {questName}");
+                }
+
+                var def = QuestDataService.Instance?.GetDefinition(questName);
+                if (def != null && def.AutoCompleteOnActivation)
+                {
+                    autoCompletePending ??= new List<string>();
+                    autoCompletePending.Add(questName);
+                }
+            }
+
+            if (autoCompletePending != null)
+            {
+                foreach (var questName in autoCompletePending)
+                {
+                    if (debugMode)
+                        Debug.Log($"[QuestLogicManager] 启动扫描兜底完成 AutoComplete 任务: {questName}");
+                    CompleteQuest(questName);
                 }
             }
         }

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.BufferData
   bufferId: Robot Strike
   displayName: Robot Strike
-  description: '[REWORK NEEDED: No Restock For Category]Industrial transportation
-    robotics are on strike, no restocks for *random category* tomorrow.'
+  description: Industrial transportation robotics are on strike. A random product
+    category cannot be restocked tomorrow.
   icon: {fileID: 0}
   triggerType: 0
   occurProbability: 0.02
@@ -28,10 +28,14 @@ MonoBehaviour:
     customerSpawnRateMultiplier: 1
     customerMoneyBagMultiplier: 1
     globalFameGainMultiplier: 1
+    maintenanceCostMultiplier: 1
     categoryPriceModifiers: []
     categoryFameModifiers: []
-    categoryQuantityModifiers:
-    - category: 0
-      multiplier: 0
+    categoryQuantityModifiers: []
     shelfAppealModifiers: []
-    bonusInterestCategories: 
+    categoryAppealModifiers: []
+    bonusInterestCategories: []
+    restockBlockedCategories: []
+  delayActivationByOneDay: 1
+  rollRandomBlockedCategory: 1
+  activationConversationTitle:

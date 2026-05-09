@@ -243,7 +243,7 @@ namespace PopLife.Customers.Spawner
 
             if (IsReservedDay1TutorialCustomerId(customerId))
             {
-                Debug.LogWarning($"[CustomerSpawner] Day 1 tutorial customer '{customerId}' is reserved for the forced 3rd spawn and cannot be spawned manually today.");
+                Debug.LogWarning($"[CustomerSpawner] Day 1 tutorial customer '{customerId}' is reserved for the forced 1st spawn and cannot be spawned manually today.");
                 return;
             }
 

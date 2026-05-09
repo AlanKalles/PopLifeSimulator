@@ -28,12 +28,17 @@ namespace PopLife
         // 会话级 flag：本次 BuildPhase 玩家是否已点过 Skip Restock，跳过后允许直接开店
         private bool playerSkippedRestockThisSession;
 
+        // Lifetime flag：玩家此存档是否已经做过任意一次 restock/skip 决策
+        // 用于"首次打开 RestockPanel 时禁用关闭键"的教程闸门
+        private bool hasMadeFirstRestockDecisionEver;
+
         // 上次补货时场上存在的 shelf id 快照
         private HashSet<string> shelvesKnownAtLastRestock = new HashSet<string>();
 
         private const string ES3_KEY_RESTOCKED = "RestockMgr_HasRestockedThisSession";
         private const string ES3_KEY_KNOWN_IDS = "RestockMgr_ShelvesKnownAtLastRestock";
         private const string ES3_KEY_SKIPPED = "RestockMgr_SkippedThisSession";
+        private const string ES3_KEY_FIRST_DECISION = "RestockMgr_FirstDecisionMadeEver";
 
         private void Awake()
         {
@@ -100,10 +105,14 @@ namespace PopLife
             return true;
         }
 
+        /// <summary>玩家此存档是否已经做过首次 restock/skip 决策（用于关闭键教程闸门）。</summary>
+        public bool HasMadeFirstRestockDecisionEver => hasMadeFirstRestockDecisionEver;
+
         /// <summary>玩家成功点击 Restock 后调用：置 flag 为 true 并刷新已知货架快照。</summary>
         public void MarkRestocked()
         {
             hasRestockedThisSession = true;
+            hasMadeFirstRestockDecisionEver = true;
             shelvesKnownAtLastRestock = CollectCurrentShelfIds();
             SaveToES3();
         }
@@ -112,6 +121,7 @@ namespace PopLife
         public void MarkSkippedRestock()
         {
             playerSkippedRestockThisSession = true;
+            hasMadeFirstRestockDecisionEver = true;
             SaveToES3();
         }
 
@@ -187,6 +197,7 @@ namespace PopLife
             ES3.Save(ES3_KEY_RESTOCKED, hasRestockedThisSession);
             ES3.Save(ES3_KEY_KNOWN_IDS, new List<string>(shelvesKnownAtLastRestock));
             ES3.Save(ES3_KEY_SKIPPED, playerSkippedRestockThisSession);
+            ES3.Save(ES3_KEY_FIRST_DECISION, hasMadeFirstRestockDecisionEver);
         }
 
         // 必须保留在 Start，不要移到 Awake：GameStateManager.ClearAllSaves 在 Awake 阶段删除 ES3 key，
@@ -204,6 +215,9 @@ namespace PopLife
 
             if (ES3.KeyExists(ES3_KEY_SKIPPED))
                 playerSkippedRestockThisSession = ES3.Load<bool>(ES3_KEY_SKIPPED);
+
+            if (ES3.KeyExists(ES3_KEY_FIRST_DECISION))
+                hasMadeFirstRestockDecisionEver = ES3.Load<bool>(ES3_KEY_FIRST_DECISION);
         }
     }
 }

@@ -15,6 +15,6 @@ MonoBehaviour:
   activationMarker: 0
   executionOrder: 100
   conversationToStart: Midori/1
-  conversationDelay: 0.1
+  conversationDelay: 0.2
   luaScript: 
   description: 

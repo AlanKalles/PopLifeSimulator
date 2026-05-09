@@ -108,7 +108,7 @@ namespace PopLife.Manager
                 name = adapter?.customerName ?? "Unknown",
                 loyaltyLevel = adapter?.loyaltyLevel ?? 0,
                 totalSpent = 0,
-                sprite = CustomerPartLoader.GetPart(agent.customerID, PartIndex.Head),
+                sprite = CustomerPortraitLoader.LoadPortrait(agent.customerID, agent.cachedArchetype),
                 hasLeft = false
             };
 
