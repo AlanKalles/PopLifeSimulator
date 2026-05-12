@@ -34,7 +34,7 @@ MonoBehaviour:
     filterArchetypes:
     - {fileID: 11400000, guid: f1c9c3dbacc0144f295d97e030a6ccdd, type: 2}
   activationMarker: 97
-  completionMarker: -1
+  completionMarker: 111
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: "SoloFans: Old CD"

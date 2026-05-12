@@ -19,11 +19,14 @@ MonoBehaviour:
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 100
+    amount: 60
     itemId: 
   - type: 2
     amount: 1
-    itemId: Women’s Pleasure Condoms
+    itemId: "Women\u2019s Pleasure Condoms"
+  - type: 2
+    amount: 1
+    itemId: Mouth Wash
   - type: 3
     amount: 1
     itemId: Alex
@@ -31,23 +34,25 @@ MonoBehaviour:
     amount: 1
     itemId: Cherry
   conditions:
-  - conditionType: 0
+  - conditionType: 1
     scope: 0
-    targetValue: 0
+    targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
-    useFilterArchetypes: 0
-    filterArchetypes: []
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: 36f9b136240a48345b049eba6b922643, type: 2}
   activationMarker: 73
   completionMarker: 76
+  failureMarker: -1
   triggerMarkerAfterToast: 1
-  autoCompleteOnActivation: 1
+  autoCompleteOnActivation: 0
   title: Pleasure Condom
-  description: Some customers want protection that still feels like part of the fun.
-    Add safer-sex options that promise sensation, not just caution.
+  description: 'Some customers want protection that still feels like part of the
+    fun. '
   successDescription: Protection now feels less like a compromise and more like part
     of the experience.
   entryTexts:
-  - Move the protection that promises more sensation than the basics
+  - Sell condoms that enhance stimulation.
   questIcon: {fileID: 0}
   sortPriority: 120

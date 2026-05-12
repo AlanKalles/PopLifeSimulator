@@ -19,7 +19,7 @@ MonoBehaviour:
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 100
+    amount: 50
     itemId: 
   - type: 2
     amount: 1
@@ -32,7 +32,7 @@ MonoBehaviour:
     itemId: Textured Fantasy Sheath
   - type: 1
     amount: 30
-    itemId:
+    itemId: 
   - type: 2
     amount: 1
     itemId: Nipple Pump
@@ -46,9 +46,9 @@ MonoBehaviour:
     amount: 1
     itemId: Yukari
   conditions:
-  - conditionType: 6
-    scope: 2
-    targetValue: 1
+  - conditionType: 1
+    scope: 0
+    targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
@@ -56,6 +56,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: dc2cf04e956aef24f8f4edb9b09765b4, type: 2}
   activationMarker: 75
   completionMarker: 77
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Inclusiveness

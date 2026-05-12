@@ -33,7 +33,7 @@ MonoBehaviour:
     useFilterArchetypes: 0
     filterArchetypes: []
   activationMarker: 89
-  completionMarker: -1
+  completionMarker: 104
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Auditor's Request #2

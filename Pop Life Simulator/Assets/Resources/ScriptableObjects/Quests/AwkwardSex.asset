@@ -19,11 +19,11 @@ MonoBehaviour:
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 100
-    itemId:
+    amount: 50
+    itemId: 
   - type: 1
     amount: 40
-    itemId:
+    itemId: 
   - type: 2
     amount: 1
     itemId: Flower Vibrator
@@ -33,14 +33,15 @@ MonoBehaviour:
   conditions:
   - conditionType: 1
     scope: 0
-    targetValue: 5
+    targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes:
-    - {fileID: 11400000, guid: 5f6df33ba86e4f0428c0bde372632ebe, type: 2}
+    - {fileID: 11400000, guid: c02e696425debd4478ad18db4d97b8e6, type: 2}
   activationMarker: 78
   completionMarker: 79
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Awkward Sex

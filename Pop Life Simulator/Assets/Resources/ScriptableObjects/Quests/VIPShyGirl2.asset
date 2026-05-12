@@ -35,7 +35,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 41fadbfd3565b91429da869370698f16, type: 2}
     - {fileID: 11400000, guid: b8e3789a5910b45f19838eed626c2c2c, type: 2}
   activationMarker: 101
-  completionMarker: -1
+  completionMarker: 114
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: "Shy Girl: Party Lingerie"

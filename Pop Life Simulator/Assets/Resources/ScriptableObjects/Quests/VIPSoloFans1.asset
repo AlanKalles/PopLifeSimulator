@@ -20,27 +20,33 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 300
-    itemId:
+    itemId: 
   - type: 1
     amount: 75
-    itemId:
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: SoloFans Giftcode
   conditions:
-  - conditionType: 6
+  - conditionType: 1
     scope: 2
-    targetValue: 1
+    targetValue: 5
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes:
-    - {fileID: 11400000, guid: 2e2b92dbce1404641a297de91c342ef0, type: 2}
+    - {fileID: 11400000, guid: 9bfa6244e9697e141a7fabbce011d3a3, type: 2}
   activationMarker: 96
-  completionMarker: -1
+  completionMarker: 110
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "SoloFans: Big Order"
-  description: "Omega wants a showpiece powerful enough to turn a video into an event. Find something rare, mechanical, and hard for competitors to copy."
-  successDescription: "Omega got the kind of spectacle that can move rankings."
+  title: 'SoloFans: Big Order'
+  description: Omega wants a showpiece powerful enough to turn a video into an event.
+    Find something rare, catchy, and hard for competitors to copy.
+  successDescription: Omega loves it. She offers you giftcodes to her content on
+    solofans.
   entryTexts:
-  - Set out the sleeve-style toy Omega can build a scene around
+  - Set up the shelf Omega wants.
   questIcon: {fileID: 0}
   sortPriority: 138

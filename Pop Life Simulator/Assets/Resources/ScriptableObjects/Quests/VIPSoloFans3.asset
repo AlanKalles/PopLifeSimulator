@@ -34,7 +34,7 @@ MonoBehaviour:
     filterArchetypes:
     - {fileID: 11400000, guid: dc1f283763cf14213a069990b3b5e2fb, type: 2}
   activationMarker: 98
-  completionMarker: -1
+  completionMarker: 112
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: "SoloFans: Extreme Toy"

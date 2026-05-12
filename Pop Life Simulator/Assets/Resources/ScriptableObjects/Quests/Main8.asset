@@ -33,7 +33,8 @@ MonoBehaviour:
     useFilterArchetypes: 0
     filterArchetypes: []
   activationMarker: 93
-  completionMarker: -1
+  completionMarker: 108
+  failureMarker: 109
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Remove Cucci Products

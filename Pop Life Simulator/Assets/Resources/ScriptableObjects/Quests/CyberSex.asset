@@ -20,10 +20,10 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId:
+    itemId: 
   - type: 1
     amount: 60
-    itemId:
+    itemId: 
   - type: 2
     amount: 1
     itemId: WLW VR Porn
@@ -37,22 +37,24 @@ MonoBehaviour:
     amount: 1
     itemId: Isabel
   conditions:
-  - conditionType: 6
-    scope: 2
-    targetValue: 1
+  - conditionType: 1
+    scope: 0
+    targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes:
-    - {fileID: 11400000, guid: f1c9c3dbacc0144f295d97e030a6ccdd, type: 2}
     - {fileID: 11400000, guid: 740d7e81e93c449b380d9f58e2363a5d, type: 2}
   activationMarker: 80
   completionMarker: 81
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: "C\xA5B3R5EX"
-  description: "Some customers would rather escape into pixels than meet anyone's eyes. Add digital fantasies for shoppers who want distance, privacy, and high production value."
-  successDescription: "The store now has a digital fantasy corner for customers who prefer screens to small talk."
+  description: Some customers would rather escape into pixels than meet anyone's
+    eyes. Add digital fantasies for shoppers who want distance, privacy, and high
+    production value.
+  successDescription: The store now has a digital fantasy corner for customers who
+    prefer screens to small talk.
   entryTexts:
   - Stock a digital gift card for customers who prefer fantasy through a screen
   questIcon: {fileID: 0}

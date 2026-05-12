@@ -20,27 +20,29 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 75
-    itemId:
+    itemId: 
   - type: 1
     amount: 50
-    itemId:
+    itemId: 
   conditions:
-  - conditionType: 6
-    scope: 2
-    targetValue: 1
+  - conditionType: 1
+    scope: 0
+    targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes:
-    - {fileID: 11400000, guid: 5f6df33ba86e4f0428c0bde372632ebe, type: 2}
+    - {fileID: 11400000, guid: c02e696425debd4478ad18db4d97b8e6, type: 2}
   activationMarker: 100
-  completionMarker: -1
+  completionMarker: 113
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "Shy Girl: First Toy"
-  description: "Hana is new to this and trying to keep her boundaries intact while still exploring pleasure. Point her toward something gentle and external."
-  successDescription: "Hana left with a first choice that respected both her curiosity and her limits."
+  title: 'Shy Girl: First Toy'
+  description: Hana is new to this and feel afraid of her mom finding her sex toy.
+    Do you have any recommandation for her?
+  successDescription: Hana left with a first choice that respected both her curiosity
+    and her limits.
   entryTexts:
-  - Give Hana the small external toy that feels least intimidating
+  - Give Hana the small external toy that looks least intimidating
   questIcon: {fileID: 0}
   sortPriority: 134

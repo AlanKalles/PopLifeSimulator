@@ -20,13 +20,13 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 350
-    itemId:
+    itemId: 
   - type: 2
     amount: 1
     itemId: Textured Fantasy Dildo
   - type: 1
     amount: 1000
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Susan
@@ -36,12 +36,18 @@ MonoBehaviour:
     targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 43
   completionMarker: 44
+  failureMarker: -1
   triggerMarkerAfterToast: 1
+  autoCompleteOnActivation: 0
   title: Tenth Building
-  description: "The final expansion push should make the store feel like an institution. Give every major product fantasy enough space to breathe."
-  successDescription: "The store has become a full destination, with room for nearly every kind of customer."
+  description: The final expansion push should make the store feel like an institution.
+    Give every major product fantasy enough space to breathe.
+  successDescription: The store has become a full destination, with room for nearly
+    every kind of customer.
   entryTexts:
   - Place 10 buildings
   questIcon: {fileID: 0}

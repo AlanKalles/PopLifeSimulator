@@ -398,6 +398,10 @@ namespace PopLife.Quest
             // 触发事件
             OnQuestFailed?.Invoke(questName);
 
+            var failDef = QuestDataService.Instance?.GetDefinition(questName);
+            if (failDef != null && failDef.FailureMarker != TutorialMarker.None)
+                TutorialEventBus.RaiseMarker(failDef.FailureMarker);
+
             // 音效
             AudioManager.Instance?.PlaySound(AudioKeys.QUEST_FAILED);
 

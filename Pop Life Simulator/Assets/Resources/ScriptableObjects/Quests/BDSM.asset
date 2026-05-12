@@ -20,10 +20,10 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId:
+    itemId: 
   - type: 1
     amount: 60
-    itemId:
+    itemId: 
   - type: 2
     amount: 1
     itemId: Collar
@@ -37,9 +37,9 @@ MonoBehaviour:
     amount: 1
     itemId: Unc
   conditions:
-  - conditionType: 6
-    scope: 2
-    targetValue: 1
+  - conditionType: 1
+    scope: 0
+    targetValue: 10
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
@@ -50,8 +50,11 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: BDSM
-  description: "A sharper-edged crowd is looking for restraint, trust, and control rather than straightforward stimulation. Stock the kind of tools that make negotiated power play feel intentional."
-  successDescription: "The kink-focused crowd has a reason to take the store seriously now."
+  description: A sharper-edged crowd is looking for restraint, trust, and control
+    rather than straightforward stimulation. Stock the kind of tools that make negotiated
+    power play feel intentional.
+  successDescription: The kink-focused crowd has a reason to take the store seriously
+    now.
   entryTexts:
   - Put out the restraint tool that makes negotiated control feel intentional
   questIcon: {fileID: 0}

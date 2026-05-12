@@ -15,7 +15,7 @@ MonoBehaviour:
   questName: Gift from Midori
   questType: 1
   deadlineDays: 0
-  giverName: 
+  giverName: Midori
   giverPortrait: {fileID: 0}
   rewards:
   - type: 2
@@ -24,14 +24,19 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Silicone Dildo
+  - type: 0
+    amount: 75
+    itemId: 
   conditions: []
   activationMarker: -1
   completionMarker: -1
+  failureMarker: -1
   triggerMarkerAfterToast: 0
   autoCompleteOnActivation: 1
   title: Gift from Midori
-  description: You need to build up and expand your store to attract more customers
+  description: You did a great job! Midori gave you more shelf blueprint.
   successDescription: Midori sent you more shelf bluprints as your opening gift.
-  entryTexts: []
+  entryTexts:
+  - Open the gift.
   questIcon: {fileID: 0}
   sortPriority: 50

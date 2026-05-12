@@ -20,13 +20,16 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 125
-    itemId:
+    itemId: 
   - type: 1
     amount: 200
-    itemId:
+    itemId: 
   - type: 3
     amount: 1
     itemId: Paxton
+  - type: 0
+    amount: 1
+    itemId: Textured Fantasy Fleshlights
   conditions:
   - conditionType: 5
     scope: 2
@@ -37,6 +40,7 @@ MonoBehaviour:
     filterArchetypes: []
   activationMarker: 39
   completionMarker: 40
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Second Building

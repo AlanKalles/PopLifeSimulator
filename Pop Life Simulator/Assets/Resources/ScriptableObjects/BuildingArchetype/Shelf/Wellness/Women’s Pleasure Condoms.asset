@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   archetypeId: "Women\u2019s Pleasure Condoms"
   displayName: "Women\u2019s Pleasure Condoms"
+  isImplemented: 1
   icon: {fileID: 21300000, guid: c8d177d0ed74643f2be081445c2c27c7, type: 3}
   prefab: {fileID: 2553700819061216157, guid: 6d2c32b02823f4ab3818ecb73b6b22d0, type: 3}
-  buildCost: 195
+  buildCost: 287
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern:

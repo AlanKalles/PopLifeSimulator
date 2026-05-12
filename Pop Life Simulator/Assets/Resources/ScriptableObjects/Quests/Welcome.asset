@@ -19,7 +19,7 @@ MonoBehaviour:
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 150
+    amount: 65
     itemId: 
   - type: 2
     amount: 1
@@ -46,6 +46,7 @@ MonoBehaviour:
     filterArchetypes: []
   activationMarker: -1
   completionMarker: -1
+  failureMarker: -1
   triggerMarkerAfterToast: 0
   autoCompleteOnActivation: 1
   title: Start Game
