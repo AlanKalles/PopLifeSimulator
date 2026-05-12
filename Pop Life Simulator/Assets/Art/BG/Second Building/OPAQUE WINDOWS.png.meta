@@ -61,7 +61,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -132,11 +132,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 257
-        width: 345
-        height: 95
+        y: 265
+        width: 699
+        height: 87
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -150,37 +150,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: OPAQUE WINDOWS_1
-      rect:
-        serializedVersion: 2
-        x: 470
-        y: 257
-        width: 229
-        height: 95
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 903fb3b0b06af77e0800000000000000
-      internalID: -1765509962542615799
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: OPAQUE WINDOWS_2
       rect:
         serializedVersion: 2
         x: 0
-        y: 129
-        width: 345
-        height: 104
+        y: 136
+        width: 699
+        height: 89
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -194,37 +172,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: OPAQUE WINDOWS_3
-      rect:
-        serializedVersion: 2
-        x: 470
-        y: 128
-        width: 229
-        height: 97
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 32cce5851a2049e00800000000000000
-      internalID: 1050467505079766051
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: OPAQUE WINDOWS_4
       rect:
         serializedVersion: 2
         x: 102
         y: 0
-        width: 66
+        width: 595
         height: 72
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -233,28 +189,6 @@ TextureImporter:
       bones: []
       spriteID: 46922948468d29d20800000000000000
       internalID: 3283925004539013476
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: OPAQUE WINDOWS_5
-      rect:
-        serializedVersion: 2
-        x: 174
-        y: 0
-        width: 523
-        height: 80
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8ecdc6143f4107120800000000000000
-      internalID: 2409448835650477288
       vertices: []
       indices: 
       edges: []

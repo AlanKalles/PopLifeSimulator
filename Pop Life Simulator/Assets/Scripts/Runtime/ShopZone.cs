@@ -52,7 +52,26 @@ namespace PopLife.Runtime
             RefreshRuntimeReferences();
             ValidateConfiguredTiles();
             RefreshGlassState();
+
+            // 订阅阶段切换事件：BuildPhase=白天 / OpenPhase=夜晚
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnBuildPhaseStart += HandleBuildPhaseStart;
+                DayLoopManager.Instance.OnStoreOpen += HandleStoreOpen;
+            }
         }
+
+        private void OnDisable()
+        {
+            if (DayLoopManager.Instance != null)
+            {
+                DayLoopManager.Instance.OnBuildPhaseStart -= HandleBuildPhaseStart;
+                DayLoopManager.Instance.OnStoreOpen -= HandleStoreOpen;
+            }
+        }
+
+        private void HandleBuildPhaseStart() => ApplyTimeOfDayToGlass(false);
+        private void HandleStoreOpen() => ApplyTimeOfDayToGlass(true);
 
         public void RefreshRuntimeReferences()
         {
@@ -148,9 +167,14 @@ namespace PopLife.Runtime
             }
 
             bool shouldShowLocked = useGlassOverlayWhenUnowned && !isOwnedByPlayer;
+            // OpenPhase 视为夜晚，其他（含 BuildPhase）视为白天
+            bool isNight = DayLoopManager.Instance != null
+                && DayLoopManager.Instance.currentPhase == GamePhase.OpenPhase;
+
             foreach (var glass in activeGlassControllers)
             {
                 if (glass == null) continue;
+                glass.SetTimeOfDay(isNight);
                 if (shouldShowLocked)
                 {
                     glass.SetLocked(true);
@@ -160,6 +184,21 @@ namespace PopLife.Runtime
                     glass.SetLocked(false);
                     glass.SetVisible(useGlassOverlayWhenUnowned);
                 }
+            }
+        }
+
+        private void ApplyTimeOfDayToGlass(bool isNight)
+        {
+            var activeGlassControllers = glassControllers != null && glassControllers.Length > 0
+                ? glassControllers
+                : discoveredGlassControllers;
+
+            if (activeGlassControllers == null || activeGlassControllers.Length == 0) return;
+
+            foreach (var glass in activeGlassControllers)
+            {
+                if (glass == null) continue;
+                glass.SetTimeOfDay(isNight);
             }
         }
 
