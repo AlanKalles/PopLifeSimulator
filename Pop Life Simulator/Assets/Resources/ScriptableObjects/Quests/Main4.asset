@@ -20,10 +20,10 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 150
-    itemId:
+    itemId: 
   - type: 1
     amount: 100
-    itemId:
+    itemId: 
   conditions:
   - conditionType: 1
     scope: 0
@@ -42,6 +42,6 @@ MonoBehaviour:
   successDescription: The vibration sales target is complete, and the Auditor has
     fresh numbers to file.
   entryTexts:
-  - Move 200 pleasure devices built around vibration
+  - Sell 200 pleasure devices built around vibration
   questIcon: {fileID: 0}
   sortPriority: 29

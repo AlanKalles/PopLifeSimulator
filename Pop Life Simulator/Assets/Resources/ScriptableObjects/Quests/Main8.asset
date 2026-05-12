@@ -20,17 +20,17 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId:
+    itemId: 
   - type: 1
     amount: 50
-    itemId:
+    itemId: 
   conditions:
   - conditionType: 0
-    scope: 0
-    targetValue: 1
+    scope: 2
+    targetValue: 0
     useFilterCategory: 0
     filterCategory: 0
-    useFilterArchetypes: 0
+    useFilterArchetypes: 1
     filterArchetypes: []
   activationMarker: 93
   completionMarker: 108

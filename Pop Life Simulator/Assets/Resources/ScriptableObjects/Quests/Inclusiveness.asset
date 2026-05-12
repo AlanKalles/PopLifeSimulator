@@ -61,8 +61,8 @@ MonoBehaviour:
   autoCompleteOnActivation: 0
   title: Inclusiveness
   description: A store should not assume that every customer shops the same way or
-    loves the same body. Add options that make more relationships and identities
-    feel seen.
+    loves the same body. Add soft beginner options that make queer relationships
+    and identities feel seen.
   successDescription: More customers can now recognize themselves somewhere in POPLife's
     aisles.
   entryTexts:

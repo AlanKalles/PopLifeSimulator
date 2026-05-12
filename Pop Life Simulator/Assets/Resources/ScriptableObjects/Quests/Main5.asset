@@ -20,14 +20,14 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 100
-    itemId:
+    itemId: 
   - type: 1
     amount: 100
-    itemId:
+    itemId: 
   conditions:
-  - conditionType: 0
+  - conditionType: 4
     scope: 0
-    targetValue: 3
+    targetValue: 100
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 0
@@ -43,6 +43,6 @@ MonoBehaviour:
   successDescription: Enough customers came back often enough to prove POPLife is
     building loyalty.
   entryTexts:
-  - Have 3 loyal customers reach member status
+  - 'Have 3 loyal customers reach member status [Condition not implemented]'
   questIcon: {fileID: 0}
   sortPriority: 28
