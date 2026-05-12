@@ -40,7 +40,7 @@ MonoBehaviour:
     filterArchetypes:
     - {fileID: 11400000, guid: b56367274e8c2e843959960822bd01db, type: 2}
     - {fileID: 11400000, guid: df68b262ed3fb674d96917ef2927c2a2, type: 2}
-  activationMarker: 32
+  activationMarker: -1
   completionMarker: 74
   failureMarker: -1
   triggerMarkerAfterToast: 1

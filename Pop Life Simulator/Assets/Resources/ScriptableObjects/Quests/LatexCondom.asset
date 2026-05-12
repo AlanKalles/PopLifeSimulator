@@ -31,9 +31,9 @@ MonoBehaviour:
     amount: 1
     itemId: Zarah
   conditions:
-  - conditionType: 1
+  - conditionType: 6
     scope: 0
-    targetValue: 10
+    targetValue: 1
     useFilterCategory: 1
     filterCategory: 10
     useFilterArchetypes: 0

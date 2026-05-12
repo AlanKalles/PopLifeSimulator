@@ -34,9 +34,9 @@ MonoBehaviour:
     amount: 1
     itemId: Phosphodiesterase-5 (PDE-5) inhibitor
   conditions:
-  - conditionType: 1
+  - conditionType: 6
     scope: 0
-    targetValue: 10
+    targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
