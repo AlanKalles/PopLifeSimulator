@@ -57,7 +57,7 @@ namespace PopLife.Data
         public int GetMaintenanceFee(int level)
         {
             int p = GetProfit(level);
-            return Mathf.Max(Mathf.FloorToInt(0.9f * p + 3f * Mathf.Sqrt(p)) - 1,1);
+            return Mathf.Max(Mathf.FloorToInt(0.9f * p + 3f * Mathf.Sqrt(p)) - 2,1);
         }
 
         /// <summary>最大库存 = Floor(Max(0, 800 - buildCost) × 0.01 + 5 + level² × 0.5)</summary>

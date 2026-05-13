@@ -17,7 +17,7 @@ MonoBehaviour:
   isImplemented: 1
   icon: {fileID: 21300000, guid: e9e0576e879d44b7f943f1f308e8996f, type: 3}
   prefab: {fileID: 9121478431460335272, guid: f50b07e401546724eb94ba73502b00f9, type: 3}
-  buildCost: 95
+  buildCost: 105
   moveCost: 0
   destroyRefundRate: 0.75
   footprintPattern:
