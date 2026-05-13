@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AwkwardSex
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: Awkward Sex
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Midori
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
@@ -26,7 +26,7 @@ MonoBehaviour:
     itemId: 
   - type: 2
     amount: 1
-    itemId: Flower Vibrator
+    itemId: 
   - type: 3
     amount: 1
     itemId: Bianca
@@ -45,12 +45,10 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Awkward Sex
-  description: New shoppers are hovering near the aisles, pretending they are only
-    browsing. Give them gentle, beginner-friendly options that make that first step
-    feel less embarrassing.
-  successDescription: First-timers found something they could actually ask for, and
-    the store became a little easier to enter.
+  description: Bianca's wandering outside POPlife, but scared to get in. She's clearly
+    interested in the vibrators:"But I don't want my mom to find it..."
+  successDescription: Bianca loves you. She's coming to the store from now on.
   entryTexts:
-  - Sell five small external toys that make first-timers less nervous
+  - What's the perfect camouflaged vibrator?
   questIcon: {fileID: 0}
   sortPriority: 90
