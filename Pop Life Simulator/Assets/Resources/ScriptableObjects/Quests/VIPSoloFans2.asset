@@ -20,10 +20,13 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 300
-    itemId:
+    itemId: 
   - type: 1
     amount: 100
-    itemId:
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: Leather Queen Lingerie
   conditions:
   - conditionType: 6
     scope: 2

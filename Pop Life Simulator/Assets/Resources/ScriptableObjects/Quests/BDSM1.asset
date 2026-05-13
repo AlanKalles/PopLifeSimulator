@@ -19,32 +19,23 @@ MonoBehaviour:
   giverPortrait: {fileID: 0}
   rewards:
   - type: 0
-    amount: 50
-    itemId:
+    amount: 200
+    itemId: 
   - type: 1
-    amount: 50
-    itemId:
+    amount: 100
+    itemId: 
   - type: 2
     amount: 1
     itemId: Nipple Clamps
   - type: 2
     amount: 1
     itemId: Chasity Cage
-  - type: 0
-    amount: 150
-    itemId:
-  - type: 1
-    amount: 50
-    itemId:
   - type: 2
     amount: 1
     itemId: Pussy Pump
   - type: 2
     amount: 1
     itemId: Sounding Rod
-  - type: 3
-    amount: 1
-    itemId: Naoko
   conditions:
   - conditionType: 6
     scope: 2

@@ -18,15 +18,18 @@ MonoBehaviour:
   giverName: Omega
   giverPortrait: {fileID: 0}
   rewards:
-  - type: 1
-    amount: 100
-    itemId: 
   - type: 0
     amount: 100
     itemId: 
-  - type: 2
+  - type: 1
     amount: 100
+    itemId: 
+  - type: 2
+    amount: 1
     itemId: Orgy VR Porn
+  - type: 2
+    amount: 1
+    itemId: Whip
   conditions:
   - conditionType: 6
     scope: 2

@@ -24,6 +24,9 @@ MonoBehaviour:
   - type: 1
     amount: 100
     itemId: 
+  - type: 2
+    amount: 1
+    itemId: Bunny Gril Lingerie
   conditions:
   - conditionType: 1
     scope: 0

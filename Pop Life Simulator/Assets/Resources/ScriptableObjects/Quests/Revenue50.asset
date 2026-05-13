@@ -20,13 +20,13 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 50
-    itemId:
+    itemId: 
   - type: 1
     amount: 65
-    itemId:
-  - type: 3
+    itemId: 
+  - type: 2
     amount: 1
-    itemId: Rory
+    itemId: Lovi Couples Vibrator
   conditions:
   - conditionType: 2
     scope: 1

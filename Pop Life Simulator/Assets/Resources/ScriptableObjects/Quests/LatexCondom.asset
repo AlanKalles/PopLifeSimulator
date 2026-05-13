@@ -34,9 +34,9 @@ MonoBehaviour:
   - conditionType: 6
     scope: 0
     targetValue: 1
-    useFilterCategory: 1
+    useFilterCategory: 0
     filterCategory: 10
-    useFilterArchetypes: 0
+    useFilterArchetypes: 1
     filterArchetypes:
     - {fileID: 11400000, guid: 29e9aeaf9ee6542b180df127cf36d86a, type: 2}
   activationMarker: 33

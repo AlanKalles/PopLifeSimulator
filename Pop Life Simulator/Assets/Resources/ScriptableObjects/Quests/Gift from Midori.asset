@@ -24,9 +24,6 @@ MonoBehaviour:
   - type: 2
     amount: 1
     itemId: Silicone Dildo
-  - type: 0
-    amount: 75
-    itemId: 
   conditions: []
   activationMarker: -1
   completionMarker: -1

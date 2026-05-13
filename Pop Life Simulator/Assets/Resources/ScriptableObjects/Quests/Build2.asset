@@ -19,17 +19,11 @@ MonoBehaviour:
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 125
+    amount: 126
     itemId: 
   - type: 1
     amount: 200
     itemId: 
-  - type: 3
-    amount: 1
-    itemId: Paxton
-  - type: 0
-    amount: 1
-    itemId: Textured Fantasy Fleshlights
   conditions:
   - conditionType: 5
     scope: 2
