@@ -46,6 +46,9 @@ MonoBehaviour:
   - key: Lottery_Win
     clips:
     - {fileID: 8300000, guid: 177553b2f8a90314882302a0762396e3, type: 3}
+  - key: Lottery_Purchase
+    clips:
+    - {fileID: 8300000, guid: c0e496adaa8cfd7489ca9e7442963766, type: 3}
   - key: BuildingDestroyed
     clips:
     - {fileID: 8300000, guid: 9aa7070803af1564da119d753f617274, type: 3}

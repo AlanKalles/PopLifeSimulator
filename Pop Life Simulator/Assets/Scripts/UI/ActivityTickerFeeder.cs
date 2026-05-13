@@ -7,7 +7,8 @@ namespace PopLife.UI
 {
     /// <summary>
     /// 顾客活动播报数据源 - 监听顾客事件，生成活动消息喂入 ScrollingMessageBar
-    /// 播报事件：进店、拿货、结账
+    /// 播报事件：真正进店（穿过店门）、拿货、结账
+    /// 注意：订阅 OnCustomerEnteredStore 而非 OnSpawned，避免 Club 顾客在外部生成时就被播报
     /// </summary>
     public class ActivityTickerFeeder : MonoBehaviour
     {
@@ -21,22 +22,22 @@ namespace PopLife.UI
 
         void OnEnable()
         {
-            CustomerEventBus.OnSpawned += HandleSpawned;
+            CustomerEventBus.OnCustomerEnteredStore += HandleEnteredStore;
             CustomerEventBus.OnPurchased += HandlePurchased;
             CustomerEventBus.OnCheckedOut += HandleCheckedOut;
         }
 
         void OnDisable()
         {
-            CustomerEventBus.OnSpawned -= HandleSpawned;
+            CustomerEventBus.OnCustomerEnteredStore -= HandleEnteredStore;
             CustomerEventBus.OnPurchased -= HandlePurchased;
             CustomerEventBus.OnCheckedOut -= HandleCheckedOut;
         }
 
         /// <summary>
-        /// 顾客进店
+        /// 顾客真正进入店内（穿过店门入口）
         /// </summary>
-        private void HandleSpawned(CustomerAgent agent)
+        private void HandleEnteredStore(CustomerAgent agent)
         {
             if (agent == null || ticker == null) return;
 
