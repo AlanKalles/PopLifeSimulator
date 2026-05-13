@@ -5326,9 +5326,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: "That's right. Keep an eye on your customer, and the sales of your
+        value: That's right. Keep an eye on your customer, and the sales of your
           shelves. When a shelf is not making enough money to cover it's maintenance
-          fee, consider selling\n it."
+          fee, consider selling it.
         type: 0
         typeString: 
       - title: Sequence
@@ -5438,9 +5438,8 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Any time. But I can't help you everytime. Next time you're in debt,
-          PEI will come and fire you. But don't worry about it too much, I believe
-          in you.
+        value: Anytime. Expand with cautious, no matter what that PEI's watch dog
+          told you. You don't wanna be in debt.
         type: 0
         typeString: 
       - title: Sequence
