@@ -23,16 +23,18 @@ namespace PopLife.UI.Quest
         [SerializeField] private TextMeshProUGUI toggleLabel; // 折叠/展开文字
         [SerializeField] private string expandedText = "Collapse";
         [SerializeField] private string collapsedText = "Expand";
+        [SerializeField] private Button moreButton; // "..." 按钮，点击打开 QuestLogPanel；应放在 contentContainer 之后的同级位置
 
         [Header("引用")]
         [SerializeField] private QuestTooltip questTooltip;
         [SerializeField] private QuestLogPanel questLogPanel;
 
         [Header("Settings")]
-        [SerializeField] private int maxDisplayCount = 5;
+        [SerializeField] private int maxDisplayCount = 3;
 
         private bool isCollapsed = false; // 默认展开
-        private readonly List<QuestTrackerEntry> activeEntries = new();
+        // 对象池：复用 entry GameObject，避免每次刷新都 Destroy/Instantiate 引起的 GC
+        private readonly List<QuestTrackerEntry> entryPool = new();
 
         private void OnEnable()
         {
@@ -52,6 +54,9 @@ namespace PopLife.UI.Quest
 
             if (collapseButton != null)
                 collapseButton.onClick.AddListener(Toggle);
+
+            if (moreButton != null)
+                moreButton.onClick.AddListener(OnMoreClicked);
         }
 
         private void Start()
@@ -82,6 +87,17 @@ namespace PopLife.UI.Quest
 
             if (collapseButton != null)
                 collapseButton.onClick.RemoveListener(Toggle);
+
+            if (moreButton != null)
+                moreButton.onClick.RemoveListener(OnMoreClicked);
+        }
+
+        private void OnMoreClicked()
+        {
+            questLogPanel?.Show();
+
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlaySound(AudioKeys.UI_CLICK);
         }
 
         private void OnQuestTerminalState(string questName)
@@ -90,48 +106,63 @@ namespace PopLife.UI.Quest
         }
 
         /// <summary>
-        /// 刷新追踪列表
+        /// 刷新追踪列表。
+        /// 折叠状态下也会被调用——池中数据照常更新（不可见，但保持最新），
+        /// 这样玩家展开时立刻看到最新的任务/进度，无需额外刷新。
         /// </summary>
         public void RefreshQuests()
         {
-            // 清空旧条目
-            foreach (var entry in activeEntries)
-            {
-                if (entry != null) Destroy(entry.gameObject);
-            }
-            activeEntries.Clear();
-
-            // 获取数据
             var quests = QuestDataService.Instance?.GetTrackedQuests();
-            if (quests == null || quests.Count == 0)
-            {
-                UpdateHeader(0);
-                // 即使列表为空也强制重建：上面的 Destroy 是延迟到帧末，layout
-                // 不主动收缩会让已销毁条目的位置看起来还占着 panel
-                if (contentContainer != null)
-                    LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer);
-                return;
-            }
+            int totalCount = quests?.Count ?? 0;
+            UpdateHeader(totalCount);
 
-            // 折叠时只显示第一条，展开时显示全部（最多 maxDisplayCount 条）
-            int count = isCollapsed ? 1 : Mathf.Min(quests.Count, maxDisplayCount);
-            for (int i = 0; i < count; i++)
-            {
-                if (questEntryPrefab == null || contentContainer == null) break;
+            // 折叠时显示数为 0（条目都隐藏，但下面仍会用最新数据填充已激活的池条目，
+            // 以及保持池容量与实际任务数同步——展开时无需 rebuild）
+            int displayCount = isCollapsed ? 0 : Mathf.Min(totalCount, maxDisplayCount);
 
-                var obj = Instantiate(questEntryPrefab, contentContainer);
-                var entry = obj.GetComponent<QuestTrackerEntry>();
-                if (entry != null)
+            EnsurePoolCapacity(displayCount);
+
+            // 复用池中条目：前 displayCount 个激活并填充新数据，其余隐藏
+            for (int i = 0; i < entryPool.Count; i++)
+            {
+                var entry = entryPool[i];
+                if (entry == null) continue;
+
+                if (i < displayCount)
                 {
+                    if (!entry.gameObject.activeSelf) entry.gameObject.SetActive(true);
                     entry.Initialize(quests[i], questTooltip, questLogPanel);
-                    activeEntries.Add(entry);
+                }
+                else
+                {
+                    if (entry.gameObject.activeSelf) entry.gameObject.SetActive(false);
                 }
             }
 
-            UpdateHeader(quests.Count);
+            // 折叠态没有可见 UI 变化，跳过 immediate rebuild；展开时强制立即重建避免与 header 重叠
+            if (!isCollapsed && contentContainer != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer);
+        }
 
-            // 强制重建布局，避免新条目与 header 重叠
-            LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer);
+        /// <summary>
+        /// 确保对象池至少有 desired 个 entry GameObject 可用。
+        /// 池只增不减——maxDisplayCount=3 上限下，最多保留 3 个实例。
+        /// </summary>
+        private void EnsurePoolCapacity(int desired)
+        {
+            while (entryPool.Count < desired)
+            {
+                if (questEntryPrefab == null || contentContainer == null) return;
+
+                var obj = Instantiate(questEntryPrefab, contentContainer);
+                var entry = obj.GetComponent<QuestTrackerEntry>();
+                if (entry == null)
+                {
+                    Destroy(obj);
+                    return;
+                }
+                entryPool.Add(entry);
+            }
         }
 
         /// <summary>
@@ -146,7 +177,7 @@ namespace PopLife.UI.Quest
 
             UpdateToggleLabel();
 
-            // 刷新列表（折叠时只显示1条，展开时显示全部）
+            // 折叠时把所有条目 SetActive(false)；展开时把池中前 maxDisplayCount 个用最新数据填充并显示
             RefreshQuests();
 
             // 播放音效

@@ -49,7 +49,19 @@ namespace PopLife.Quest
             if (trackingQuests.Contains(questName)) return;
 
             var def = QuestDataService.Instance?.GetDefinition(questName);
-            if (def?.Conditions == null || def.Conditions.Length == 0) return;
+            if (def == null) return;
+
+            // AutoComplete 任务：加入追踪集合避免外层重复进入，但不订阅 condition，
+            // 也不做 CheckCurrentScopeConditions（防止 target=0 的 condition 抢在 OnQuestActivated 之前完成任务）
+            if (def.AutoCompleteOnActivation)
+            {
+                trackingQuests.Add(questName);
+                if (debugMode)
+                    Debug.Log($"[QuestProgressTracker] 标记追踪（AutoComplete，跳过 condition）: {questName}");
+                return;
+            }
+
+            if (def.Conditions == null || def.Conditions.Length == 0) return;
 
             trackingQuests.Add(questName);
 

@@ -17,6 +17,6 @@ MonoBehaviour:
   maxDigitValue: 9
   drawCycleDays: 4
   drawDayOffset: 3
-  grandPrize: 50000
-  secondPrize: 500
-  thirdPrize: 100
+  grandPrize: 1000
+  secondPrize: 100
+  thirdPrize: 50

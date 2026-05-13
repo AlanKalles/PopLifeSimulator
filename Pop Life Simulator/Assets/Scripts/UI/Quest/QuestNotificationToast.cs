@@ -67,6 +67,8 @@ namespace PopLife.UI.Quest
             public string audioKey;
             // Toast消失后触发的Marker（None = 不触发）
             public TutorialMarker afterToastMarker;
+            // QUEST COMPLETE 专用：toast 淡出后弹出的奖励详情窗口需要查 reward
+            public string questName;
         }
 
         private void Awake()
@@ -148,7 +150,8 @@ namespace PopLife.UI.Quest
                 icon = def?.QuestIcon,
                 titleColor = questCompleteTitleColor,
                 audioKey = AudioKeys.QUEST_COMPLETE,
-                afterToastMarker = afterMarker
+                afterToastMarker = afterMarker,
+                questName = questName
             });
         }
 
@@ -289,6 +292,22 @@ namespace PopLife.UI.Quest
             // 首个新任务Toast完全消失时触发marker
             if (data.title == "NEW QUEST")
                 GameStateManager.Instance?.NotifyFirstQuestToastDismissed();
+
+            // QUEST COMPLETE 一级 toast 关闭后，弹出二级奖励详情窗口
+            // 阻塞 toast 队列，直到玩家关闭二级窗口（点击窗口外背景）
+            if (data.useDualLayout
+                && !string.IsNullOrEmpty(data.questName)
+                && QuestSuccessRewardPanel.Instance != null)
+            {
+                QuestSuccessRewardPanel.Instance.Show(data.questName);
+                // 等一帧让 IsVisible=true 稳定，避免 Show 在 SetActive 之前被读到 false
+                yield return null;
+                while (QuestSuccessRewardPanel.Instance != null
+                       && QuestSuccessRewardPanel.Instance.IsVisible)
+                {
+                    yield return null;
+                }
+            }
 
             // 任务完成Toast消失后触发配置的Marker
             if (data.afterToastMarker != TutorialMarker.None)

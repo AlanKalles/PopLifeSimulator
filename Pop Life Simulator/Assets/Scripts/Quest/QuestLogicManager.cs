@@ -269,19 +269,36 @@ namespace PopLife.Quest
             string[] activeQuests = stateStore?.GetAllQuests(QuestState.Active);
             if (activeQuests != null && activeQuests.Length > 0)
             {
-                // 收集需要 auto-complete 的任务，避免在遍历 activeQuests 时
-                // 因 CompleteQuest 同步触发新一轮 HandleQuestStateChanged 造成迭代不一致
+                // 先收集首次见到的 active 任务，避免在遍历时被 CompleteQuest 同步触发的嵌套
+                // HandleQuestStateChanged 干扰迭代；同时保证 OnQuestActivated 先于
+                // OnQuestCompleted 触发（NEW QUEST toast 必须先于 QUEST COMPLETE toast 入队）
+                List<string> newlyActiveQuests = null;
                 List<string> autoCompletePending = null;
 
                 foreach (string questName in activeQuests)
                 {
                     if (!tracker.IsTracking(questName))
                     {
-                        tracker.StartTracking(questName);
+                        newlyActiveQuests ??= new List<string>();
+                        newlyActiveQuests.Add(questName);
+                    }
+                }
+
+                if (newlyActiveQuests != null)
+                {
+                    // 第一轮：先一次性发 OnQuestActivated，确保 NEW QUEST toast 排在前面
+                    foreach (var questName in newlyActiveQuests)
+                    {
                         OnQuestActivated?.Invoke(questName);
 
                         if (debugMode)
                             Debug.Log($"[QuestLogicManager] 检测到新激活任务: {questName}");
+                    }
+
+                    // 第二轮：开启追踪，并把需要 auto-complete 的任务挂起到下一轮统一处理
+                    foreach (var questName in newlyActiveQuests)
+                    {
+                        tracker.StartTracking(questName);
 
                         // Dialogue/Lua 通过 SetQuestState 直接激活的任务也要尊重 AutoCompleteOnActivation
                         // （ActivateQuest() 路径之外的兜底）

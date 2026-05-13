@@ -16,7 +16,7 @@ MonoBehaviour:
   - key: Build_Lingerie
     clips:
     - {fileID: 8300000, guid: 487c3591504704c45a7703c37aa8f39f, type: 3}
-  - key: Build_Condom
+  - key: Build_Wellness
     clips:
     - {fileID: 8300000, guid: 0769e19a7d5137244bd543fb8225066b, type: 3}
   - key: Build_Vibrator
@@ -33,8 +33,19 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 077c40bcb3952164582319c2aac9f595, type: 3}
   - key: UI_Error
     clips:
-    - {fileID: 8300000, guid: 3d63fcc6dd53b88478295e435f918226, type: 3}
-    - {fileID: 8300000, guid: 7241c641f32484b4c862f507b6ef4327, type: 3}
+    - {fileID: 8300000, guid: 5711b96076135744d88825fe032615f2, type: 3}
+  - key: UI_Click
+    clips:
+    - {fileID: 8300000, guid: 5d69d91c6c705cc4f9251d935665d673, type: 3}
+  - key: UI_Confirm
+    clips:
+    - {fileID: 8300000, guid: 5d69d91c6c705cc4f9251d935665d673, type: 3}
+  - key: UI_Cancel
+    clips:
+    - {fileID: 8300000, guid: f23b3605d1b961041ae1766ced4a0647, type: 3}
+  - key: Lottery_Win
+    clips:
+    - {fileID: 8300000, guid: 177553b2f8a90314882302a0762396e3, type: 3}
   - key: BuildingDestroyed
     clips:
     - {fileID: 8300000, guid: 9aa7070803af1564da119d753f617274, type: 3}

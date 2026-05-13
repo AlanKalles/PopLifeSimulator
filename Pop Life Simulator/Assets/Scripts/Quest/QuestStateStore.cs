@@ -227,7 +227,11 @@ namespace PopLife.Quest
         public int GetEntryCount(string questName)
         {
             if (defMap.TryGetValue(questName, out var def))
+            {
+                // AutoComplete 任务不读 condition，UI 视为 0 个子目标
+                if (def.AutoCompleteOnActivation) return 0;
                 return def.Conditions?.Length ?? 0;
+            }
             return 0;
         }
 

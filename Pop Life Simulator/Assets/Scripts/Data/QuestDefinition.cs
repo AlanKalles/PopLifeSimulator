@@ -122,6 +122,15 @@ namespace PopLife.Data
 
         private void OnValidate()
         {
+            // AutoComplete 任务在运行时跳过 condition 处理，UI 也按 0 子目标渲染。
+            // 此时 conditions / entryTexts 都是死配置，给出温和提示便于清理。
+            if (autoCompleteOnActivation)
+            {
+                if (conditions != null && conditions.Length > 0)
+                    Debug.LogWarning($"[QuestDefinition] {name}: autoCompleteOnActivation=true 时 conditions 被运行时忽略，可考虑清空。");
+                return;
+            }
+
             if (conditions != null && entryTexts != null && conditions.Length != entryTexts.Length)
                 Debug.LogWarning($"[QuestDefinition] {name}: conditions({conditions.Length}) 与 entryTexts({entryTexts.Length}) 长度不一致");
 
