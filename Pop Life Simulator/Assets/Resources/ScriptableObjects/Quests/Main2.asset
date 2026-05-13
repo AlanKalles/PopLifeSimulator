@@ -14,16 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: Main/2
   questType: 0
-  deadlineDays: 3
+  deadlineDays: 6
   giverName: Auditor
   giverPortrait: {fileID: 21300000, guid: adfa28d6e21e50941b0609702b296174, type: 3}
   rewards:
   - type: 0
     amount: 200
-    itemId:
-  - type: 2
-    amount: 1
-    itemId: SoloFans GiftCode
+    itemId: 
   - type: 2
     amount: 1
     itemId: Textured Stroker
@@ -42,12 +39,19 @@ MonoBehaviour:
     targetValue: 6
     useFilterCategory: 0
     filterCategory: 0
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: -1
   completionMarker: 71
+  failureMarker: -1
   triggerMarkerAfterToast: 0
+  autoCompleteOnActivation: 0
   title: Auditor's Request #1
-  description: "The Auditor wants proof that this store can attract more than pity traffic. Add enough browsing options that new customers have a reason to enter and stay."
-  successDescription: "The first Auditor target is complete, and Pop Life looks less like a government mistake."
+  description: The Auditor wants proof that this store can attract more than pity
+    traffic. Add enough browsing options that new customers have a reason to enter
+    and stay.
+  successDescription: The first Auditor target is complete, and Pop Life looks less
+    like a government mistake.
   entryTexts:
   - Build 6 shelves
   questIcon: {fileID: 0}

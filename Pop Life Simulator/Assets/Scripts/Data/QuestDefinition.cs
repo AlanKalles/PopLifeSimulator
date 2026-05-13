@@ -72,6 +72,8 @@ namespace PopLife.Data
         [Header("完成时触发")]
         [Tooltip("任务完成时触发的 Marker（None = 不触发）")]
         [SerializeField] private TutorialMarker completionMarker = TutorialMarker.None;
+        [Tooltip("任务 DDL 过期失败时触发的 Marker（None = 不触发）")]
+        [SerializeField] private TutorialMarker failureMarker = TutorialMarker.None;
         [Tooltip("勾选后，Marker 在完成通知 Toast 消失后才触发；否则任务完成时立即触发")]
         [SerializeField] private bool triggerMarkerAfterToast = false;
         [Tooltip("勾选后，任务激活的同一帧立即自动完成（适用于纯触发型任务，无需玩家操作）")]
@@ -112,6 +114,7 @@ namespace PopLife.Data
         public QuestReward[] Rewards => rewards;
         public TutorialMarker ActivationMarker => activationMarker;
         public TutorialMarker CompletionMarker => completionMarker;
+        public TutorialMarker FailureMarker => failureMarker;
         public bool TriggerMarkerAfterToast => triggerMarkerAfterToast;
         public bool AutoCompleteOnActivation => autoCompleteOnActivation;
         public Sprite QuestIcon => questIcon;

@@ -20,10 +20,13 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 150
-    itemId:
+    itemId: 
   - type: 1
     amount: 100
-    itemId:
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: Bunny Gril Lingerie
   conditions:
   - conditionType: 1
     scope: 0
@@ -33,7 +36,7 @@ MonoBehaviour:
     useFilterArchetypes: 0
     filterArchetypes: []
   activationMarker: 89
-  completionMarker: -1
+  completionMarker: 104
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Auditor's Request #2
@@ -42,6 +45,6 @@ MonoBehaviour:
   successDescription: The vibration sales target is complete, and the Auditor has
     fresh numbers to file.
   entryTexts:
-  - Move 200 pleasure devices built around vibration
+  - Sell 200 pleasure devices built around vibration
   questIcon: {fileID: 0}
   sortPriority: 29

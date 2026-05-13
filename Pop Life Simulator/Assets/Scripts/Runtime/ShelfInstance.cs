@@ -26,8 +26,7 @@ namespace PopLife.Runtime
         {
             var lv = SA.GetShelfLevel(1);
             maxStock = lv.maxStock;
-            // 新货架上线时初始库存 = 1，其余由 Restock 面板补充
-            currentStock = 1;
+            currentStock = Mathf.Min(3, maxStock);
             currentPrice = lv.price;
         }
 

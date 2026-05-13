@@ -33,7 +33,7 @@ MonoBehaviour:
     useFilterArchetypes: 0
     filterArchetypes: []
   activationMarker: 92
-  completionMarker: -1
+  completionMarker: 107
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Auditor's Tourist Surge

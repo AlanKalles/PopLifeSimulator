@@ -13,38 +13,29 @@ MonoBehaviour:
   m_Name: BDSM1
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: BDSM/1
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Henya
   giverPortrait: {fileID: 0}
   rewards:
   - type: 0
-    amount: 50
-    itemId:
+    amount: 200
+    itemId: 
   - type: 1
-    amount: 50
-    itemId:
+    amount: 100
+    itemId: 
   - type: 2
     amount: 1
     itemId: Nipple Clamps
   - type: 2
     amount: 1
     itemId: Chasity Cage
-  - type: 0
-    amount: 150
-    itemId:
-  - type: 1
-    amount: 50
-    itemId:
   - type: 2
     amount: 1
     itemId: Pussy Pump
   - type: 2
     amount: 1
     itemId: Sounding Rod
-  - type: 3
-    amount: 1
-    itemId: Naoko
   conditions:
   - conditionType: 6
     scope: 2
@@ -61,11 +52,15 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 28c2d19a605654907ac89f6675793032, type: 2}
   activationMarker: 95
   completionMarker: 82
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: BDSM Challenge
-  description: "Henya's challenge is less about one product and more about proving there is demand for intensity, restraint, and spectacle. Prepare the store for customers who want something less vanilla."
-  successDescription: "Henya's challenge has moved from trash talk into a real rivalry, and the store is ready to answer it."
+  description: Henya's challenge is less about one product and more about proving
+    there is demand for intensity, restraint, and spectacle. Prepare the store for
+    customers who want something less vanilla.
+  successDescription: Henya's challenge has moved from trash talk into a real rivalry,
+    and the store is ready to answer it.
   entryTexts:
   - Prepare three shelves for restraint, control, or impact play
   questIcon: {fileID: 0}

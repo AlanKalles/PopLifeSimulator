@@ -20,10 +20,13 @@ MonoBehaviour:
   rewards:
   - type: 0
     amount: 200
-    itemId:
+    itemId: 
   - type: 1
     amount: 100
-    itemId:
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: Textured Fantasy Dildo
   conditions:
   - conditionType: 2
     scope: 1
@@ -33,7 +36,7 @@ MonoBehaviour:
     useFilterArchetypes: 0
     filterArchetypes: []
   activationMarker: 91
-  completionMarker: -1
+  completionMarker: 106
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Auditor's Holiday Target

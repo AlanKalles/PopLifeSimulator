@@ -175,5 +175,22 @@ namespace PopLife.Manager
 
         // Twenty Shelves completion
         a_TwentyshelfC,           // = 103
+
+        // Auditor visit chain — fired by Main quest completion/failure
+        Main4Completed,           // = 104  Main/4 done → triggers Auditor/4
+        Main5Completed,           // = 105  Main/5 done → triggers Auditor/5
+        Main6Completed,           // = 106  Main/6 done → triggers Auditor/6
+        Main7Completed,           // = 107  Main/7 done → triggers Auditor/7
+        Main8Completed,           // = 108  Main/8 done (Cucci removed) → triggers Auditor/8
+        Main8DeadlineMissed,      // = 109  Main/8 deadline expired → triggers Auditor/9
+
+        // VIP SoloFans chain — each quest completion triggers next conversation
+        VIPSoloFans1Completed,    // = 110  VIPSoloFans1 done → VIP/SoloFans/2
+        VIPSoloFans2Completed,    // = 111  VIPSoloFans2 done → VIP/SoloFans/3
+        VIPSoloFans3Completed,    // = 112  VIPSoloFans3 done → VIP/SoloFans/4
+
+        // VIP ShyGirl chain
+        VIPShyGirl1Completed,     // = 113  VIPShyGirl1 done → VIP/ShyGirl/2
+        VIPShyGirl2Completed,     // = 114  VIPShyGirl2 done → VIP/ShyGirl/3
     }
 }

@@ -13,34 +13,39 @@ MonoBehaviour:
   m_Name: VIPSoloFans1
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: VIP/SoloFans/1
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Omega
   giverPortrait: {fileID: 0}
   rewards:
   - type: 0
     amount: 300
-    itemId:
+    itemId: 
   - type: 1
     amount: 75
-    itemId:
+    itemId: 
+  - type: 2
+    amount: 1
+    itemId: SoloFans Giftcode
   conditions:
   - conditionType: 6
     scope: 2
     targetValue: 1
-    useFilterCategory: 0
-    filterCategory: 0
-    useFilterArchetypes: 1
-    filterArchetypes:
-    - {fileID: 11400000, guid: 2e2b92dbce1404641a297de91c342ef0, type: 2}
+    useFilterCategory: 1
+    filterCategory: 6
+    useFilterArchetypes: 0
+    filterArchetypes: []
   activationMarker: 96
-  completionMarker: -1
+  completionMarker: 110
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "SoloFans: Big Order"
-  description: "Omega wants a showpiece powerful enough to turn a video into an event. Find something rare, mechanical, and hard for competitors to copy."
-  successDescription: "Omega got the kind of spectacle that can move rankings."
+  title: 'SoloFans: Big Order'
+  description: Omega wants a showpiece powerful enough to turn a video into an event.
+    Find something huge, catchy, and hard for competitors to copy.
+  successDescription: Omega loves it. She offers you giftcodes to her content on
+    solofans.
   entryTexts:
-  - Set out the sleeve-style toy Omega can build a scene around
+  - Set up the shelf Omega wants.
   questIcon: {fileID: 0}
   sortPriority: 138

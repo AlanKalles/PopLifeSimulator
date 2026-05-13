@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: VIPShyGirl2
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: VIP/ShyGirl/2
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Hana
   giverPortrait: {fileID: 0}
   rewards:
   - type: 0
     amount: 75
-    itemId:
+    itemId: 
   - type: 1
     amount: 50
-    itemId:
+    itemId: 
   conditions:
   - conditionType: 6
     scope: 2
@@ -35,13 +35,15 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 41fadbfd3565b91429da869370698f16, type: 2}
     - {fileID: 11400000, guid: b8e3789a5910b45f19838eed626c2c2c, type: 2}
   activationMarker: 101
-  completionMarker: -1
+  completionMarker: 114
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "Shy Girl: Party Lingerie"
-  description: "Hana wants to enter a darker, more theatrical scene without feeling swallowed by it. Find something she can wear like confidence, not armor."
-  successDescription: "Hana found a look that lets her step into the party without disappearing inside it."
+  title: 'Shy Girl: Party Lingerie'
+  description: Hana wants to try some light roleplay.
+  successDescription: Hana found a look that lets her step into the party.
   entryTexts:
-  - Find Hana something theatrical enough for the party, but still wearable as confidence
+  - Find Hana something theatrical enough for the party, but not too kinky for a
+    begginer.
   questIcon: {fileID: 0}
   sortPriority: 133

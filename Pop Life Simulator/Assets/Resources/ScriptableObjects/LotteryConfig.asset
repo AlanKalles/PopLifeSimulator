@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0baeaae1bbc6da49b07bf9e9a1d6ea8, type: 3}
   m_Name: LotteryConfig
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.LotteryConfig
-  ticketCost: 50
+  ticketCost: 5
   digitCount: 4
   maxDigitValue: 9
   drawCycleDays: 4

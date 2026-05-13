@@ -13,17 +13,14 @@ MonoBehaviour:
   m_Name: Boost
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: Boost
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Midori
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 100
+    amount: 50
     itemId: 
-  - type: 2
-    amount: 1
-    itemId: Phosphodiesterase-5 (PDE-5) inhibitor
   - type: 2
     amount: 1
     itemId: Strawberry Lubricant
@@ -33,25 +30,29 @@ MonoBehaviour:
   - type: 3
     amount: 1
     itemId: Ash
+  - type: 2
+    amount: 1
+    itemId: Phosphodiesterase-5 (PDE-5) inhibitor
   conditions:
-  - conditionType: 0
+  - conditionType: 6
     scope: 0
-    targetValue: 0
+    targetValue: 1
     useFilterCategory: 0
     filterCategory: 0
-    useFilterArchetypes: 0
-    filterArchetypes: []
+    useFilterArchetypes: 1
+    filterArchetypes:
+    - {fileID: 11400000, guid: 5c2adb35045424609991add20cff4a58, type: 2}
   activationMarker: 34
   completionMarker: 75
+  failureMarker: -1
   triggerMarkerAfterToast: 1
-  autoCompleteOnActivation: 1
+  autoCompleteOnActivation: 0
   title: Boost
-  description: Some customers are not chasing novelty; they want confidence, stamina,
-    and reassurance. Stock items that speak to performance without making them feel
-    judged.
-  successDescription: Customers looking for a confidence boost can now find help
-    without awkward explanations.
+  description: Some people needs outside help to perform better sex. That's okay,
+    in POPlife, you can find confidence and enjoy the sex for everyone.
+  successDescription: Ash's coming to store more often. She introduce you to new
+    production lines.
   entryTexts:
-  - Set out products that promise a stronger night without changing the furniture
+  - Prepare for the product that boost people's sexual abilities
   questIcon: {fileID: 0}
   sortPriority: 80

@@ -13,20 +13,23 @@ MonoBehaviour:
   m_Name: VIPSoloFans4
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: VIP/SoloFans/4
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Omega
   giverPortrait: {fileID: 0}
   rewards:
-  - type: 1
-    amount: 100
-    itemId: 
   - type: 0
     amount: 100
     itemId: 
-  - type: 2
+  - type: 1
     amount: 100
+    itemId: 
+  - type: 2
+    amount: 1
     itemId: Orgy VR Porn
+  - type: 2
+    amount: 1
+    itemId: Whip
   conditions:
   - conditionType: 6
     scope: 2
@@ -36,16 +39,17 @@ MonoBehaviour:
     useFilterArchetypes: 1
     filterArchetypes:
     - {fileID: 11400000, guid: 5af711a783f9993488a526cb0a8c172d, type: 2}
+    - {fileID: 11400000, guid: a02960e82affe48c49753a8ceac78fd4, type: 2}
   activationMarker: 99
   completionMarker: -1
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: 'SoloFans: New Fetish'
-  description: Omega needs a way forward that does not erase their brand or their
-    partner's honesty. Find something flexible enough for both fantasy and care.
-  successDescription: Omega found a path that can hold performance and intimacy in
-    the same frame.
+  description: Omega and her partner fell in love. Let's provide her what they need
+    for a soft, loving sex video.
+  successDescription: 'The video was successful. Omega thanked you. '
   entryTexts:
-  - Stock the couples toy designed to stay involved during partnered sex
+  - Stock the couples toy.
   questIcon: {fileID: 0}
   sortPriority: 135

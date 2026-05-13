@@ -19,14 +19,11 @@ MonoBehaviour:
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
   rewards:
   - type: 0
-    amount: 125
-    itemId:
+    amount: 126
+    itemId: 
   - type: 1
     amount: 200
-    itemId:
-  - type: 3
-    amount: 1
-    itemId: Paxton
+    itemId: 
   conditions:
   - conditionType: 5
     scope: 2
@@ -37,6 +34,7 @@ MonoBehaviour:
     filterArchetypes: []
   activationMarker: 39
   completionMarker: 40
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Second Building
