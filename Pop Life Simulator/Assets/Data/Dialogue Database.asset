@@ -62,7 +62,7 @@ MonoBehaviour:
     - title: Name
       value: Tutorial
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Pictures
       value: '[]'
       type: 3
@@ -78,7 +78,7 @@ MonoBehaviour:
     - title: Display Name
       value: 
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     portrait: {fileID: 0}
     spritePortrait: {fileID: 0}
     alternatePortraits: []
@@ -179,9 +179,9 @@ MonoBehaviour:
     - title: Display Name
       value: Henya
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     portrait: {fileID: 0}
-    spritePortrait: {fileID: 0}
+    spritePortrait: {fileID: 21300000, guid: e7fa51e8dbb883f40ac5a3dd48a3fd17, type: 3}
     alternatePortraits: []
     spritePortraits: []
   - id: 7
@@ -206,9 +206,9 @@ MonoBehaviour:
     - title: Display Name
       value: Omega
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     portrait: {fileID: 0}
-    spritePortrait: {fileID: 0}
+    spritePortrait: {fileID: 21300000, guid: 04b8bca1621652248a907f624862de3b, type: 3}
     alternatePortraits: []
     spritePortraits: []
   - id: 8
@@ -233,9 +233,9 @@ MonoBehaviour:
     - title: Display Name
       value: Hana
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     portrait: {fileID: 0}
-    spritePortrait: {fileID: 0}
+    spritePortrait: {fileID: 21300000, guid: ca5a83bac665c08458ef092bcd250e46, type: 3}
     alternatePortraits: []
     spritePortraits: []
   items:
@@ -4597,11 +4597,11 @@ MonoBehaviour:
         type: 5
         typeString: CustomFieldType_Actor
       - title: Menu Text
-        value: I'm broke.
+        value: Struggling.
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: I'm broke.
+        value: Struggling.
         type: 0
         typeString: 
       - title: Sequence
@@ -5326,9 +5326,9 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: That's right. Keep an eye on your customer, and the sales of your
+        value: "That's right. Keep an eye on your customer, and the sales of your
           shelves. When a shelf is not making enough money to cover it's maintenance
-          fee, consider sell it.
+          fee, consider selling\n it."
         type: 0
         typeString: 
       - title: Sequence
@@ -5411,7 +5411,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 354.2681
+        x: 355.53232
         y: 761.57947
         width: 160
         height: 30
@@ -5438,7 +5438,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Any time! But I can't help you everytime. Next time you're in debt,
+        value: Any time. But I can't help you everytime. Next time you're in debt,
           PEI will come and fire you. But don't worry about it too much, I believe
           in you.
         type: 0
@@ -20458,7 +20458,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Dialogue Text
-        value: Lie.
+        value: Huh. That's surprising.
         type: 0
         typeString: 
       - title: Sequence
@@ -25872,7 +25872,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Actor
-        value: 7
+        value: 3
         type: 5
         typeString: CustomFieldType_Actor
       - title: Conversant
@@ -25927,7 +25927,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Actor
-        value: 7
+        value: 3
         type: 5
         typeString: CustomFieldType_Actor
       - title: Conversant
@@ -25982,7 +25982,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Actor
-        value: 7
+        value: 3
         type: 5
         typeString: CustomFieldType_Actor
       - title: Conversant
@@ -26037,7 +26037,7 @@ MonoBehaviour:
         type: 0
         typeString: 
       - title: Actor
-        value: 7
+        value: 3
         type: 5
         typeString: CustomFieldType_Actor
       - title: Conversant

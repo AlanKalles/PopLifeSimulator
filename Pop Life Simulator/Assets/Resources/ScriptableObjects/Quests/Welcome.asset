@@ -50,10 +50,9 @@ MonoBehaviour:
   triggerMarkerAfterToast: 0
   autoCompleteOnActivation: 1
   title: Start Game
-  description: Midori is waiting with the first practical lesson. Before the shop
-    can open, you need one simple display for the starter products.
-  successDescription: Midori has handed you the first real store task.
+  description: Welcome to POPlife, "sex expert".
+  successDescription: You got new shelf blueprints.
   entryTexts:
-  - Get started
+  - This is where you start from.
   questIcon: {fileID: 0}
   sortPriority: 10

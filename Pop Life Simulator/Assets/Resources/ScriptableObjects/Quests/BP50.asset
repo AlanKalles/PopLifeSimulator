@@ -32,7 +32,7 @@ MonoBehaviour:
   activationMarker: 61
   completionMarker: 62
   failureMarker: -1
-  triggerMarkerAfterToast: 1
+  triggerMarkerAfterToast: 0
   autoCompleteOnActivation: 0
   title: Blueprints III
   description: At this point, variety becomes a reputation of its own. Push the catalog

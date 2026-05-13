@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: VIPSoloFans3
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: VIP/SoloFans/3
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Omega
   giverPortrait: {fileID: 0}
@@ -30,20 +30,27 @@ MonoBehaviour:
   conditions:
   - conditionType: 6
     scope: 2
-    targetValue: 1
+    targetValue: 2
     useFilterCategory: 0
     filterCategory: 0
     useFilterArchetypes: 1
     filterArchetypes:
-    - {fileID: 11400000, guid: dc1f283763cf14213a069990b3b5e2fb, type: 2}
+    - {fileID: 11400000, guid: f3e5bac9872b34ccaaed6e3cff249ca1, type: 2}
+    - {fileID: 11400000, guid: 628eba430b24940c58753e38ff3b3c85, type: 2}
+    - {fileID: 11400000, guid: 428ce8ac92e5e455ba024716e651a258, type: 2}
+    - {fileID: 11400000, guid: 7df3c9792ad01472590261b9e75e9fd4, type: 2}
+    - {fileID: 11400000, guid: 3f1b2af9e688d40d384bf7adf6a7217c, type: 2}
+    - {fileID: 11400000, guid: 2e5e77ba46f31410780d679b66661801, type: 2}
   activationMarker: 98
   completionMarker: 112
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "SoloFans: Extreme Toy"
-  description: "Omega wants intensity that might reveal the truth, even if it hurts. Find a tool dramatic enough for performance but serious enough to test a boundary."
-  successDescription: "Omega has the extreme prop they asked for, and the consequences are now theirs."
+  title: 'SoloFans: Extreme Toy'
+  description: Omega explore deeper into pain and submission. Is it her desire, or
+    her fans' ?
+  successDescription: Omega got the extreme pleasure she's asking for, and the pain.
   entryTexts:
-  - Offer the beaded anal toy with the most extreme edge
+  - Stock up extreme SM shelves for Omega.
   questIcon: {fileID: 0}
   sortPriority: 136

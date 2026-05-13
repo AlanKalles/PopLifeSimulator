@@ -32,7 +32,7 @@ MonoBehaviour:
   activationMarker: 60
   completionMarker: 61
   failureMarker: -1
-  triggerMarkerAfterToast: 1
+  triggerMarkerAfterToast: 0
   autoCompleteOnActivation: 0
   title: Blueprints II
   description: A broader catalog lets you react to strange requests instead of turning

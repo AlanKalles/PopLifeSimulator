@@ -32,7 +32,7 @@ MonoBehaviour:
   activationMarker: 35
   completionMarker: 60
   failureMarker: -1
-  triggerMarkerAfterToast: 1
+  triggerMarkerAfterToast: 0
   autoCompleteOnActivation: 0
   title: Blueprints I
   description: The catalog still feels thin. Keep finding new suppliers and designs

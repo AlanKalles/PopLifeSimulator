@@ -23,9 +23,6 @@ MonoBehaviour:
     itemId: 
   - type: 2
     amount: 1
-    itemId: SoloFans GiftCode
-  - type: 2
-    amount: 1
     itemId: Textured Stroker
   - type: 2
     amount: 1

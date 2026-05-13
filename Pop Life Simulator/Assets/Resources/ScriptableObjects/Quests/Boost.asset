@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boost
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: Boost
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Midori
   giverPortrait: {fileID: 21300000, guid: 966896e566969a341918b408a096a2c5, type: 3}
@@ -48,12 +48,11 @@ MonoBehaviour:
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
   title: Boost
-  description: Some customers are not chasing novelty; they want confidence, stamina,
-    and reassurance. Stock items that speak to performance without making them feel
-    judged.
-  successDescription: Customers looking for a confidence boost can now find help
-    without awkward explanations.
+  description: Some people needs outside help to perform better sex. That's okay,
+    in POPlife, you can find confidence and enjoy the sex for everyone.
+  successDescription: Ash's coming to store more often. She introduce you to new
+    production lines.
   entryTexts:
-  - Set out products that promise a stronger night without changing the furniture
+  - Prepare for the product that boost people's sexual abilities
   questIcon: {fileID: 0}
   sortPriority: 80

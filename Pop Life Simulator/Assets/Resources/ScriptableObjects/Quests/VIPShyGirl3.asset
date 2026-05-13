@@ -13,17 +13,17 @@ MonoBehaviour:
   m_Name: VIPShyGirl3
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.QuestDefinition
   questName: VIP/ShyGirl/3
-  questType: 1
+  questType: 0
   deadlineDays: 0
   giverName: Hana
   giverPortrait: {fileID: 0}
   rewards:
   - type: 0
     amount: 100
-    itemId:
+    itemId: 
   - type: 1
     amount: 75
-    itemId:
+    itemId: 
   conditions:
   - conditionType: 6
     scope: 2
@@ -35,12 +35,15 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 63a7794a79d7944acb086814c4b4efc8, type: 2}
   activationMarker: 102
   completionMarker: -1
+  failureMarker: -1
   triggerMarkerAfterToast: 1
   autoCompleteOnActivation: 0
-  title: "Shy Girl: Henya Encounter"
-  description: "Hana's curiosity is running into Henya's intensity. Help her keep hold of her own desire while the room gets louder around her."
-  successDescription: "Hana's encounter with Henya became another step toward naming what she actually wants."
+  title: 'Shy Girl: Henya Encounter'
+  description: 'Hana''s curiosity is running into Henya''s intensity. She''s specifically
+    into workplace role-playing. '
+  successDescription: Hana's encounter with Henya became another step toward naming
+    what she actually wants.
   entryTexts:
-  - Give Hana a wearable signal of restraint without taking away her agency
+  - Figure out what Hana wants.
   questIcon: {fileID: 0}
   sortPriority: 132
