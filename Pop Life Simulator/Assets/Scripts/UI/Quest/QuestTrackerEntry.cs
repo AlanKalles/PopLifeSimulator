@@ -28,7 +28,6 @@ namespace PopLife.UI.Quest
         [Header("Colors")]
         [SerializeField] private Color mainQuestColor = new Color(1f, 0.84f, 0f);   // 金色
         [SerializeField] private Color sideQuestColor = Color.white;
-        [SerializeField] private Color urgentColor = new Color(1f, 0.27f, 0.27f);    // 红色
         [SerializeField] private Color normalDeadlineColor = new Color(0.8f, 0.8f, 0.8f);
         [SerializeField] private Color hoverBgColor = new Color(1f, 1f, 1f, 0.1f);
         [SerializeField] private Color normalBgColor = new Color(0f, 0f, 0f, 0f);
