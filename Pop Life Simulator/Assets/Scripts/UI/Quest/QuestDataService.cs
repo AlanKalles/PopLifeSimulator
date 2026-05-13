@@ -16,6 +16,7 @@ namespace PopLife.UI.Quest
         public string displayTitle;
         public QuestType questType;
         public int remainingDays;   // -1 = 永不过期
+        public int deadlineDay;     // 绝对日期（absoluteDay），-1 表示无截止
         public int completedEntries;
         public int totalEntries;
         public int sortPriority;
@@ -31,6 +32,7 @@ namespace PopLife.UI.Quest
         public string description;
         public QuestType questType;
         public int remainingDays;
+        public int deadlineDay;     // 绝对日期（absoluteDay），-1 表示无截止
         public string giverName;
         public Sprite giverPortrait;
         public Sprite questIcon;
@@ -266,6 +268,7 @@ namespace PopLife.UI.Quest
                     displayTitle = Store?.GetTitle(qName) ?? qName,
                     questType = GetQuestType(qName),
                     remainingDays = GetRemainingDays(qName),
+                    deadlineDay = GetDeadlineDay(qName),
                     sortPriority = GetSortPriority(qName)
                 };
                 (vm.completedEntries, vm.totalEntries) = GetProgress(qName);
@@ -322,6 +325,7 @@ namespace PopLife.UI.Quest
                 description = Store.GetDescription(questName),
                 questType = def != null ? def.QuestType : QuestType.Side,
                 remainingDays = GetRemainingDays(questName),
+                deadlineDay = GetDeadlineDay(questName),
                 giverName = def != null ? def.GiverName : "",
                 giverPortrait = def?.GiverPortrait,
                 questIcon = def?.QuestIcon,
@@ -346,6 +350,21 @@ namespace PopLife.UI.Quest
             int deadlineDay = activateDay + def.DeadlineDays;
             int currentDay = DayLoopManager.Instance != null ? DayLoopManager.Instance.currentDay : 1;
             return deadlineDay - currentDay;
+        }
+
+        /// <summary>
+        /// 获取任务截止的绝对天数（absoluteDay）
+        /// 返回 -1 表示无截止日期
+        /// </summary>
+        public int GetDeadlineDay(string questName)
+        {
+            if (!definitionMap.TryGetValue(questName, out var def) || def.DeadlineDays <= 0)
+                return -1;
+
+            if (!activationDayMap.TryGetValue(questName, out int activateDay))
+                return -1;
+
+            return activateDay + def.DeadlineDays;
         }
 
         /// <summary>
@@ -403,6 +422,7 @@ namespace PopLife.UI.Quest
                     displayTitle = Store?.GetTitle(qName) ?? qName,
                     questType = GetQuestType(qName),
                     remainingDays = GetRemainingDays(qName),
+                    deadlineDay = GetDeadlineDay(qName),
                     sortPriority = GetSortPriority(qName)
                 };
                 (vm.completedEntries, vm.totalEntries) = GetProgress(qName);

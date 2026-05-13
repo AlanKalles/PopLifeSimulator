@@ -53,20 +53,21 @@ namespace PopLife.UI.Quest
                 titleText.color = viewModel.questType == QuestType.Main ? mainQuestColor : sideQuestColor;
             }
 
-            // DDL
+            // DDL：无截止显示 "Unlimited time"，有截止显示绝对日期 "Spring Day 11"
             if (deadlineText != null)
             {
-                if (viewModel.remainingDays < 0)
+                deadlineText.gameObject.SetActive(true);
+                deadlineText.color = normalDeadlineColor;
+                if (viewModel.deadlineDay < 0)
                 {
-                    deadlineText.gameObject.SetActive(false);
+                    deadlineText.text = "Unlimited time";
                 }
                 else
                 {
-                    deadlineText.gameObject.SetActive(true);
-                    deadlineText.text = viewModel.remainingDays <= 1
-                        ? $"{viewModel.remainingDays}d left!"
-                        : $"{viewModel.remainingDays}d left";
-                    deadlineText.color = viewModel.remainingDays <= 1 ? urgentColor : normalDeadlineColor;
+                    int startingYear = DayLoopManager.Instance != null
+                        ? DayLoopManager.Instance.StartingYear
+                        : 2126;
+                    deadlineText.text = CalendarUtils.FormatShortDate(viewModel.deadlineDay, startingYear);
                 }
             }
 

@@ -141,19 +141,20 @@ namespace PopLife.UI.Quest
             if (descriptionText != null)
                 descriptionText.text = data.description;
 
-            // 填充 DDL
+            // 填充 DDL：无截止显示 "Unlimited time"，有截止显示绝对日期 "Spring Day 11"
             if (deadlineText != null)
             {
-                if (data.remainingDays < 0)
+                deadlineText.gameObject.SetActive(true);
+                if (data.deadlineDay < 0)
                 {
-                    deadlineText.gameObject.SetActive(false);
+                    deadlineText.text = "Unlimited time";
                 }
                 else
                 {
-                    deadlineText.gameObject.SetActive(true);
-                    deadlineText.text = data.remainingDays <= 1
-                        ? $"Deadline: {data.remainingDays} day left!"
-                        : $"Deadline: {data.remainingDays} days left";
+                    int startingYear = DayLoopManager.Instance != null
+                        ? DayLoopManager.Instance.StartingYear
+                        : 2126;
+                    deadlineText.text = CalendarUtils.FormatShortDate(data.deadlineDay, startingYear);
                 }
             }
 

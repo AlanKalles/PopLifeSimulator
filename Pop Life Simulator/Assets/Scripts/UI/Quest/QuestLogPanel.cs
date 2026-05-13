@@ -44,14 +44,15 @@ namespace PopLife.UI.Quest
         [SerializeField] private TextMeshProUGUI descriptionText;
 
         [Header("右侧详情区 - 需求条目")]
+        [SerializeField] private GameObject entriesSection;
         [SerializeField] private Transform entriesContainer;
         [SerializeField] private GameObject entryItemPrefab;
 
         [Header("右侧详情区 - 截止日期")]
-        [SerializeField] private GameObject deadlineSection;
         [SerializeField] private TextMeshProUGUI deadlineText;
 
         [Header("右侧详情区 - 颁布者")]
+        [SerializeField] private GameObject portraitSection;
         [SerializeField] private GameObject giverSection;
         [SerializeField] private Image giverPortrait;
         [SerializeField] private TextMeshProUGUI giverNameText;
@@ -431,47 +432,42 @@ namespace PopLife.UI.Quest
             // 描述
             if (descriptionText != null) descriptionText.text = detail.description;
 
-            // 截止日期
-            if (deadlineSection != null)
+            // 截止日期：无截止显示 "Unlimited time"；有截止显示绝对日期，如 "Spring Day 11"
+            if (deadlineText != null)
             {
-                if (detail.remainingDays < 0)
+                if (detail.deadlineDay < 0)
                 {
-                    deadlineSection.SetActive(false);
+                    deadlineText.text = "Unlimited time";
                 }
                 else
                 {
-                    deadlineSection.SetActive(true);
-                    if (deadlineText != null)
-                    {
-                        if (detail.remainingDays <= 1)
-                            deadlineText.text = $"<color=#FF4444>{detail.remainingDays} day remaining!</color>";
-                        else
-                            deadlineText.text = $"{detail.remainingDays} days remaining";
-                    }
+                    int startingYear = DayLoopManager.Instance != null
+                        ? DayLoopManager.Instance.StartingYear
+                        : 2126;
+                    deadlineText.text = CalendarUtils.FormatShortDate(detail.deadlineDay, startingYear);
                 }
             }
 
-            // 颁布者
-            if (giverSection != null)
+            // 颁布者：portraitSection 和 giverSection 是两个独立块，没有 giver 时整体隐藏
+            bool hasGiver = !string.IsNullOrEmpty(detail.giverName);
+            if (portraitSection != null) portraitSection.SetActive(hasGiver);
+            if (giverSection != null) giverSection.SetActive(hasGiver);
+
+            if (hasGiver)
             {
-                if (!string.IsNullOrEmpty(detail.giverName))
+                if (giverNameText != null) giverNameText.text = detail.giverName;
+                if (giverPortrait != null)
                 {
-                    giverSection.SetActive(true);
-                    if (giverNameText != null) giverNameText.text = detail.giverName;
-                    if (giverPortrait != null && detail.giverPortrait != null)
+                    if (detail.giverPortrait != null)
                     {
                         giverPortrait.sprite = detail.giverPortrait;
                         giverPortrait.preserveAspect = true;
                         giverPortrait.enabled = true;
                     }
-                    else if (giverPortrait != null)
+                    else
                     {
                         giverPortrait.enabled = false;
                     }
-                }
-                else
-                {
-                    giverSection.SetActive(false);
                 }
             }
 
@@ -495,7 +491,11 @@ namespace PopLife.UI.Quest
             }
             spawnedEntries.Clear();
 
-            if (entries == null || entries.Length == 0 || entriesContainer == null || entryItemPrefab == null)
+            // 无 condition 的自动完成任务：整块隐藏（含 "Objectives:" 标题）
+            bool hasEntries = entries != null && entries.Length > 0;
+            if (entriesSection != null) entriesSection.SetActive(hasEntries);
+
+            if (!hasEntries || entriesContainer == null || entryItemPrefab == null)
                 return;
 
             foreach (var entry in entries)

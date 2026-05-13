@@ -18,6 +18,7 @@ namespace PopLife
         [Header("Day Stats Display")]
         [SerializeField] private TextMeshProUGUI maintenanceFeeText;
         [SerializeField] private TextMeshProUGUI todayIncomeText;
+        [SerializeField] private TextMeshProUGUI profitText;
 
         [Header("Display Format")]
         [SerializeField] private string moneyPrefix = "$";
@@ -27,7 +28,18 @@ namespace PopLife
         [SerializeField] private Color debtColor = new Color(1f, 0.27f, 0.27f);
         [SerializeField] private Color normalColor = Color.white;
 
-        private void OnEnable()
+        [Header("Profit Color")]
+        [SerializeField] private Color profitPositiveColor = new Color(0.35f, 1f, 0.45f);
+        [SerializeField] private Color profitNegativeColor = new Color(1f, 0.27f, 0.27f);
+        [SerializeField] private Color profitZeroColor = Color.white;
+
+        // 当日实时数值缓存（用于 profit 计算）
+        private float currentMaintenance;
+        private float currentDailySales;
+
+        // Start 而非 OnEnable，保证 ResourceManager / DayLoopManager 的 Awake 已完成，
+        // 否则 OnEnable 比 manager Awake 先跑时 Instance == null，订阅会被静默跳过。
+        private void Start()
         {
             if (ResourceManager.Instance != null)
             {
@@ -42,7 +54,7 @@ namespace PopLife
                 DayLoopManager.Instance.OnSaleRecorded += UpdateDailyIncome;
             }
 
-            // 事件驱动模式下，订阅后立即拉一次当前值同步初始 UI
+            // 订阅后立即拉一次当前值同步初始 UI
             if (ResourceManager.Instance != null)
             {
                 UpdateMoneyDisplay(ResourceManager.Instance.money);
@@ -53,7 +65,7 @@ namespace PopLife
             ResetDailyIncome();
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             if (ResourceManager.Instance != null)
             {
@@ -102,8 +114,6 @@ namespace PopLife
         /// </summary>
         private void RefreshMaintenance()
         {
-            if (maintenanceFeeText == null) return;
-
             float total = 0f;
             var wg = WorldGrid.Instance;
             if (wg != null)
@@ -121,7 +131,10 @@ namespace PopLife
             if (GlobalModifierManager.Instance != null)
                 total *= GlobalModifierManager.Instance.GetMaintenanceCostMultiplier();
 
-            maintenanceFeeText.text = $"Maintenance: ${Mathf.RoundToInt(total)}/day";
+            currentMaintenance = total;
+            if (maintenanceFeeText != null)
+                maintenanceFeeText.text = $"-{moneyPrefix}{Mathf.RoundToInt(total).ToString("N0")}";
+            RefreshProfit();
         }
 
         private void HandleBuildPhaseStart()
@@ -133,14 +146,44 @@ namespace PopLife
 
         private void ResetDailyIncome()
         {
+            currentDailySales = 0f;
             if (todayIncomeText != null)
-                todayIncomeText.text = "Today's Sales: $0";
+                todayIncomeText.text = $"+{moneyPrefix}0";
+            RefreshProfit();
         }
 
         private void UpdateDailyIncome(float total)
         {
+            currentDailySales = total;
             if (todayIncomeText != null)
-                todayIncomeText.text = $"Today's Sales: ${Mathf.RoundToInt(total)}";
+                todayIncomeText.text = $"+{moneyPrefix}{Mathf.RoundToInt(total).ToString("N0")}";
+            RefreshProfit();
+        }
+
+        /// <summary>
+        /// 利润 = 当日销售（仅收银台结算的实际收入） - 当日维护费预估。
+        /// 销售或维护任何一方变化时重新计算并染色。
+        /// </summary>
+        private void RefreshProfit()
+        {
+            if (profitText == null) return;
+
+            int profit = Mathf.RoundToInt(currentDailySales - currentMaintenance);
+            if (profit > 0)
+            {
+                profitText.text = $"+{moneyPrefix}{profit.ToString("N0")}";
+                profitText.color = profitPositiveColor;
+            }
+            else if (profit < 0)
+            {
+                profitText.text = $"-{moneyPrefix}{(-profit).ToString("N0")}";
+                profitText.color = profitNegativeColor;
+            }
+            else
+            {
+                profitText.text = $"{moneyPrefix}0";
+                profitText.color = profitZeroColor;
+            }
         }
     }
 }
