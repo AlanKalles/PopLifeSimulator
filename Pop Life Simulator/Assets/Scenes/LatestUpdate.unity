@@ -40145,8 +40145,8 @@ MonoBehaviour:
   page2TabButton: {fileID: 877132271}
   page1TabLabel: {fileID: 1887387125}
   page2TabLabel: {fileID: 1246664559}
-  tabActiveTextColor: {r: 0.4862745, g: 0.4862745, b: 0.4862745, a: 1}
-  tabInactiveTextColor: {r: 0.46666667, g: 1, b: 0.98039216, a: 1}
+  tabActiveTextColor: {r: 0.46666667, g: 1, b: 0.98039216, a: 1}
+  tabInactiveTextColor: {r: 0.4862745, g: 0.4862745, b: 0.4862745, a: 1}
   revenueValueText: {fileID: 1547699678}
   revenueComparisonText: {fileID: 339396928}
   expensesValueText: {fileID: 917046422}
@@ -40162,7 +40162,7 @@ MonoBehaviour:
   netProfitIconImage: {fileID: 1592614049}
   netProfitPositiveIcon: {fileID: 21300000, guid: 43d8973ae04cf104eb8805b84a1c9ddb, type: 3}
   netProfitNegativeIcon: {fileID: 21300000, guid: 3c77718fba2e97b41b6034ffd8391ee2, type: 3}
-  todayHighlightsContainer: {fileID: 313081200}
+  todayHighlightsContainer: {fileID: 0}
   lineChartPrefab: {fileID: 5477728946280425310, guid: 83a4a4b9fcedf934eb5bcd5078c4eb26, type: 3}
   pieChartPrefab: {fileID: 7945074836914939056, guid: 75fde0be9269416459a1b84e1875fa56, type: 3}
   lineChartContainer: {fileID: 1324525544}
@@ -61913,7 +61913,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -73326,7 +73326,7 @@ PrefabInstance:
       objectReference: {fileID: -2483764444016197910, guid: d6d69bafc41c2f844ad46bba93c4e988, type: 2}
     - target: {fileID: 1568060411137529001, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -263.87305
+      value: -263.87308
       objectReference: {fileID: 0}
     - target: {fileID: 1682418171592549610, guid: 7617180c53ab8b64f82dead63c1df951, type: 3}
       propertyPath: m_AnchorMax.y
@@ -74986,7 +74986,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7497080385439492761, guid: 81be3b49f2cc0eb44982ecd6cf38f838, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -263.87283
+      value: -263.8728
       objectReference: {fileID: 0}
     - target: {fileID: 7551887745505466259, guid: 81be3b49f2cc0eb44982ecd6cf38f838, type: 3}
       propertyPath: m_AnchorMax.y
