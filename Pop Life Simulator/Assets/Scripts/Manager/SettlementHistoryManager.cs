@@ -145,10 +145,21 @@ namespace PopLife
         public float totalSale;          // 今日销售额
         public float dailyExpenses;      // 今日费用（含维护费）
         public float dailyIncome;        // 净收入 (totalSale - dailyExpenses)
-        public int totalCustomers;       // 今日顾客数
+        public int totalCustomers;       // 今日顾客数（spawned 计数，含未真实入店）
         public int fameEarned;           // 今日Fame
         public float[] categoryRevenue;  // 各品类收入（索引对应ProductCategory枚举）
         public HotSellerEntry[] hotSellers; // 热销前3
+
+        // v2 扩展字段（旧记录加载时默认 0，趋势图前期为 0 是预期行为）
+        public int customersEntered;     // 真实入店顾客数（CustomerPresenceService）
+        public int restockExpense;
+        public int constructionExpense;
+        public int maintenanceExpense;
+
+        // v2 聚合口径（用于"vs 昨天"对比，避免新旧口径混用）
+        public float totalRevenueV2;     // = totalSale + lottery + sponsorship + quest + refund
+        public float totalExpenseV2;     // = restock + construction + maintenance
+        public float netProfitV2;        // = totalRevenueV2 - totalExpenseV2
     }
 
     /// <summary>

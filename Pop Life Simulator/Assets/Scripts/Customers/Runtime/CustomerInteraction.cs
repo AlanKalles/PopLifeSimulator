@@ -78,7 +78,8 @@ namespace PopLife.Customers.Runtime
                     {
                         shelfId = targetShelf.instanceId,
                         categoryIndex = shelfArchetype != null ? (int)shelfArchetype.category : 0,
-                        boughtQty = 1
+                        boughtQty = 1,
+                        spending = effectivePrice  // 单件实际花费（结算面板按 shelfId 聚合）
                     });
                 }
 

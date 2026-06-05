@@ -23,6 +23,22 @@ namespace PopLife.Manager
         // 顾客消费追踪
         private List<CustomerStatsData> customerStatsTracker = new List<CustomerStatsData>();
 
+        // 顾客会话快照（销毁前 snapshot），用于 P2 Customer Analysis
+        private List<CustomerSession> todaySessions = new List<CustomerSession>();
+
+        // Hot Seller / 货架图标 sprite 缓存：优先用 prefab 的 SpriteRenderer.sprite，archetype.icon 兜底
+        private static readonly Dictionary<string, Sprite> shelfPrefabSpriteCache = new Dictionary<string, Sprite>();
+        private static Sprite GetShelfPrefabSprite(ShelfArchetype sa)
+        {
+            if (sa == null || sa.prefab == null) return null;
+            string key = sa.archetypeId ?? sa.name;
+            if (shelfPrefabSpriteCache.TryGetValue(key, out var cached)) return cached;
+            var sr = sa.prefab.GetComponent<SpriteRenderer>();
+            var sprite = sr != null ? sr.sprite : null;
+            shelfPrefabSpriteCache[key] = sprite;
+            return sprite;
+        }
+
         void Awake()
         {
             if (Instance == null)
@@ -102,6 +118,14 @@ namespace PopLife.Manager
                 return;
             }
 
+            // snapshot record.everEnteredStore 在入店前的状态，用于判定 New vs Returning
+            bool preEntered = false;
+            if (CustomerRepository.Instance != null)
+            {
+                var record = CustomerRepository.Instance.Get(agent.customerID);
+                if (record != null) preEntered = record.everEnteredStore;
+            }
+
             var statsData = new CustomerStatsData
             {
                 customerId = agent.customerID,
@@ -109,7 +133,8 @@ namespace PopLife.Manager
                 loyaltyLevel = adapter?.loyaltyLevel ?? 0,
                 totalSpent = 0,
                 sprite = CustomerPortraitLoader.LoadPortrait(agent.customerID, agent.cachedArchetype),
-                hasLeft = false
+                hasLeft = false,
+                preEntered = preEntered
             };
 
             customerStatsTracker.Add(statsData);
@@ -135,7 +160,7 @@ namespace PopLife.Manager
         }
 
         /// <summary>
-        /// 顾客离店时标记为已离开
+        /// 顾客离店时标记为已离开，并 snapshot session（用于 P2 Customer Analysis）
         /// </summary>
         private void OnCustomerDestroyed(CustomerAgent agent)
         {
@@ -146,6 +171,15 @@ namespace PopLife.Manager
             {
                 statsData.hasLeft = true;
             }
+
+            // Snapshot session for analysis（仅 PlayerStore 顾客）
+            var adapter = agent.GetComponent<CustomerBlackboardAdapter>();
+            if (adapter != null
+                && adapter.visitPurpose == CustomerVisitPurpose.PlayerStore
+                && agent.currentSession != null)
+            {
+                todaySessions.Add(agent.currentSession);
+            }
         }
 
         /// <summary>
@@ -155,6 +189,7 @@ namespace PopLife.Manager
         {
             shelfRevenueTracker.Clear();
             customerStatsTracker.Clear();
+            todaySessions.Clear();
         }
 
         #endregion
@@ -195,7 +230,8 @@ namespace PopLife.Manager
                         level = shelf.currentLevel,
                         todayRevenue = todayRevenue,
                         unitPrice = shelf.currentPrice,
-                        sprite = archetype.icon
+                        // prefab 的 SpriteRenderer.sprite 优先（与场上货架美术一致），icon 字段兜底
+                        sprite = GetShelfPrefabSprite(archetype) ?? archetype.icon
                     };
 
                     shelfStatsList.Add(statsData);
@@ -310,6 +346,148 @@ namespace PopLife.Manager
             return breakdown;
         }
 
+        /// <summary>
+        /// 获取今日新顾客 / 回头客拆分（基于 record.everEnteredStore 入店前 snapshot）
+        /// 注：分母用 customerStatsTracker.Count（spawned 计数），不是真实 entered count；
+        /// 仅 PlayerStore 顾客（OnCustomerSpawned 已过滤）
+        /// </summary>
+        public (int newCount, int returningCount) GetNewVsReturningSplit()
+        {
+            int newCount = 0, returningCount = 0;
+            foreach (var stat in customerStatsTracker)
+            {
+                if (stat == null) continue;
+                if (stat.preEntered) returningCount++;
+                else newCount++;
+            }
+            return (newCount, returningCount);
+        }
+
+        /// <summary>
+        /// 今日平均每位入店顾客购买的件数
+        /// 分母：CustomerPresenceService.EnteredTodayCount（含未购买进店顾客）
+        /// 分子：所有 ShelfVisit.boughtQty 求和
+        /// </summary>
+        public float GetAvgProductsPerCustomer()
+        {
+            int enteredCount = CustomerPresenceService.Instance?.EnteredTodayCount ?? 0;
+            if (enteredCount <= 0) return 0f;
+
+            int totalBought = 0;
+            foreach (var session in todaySessions)
+            {
+                if (session?.visitedShelves == null) continue;
+                foreach (var visit in session.visitedShelves)
+                    totalBought += visit.boughtQty;
+            }
+            return (float)totalBought / enteredCount;
+        }
+
+        /// <summary>
+        /// 今日平均每位入店顾客购买过的不同货架数
+        /// 分母：EnteredTodayCount，分子：每个 session 的 distinct shelfId（boughtQty>0）求和
+        /// </summary>
+        public float GetAvgShelvesPurchasedPerCustomer()
+        {
+            int enteredCount = CustomerPresenceService.Instance?.EnteredTodayCount ?? 0;
+            if (enteredCount <= 0) return 0f;
+
+            int totalDistinctShelves = 0;
+            foreach (var session in todaySessions)
+            {
+                if (session?.visitedShelves == null) continue;
+                var seen = new HashSet<string>();
+                foreach (var visit in session.visitedShelves)
+                {
+                    if (visit.boughtQty > 0 && !string.IsNullOrEmpty(visit.shelfId))
+                        seen.Add(visit.shelfId);
+                }
+                totalDistinctShelves += seen.Count;
+            }
+            return (float)totalDistinctShelves / enteredCount;
+        }
+
+        /// <summary>
+        /// 今日销售额最高的货架名称（基于已存在的 shelfRevenueTracker）
+        /// </summary>
+        public string GetMostPurchasedShelfName()
+        {
+            if (shelfRevenueTracker.Count == 0) return null;
+
+            string topShelfId = null;
+            int topRevenue = 0;
+            foreach (var kv in shelfRevenueTracker)
+            {
+                if (kv.Value > topRevenue)
+                {
+                    topRevenue = kv.Value;
+                    topShelfId = kv.Key;
+                }
+            }
+            if (string.IsNullOrEmpty(topShelfId)) return null;
+
+            // 查 WorldGrid 找到对应 shelf 的 displayName
+            var wg = WorldGrid.Instance;
+            if (wg != null)
+            {
+                foreach (var shelf in wg.AllShelves())
+                {
+                    if (shelf.instanceId != topShelfId) continue;
+                    var archetype = shelf.archetype as ShelfArchetype;
+                    return archetype != null ? archetype.displayName : null;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 今日销售额最高的品类
+        /// </summary>
+        public ProductCategory? GetMostPurchasedCategory()
+        {
+            var breakdown = GetCategoryRevenueBreakdown();
+            if (breakdown.Count == 0) return null;
+
+            ProductCategory? top = null;
+            float topRevenue = 0f;
+            foreach (var kv in breakdown)
+            {
+                if (kv.Value > topRevenue)
+                {
+                    topRevenue = kv.Value;
+                    top = kv.Key;
+                }
+            }
+            return top;
+        }
+
+        /// <summary>
+        /// 单货架最高消费：同一会话同一货架的 spending 总和的最大值
+        /// （顾客在一个货架上的最高单笔总消费）
+        /// </summary>
+        public int GetHighestSingleShelfSpend()
+        {
+            int maxSpend = 0;
+            foreach (var session in todaySessions)
+            {
+                if (session?.visitedShelves == null) continue;
+                // 同一会话内按 shelfId 聚合 spending
+                var spendByShelf = new Dictionary<string, int>();
+                foreach (var visit in session.visitedShelves)
+                {
+                    if (string.IsNullOrEmpty(visit.shelfId)) continue;
+                    if (!spendByShelf.ContainsKey(visit.shelfId))
+                        spendByShelf[visit.shelfId] = 0;
+                    spendByShelf[visit.shelfId] += visit.spending;
+                }
+                foreach (var v in spendByShelf.Values)
+                {
+                    if (v > maxSpend) maxSpend = v;
+                }
+            }
+            return maxSpend;
+        }
+
         #endregion
     }
 
@@ -332,6 +510,8 @@ namespace PopLife.Manager
 
     /// <summary>
     /// 顾客统计数据
+    /// preEntered: 入店前是否曾经进过店（基于 record.everEnteredStore snapshot）
+    ///             true = 回头客, false = 新客
     /// </summary>
     [Serializable]
     public class CustomerStatsData
@@ -342,6 +522,7 @@ namespace PopLife.Manager
         public int totalSpent;      // 总消费
         public Sprite sprite;
         public bool hasLeft;        // 是否已离店
+        public bool preEntered;     // 入店前是否曾经进过店（用于新客/回头客判定）
     }
 
     #endregion

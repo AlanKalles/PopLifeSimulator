@@ -65,6 +65,23 @@ namespace PopLife.Customers.Services
             if (agent == null) return;
             if (!tracker.TryEnter(agent.customerID)) return;
 
+            // Lifetime 入店计数 +1
+            if (PopLife.ResourceManager.Instance != null)
+                PopLife.ResourceManager.Instance.IncrementLifetimeCustomers();
+
+            // 在 record 上置位 everEnteredStore（用于 New vs Returning 判定）
+            // 注意：StatsDataManager 已在 OnSpawned 时 snapshot 了 preEntered，
+            // 所以这里置位不影响当日判定，只影响之后入店时的"是否新客"
+            if (CustomerRepository.Instance != null)
+            {
+                var record = CustomerRepository.Instance.Get(agent.customerID);
+                if (record != null && !record.everEnteredStore)
+                {
+                    record.everEnteredStore = true;
+                    CustomerRepository.Instance.SaveSingleRecord(record);
+                }
+            }
+
             SyncDebugFields();
             OnCustomerEnteredStore?.Invoke(agent, tracker.EnteredTodayCount);
         }

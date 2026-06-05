@@ -14,6 +14,7 @@ namespace PopLife.Customers.Runtime
         public int reservedQty;
         public int boughtQty;
         public float waitSeconds;
+        public int spending;  // 此次购买的实际花费 = effectivePrice × boughtQty（用于结算面板分析）
     }
 
     [Serializable]

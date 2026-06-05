@@ -29,10 +29,11 @@ namespace PopLife.Customers.Runtime
         public int walletCapBase = 100;
 
         // —— 统计 ——
-        public int visitCount;
+        public int visitCount;        // 仅在购买会话后递增（不可作为"是否进过店"的判断依据）
         public string lastVisitDay;
         public string lastLeaveReason;
         public int lifetimeSpent;
+        public bool everEnteredStore; // 是否曾真实进入过店内（不论是否购买）—— 用于新客/回头客区分
 
 // —— 对话交互 ——
         public string[] availableNarrativeIds = Array.Empty<string>(); // 该顾客可用的对话ID列表

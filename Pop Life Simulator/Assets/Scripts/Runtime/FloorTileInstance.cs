@@ -159,7 +159,7 @@ namespace PopLife.Runtime
                 : rawCost;
             if (!ResourceManager.Instance.CanAfford(finalBuildCost, 0)) return null;
 
-            ResourceManager.Instance.SpendMoney(finalBuildCost);
+            ResourceManager.Instance.SpendOnConstruction(finalBuildCost);
             if (!isElevator)
                 BlueprintManager.Instance.ConsumeBlueprint(arch.archetypeId);
 

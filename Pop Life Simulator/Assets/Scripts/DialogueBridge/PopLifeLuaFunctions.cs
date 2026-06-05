@@ -185,8 +185,8 @@ namespace PopLife.DialogueBridge
         {
             if (ResourceManager.Instance != null)
             {
-                // Use RefundMoney to avoid counting as sales income
-                ResourceManager.Instance.RefundMoney((int)amount);
+                // 任务/对话奖励：计入 lifetime 非营业收入 + daily Quest 分类
+                ResourceManager.Instance.AddQuestRewardMoney((int)amount);
                 Debug.Log($"[PopLifeLuaFunctions] Gave {amount} money to player");
             }
             else

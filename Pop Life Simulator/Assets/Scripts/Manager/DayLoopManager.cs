@@ -315,7 +315,7 @@ namespace PopLife
 
             int totalFee = Mathf.RoundToInt(totalMaintenanceFee);
             if (ResourceManager.Instance != null)
-                ResourceManager.Instance.SpendMoney(totalFee);
+                ResourceManager.Instance.SpendOnMaintenance(totalFee);
             return totalFee;
         }
 
@@ -364,15 +364,50 @@ namespace PopLife
             // 计算今日金钱变化（建造阶段开始时的钱 - 当前的钱）
             if (ResourceManager.Instance != null)
             {
-                data.dailyMoneyChange = buildPhaseStartMoney - ResourceManager.Instance.GetMoney();
+                var rm = ResourceManager.Instance;
+                data.dailyMoneyChange = buildPhaseStartMoney - rm.GetMoney();
 
-                // 获取累计统计
-                data.lifetimeIncome = ResourceManager.Instance.GetTotalIncome();
-                data.lifetimeExpenses = ResourceManager.Instance.GetTotalExpenses();
+                // 累计统计（旧版仅 sales）
+                data.lifetimeIncome = rm.GetTotalIncome();
+                data.lifetimeExpenses = rm.GetTotalExpenses();
+
+                // 新版结算扩展：收入明细
+                data.questRewardIncome = rm.GetDailyQuestRewardIncome();
+                data.refundIncome = rm.GetDailyRefundIncome();
+
+                // 新版结算扩展：支出明细（覆盖旧的混合 dailyExpenses）
+                data.restockExpense = rm.GetDailyRestockExpense();
+                data.constructionExpense = rm.GetDailyConstructionExpense();
+                data.maintenanceExpense = rm.GetDailyMaintenanceExpense();
+
+                // Lifetime 含所有进账（refund + quest + sponsorship）
+                data.lifetimeAllIncome = rm.GetLifetimeAllIncome();
+                data.lifetimeAllExpenses = rm.GetTotalExpenses();
+                data.lifetimeFameGained = rm.GetLifetimeFameGained();
+                data.lifetimeCustomers = rm.GetLifetimeCustomersEntered();
             }
 
             // 今日累计获得的Fame（通过购买实时累积）
             data.fameEarned = Mathf.RoundToInt(dailyFameEarned);
+
+            // 真实进店顾客数（来自 CustomerPresenceService）
+            data.customersEntered = PopLife.Customers.Services.CustomerPresenceService.Instance != null
+                ? PopLife.Customers.Services.CustomerPresenceService.Instance.EnteredTodayCount : 0;
+
+            // P2 Customer Analysis 字段（来自 StatsDataManager）
+            var stats = PopLife.Manager.StatsDataManager.Instance;
+            if (stats != null)
+            {
+                var (newC, retC) = stats.GetNewVsReturningSplit();
+                data.newCustomersCount = newC;
+                data.returningCustomersCount = retC;
+                data.avgProductsPerCustomer = stats.GetAvgProductsPerCustomer();
+                data.avgShelvesPerCustomer = stats.GetAvgShelvesPurchasedPerCustomer();
+                data.mostPurchasedShelfName = stats.GetMostPurchasedShelfName();
+                var mostCat = stats.GetMostPurchasedCategory();
+                data.mostPurchasedCategory = mostCat.HasValue ? mostCat.Value.ToString() : null;
+                data.highestSingleShelfSpend = stats.GetHighestSingleShelfSpend();
+            }
 
             // 维护费扣除已在 CalculateAndDeductMaintenance 中完成，此处不再重复扣费
 
@@ -708,8 +743,34 @@ namespace PopLife
         public int dailyMoneyChange;         // 今日金钱变化（建造阶段开始时的钱 - 结算时的钱）
         public int lifetimeIncome;           // 总收入（累计，仅来自顾客结账）
         public int lifetimeExpenses;         // 总开支（累计，所有花费）
-        public int totalCustomers;           // 今日访客数
+        public int totalCustomers;           // 今日访客数（spawned 计数，含未真实入店）
         public int fameEarned;               // 今日获得的声望值
         public CustomerLevelUpInfo[] levelUps; // 当日升级的顾客列表
+
+        // ────── Settlement v2 扩展字段 ──────
+        // 收入明细（Page 2 Revenue Breakdown）
+        public int questRewardIncome;        // 今日任务奖励金钱
+        public int refundIncome;             // 今日建筑拆除/撤销返还
+
+        // 支出明细（Page 2 Expense Breakdown）
+        public int restockExpense;
+        public int constructionExpense;
+        public int maintenanceExpense;
+
+        // Customer 真实入店数 + P2 分析字段
+        public int customersEntered;         // CustomerPresenceService.EnteredTodayCount
+        public int newCustomersCount;        // 今日新客（!preEntered）
+        public int returningCustomersCount;  // 今日回头客
+        public float avgProductsPerCustomer; // 平均购买件数（分母 customersEntered）
+        public float avgShelvesPerCustomer;  // 平均购买货架数
+        public string mostPurchasedShelfName; // 今日销售额最高货架名
+        public string mostPurchasedCategory;  // 今日销售额最高品类
+        public int highestSingleShelfSpend;   // 单货架最高消费
+
+        // Lifetime 累计（含所有进账类型）
+        public int lifetimeAllIncome;        // totalIncome + totalNonSaleIncome
+        public int lifetimeAllExpenses;      // totalExpenses
+        public int lifetimeCustomers;        // 累计真实进店顾客
+        public int lifetimeFameGained;       // 累计获得 fame（gross）
     }
 }

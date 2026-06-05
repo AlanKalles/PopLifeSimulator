@@ -531,7 +531,7 @@ namespace PopLife.Runtime
                 : arch.buildCost;
             if (!ResourceManager.Instance.CanAfford(finalBuildCost, 0)) return null;
 
-            ResourceManager.Instance.SpendMoney(finalBuildCost);
+            ResourceManager.Instance.SpendOnConstruction(finalBuildCost);
             BlueprintManager.Instance.ConsumeBlueprint(arch.archetypeId);
 
             FloorTileInstance inst = null;

@@ -933,7 +933,7 @@ namespace PopLife.UI.Restock
             if (ResourceManager.Instance == null) return;
 
             // 1. 扣钱（一次性）— money 可能因此变更负，这是预期行为
-            ResourceManager.Instance.SpendMoney(total);
+            ResourceManager.Instance.SpendOnRestock(total);
 
             // 2. 逐个 shelf 补货
             foreach (var id in selectedShelfIds)

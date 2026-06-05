@@ -8,6 +8,7 @@ using TMPro;
 using PopLife.Customers.Runtime;
 using PopLife.Data;
 using PopLife.Manager;
+using PopLife.UI.Settlement;
 using XCharts.Runtime;
 
 namespace PopLife.UI
@@ -25,15 +26,39 @@ namespace PopLife.UI
         [SerializeField] private TextMeshProUGUI gradeText;
         [SerializeField] private Image gradeBadgeBackground;
 
-        [Header("Key Metrics")]
+        [Header("Pages")]
+        [SerializeField] private GameObject page1Root;
+        [SerializeField] private GameObject page2Root;
+        [SerializeField] private Button page1TabButton;
+        [SerializeField] private Button page2TabButton;
+
+        [Header("Tab Button Text Colors")]
+        [SerializeField] private TextMeshProUGUI page1TabLabel;
+        [SerializeField] private TextMeshProUGUI page2TabLabel;
+        [SerializeField] private Color tabActiveTextColor = Color.white;
+        [SerializeField] private Color tabInactiveTextColor = new Color(0.5f, 0.5f, 0.5f);
+
+        [Header("Key Metrics — Page 1 (6 cards)")]
         [SerializeField] private TextMeshProUGUI revenueValueText;
         [SerializeField] private TextMeshProUGUI revenueComparisonText;
         [SerializeField] private TextMeshProUGUI expensesValueText;
         [SerializeField] private TextMeshProUGUI expensesComparisonText;
         [SerializeField] private TextMeshProUGUI netProfitValueText;
         [SerializeField] private TextMeshProUGUI netProfitComparisonText;
+        [SerializeField] private TextMeshProUGUI customersEnteredValueText;
+        [SerializeField] private TextMeshProUGUI customersEnteredComparisonText;
+        [SerializeField] private TextMeshProUGUI avgSpendValueText;
+        [SerializeField] private TextMeshProUGUI avgSpendComparisonText;
         [SerializeField] private TextMeshProUGUI fameValueText;
         [SerializeField] private TextMeshProUGUI fameComparisonText;
+
+        [Header("Net Profit Icon Swap")]
+        [SerializeField] private Image netProfitIconImage;
+        [SerializeField] private Sprite netProfitPositiveIcon;
+        [SerializeField] private Sprite netProfitNegativeIcon;
+
+        [Header("Today's Highlights (P1, placeholder)")]
+        [SerializeField] private GameObject todayHighlightsContainer;
 
         [Header("Charts")]
         [SerializeField] private LineChart lineChartPrefab;  // XCharts 预制体（在 Inspector 中拖拽赋值）
@@ -47,20 +72,42 @@ namespace PopLife.UI
         [SerializeField] private Transform hotSellersContainer;
         [SerializeField] private TextMeshProUGUI noHotSellerText;
 
-        [Header("Extra Income")]
-        [SerializeField] private GameObject extraIncomeSection;       // 整块区域（含 header + container）
-        [SerializeField] private Transform extraIncomeContainer;      // 词条父节点
-        [SerializeField] private GameObject extraIncomeItemPrefab;    // 含 ExtraIncomeItem 组件
-
         [Header("Level Up Section")]
         [SerializeField] private GameObject levelUpContainer;
         [SerializeField] private GameObject levelUpItemPrefab;
         [SerializeField] private TextMeshProUGUI noLevelUpText;
 
-        [Header("Lifetime Stats")]
+        [Header("Lifetime Stats (P1, 4 items)")]
         [SerializeField] private TextMeshProUGUI lifetimeIncomeText;
         [SerializeField] private TextMeshProUGUI lifetimeExpenseText;
-        [SerializeField] private TextMeshProUGUI totalCustomersText;
+        [SerializeField] private TextMeshProUGUI totalCustomersText;       // 现复用为 Lifetime Customers
+        [SerializeField] private TextMeshProUGUI lifetimeFameText;         // 累计 fame
+
+        // ─── Page 2 ───
+        [Header("P2 Revenue Breakdown")]
+        [SerializeField] private TextMeshProUGUI saleAmountText, salePctText;
+        [SerializeField] private TextMeshProUGUI lotteryAmountText, lotteryPctText;
+        [SerializeField] private TextMeshProUGUI questAmountText, questPctText;
+        [SerializeField] private TextMeshProUGUI refundAmountText, refundPctText;
+        [SerializeField] private TextMeshProUGUI sponsorshipAmountText, sponsorshipPctText;
+        [SerializeField] private Image saleBar, lotteryBar, questBar, refundBar, sponsorshipBar;
+        [SerializeField] private TextMeshProUGUI totalRevenueText;
+
+        [Header("P2 Expense Breakdown")]
+        [SerializeField] private TextMeshProUGUI restockAmountText, restockPctText;
+        [SerializeField] private TextMeshProUGUI constructionAmountText, constructionPctText;
+        [SerializeField] private TextMeshProUGUI maintenanceAmountText, maintenancePctText;
+        [SerializeField] private Image restockBar, constructionBar, maintenanceBar;
+        [SerializeField] private TextMeshProUGUI totalExpenseText;
+
+        [Header("P2 Customer Analysis (icon+title+content prefab)")]
+        [SerializeField] private TextMeshProUGUI newCustomersValue;
+        [SerializeField] private TextMeshProUGUI returningCustomersValue;
+        [SerializeField] private TextMeshProUGUI avgProductsValue;
+        [SerializeField] private TextMeshProUGUI avgShelvesValue;
+        [SerializeField] private TextMeshProUGUI mostShelfValue;
+        [SerializeField] private TextMeshProUGUI mostCategoryValue;
+        [SerializeField] private TextMeshProUGUI highestShelfSpendValue;
 
         [Header("Control")]
         [SerializeField] private Button continueButton;
@@ -103,6 +150,34 @@ namespace PopLife.UI
             {
                 continueButton.onClick.AddListener(OnContinueClicked);
             }
+
+            // Tab buttons
+            if (page1TabButton != null)
+                page1TabButton.onClick.AddListener(() => ShowPage(0));
+            if (page2TabButton != null)
+                page2TabButton.onClick.AddListener(() => ShowPage(1));
+
+            // Today's Highlights 当前为空占位，整块隐藏
+            if (todayHighlightsContainer != null)
+                todayHighlightsContainer.SetActive(false);
+        }
+
+        /// <summary>
+        /// 切换页面：根据 idx 设置 page root active / tab 按钮 interactable / tab label 颜色
+        /// 0 = Summary, 1 = Details
+        /// </summary>
+        private void ShowPage(int idx)
+        {
+            if (page1Root != null) page1Root.SetActive(idx == 0);
+            if (page2Root != null) page2Root.SetActive(idx == 1);
+
+            bool page1IsActive = idx == 0;
+            if (page1TabButton != null) page1TabButton.interactable = !page1IsActive;
+            if (page2TabButton != null) page2TabButton.interactable = page1IsActive;
+
+            // disabled（即当前页）用 active 色，可点击的用 inactive 色
+            if (page1TabLabel != null) page1TabLabel.color = page1IsActive ? tabActiveTextColor : tabInactiveTextColor;
+            if (page2TabLabel != null) page2TabLabel.color = page1IsActive ? tabInactiveTextColor : tabActiveTextColor;
         }
 
         /// <summary>
@@ -113,6 +188,9 @@ namespace PopLife.UI
             // 停止之前未完成的动画
             if (animationCoroutine != null)
                 StopCoroutine(animationCoroutine);
+
+            // 每次显示默认显示 Page 1
+            ShowPage(0);
 
             // 首次初始化图表（异步）
             if (!chartsInitialized)
@@ -199,16 +277,35 @@ namespace PopLife.UI
 
             yield return new WaitForSecondsRealtime(0.2f);
 
-            // --- 数字滚动动画（4个并行） ---
+            // --- 计算 Settlement v2 派生指标 ---
+            float totalRevenue = data.totalSale + data.lotteryWinnings + data.sponsorshipAmount
+                               + data.questRewardIncome + data.refundIncome;
+            float totalExpense = data.restockExpense + data.constructionExpense + data.maintenanceExpense;
+            // 旧 dailyExpenses 字段当 fallback（兼容旧维护费独立扣的逻辑）
+            if (totalExpense <= 0) totalExpense = data.dailyExpenses;
+            float netProfit = totalRevenue - totalExpense;
+            float avgSpend = data.customersEntered > 0
+                ? data.totalSale / (float)data.customersEntered : 0f;
+
+            // --- Net Profit 图标 sprite 切换（颜色仍走动画 finalColor）---
+            SetNetProfitIcon(netProfit);
+
+            // --- 数字滚动动画（6 个并行） ---
             StartCoroutine(NumberCountAnimator.AnimateValue(
-                revenueValueText, 0, data.totalSale, countDuration, "${0:F0}", tickInterval));
+                revenueValueText, 0, totalRevenue, countDuration, "${0:F0}", tickInterval));
 
             StartCoroutine(NumberCountAnimator.AnimateValue(
-                expensesValueText, 0, data.dailyExpenses, countDuration, "${0:F0}", tickInterval));
+                expensesValueText, 0, totalExpense, countDuration, "${0:F0}", tickInterval));
 
             StartCoroutine(NumberCountAnimator.AnimateValue(
-                netProfitValueText, 0, data.dailyIncome, countDuration, "${0:F0}", tickInterval,
-                data.dailyIncome >= 0 ? greenColor : redColor));
+                netProfitValueText, 0, netProfit, countDuration, "${0:F0}", tickInterval,
+                netProfit >= 0 ? greenColor : redColor));
+
+            StartCoroutine(NumberCountAnimator.AnimateValue(
+                customersEnteredValueText, 0, data.customersEntered, countDuration, "{0:F0}", tickInterval));
+
+            StartCoroutine(NumberCountAnimator.AnimateValue(
+                avgSpendValueText, 0, avgSpend, countDuration, "${0:F1}", tickInterval));
 
             StartCoroutine(NumberCountAnimator.AnimateValue(
                 fameValueText, 0, data.fameEarned, countDuration, "+{0:F0}", tickInterval));
@@ -233,19 +330,23 @@ namespace PopLife.UI
             // --- 热销商品 ---
             PopulateHotSellers(topSellers);
 
-            // --- 额外收入（彩票 + Midori 补助，按存在性动态生成词条） ---
-            PopulateExtraIncome(data);
-
-            // --- 升级列表 ---
+            // --- 升级列表（移到 Page 2 Customer Upgrade 区域，Inspector 内把 container re-parent 到 page2Root 下）---
             PopulateLevelUpList(data.levelUps);
 
-            // --- 生涯统计 ---
+            // --- 生涯统计（4 项：含全部进账 / 全部支出 / 累计入店顾客 / 累计 Fame）---
             if (lifetimeIncomeText != null)
-                lifetimeIncomeText.text = $"Lifetime Income: ${data.lifetimeIncome:F0}";
+                lifetimeIncomeText.text = $"${data.lifetimeAllIncome:F0}";
             if (lifetimeExpenseText != null)
-                lifetimeExpenseText.text = $"Lifetime Expenses: ${data.lifetimeExpenses:F0}";
+                lifetimeExpenseText.text = $"${data.lifetimeAllExpenses:F0}";
             if (totalCustomersText != null)
-                totalCustomersText.text = $"Customers Today: {data.totalCustomers}";
+                totalCustomersText.text = $"{data.lifetimeCustomers}";
+            if (lifetimeFameText != null)
+                lifetimeFameText.text = $"+{data.lifetimeFameGained}";
+
+            // --- Page 2 内容立即填充（不做数字动画，避免重复滚动）---
+            PopulateRevenueBreakdown(data, totalRevenue);
+            PopulateExpenseBreakdown(data, totalExpense);
+            PopulateCustomerAnalysis(data);
 
             // --- 所有数据展示完毕，显示 Continue 按钮 ---
             if (continueButton != null)
@@ -254,22 +355,39 @@ namespace PopLife.UI
 
         private void ClearAllTexts()
         {
-            // 清空数值文本
+            // 清空数值文本（Page 1 6 个指标）
             if (revenueValueText != null) revenueValueText.text = "$0";
             if (expensesValueText != null) expensesValueText.text = "$0";
             if (netProfitValueText != null) { netProfitValueText.text = "$0"; netProfitValueText.color = Color.white; }
+            if (customersEnteredValueText != null) customersEnteredValueText.text = "0";
+            if (avgSpendValueText != null) avgSpendValueText.text = "$0";
             if (fameValueText != null) fameValueText.text = "+0";
 
             // 清空对比箭头
             if (revenueComparisonText != null) revenueComparisonText.text = "";
             if (expensesComparisonText != null) expensesComparisonText.text = "";
             if (netProfitComparisonText != null) netProfitComparisonText.text = "";
+            if (customersEnteredComparisonText != null) customersEnteredComparisonText.text = "";
+            if (avgSpendComparisonText != null) avgSpendComparisonText.text = "";
             if (fameComparisonText != null) fameComparisonText.text = "";
 
             // 清空生涯统计
             if (lifetimeIncomeText != null) lifetimeIncomeText.text = "";
             if (lifetimeExpenseText != null) lifetimeExpenseText.text = "";
             if (totalCustomersText != null) totalCustomersText.text = "";
+            if (lifetimeFameText != null) lifetimeFameText.text = "";
+        }
+
+        /// <summary>
+        /// Net Profit 图标 sprite 切换（正/负）
+        /// </summary>
+        private void SetNetProfitIcon(float netProfit)
+        {
+            if (netProfitIconImage == null) return;
+            if (netProfit >= 0 && netProfitPositiveIcon != null)
+                netProfitIconImage.sprite = netProfitPositiveIcon;
+            else if (netProfit < 0 && netProfitNegativeIcon != null)
+                netProfitIconImage.sprite = netProfitNegativeIcon;
         }
 
         #endregion
@@ -278,87 +396,15 @@ namespace PopLife.UI
 
         /// <summary>
         /// 计算每日评级 (S+/S/A/B/C/D)
-        /// 4 个维度，每维 25 分（满分 100）：
-        ///   1. 盈利能力 — 利润率
-        ///   2. 成长性  — 营收与顾客数 vs 近 7 日均值
-        ///   3. 顾客体验 — 转化率 + 平均客单价
-        ///   4. 声望表现 — 自适应 Fame 目标
-        /// 设计要点：
-        ///   - 移除硬编码的"day≤3:5"等顾客/Fame 目标，改用自适应 + 历史对比
-        ///   - 移除"利润率+盈利"双重计分
-        ///   - 前几天无历史时，成长维度默认满分，鼓励新手
+        /// 公式实现移到 DailyGradeEvaluator (Scripts/UI/Settlement/DailyGradeEvaluator.cs)
+        /// 3 维度 100 分制：盈利能力 35 + 成长性 35 + Fame 30
+        /// Tier 按天数自动切换（每 8 天升一档，共 4 档）
         /// </summary>
         private string CalculateDailyGrade(DailySettlementData data)
         {
-            float score = 0f;
-            var historyMgr = SettlementHistoryManager.Instance;
-            var statsMgr = StatsDataManager.Instance;
-
-            // ── 1. 盈利能力 (25 分) ──
-            // 40% 利润率即满分（维护费占 10-15% 是常态，40% 已算"经营优秀"）
-            if (data.totalSale > 0)
-            {
-                float profitMargin = data.dailyIncome / data.totalSale;
-                score += Mathf.Clamp(profitMargin, 0f, 0.4f) * 62.5f;
-            }
-
-            // ── 2. 成长性 (25 分) ──
-            // Revenue (15) + Customer (10) vs 7 日均值
-            // 增长率 -20% 到 +50% 线性映射 0~满分
-            float avgRevenue = historyMgr != null
-                ? historyMgr.GetAverage(e => e.totalSale, 7) : 0f;
-            float avgCustomers = historyMgr != null
-                ? historyMgr.GetAverage(e => e.totalCustomers, 7) : 0f;
-
-            if (avgRevenue > 0f)
-            {
-                float growth = (data.totalSale - avgRevenue) / avgRevenue;
-                score += Mathf.InverseLerp(-0.2f, 0.5f, growth) * 15f;
-            }
-            else
-            {
-                score += 15f; // 早期无历史，默认满分鼓励
-            }
-
-            if (avgCustomers > 0f)
-            {
-                float growth = (data.totalCustomers - avgCustomers) / avgCustomers;
-                score += Mathf.InverseLerp(-0.2f, 0.5f, growth) * 10f;
-            }
-            else
-            {
-                score += 10f;
-            }
-
-            // ── 3. 顾客体验 (25 分) ──
-            // 转化率 (15): 80% 即满分
-            int purchasedCount = statsMgr != null ? statsMgr.GetPurchasedCustomerCount() : 0;
-            if (data.totalCustomers > 0)
-            {
-                float conversion = (float)purchasedCount / data.totalCustomers;
-                score += Mathf.Clamp(conversion, 0f, 0.8f) * 18.75f; // 0.8 × 18.75 = 15
-            }
-
-            // 平均客单价 (10): $50 客单价即满分（可后续根据数值调优）
-            if (purchasedCount > 0)
-            {
-                float avgSpend = data.totalSale / purchasedCount;
-                score += Mathf.Clamp01(avgSpend / 50f) * 10f;
-            }
-
-            // ── 4. 声望表现 (25 分) ──
-            // 自适应目标 = 5 + day × 0.5（早期目标低，后期目标高）
-            float fameTarget = 5f + data.day * 0.5f;
-            float fameRatio = data.fameEarned / fameTarget;
-            score += Mathf.Clamp(fameRatio, 0f, 1.5f) * 16.67f; // 满目标 16.67，1.5x 25.005
-
-            // ── 评级映射 ──
-            if (score >= 95f) return "S+";
-            if (score >= 85f) return "S";
-            if (score >= 70f) return "A";
-            if (score >= 55f) return "B";
-            if (score >= 35f) return "C";
-            return "D";
+            var tier = GradeTier.From(data.day);
+            var (grade, _) = DailyGradeEvaluator.Evaluate(data, tier);
+            return grade;
         }
 
         private void SetGrade(string grade)
@@ -382,22 +428,44 @@ namespace PopLife.UI
 
         private void SetComparisonArrows(DailySettlementData data, SettlementHistoryEntry yesterday)
         {
+            // 计算今日 v2 口径（与 Page 1 显示值一致）
+            float todayRevenue = data.totalSale + data.lotteryWinnings + data.sponsorshipAmount
+                               + data.questRewardIncome + data.refundIncome;
+            float todayExpense = data.restockExpense + data.constructionExpense + data.maintenanceExpense;
+            if (todayExpense <= 0) todayExpense = data.dailyExpenses;
+            float todayProfit = todayRevenue - todayExpense;
+            float todayAvgSpend = data.customersEntered > 0
+                ? data.totalSale / (float)data.customersEntered : 0f;
+
             if (yesterday == null)
             {
                 // 第一天没有对比数据
                 if (revenueComparisonText != null) revenueComparisonText.text = "";
                 if (expensesComparisonText != null) expensesComparisonText.text = "";
                 if (netProfitComparisonText != null) netProfitComparisonText.text = "";
+                if (customersEnteredComparisonText != null) customersEnteredComparisonText.text = "";
+                if (avgSpendComparisonText != null) avgSpendComparisonText.text = "";
                 if (fameComparisonText != null) fameComparisonText.text = "";
                 return;
             }
 
+            // 昨日 v2 口径（旧记录 totalRevenueV2/totalExpenseV2/netProfitV2 默认 0 → 触发 NEW 状态）
+            float yRevenue = yesterday.totalRevenueV2 > 0 ? yesterday.totalRevenueV2 : yesterday.totalSale;
+            float yExpense = yesterday.totalExpenseV2 > 0 ? yesterday.totalExpenseV2 : yesterday.dailyExpenses;
+            float yProfit = yesterday.totalRevenueV2 > 0 ? yesterday.netProfitV2 : yesterday.dailyIncome;
+            float yAvgSpend = yesterday.customersEntered > 0
+                ? yesterday.totalSale / (float)yesterday.customersEntered : 0f;
+
             if (revenueComparisonText != null)
-                revenueComparisonText.text = FormatComparison(data.totalSale, yesterday.totalSale);
+                revenueComparisonText.text = FormatComparison(todayRevenue, yRevenue);
             if (expensesComparisonText != null)
-                expensesComparisonText.text = FormatComparison(data.dailyExpenses, yesterday.dailyExpenses, true);
+                expensesComparisonText.text = FormatComparison(todayExpense, yExpense, true);
             if (netProfitComparisonText != null)
-                netProfitComparisonText.text = FormatComparison(data.dailyIncome, yesterday.dailyIncome);
+                netProfitComparisonText.text = FormatComparison(todayProfit, yProfit);
+            if (customersEnteredComparisonText != null)
+                customersEnteredComparisonText.text = FormatComparison(data.customersEntered, yesterday.customersEntered);
+            if (avgSpendComparisonText != null)
+                avgSpendComparisonText.text = FormatComparison(todayAvgSpend, yAvgSpend);
             if (fameComparisonText != null)
                 fameComparisonText.text = FormatComparison(data.fameEarned, yesterday.fameEarned);
         }
@@ -611,57 +679,6 @@ namespace PopLife.UI
 
         #endregion
 
-        #region 额外收入（彩票 / 补助）
-
-        /// <summary>
-        /// 动态生成 Extra Income 词条。彩票奖金 / Midori 补助分项展示，有则生成，无则隐藏整块。
-        /// </summary>
-        private void PopulateExtraIncome(DailySettlementData data)
-        {
-            // 清空旧词条
-            if (extraIncomeContainer != null)
-            {
-                foreach (Transform child in extraIncomeContainer)
-                    Destroy(child.gameObject);
-            }
-
-            bool hasAny = false;
-
-            if (data.lotteryWinnings > 0)
-            {
-                CreateExtraItem("Lottery Win", data.lotteryWinnings);
-                hasAny = true;
-            }
-
-            if (data.sponsorshipAmount > 0)
-            {
-                CreateExtraItem("Midori's Sponsorship", data.sponsorshipAmount);
-                hasAny = true;
-            }
-
-            // 都为 0 时隐藏整块区域（避免空标题）
-            if (extraIncomeSection != null)
-                extraIncomeSection.SetActive(hasAny);
-        }
-
-        private void CreateExtraItem(string label, int amount)
-        {
-            if (extraIncomeItemPrefab == null || extraIncomeContainer == null) return;
-
-            var obj = Instantiate(extraIncomeItemPrefab, extraIncomeContainer);
-            var item = obj.GetComponent<ExtraIncomeItem>();
-            if (item != null)
-            {
-                item.SetData(label, amount);
-            }
-            else
-            {
-                Debug.LogWarning("[NewDailySettlementPanel] extraIncomeItemPrefab 缺少 ExtraIncomeItem 组件！");
-            }
-        }
-
-        #endregion
-
         #region 升级列表
 
         private void PopulateLevelUpList(CustomerLevelUpInfo[] levelUps)
@@ -705,6 +722,84 @@ namespace PopLife.UI
 
         #endregion
 
+        #region Page 2 — Revenue Breakdown / Expense Breakdown / Customer Analysis
+
+        /// <summary>
+        /// Page 2 Revenue Breakdown — 固定 5 行（sale / lottery / quest / refund / sponsorship），始终显示
+        /// 每行只更新 amount/pct/bar，icon 和 title 在预制体中静态设置
+        /// </summary>
+        private void PopulateRevenueBreakdown(DailySettlementData data, float totalRevenue)
+        {
+            float divisor = totalRevenue > 0 ? totalRevenue : 1f;
+
+            void Apply(TextMeshProUGUI amountText, TextMeshProUGUI pctText, Image bar, int amount)
+            {
+                if (amountText != null) amountText.text = $"${amount}";
+                float pct = amount / divisor;
+                if (pctText != null) pctText.text = $"{Mathf.RoundToInt(pct * 100f)}%";
+                if (bar != null) bar.fillAmount = Mathf.Clamp01(pct);
+            }
+
+            Apply(saleAmountText, salePctText, saleBar, (int)data.totalSale);
+            Apply(lotteryAmountText, lotteryPctText, lotteryBar, data.lotteryWinnings);
+            Apply(questAmountText, questPctText, questBar, data.questRewardIncome);
+            Apply(refundAmountText, refundPctText, refundBar, data.refundIncome);
+            Apply(sponsorshipAmountText, sponsorshipPctText, sponsorshipBar, data.sponsorshipAmount);
+
+            if (totalRevenueText != null)
+                totalRevenueText.text = $"${(int)totalRevenue}";
+        }
+
+        /// <summary>
+        /// Page 2 Expense Breakdown — 3 个固定行（restock / construction / maintenance）+ Total
+        /// 用 fillAmount 表达 % 条
+        /// </summary>
+        private void PopulateExpenseBreakdown(DailySettlementData data, float totalExpense)
+        {
+            float divisor = totalExpense > 0 ? totalExpense : 1f;
+
+            void Apply(TextMeshProUGUI amountText, TextMeshProUGUI pctText, Image bar, int amount)
+            {
+                if (amountText != null) amountText.text = $"${amount}";
+                float pct = amount / divisor;
+                if (pctText != null) pctText.text = $"{Mathf.RoundToInt(pct * 100f)}%";
+                if (bar != null) bar.fillAmount = Mathf.Clamp01(pct);
+            }
+
+            Apply(restockAmountText, restockPctText, restockBar, data.restockExpense);
+            Apply(constructionAmountText, constructionPctText, constructionBar, data.constructionExpense);
+            Apply(maintenanceAmountText, maintenancePctText, maintenanceBar, data.maintenanceExpense);
+
+            if (totalExpenseText != null)
+                totalExpenseText.text = $"${(int)totalExpense}";
+        }
+
+        /// <summary>
+        /// Page 2 Customer Analysis — 7 个 value TMP，icon+title 在预制体内静态设置
+        /// </summary>
+        private void PopulateCustomerAnalysis(DailySettlementData data)
+        {
+            if (newCustomersValue != null)
+                newCustomersValue.text = $"{data.newCustomersCount}";
+            if (returningCustomersValue != null)
+                returningCustomersValue.text = $"{data.returningCustomersCount}";
+            if (avgProductsValue != null)
+                avgProductsValue.text = $"{data.avgProductsPerCustomer:F1}";
+            if (avgShelvesValue != null)
+                avgShelvesValue.text = $"{data.avgShelvesPerCustomer:F1}";
+            if (mostShelfValue != null)
+                mostShelfValue.text = string.IsNullOrEmpty(data.mostPurchasedShelfName)
+                    ? "—" : data.mostPurchasedShelfName;
+            if (mostCategoryValue != null)
+                mostCategoryValue.text = string.IsNullOrEmpty(data.mostPurchasedCategory)
+                    ? "—" : data.mostPurchasedCategory;
+            if (highestShelfSpendValue != null)
+                highestShelfSpendValue.text = data.highestSingleShelfSpend > 0
+                    ? $"${data.highestSingleShelfSpend}" : "—";
+        }
+
+        #endregion
+
         #region 数据构建
 
         /// <summary>
@@ -715,6 +810,13 @@ namespace PopLife.UI
             Dictionary<ProductCategory, float> categoryRevenue,
             List<ShelfStatsData> topSellers)
         {
+            // v2 聚合口径（用于"vs 昨天"对比）
+            float totalRevenueV2 = data.totalSale + data.lotteryWinnings + data.sponsorshipAmount
+                                 + data.questRewardIncome + data.refundIncome;
+            float totalExpenseV2 = data.restockExpense + data.constructionExpense + data.maintenanceExpense;
+            if (totalExpenseV2 <= 0) totalExpenseV2 = data.dailyExpenses; // 兼容
+            float netProfitV2 = totalRevenueV2 - totalExpenseV2;
+
             var entry = new SettlementHistoryEntry
             {
                 day = data.day,
@@ -722,7 +824,16 @@ namespace PopLife.UI
                 dailyExpenses = data.dailyExpenses,
                 dailyIncome = data.dailyIncome,
                 totalCustomers = data.totalCustomers,
-                fameEarned = data.fameEarned
+                fameEarned = data.fameEarned,
+                // v2 扩展字段
+                customersEntered = data.customersEntered,
+                restockExpense = data.restockExpense,
+                constructionExpense = data.constructionExpense,
+                maintenanceExpense = data.maintenanceExpense,
+                // v2 聚合口径
+                totalRevenueV2 = totalRevenueV2,
+                totalExpenseV2 = totalExpenseV2,
+                netProfitV2 = netProfitV2
             };
 
             // 品类收入数组

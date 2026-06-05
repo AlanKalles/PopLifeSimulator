@@ -808,7 +808,7 @@ namespace PopLife.Runtime
                     {
                         // 扣除移动费用
                         if (moveCost > 0)
-                            resourceManager.SpendMoney(moveCost);
+                            resourceManager.SpendOnConstruction(moveCost);
 
                         AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);
                         OnBuildingPlacedOrDestroyed?.Invoke();
@@ -957,7 +957,7 @@ namespace PopLife.Runtime
                         if (moveSuccess)
                         {
                             if (moveCost > 0)
-                                resourceManager.SpendMoney(moveCost);
+                                resourceManager.SpendOnConstruction(moveCost);
 
                             movingFti.InitializeInterior();
                             AudioManager.Instance.PlaySound(AudioKeys.BUILDING_MOVED);

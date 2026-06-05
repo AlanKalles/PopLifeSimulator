@@ -34,9 +34,9 @@ namespace PopLife.Quest
             switch (reward.type)
             {
                 case RewardType.Money:
-                    // 使用 RefundMoney 不计入销售收入（与 PopLifeLuaFunctions.GiveMoney 一致）
+                    // 任务奖励：计入 lifetime 非营业收入 + daily Quest 分类
                     if (ResourceManager.Instance != null)
-                        ResourceManager.Instance.RefundMoney(reward.amount);
+                        ResourceManager.Instance.AddQuestRewardMoney(reward.amount);
                     Debug.Log($"[QuestRewardDistributor] 发放奖励: Money +{reward.amount}");
                     break;
 
