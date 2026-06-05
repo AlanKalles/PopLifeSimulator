@@ -87,6 +87,7 @@ namespace PopLife.UI
         // 评级颜色映射
         private static readonly Dictionary<string, Color> gradeColors = new Dictionary<string, Color>
         {
+            { "S+", new Color(1f, 0.4f, 0.8f) },      // 粉紫色 #FF66CC（罕见，挑战目标）
             { "S", new Color(1f, 0.84f, 0f) },       // 金色 #FFD700
             { "A", new Color(0f, 0.69f, 0.11f) },     // 绿色 #00B11D
             { "B", new Color(0.27f, 0.53f, 1f) },     // 蓝色 #4488FF
@@ -276,39 +277,87 @@ namespace PopLife.UI
         #region 评级系统
 
         /// <summary>
-        /// 计算每日评级 (S/A/B/C/D)
-        /// 基于利润率、顾客数、Fame、是否盈利的综合评分
+        /// 计算每日评级 (S+/S/A/B/C/D)
+        /// 4 个维度，每维 25 分（满分 100）：
+        ///   1. 盈利能力 — 利润率
+        ///   2. 成长性  — 营收与顾客数 vs 近 7 日均值
+        ///   3. 顾客体验 — 转化率 + 平均客单价
+        ///   4. 声望表现 — 自适应 Fame 目标
+        /// 设计要点：
+        ///   - 移除硬编码的"day≤3:5"等顾客/Fame 目标，改用自适应 + 历史对比
+        ///   - 移除"利润率+盈利"双重计分
+        ///   - 前几天无历史时，成长维度默认满分，鼓励新手
         /// </summary>
         private string CalculateDailyGrade(DailySettlementData data)
         {
             float score = 0f;
+            var historyMgr = SettlementHistoryManager.Instance;
+            var statsMgr = StatsDataManager.Instance;
 
-            // 1. 利润率 (40分) - 净收入 / 总销售
+            // ── 1. 盈利能力 (25 分) ──
+            // 40% 利润率即满分（维护费占 10-15% 是常态，40% 已算"经营优秀"）
             if (data.totalSale > 0)
             {
                 float profitMargin = data.dailyIncome / data.totalSale;
-                score += Mathf.Clamp(profitMargin, 0f, 1f) * 40f;
+                score += Mathf.Clamp(profitMargin, 0f, 0.4f) * 62.5f;
             }
 
-            // 2. 顾客数量 (30分) - 基于递增目标
-            int customerTarget = data.day <= 3 ? 5 : (data.day <= 7 ? 10 : 15);
-            float customerRatio = (float)data.totalCustomers / customerTarget;
-            score += Mathf.Clamp(customerRatio, 0f, 1.5f) * 20f;
+            // ── 2. 成长性 (25 分) ──
+            // Revenue (15) + Customer (10) vs 7 日均值
+            // 增长率 -20% 到 +50% 线性映射 0~满分
+            float avgRevenue = historyMgr != null
+                ? historyMgr.GetAverage(e => e.totalSale, 7) : 0f;
+            float avgCustomers = historyMgr != null
+                ? historyMgr.GetAverage(e => e.totalCustomers, 7) : 0f;
 
-            // 3. Fame获取 (20分)
-            int fameTarget = data.day <= 3 ? 3 : (data.day <= 7 ? 8 : 15);
-            float fameRatio = (float)data.fameEarned / fameTarget;
-            score += Mathf.Clamp(fameRatio, 0f, 1.5f) * 13.3f;
+            if (avgRevenue > 0f)
+            {
+                float growth = (data.totalSale - avgRevenue) / avgRevenue;
+                score += Mathf.InverseLerp(-0.2f, 0.5f, growth) * 15f;
+            }
+            else
+            {
+                score += 15f; // 早期无历史，默认满分鼓励
+            }
 
-            // 4. 盈利（非亏损）(10分) - 二元判断
-            if (data.dailyIncome > 0)
+            if (avgCustomers > 0f)
+            {
+                float growth = (data.totalCustomers - avgCustomers) / avgCustomers;
+                score += Mathf.InverseLerp(-0.2f, 0.5f, growth) * 10f;
+            }
+            else
+            {
                 score += 10f;
+            }
 
-            // 映射到评级
+            // ── 3. 顾客体验 (25 分) ──
+            // 转化率 (15): 80% 即满分
+            int purchasedCount = statsMgr != null ? statsMgr.GetPurchasedCustomerCount() : 0;
+            if (data.totalCustomers > 0)
+            {
+                float conversion = (float)purchasedCount / data.totalCustomers;
+                score += Mathf.Clamp(conversion, 0f, 0.8f) * 18.75f; // 0.8 × 18.75 = 15
+            }
+
+            // 平均客单价 (10): $50 客单价即满分（可后续根据数值调优）
+            if (purchasedCount > 0)
+            {
+                float avgSpend = data.totalSale / purchasedCount;
+                score += Mathf.Clamp01(avgSpend / 50f) * 10f;
+            }
+
+            // ── 4. 声望表现 (25 分) ──
+            // 自适应目标 = 5 + day × 0.5（早期目标低，后期目标高）
+            float fameTarget = 5f + data.day * 0.5f;
+            float fameRatio = data.fameEarned / fameTarget;
+            score += Mathf.Clamp(fameRatio, 0f, 1.5f) * 16.67f; // 满目标 16.67，1.5x 25.005
+
+            // ── 评级映射 ──
+            if (score >= 95f) return "S+";
             if (score >= 85f) return "S";
             if (score >= 70f) return "A";
-            if (score >= 50f) return "B";
-            if (score >= 30f) return "C";
+            if (score >= 55f) return "B";
+            if (score >= 35f) return "C";
             return "D";
         }
 

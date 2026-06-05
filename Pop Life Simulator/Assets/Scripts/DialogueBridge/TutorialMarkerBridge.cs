@@ -4,6 +4,7 @@ using UnityEngine;
 using PixelCrushers.DialogueSystem;
 using PopLife.Data;
 using PopLife.Manager;
+using PopLife.UI;
 using Sirenix.OdinInspector;
 
 namespace PopLife.DialogueBridge
@@ -134,8 +135,32 @@ namespace PopLife.DialogueBridge
             // 串行执行：前一个 action 启动的对话结束后，才启动下一个 action。
             // ⚠️ 串行范围限于"同一 marker 内"——不同 marker 同时被 raise 时，它们各自的协程仍并发，
             //    顺序由 DialogueManager.isConversationActive 抢占决定，不可控。当前游戏无此场景。
-            DialogueManager.instance.StartCoroutine(ExecuteActionsSerially(actions));
+            //
+            // 日触发器（DayN）走演出通道（PresentationChannel），作为一等队列项，
+            // 以便与彩票揭晓等同日弹窗按固定优先级串行（对话优先级 100 < 彩票 200）。
+            // 其余 marker 维持原有直接播放，blast radius 最小。
+            if (IsDayTrigger(marker) && PresentationChannel.Instance != null)
+            {
+                PresentationChannel.Instance.Enqueue(
+                    new DialogueActionPresentation(ExecuteActionsSerially(actions)));
+            }
+            else
+            {
+                DialogueManager.instance.StartCoroutine(ExecuteActionsSerially(actions));
+            }
         }
+
+        /// <summary>
+        /// 是否为每日剧情触发 marker（这些走演出通道，与同日其它弹窗协调时序）。
+        /// </summary>
+        private static bool IsDayTrigger(TutorialMarker marker) => marker is
+            TutorialMarker.Day2Trigger or
+            TutorialMarker.Day3Trigger or
+            TutorialMarker.Day4Trigger or
+            TutorialMarker.Day8Trigger or
+            TutorialMarker.Day10Trigger or
+            TutorialMarker.Day12Trigger or
+            TutorialMarker.Day15Trigger;
 
         private System.Collections.IEnumerator ExecuteActionsSerially(List<DialogueAction> actions)
         {

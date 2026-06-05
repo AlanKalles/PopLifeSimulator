@@ -44,6 +44,12 @@ namespace PopLife.UI
         [SerializeField] private Button entryButton;
         [SerializeField] private CanvasGroup entryButtonCanvasGroup;
 
+        [Header("Entry Button Badge")]
+        [Tooltip("持票时在入口按钮上显示的角标根物体")]
+        [SerializeField] private GameObject daysBadgeRoot;
+        [Tooltip("角标文本（如 \"3d left\"）")]
+        [SerializeField] private TextMeshProUGUI daysBadgeText;
+
         [Header("Unlock Animation")]
         [SerializeField] private float fadeInDuration = 0.5f;
 
@@ -101,6 +107,10 @@ namespace PopLife.UI
                 DayLoopManager.Instance.OnStoreOpen += OnStoreOpen;
             }
 
+            // 开奖完成后（票已清）刷新角标，避免依赖 OnBuildPhaseStart 的处理顺序而卡在 "Draw today"
+            if (LotteryManager.Instance != null)
+                LotteryManager.Instance.OnDrawCompleted += OnDrawCompletedRefreshBadge;
+
             if (entryButton != null)
                 entryButton.onClick.AddListener(Show);
             if (closeButton != null)
@@ -134,6 +144,9 @@ namespace PopLife.UI
                 DayLoopManager.Instance.OnBuildPhaseStart -= OnBuildPhaseStart;
                 DayLoopManager.Instance.OnStoreOpen -= OnStoreOpen;
             }
+
+            if (LotteryManager.Instance != null)
+                LotteryManager.Instance.OnDrawCompleted -= OnDrawCompletedRefreshBadge;
 
             if (entryButton != null) entryButton.onClick.RemoveListener(Show);
             if (closeButton != null) closeButton.onClick.RemoveListener(Hide);
@@ -175,6 +188,8 @@ namespace PopLife.UI
                 entryButtonCanvasGroup.interactable = visible;
                 entryButtonCanvasGroup.blocksRaycasts = visible;
             }
+
+            RefreshDaysBadge();
         }
 
         private void OnBuildPhaseStart()
@@ -359,6 +374,29 @@ namespace PopLife.UI
                     digitReels[i].ScrollToDigit(selectedDigits[i], animate: false);
                 else if (i < digitTexts.Length && digitTexts[i] != null)
                     digitTexts[i].text = selectedDigits[i].ToString();
+            }
+
+            RefreshDaysBadge();
+        }
+
+        /// <summary>开奖完成回调：票已清空，刷新角标使其正确隐藏。</summary>
+        private void OnDrawCompletedRefreshBadge(int[] _) => RefreshDaysBadge();
+
+        /// <summary>
+        /// 刷新入口按钮角标：持票时显示距开奖天数，否则隐藏。
+        /// </summary>
+        private void RefreshDaysBadge()
+        {
+            var lm = LotteryManager.Instance;
+            bool show = lm != null && lm.HasTicketForCurrentCycle();
+
+            if (daysBadgeRoot != null)
+                daysBadgeRoot.SetActive(show);
+
+            if (show && daysBadgeText != null)
+            {
+                int days = lm.GetDaysUntilDraw();
+                daysBadgeText.text = days <= 0 ? "Draw today" : $"{days}d left";
             }
         }
     }

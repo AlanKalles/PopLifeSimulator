@@ -14,11 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopLife.Data.BufferData
   bufferId: C_Lingere Sale
   displayName: Lingerie Sale
-  description: "It's been a beautiful season! Everyone is getting dressed up to see
-    the ones they adore.\n\n\nAdvice:\nLingerie items are expected to surge in popularity
-    for the next 3 days!"
+  description: 'It''s been a beautiful season! Everyone is getting dressed up to
+    see the ones they adore.
+
+
+
+    Advice:
+
+    Lingerie items are expected to surge
+    in popularity for the next 3 days!'
   icon: {fileID: 0}
-  triggerType: 0
+  triggerType: 1
   occurProbability: 0
   hostCost: 300
   durationDays: 1
@@ -41,8 +47,8 @@ MonoBehaviour:
     categoryAppealModifiers:
     - category: 8
       addend: 10
-    bonusInterestCategories: []
-    restockBlockedCategories: []
+    bonusInterestCategories: 
+    restockBlockedCategories: 
   delayActivationByOneDay: 0
   rollRandomBlockedCategory: 0
-  activationConversationTitle:
+  activationConversationTitle: 

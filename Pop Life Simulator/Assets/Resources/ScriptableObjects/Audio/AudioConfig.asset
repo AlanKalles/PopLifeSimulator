@@ -92,6 +92,11 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 701c2c3c2a8aad248a1ace0adec6c38f, type: 3}
     loop: 1
     volume: 0.5
+  - key: BGM_Title
+    clips:
+    - {fileID: 8300000, guid: daf7c75b658dc9842a945212c45d1cac, type: 3}
+    loop: 1
+    volume: 0.5
   actorEmotes:
   - actorName: Midori
     emotes:

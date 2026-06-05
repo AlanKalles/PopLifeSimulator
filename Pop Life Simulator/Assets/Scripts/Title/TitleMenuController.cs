@@ -14,8 +14,12 @@ namespace PopLife.Title
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button creditsButton;
 
-        [Header("场景加载")]
-        [Tooltip("挂在场景某 GameObject 上的 SceneLoader 组件，sceneToLoad 字段需在 Inspector 设置（如 LatestUpdate）")]
+        [Header("场景过渡（优先）")]
+        [Tooltip("品牌化加载页过渡——异步加载 + 黑屏 + Logo。配置后 Start 按钮走过渡流程")]
+        [SerializeField] private TitleSceneTransition transition;
+
+        [Header("场景加载（fallback）")]
+        [Tooltip("当 transition 未配置时使用，同步加载会导致画面短暂卡顿")]
         [SerializeField] private SceneLoader sceneLoader;
 
         [Header("子面板")]
@@ -42,12 +46,19 @@ namespace PopLife.Title
 
         private void OnStartClicked()
         {
-            if (sceneLoader == null)
+            // 优先走过渡
+            if (transition != null)
             {
-                Debug.LogWarning("[TitleMenuController] SceneLoader 未配置，Start 按钮无法跳转");
+                transition.BeginTransition();
                 return;
             }
-            sceneLoader.LoadScene();
+            // Fallback：直接同步加载（会感觉卡）
+            if (sceneLoader != null)
+            {
+                sceneLoader.LoadScene();
+                return;
+            }
+            Debug.LogWarning("[TitleMenuController] 没有配置 TitleSceneTransition 或 SceneLoader，Start 按钮无法跳转");
         }
 
         private void OnSettingsClicked()

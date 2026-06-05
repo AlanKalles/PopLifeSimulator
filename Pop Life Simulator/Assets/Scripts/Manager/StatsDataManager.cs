@@ -217,6 +217,21 @@ namespace PopLife.Manager
         }
 
         /// <summary>
+        /// 获取今日成功购买的顾客数量（totalSpent > 0）
+        /// 用于计算转化率：purchased / totalCustomers
+        /// </summary>
+        public int GetPurchasedCustomerCount()
+        {
+            int count = 0;
+            foreach (var stat in customerStatsTracker)
+            {
+                if (stat != null && stat.totalSpent > 0)
+                    count++;
+            }
+            return count;
+        }
+
+        /// <summary>
         /// 获取当前店内顾客数量
         /// </summary>
         public int GetCurrentCustomerCount()

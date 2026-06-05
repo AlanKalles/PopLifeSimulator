@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using PopLife.Data;
+using PopLife.UI;
 
 namespace PopLife
 {
@@ -232,6 +233,36 @@ namespace PopLife
             SaveState();
 
             OnDrawCompleted?.Invoke(drawnNumber);
+
+            // 玩家本期买了票 → 在开奖日清晨即弹揭晓面板（通过演出通道，排在当天剧情对话之后）
+            if (HasPendingDrawResult())
+            {
+                var channel = PresentationChannel.Instance;
+                if (channel != null)
+                {
+                    channel.Enqueue(new PanelPresentation(
+                        PresentationChannel.PRIORITY_LOTTERY_REVEAL,
+                        onComplete => ShowRevealPanel(onComplete)));
+                }
+                else
+                {
+                    // 兜底（isQuitting 等极端情形）：直弹，绝不静默丢失揭晓。
+                    // 注意 onCollected 传 null —— CollectPrize 已由 LotteryWinPanel.OnCollectClicked 调用，
+                    // 再传 CollectPrize 会导致双调用。
+                    ShowRevealPanel(null);
+                }
+            }
+        }
+
+        /// <summary>显示本期开奖揭晓面板（中奖/未中奖均展示）。</summary>
+        private void ShowRevealPanel(Action onCollected)
+        {
+            UIManager.Instance?.ShowLotteryWinPanel(
+                GetLastDrawnNumber(),
+                GetPendingPlayerTicket(),
+                GetPendingMatchCount(),
+                GetPendingPrize(),
+                onCollected: onCollected);
         }
 
         #endregion

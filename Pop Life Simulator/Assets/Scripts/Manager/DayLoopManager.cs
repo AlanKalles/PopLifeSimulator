@@ -143,10 +143,20 @@ namespace PopLife
             }
         }
 
+        private void OnDestroy()
+        {
+            if (LotteryManager.Instance != null)
+                LotteryManager.Instance.OnPlayerWon -= OnLotteryPlayerWon;
+        }
+
         private void Start()
         {
             // 初始化Unity时间系统
             Time.timeScale = 1f;
+
+            // 订阅彩票中奖：开奖日清晨揭晓领奖时记录奖金，供当天结算明细展示
+            if (LotteryManager.Instance != null)
+                LotteryManager.Instance.OnPlayerWon += OnLotteryPlayerWon;
 
             // 游戏开始时进入建造阶段
             currentHour = buildPhaseHour;
@@ -267,8 +277,8 @@ namespace PopLife
             OnStoreClose?.Invoke();
             Debug.Log("[DayLoopManager] 触发 OnStoreClose 事件");
 
-            // 1. 彩票（保留 — 必须在破产判定之前发生，破产是结算面板出现前的最后一步）
-            yield return StartCoroutine(CheckLotteryWinBeforeSettlement());
+            // 1. 彩票揭晓已移至开奖日清晨（建造阶段开始），由 PresentationChannel 弹出，
+            //    不再在打烊结算前展示。奖金通过 LotteryManager.OnPlayerWon → lotteryWinnings 进当天结算明细。
 
             // 2. 扣除维护费（含 GlobalModifier，从原 CalculateDailySettlement 抽离）
             int totalMaintenance = CalculateAndDeductMaintenance();
@@ -310,39 +320,12 @@ namespace PopLife
         }
 
         /// <summary>
-        /// 在结算面板之前检查彩票开奖结果
-        /// 玩家本期买了票就展示面板（中奖/未中奖均展示），等待玩家点击 Continue/Collect 后继续
+        /// 彩票中奖回调：开奖日清晨揭晓面板 Collect 时由 LotteryManager.OnPlayerWon 触发，
+        /// 记录奖金供当天打烊结算面板的收入明细展示（钱已由 CollectPrize 入账，此处仅展示）。
         /// </summary>
-        private IEnumerator CheckLotteryWinBeforeSettlement()
+        private void OnLotteryPlayerWon(int matchCount, int prize)
         {
-            // 改用 HasPendingDrawResult：玩家本期买了票就要展示结果（无论中没中奖）
-            if (LotteryManager.Instance == null || !LotteryManager.Instance.HasPendingDrawResult())
-            {
-                lotteryWinnings = 0;
-                yield break;
-            }
-
-            // 重置时间倍速，确保面板动画正常
-            SetTimeScale(1f);
-
-            int prize = LotteryManager.Instance.GetPendingPrize();
-            int matchCount = LotteryManager.Instance.GetPendingMatchCount();
-            int[] drawnNumber = LotteryManager.Instance.GetLastDrawnNumber();
-            int[] playerTicket = LotteryManager.Instance.GetPendingPlayerTicket();
-
-            bool collected = false;
-
-            UIManager.Instance?.ShowLotteryWinPanel(
-                drawnNumber, playerTicket, matchCount, prize,
-                onCollected: () => { collected = true; }
-            );
-
-            // 等待玩家点击 Collect 按钮
-            while (!collected)
-                yield return null;
-
             lotteryWinnings = prize;
-            Debug.Log($"[DayLoopManager] 彩票开奖结果已确认（奖金 ${prize}，将在结算中显示）");
         }
 
         /// <summary>
@@ -514,6 +497,7 @@ namespace PopLife
             dailyTotalExpenses = 0f;
             dailyTotalCustomers = 0;
             dailyFameEarned = 0f;
+            lotteryWinnings = 0; // 清掉上一天的彩票奖金（非中奖开奖日不残留旧值）
             todayLevelUps.Clear();
 
             // 记录新一天建造阶段开始时的金钱

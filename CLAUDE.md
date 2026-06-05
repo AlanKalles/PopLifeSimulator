@@ -71,12 +71,14 @@ Unity 2D 成人商店模拟经营游戏（"Pop Life Simulator"）- 一款以经�
 - **`ShelfArchetypes.cs`**
   - 继承自 `BuildingArchetype`
   - **公式驱动数值系统**：所有属性基于 `buildCost` 和 `level` 计算，无需手动配置 `ShelfLevelData[]`
-  - 公式（B=buildCost, L=level, 等级1-5）：
+  - 公式（B=buildCost, L=level, 等级1-5；以 `ShelfArchetypes.cs` 实际代码为准）：
     - 升级声望 = Floor(B×0.5 + L²×5)
-    - 商品单价 = Floor(B×0.1 + L³×0.2)
-    - 维护费 = Floor(B×0.1 + L²×0.5 - 5)
-    - 库存 = Floor(B×0.01 + L×0.9 + 5)
-    - Appeal = Floor(B×0.36 + 4×L^1.5 + 5)
+    - 补货成本 StockFee = Max(Floor(B×0.05 - 2 + L²×0.5) + 2, 1)
+    - 每件利润 Profit = Max(Floor(B×0.03 + L²×0.25), 1)
+    - 商品单价 Price = StockFee + Profit
+    - 维护费 = Max(Floor(0.9×Profit + 3×√Profit) - 2, 1)
+    - 库存 = Floor(Max(0, 800 - B)×0.01 + 5 + L²×0.5)
+    - Appeal = Floor(B×0.018×L + 4×L^1.5)
   - 按 `ProductCategory` 区分（11种类别）
   - `BrandData brand` - 品牌引用（ScriptableObject）
   - `string description` - 货架描述文本

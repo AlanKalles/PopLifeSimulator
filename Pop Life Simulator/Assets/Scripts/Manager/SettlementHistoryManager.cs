@@ -81,6 +81,33 @@ namespace PopLife
         /// </summary>
         public int HistoryCount => history.Count;
 
+        /// <summary>
+        /// 选择器签名 — 从历史条目中提取要平均的字段
+        /// </summary>
+        public delegate float HistoryFieldSelector(SettlementHistoryEntry entry);
+
+        /// <summary>
+        /// 计算最近N天（不含今天）的字段平均值
+        /// 注意：调用前需确认 today 已通过 RecordDay 写入，函数会自动跳过最后一条（今天）
+        /// 返回 0 表示没有可用历史
+        /// </summary>
+        public float GetAverage(HistoryFieldSelector selector, int days = 7)
+        {
+            if (selector == null || history.Count <= 1) return 0f;
+
+            // 排除最后一条（今天），仅平均之前的 N 天
+            int endExclusive = history.Count - 1;
+            int start = Mathf.Max(0, endExclusive - days);
+            int count = endExclusive - start;
+            if (count <= 0) return 0f;
+
+            float sum = 0f;
+            for (int i = start; i < endExclusive; i++)
+                sum += selector(history[i]);
+
+            return sum / count;
+        }
+
         private void Save()
         {
             try
